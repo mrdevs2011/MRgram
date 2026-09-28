@@ -877,12 +877,12 @@ export function openGroupEdit(groupId, g) {
   lockScroll();
 }
 
+// Q: kanal turi yo'q — "+" to'g'ridan-to'g'ri guruh yaratish formasini ochadi
 export function openCreateChoice() {
-  const el = document.getElementById('grpCreateChoiceOverlay');
-  if (el) el.classList.add('show');
+  openCreateForm('group');
 }
 
-let _createType    = 'group'; // 'group' | 'channel'
+let _createType    = 'group'; // faqat 'group' (eski 'channel'lar bazada qoladi, yangisi yaratilmaydi)
 let _selectedMembers = new Set();
 let _pendingPhotoUrl = null;
 let _usersForPicker = [];
@@ -892,17 +892,14 @@ export function openCreateForm(type) {
   _pendingPhotoUrl = null;
   _usersForPicker  = [];
 
-  // Close choice sheet
-  document.getElementById('grpCreateChoiceOverlay')?.classList.remove('show');
-
   const overlay = document.getElementById('grpCreateFormOverlay');
   if (!overlay) return;
 
-  overlay.querySelector('.grp-form-title').textContent = type === 'channel' ? 'Yangi kanal' : 'Yangi guruh';
-  overlay.querySelector('#grpFormDescWrap').style.display = type === 'channel' ? '' : 'none';
-  overlay.querySelector('.grp-form-desc-hint').textContent = type === 'channel'
-    ? 'A\'zolar faqat o\'qiy oladi. Faqat siz xabar yubora olasiz.'
-    : 'Barcha a\'zolar xabar yubora oladi.';
+  overlay.querySelector('.grp-form-title').textContent = 'Yangi guruh';
+  overlay.querySelector('#grpFormDescWrap').style.display = '';
+  overlay.querySelector('.grp-form-desc-hint').textContent = '';
+  const _perm = overlay.querySelector('#grpFormMsgPerm');
+  if (_perm) _perm.value = 'all';
 
   // Member picker section — channels can have members too (subscribers)
   const pickerSection = overlay.querySelector('#grpMemberPickerSection');
@@ -987,7 +984,6 @@ function _renderPickerRows(users, listEl) {
    ADD USER BY USERNAME (start a private chat)
    ───────────────────────────────────────────────────────────────────── */
 export function openAddUserByUsername() {
-  document.getElementById('grpCreateChoiceOverlay')?.classList.remove('show');
   const overlay = document.getElementById('grpAddUserOverlay');
   if (!overlay) return;
   const inp = overlay.querySelector('#grpAddUserInput');
@@ -1099,10 +1095,11 @@ export async function submitCreateGroup() {
     const newId = crypto.randomUUID();
     const { error: gErr } = await sb.from('groups').insert({
       id:          newId,
-      type:        _createType,
+      type:        'group',
       name,
       avatar:      _pendingPhotoUrl || '',
       description: overlay.querySelector('#grpFormDesc')?.value?.trim() || '',
+      msg_permission: overlay.querySelector('#grpFormMsgPerm')?.value === 'admins' ? 'admins' : 'all',
       owner_id:    state.me.uid,
       is_private:  true,   // Q1=B: faqat taklif orqali (a'zolarni yaratuvchi/admin qo'shadi)
     });
@@ -1114,7 +1111,7 @@ export async function submitCreateGroup() {
     }
     await _loadGroups();
     overlay.classList.remove('show');
-    toast(`${_createType === 'channel' ? 'Kanal' : 'Guruh'} yaratildi!`, 'success');
+    toast('Guruh yaratildi!', 'success');
     setTimeout(() => openGroupThread(newId), 100);
   } catch(err) {
     console.error('[Groups] create failed:', err);
@@ -1154,38 +1151,9 @@ export async function pickGroupPhoto() {
    INJECT DOM — all overlays/panels added once to body
    ───────────────────────────────────────────────────────────────────── */
 export function injectGroupsDOM() {
-  if (document.getElementById('grpCreateChoiceOverlay')) return;
+  if (document.getElementById('grpCreateFormOverlay')) return;
 
   document.body.insertAdjacentHTML('beforeend', `
-    <!-- Choice sheet: Guruh yoki Kanal -->
-    <div class="overlay" id="grpCreateChoiceOverlay">
-      <div class="sheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-title">Yangi suhbat</div>
-        <button class="grp-choice-btn" id="grpChoiceGroup">
-          <div class="grp-choice-icon grp-choice-icon--group">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          </div>
-          <div class="grp-choice-info">
-            <div class="grp-choice-name">Yangi guruh</div>
-            <div class="grp-choice-sub">Barcha a'zolar xabar yubora oladi</div>
-          </div>
-          <svg class="grp-choice-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-        <button class="grp-choice-btn" id="grpChoiceChannel">
-          <div class="grp-choice-icon grp-choice-icon--channel">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
-          </div>
-          <div class="grp-choice-info">
-            <div class="grp-choice-name">Yangi kanal</div>
-            <div class="grp-choice-sub">Faqat adminlar xabar yubora oladi</div>
-          </div>
-          <svg class="grp-choice-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-        <button class="btn-ghost mt-12px" id="grpChoiceCancel">Bekor qilish</button>
-      </div>
-    </div>
-
     <!-- Add user by username sheet -->
     <div class="overlay" id="grpAddUserOverlay">
       <div class="sheet">
@@ -1218,11 +1186,15 @@ export function injectGroupsDOM() {
         </div>
 
         <!-- Name -->
-        <input class="field mb-12px" id="grpFormName" placeholder="Guruh / Kanal nomi" maxlength="64" autocomplete="off">
+        <input class="field mb-12px" id="grpFormName" placeholder="Guruh nomi" maxlength="64" autocomplete="off">
 
-        <!-- Description (channel only) -->
-        <div id="grpFormDescWrap" style="display:none">
+        <!-- Tavsif + xabar yuborish huquqi (a'zo qo'shish rejimida yashiriladi) -->
+        <div id="grpFormDescWrap">
           <textarea class="ta mb-12px" id="grpFormDesc" placeholder="Tavsif (ixtiyoriy)" rows="2" maxlength="300"></textarea>
+          <select class="field mb-12px" id="grpFormMsgPerm">
+            <option value="all">Xabar yuborish: barcha a'zolar</option>
+            <option value="admins">Xabar yuborish: faqat adminlar (kanal kabi)</option>
+          </select>
         </div>
 
         <div class="grp-form-desc-hint"></div>
@@ -1362,11 +1334,6 @@ export function injectGroupsDOM() {
   `);
 
   // Wire events
-  document.getElementById('grpChoiceGroup').onclick    = () => openCreateForm('group');
-  document.getElementById('grpChoiceChannel').onclick  = () => openCreateForm('channel');
-  document.getElementById('grpChoiceCancel').onclick   = () =>
-    document.getElementById('grpCreateChoiceOverlay').classList.remove('show');
-
   document.getElementById('grpAddUserSubmitBtn').onclick = _submitAddUserByUsername;
   document.getElementById('grpAddUserCancelBtn').onclick = () =>
     document.getElementById('grpAddUserOverlay').classList.remove('show');
@@ -1389,7 +1356,7 @@ export function injectGroupsDOM() {
     document.getElementById('grpInfoOverlay').classList.remove('show');
 
   // Backdrop click closes
-  ['grpCreateChoiceOverlay','grpAddUserOverlay','grpCreateFormOverlay','grpInfoOverlay','grpEditOverlay'].forEach(id => {
+  ['grpAddUserOverlay','grpCreateFormOverlay','grpInfoOverlay','grpEditOverlay'].forEach(id => {
     document.getElementById(id)?.addEventListener('click', e => {
       if (e.target.id === id) { document.getElementById(id).classList.remove('show'); unlockScroll(); }
     });

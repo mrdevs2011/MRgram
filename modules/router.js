@@ -83,7 +83,6 @@ export function navigateTo(routeName, pushState = true) {
     // Confirm dialog
     'confirmOverlay',
     // Group overlaylar
-    'grpCreateChoiceOverlay',
     'grpAddUserOverlay',
     'grpCreateFormOverlay',
     'grpInfoOverlay',

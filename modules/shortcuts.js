@@ -26,7 +26,6 @@ const backdrop = id => () => {
 const CLOSERS = [
   ['confirmOverlay',         () => $('confirmCancelBtn')?.click()],
   ['zoomModal',              () => $('zoomClose')?.click()],
-  ['grpCreateChoiceOverlay', backdrop('grpCreateChoiceOverlay')],
   ['grpAddUserOverlay',      backdrop('grpAddUserOverlay')],
   ['grpCreateFormOverlay',   backdrop('grpCreateFormOverlay')],
   ['grpInfoOverlay',         backdrop('grpInfoOverlay')],

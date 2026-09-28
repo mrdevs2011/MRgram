@@ -591,7 +591,7 @@ function _appendGroupRows(root) {
   const section = document.createElement('div');
   section.className = 'grp-rows-section';
 
-  section.innerHTML = `<div class="chats-section-label">Guruhlar va kanallar</div>` +
+  section.innerHTML = `<div class="chats-section-label">Guruhlar</div>` +
     groups.map(g => {
       const av      = g.avatar || defAvi(g.name || 'G');
       const unread  = g.unreadCount?.[state.me?.uid] || 0;
