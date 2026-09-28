@@ -5,8 +5,7 @@
 
 /* ── CSS token override: border va shadow tokenlarini o'chiramiz ── */
 :root,
-[data-theme="dark"],
-[data-theme="light"] {
+[data-theme="dark"]{
   --specular-top:    none;
   --specular-edge:   none;
 
@@ -29,34 +28,25 @@
   --line3: transparent;
 }
 
-[data-theme="light"] {
-  --line:  #e5e5e5;
-  --line2: transparent;
-  --line3: transparent;
-}
-
 /* ════════════════════════════════
    GLOBAL — hamma border lar off
    ════════════════════════════════ */
 
 /* Post kartochkalar */
 .post,
-[data-theme="dark"] .post,
-[data-theme="light"] .post {
+[data-theme="dark"] .post{
   border: none;
   box-shadow: none;
 }
 
 .post:hover,
-[data-theme="dark"] .post:hover,
-[data-theme="light"] .post:hover {
+[data-theme="dark"] .post:hover{
   box-shadow: none;
 }
 
 /* Header — top bar */
 .app-hdr,
-[data-theme="dark"] .app-hdr,
-[data-theme="light"] .app-hdr {
+[data-theme="dark"] .app-hdr{
   border-bottom: none;
   box-shadow: none;
 }
@@ -64,20 +54,15 @@
 /* Mobile: frosted glass blur */
 @media (max-width: 767px) {
   .app-hdr,
-  [data-theme="dark"] .app-hdr,
-  [data-theme="light"] .app-hdr {
+  [data-theme="dark"] .app-hdr{
     background: rgba(16, 16, 16, 0.72);
   }
-  [data-theme="light"] .app-hdr {
-    background: rgba(244, 244, 244, 0.78);
   }
-}
 
 /* Desktop: shaffof qolsin */
 @media (min-width: 768px) {
   .app-hdr,
-  [data-theme="dark"] .app-hdr,
-  [data-theme="light"] .app-hdr {
+  [data-theme="dark"] .app-hdr{
     background: transparent;
   }
 }
@@ -90,8 +75,7 @@
 
 /* Bottom nav */
 .bot-nav,
-[data-theme="dark"] .bot-nav,
-[data-theme="light"] .bot-nav {
+[data-theme="dark"] .bot-nav{
   border-top: none;
   border-right: none;
   box-shadow: none;
@@ -102,16 +86,12 @@
   [data-theme="dark"] .bot-nav {
     background: #000000;
   }
-  [data-theme="light"] .bot-nav {
-    background: rgba(244, 244, 244, 0.78);
   }
-}
 
 /* Desktop: shaffof qolsin */
 @media (min-width: 768px) {
   .bot-nav,
-  [data-theme="dark"] .bot-nav,
-  [data-theme="light"] .bot-nav {
+  [data-theme="dark"] .bot-nav{
     background: transparent;
   }
 }
@@ -124,29 +104,24 @@
   }
 }
 
-
 /* Nav buttons */
 .nav-btn,
 [data-theme="dark"] .nav-btn:hover,
-[data-theme="dark"] .nav-btn.on,
-[data-theme="light"] .nav-btn:hover,
-[data-theme="light"] .nav-btn.on {
+[data-theme="dark"] .nav-btn.on{
   border: none;
   box-shadow: none;
 }
 
 /* Sheet (bottom panel) */
 .sheet,
-[data-theme="dark"] .sheet,
-[data-theme="light"] .sheet {
+[data-theme="dark"] .sheet{
   border-top: none;
   box-shadow: none;
 }
 
 /* Modal */
 .modal-content,
-[data-theme="dark"] .modal-content,
-[data-theme="light"] .modal-content {
+[data-theme="dark"] .modal-content{
   border: none;
   box-shadow: none;
 }
@@ -160,50 +135,43 @@
 
 /* Theme button */
 .theme-btn,
-[data-theme="dark"] .theme-btn:hover,
-[data-theme="light"] .theme-btn:hover {
+[data-theme="dark"] .theme-btn:hover{
   border: none;
   box-shadow: none;
 }
 
 /* Auth card */
 .auth-card,
-[data-theme="dark"] .auth-card,
-[data-theme="light"] .auth-card {
+[data-theme="dark"] .auth-card{
   border: none;
   box-shadow: none;
 }
 
 /* Avatar (avi) */
 .avi,
-[data-theme="dark"] .avi,
-[data-theme="light"] .avi {
+[data-theme="dark"] .avi{
   border: none;
   box-shadow: none;
 }
 
-[data-theme="dark"] .avi:hover,
-[data-theme="light"] .avi:hover {
+[data-theme="dark"] .avi:hover{
   box-shadow: none;
 }
 
 /* Profile avatar */
 .profile-avi,
-[data-theme="dark"] .profile-avi,
-[data-theme="light"] .profile-avi {
+[data-theme="dark"] .profile-avi{
   border: none;
   box-shadow: none;
 }
 
-[data-theme="dark"] .profile-avi:hover,
-[data-theme="light"] .profile-avi:hover {
+[data-theme="dark"] .profile-avi:hover{
   box-shadow: none;
 }
 
 /* Edit button */
 .edit-btn,
-[data-theme="dark"] .edit-btn,
-[data-theme="light"] .edit-btn {
+[data-theme="dark"] .edit-btn{
   border: none;
   box-shadow: none;
 }
@@ -215,8 +183,7 @@
 }
 
 /* Profile grid */
-[data-theme="dark"] .grid-cell,
-[data-theme="light"] .grid-cell {
+[data-theme="dark"] .grid-cell{
   border: none;
   box-shadow: none;
 }
@@ -264,10 +231,7 @@ input:not([type="checkbox"]):not([type="radio"]),
 textarea,
 [data-theme="dark"] .field,
 [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
-[data-theme="dark"] textarea,
-[data-theme="light"] .field,
-[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
-[data-theme="light"] textarea {
+[data-theme="dark"] textarea{
   border: none;
   box-shadow: none;
 }
@@ -277,10 +241,7 @@ input:focus,
 textarea:focus,
 [data-theme="dark"] .field:focus,
 [data-theme="dark"] input:focus,
-[data-theme="dark"] textarea:focus,
-[data-theme="light"] .field:focus,
-[data-theme="light"] input:focus,
-[data-theme="light"] textarea:focus {
+[data-theme="dark"] textarea:focus{
   border: none;
   box-shadow: none;
   outline: none;
@@ -324,8 +285,7 @@ textarea:focus,
 
 /* File card */
 .file-card,
-[data-theme="dark"] .file-card,
-[data-theme="light"] .file-card {
+[data-theme="dark"] .file-card{
   border: none;
   box-shadow: none;
 }
@@ -512,12 +472,6 @@ textarea:focus,
 }
 
 /* Feed buttons */
-.follow-btn,
-.unfollow-btn {
-  border: none;
-  box-shadow: none;
-}
-
 /* Story/reel ring */
 .story-ring,
 .reel-ring {
@@ -565,98 +519,32 @@ textarea:focus,
   color: var(--text);
 }
 
-[data-theme="light"] .act-btn:hover {
-  background: var(--bg3);
-  color: var(--text);
-}
-
 /* 3. Sidebar nav-btn aktiv holat — dark styled light temada */
-[data-theme="light"] .nav-btn.on {
-  background: var(--bg3);
-  border: none;
-  box-shadow: none;
-}
 
 /* Desktop sidebar nav-btn */
 @media (min-width: 768px) {
-  [data-theme="light"] .nav-btn.on {
-    background: var(--bg3);
-    border: none;
-    box-shadow: none;
+  
   }
-
-  [data-theme="light"] .nav-btn:hover {
-    background: var(--bg3);
-    border: none;
-    box-shadow: none;
-  }
-}
 
 /* 4. Visibility buttons (Private/Public) — light temada dark styled */
-[data-theme="light"] .vis-btn--active[data-mode="private"] {
-  background: var(--blue-glow3);
-  border: none;
-  color: var(--blue);
-}
-
-[data-theme="light"] .vis-btn--active[data-mode="public"] {
-  background: var(--green-glow);
-  border: none;
-  color: var(--green);
-}
 
 /* 5. Input focus — light temada dark border/outline chiqib qolishi */
-[data-theme="light"] input:focus,
-[data-theme="light"] textarea:focus,
-[data-theme="light"] .field:focus {
-  border: none;
-  outline: none;
-  box-shadow: none;
-}
 
 /* 6. nav-center-btn (+ tugma) — light temada shadow o'chish */
-[data-theme="light"] .nav-center-btn {
-  box-shadow: none;
-}
 
 /* 7. Sidebar top/bottom border — light temada */
-[data-theme="light"] .sb-top,
-[data-theme="light"] .sb-bottom {
-  border: none;
-}
 
 /* 8. Sheet handle — light temada */
-[data-theme="light"] .sheet-handle {
-  background: var(--line3);
-}
 
 /* ════════════════════════════════════════════
    CHAT — Audio xabar (voice message) tuzatish
    ════════════════════════════════════════════ */
 
 /* Incoming (theirs) — play button light temada ko'rinsin */
-[data-theme="light"] .chat-msg.theirs .cvm-play {
-  background: var(--bg4);
-  color: var(--text);
-}
-
-[data-theme="light"] .chat-msg.theirs .cvm-play:hover {
-  background: var(--bg5);
-}
 
 /* Incoming waveform bars — light temada ko'rinsin */
-[data-theme="light"] .chat-msg.theirs .cvm-bar {
-  background: var(--text3);
-}
-
-[data-theme="light"] .chat-msg.theirs .cvm-bar.played {
-  background: var(--blue);
-}
 
 /* Incoming duration text */
-[data-theme="light"] .chat-msg.theirs .cvm-dur {
-  color: var(--text2);
-}
 
 /* Dark theme — incoming play button kontrast yaxshilash */
 [data-theme="dark"] .chat-msg.theirs .cvm-play {
@@ -677,22 +565,9 @@ textarea:focus,
   outline: none;
 }
 
-[data-theme="light"] .theme-btn {
-  border: none;
-  box-shadow: none;
-}
-
 /* ════════════════════════════════════════════
    AVATAR — light temada placeholder background
    ════════════════════════════════════════════ */
-[data-theme="light"] .avi {
-  background: var(--bg3);
-  box-shadow: none;
-}
-
-[data-theme="light"] .avi:hover {
-  box-shadow: none;
-}
 
 /* avi base — shadow olib tashlash */
 .avi {
@@ -710,333 +585,94 @@ textarea:focus,
    ════════════════════════════════════════════════════════════════ */
 
 /* ── CHAT THREAD ── */
-[data-theme="light"] .chat-thread-messages {
-  background: var(--bg);
-}
 
 /* Incoming bubble */
-[data-theme="light"] .chat-msg.theirs .chat-bubble {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* Chat input area */
-[data-theme="light"] .chat-input-bar,
-[data-theme="light"] .chat-thread-input-row {
-  background: var(--bg2);
-}
-
-[data-theme="light"] .chat-input-wrap,
-[data-theme="light"] .chat-thread-input {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* Chat list row hover */
-[data-theme="light"] .chat-row:hover { background: var(--bg3); }
-[data-theme="light"] .chat-row:active { background: var(--bg4); }
 
 /* Chat header */
-[data-theme="light"] .chat-thread-hdr {
-  background: var(--bg);
-}
 
 /* Chat back button */
-[data-theme="light"] .chat-thread-back:hover {
-  background: var(--bg3);
-}
 
 /* Reply preview */
-[data-theme="light"] .chat-reply-preview {
-  background: var(--bg3);
-}
-[data-theme="light"] .chat-msg.theirs .chat-reply-preview:hover {
-  background: var(--bg4);
-}
 
 /* File preview bar */
-[data-theme="light"] .chat-file-preview {
-  background: var(--bg3);
-}
-[data-theme="light"] .cfp-remove:hover {
-  background: var(--bg4);
-}
 
 /* File message */
-[data-theme="light"] .cfm-name { color: var(--text); }
-[data-theme="light"] .chat-msg.theirs .cfm-dl {
-  background: var(--bg4);
-  color: var(--text2);
-}
 
 /* Voice message bubble */
-[data-theme="light"] .chat-voice-msg { background: transparent; }
-[data-theme="light"] .chat-msg.theirs .cvm-play {
-  background: var(--bg4);
-  color: var(--text);
-}
-[data-theme="light"] .cvm-play:hover {
-  background: var(--bg5);
-}
-[data-theme="light"] .chat-msg.theirs .cvm-bar {
-  background: var(--text3);
-}
-[data-theme="light"] .chat-msg.theirs .cvm-bar.played {
-  background: var(--blue);
-}
-[data-theme="light"] .chat-msg.theirs .cvm-dur {
-  color: var(--text2);
-}
 
 /* Call modal */
-[data-theme="light"] #callActiveModal {
-  background: var(--bg);
-}
-[data-theme="light"] .call-ctrl-btn {
-  background: var(--bg3);
-  color: var(--text2);
-}
-[data-theme="light"] .call-ctrl-btn.active {
-  background: var(--blue-glow2);
-  color: var(--blue);
-}
 
 /* Chat photo viewer */
-[data-theme="light"] .chat-photo-viewer {
-  background: rgba(242, 242, 242,0.95);
-}
 
 /* ── FEED ── */
 /* Header search/mute hover */
-[data-theme="light"] .hdr-mute-btn:hover {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* Follow/like buttons */
-[data-theme="light"] .follow-btn {
-  background: var(--bg3);
-}
 
 /* Comment body */
-[data-theme="light"] .cmt-body {
-  background: var(--bg3);
-}
-[data-theme="light"] .cmt-body:hover {
-  background: var(--bg4);
-}
-[data-theme="light"] .cmt-input {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* Reel overlays */
-[data-theme="light"] .reel {
-  background: var(--bg);
-}
-[data-theme="light"] .reel-top-btn,
-[data-theme="light"] .reel-vol-top {
-  background: var(--bg3);
-}
-[data-theme="light"] .reel-top-btn:hover,
-[data-theme="light"] .reel-vol-top:hover {
-  background: var(--bg4);
-}
 
 /* Post gradient overlay (media) */
-[data-theme="light"] .post-media-overlay,
-[data-theme="light"] .reel-gradient-bot {
-  background: rgba(205, 205, 205,0.85);
-}
 
 /* ── PROFILE ── */
-[data-theme="light"] .profile-hdr {
-  background: var(--bg);
-}
 
 /* Profile cover gradient */
-[data-theme="light"] .profile-cover-gradient {
-  background: var(--bg3);
-}
 
 /* Stats edit box */
-[data-theme="light"] .up-stat-box {
-  background: var(--bg3);
-}
 
 /* Profile grid cell */
-[data-theme="light"] .grid-cell,
-[data-theme="light"] .up-grid-cell {
-  background: var(--bg3);
-}
 
 /* Profile actions bar */
-[data-theme="light"] .profile-actions {
-  background: var(--bg);
-}
 
 /* Profile tab header */
-[data-theme="light"] .profile-grid-hdr {
-  background: var(--bg);
-}
 
 /* Avatar cover bg (cover-crop) */
-[data-theme="light"] .avatar-crop-container {
-  background: var(--bg3);
-}
 
 /* ── NAV / SIDEBAR ── */
 /* Notification badge */
-[data-theme="light"] .nav-notif-dot {
-  background: var(--red);
-}
 
 /* Sidebar */
-[data-theme="light"] .sb-panel-input-wrap {
-  background: var(--bg3);
-}
-[data-theme="light"] .sb-panel-input-wrap:focus-within {
-  background: var(--bg4);
-}
 
 /* Search overlay */
-[data-theme="light"] .search-overlay {
-  background: rgba(224, 224, 224,0.95);
-}
-[data-theme="light"] .search-overlay-box {
-  background: var(--bg2);
-}
-[data-theme="light"] .search-overlay-close {
-  background: var(--bg3);
-  color: var(--text2);
-}
-[data-theme="light"] .search-overlay-close:hover {
-  background: var(--bg4);
-}
 
 /* Sheet */
-[data-theme="light"] .sheet {
-  background: var(--bg2);
-}
 
 /* Modal */
-[data-theme="light"] .modal-content,
-[data-theme="light"] #detailContent {
-  background: var(--bg2);
-}
-[data-theme="light"] .overlay {
-  background: rgba(100,100,108,0.6);
-}
 
 /* Upload drop zone */
-[data-theme="light"] .upload-drop {
-  background: var(--bg3);
-}
-[data-theme="light"] .upload-drop:hover {
-  background: var(--bg4);
-}
-[data-theme="light"] .upload-drop.drag-over {
-  background: var(--blue-glow3);
-}
 
 /* Upload float bar */
-[data-theme="light"] .upload-float-bar {
-  background: var(--bg3);
-}
 
 /* Toast */
-[data-theme="light"] #toast {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* Skeleton shimmer */
-[data-theme="light"] .skeleton-post {
-  background: var(--bg3);
-}
-[data-theme="light"] .skel-avi,
-[data-theme="light"] .skel-line,
-[data-theme="light"] .skel-media {
-  background: var(--bg3);
-  background-size: 200% 100%;
-}
 
 /* File card */
-[data-theme="light"] .file-card {
-  background: var(--bg3);
-}
-[data-theme="light"] .file-card:hover {
-  background: var(--bg4);
-}
-[data-theme="light"] .file-dl {
-  background: var(--blue-glow3);
-  color: var(--blue);
-}
-[data-theme="light"] .file-dl:hover {
-  background: var(--blue-glow2);
-}
 
 /* Empty state icons */
-[data-theme="light"] .feed-empty-icon,
-[data-theme="light"] .empty-icon,
-[data-theme="light"] .empty-search-icon {
-  background: var(--bg3);
-}
 
 /* Dm-close button */
-[data-theme="light"] .dm-close {
-  background: var(--bg3);
-}
-[data-theme="light"] .dm-close:hover {
-  background: var(--bg4);
-}
 
 /* del-btn hover */
-[data-theme="light"] .del-btn:hover {
-  background: var(--bg4);
-  color: var(--red);
-}
 
 /* cmt-del hover */
-[data-theme="light"] .cmt-del:hover {
-  background: var(--bg4);
-  color: var(--red);
-}
 
 /* Groups */
-[data-theme="light"] .group-card {
-  background: var(--bg3);
-}
 
 /* Sidebar items active */
-[data-theme="light"] .sb-item.active {
-  background: var(--blue-glow3);
-  color: var(--blue);
-}
-[data-theme="light"] .sb-item:hover {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* hdr-icon-btn hover */
-[data-theme="light"] .hdr-icon-btn:hover {
-  background: var(--bg3);
-}
 
 /* nav-btn.on — active sidebar item */
-[data-theme="light"] .nav-btn.on {
-  background: var(--blue-glow3);
-}
 
 /* Post background */
-[data-theme="light"] .post {
-  background: var(--bg2);
-}
 
 /* Reels dark gradient — light temada oq */
-[data-theme="light"] .reel-avi {
-  border: none;
-}
 
 /* ══════════════════════════════════════════
    BARCHA BARLAR — TRANSPARENT (SEAMLESS)

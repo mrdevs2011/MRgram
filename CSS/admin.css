@@ -795,26 +795,6 @@
 /* ═══════════════════════════════════════════════════════════════════════
    LIGHT THEME — Admin Panel
    ═══════════════════════════════════════════════════════════════════════ */
-[data-theme="light"] .ua-row:hover {
-  background: #E1E1E5;
-}
-[data-theme="light"] .ua-modal {
-  background: #ffffff;
-  border-color: #D3D3D7;
-  box-shadow: 0 24px 64px #BEBEC2;
-}
-[data-theme="light"] .ua-detail-tabs {
-  background: #e0e0e0;
-  border-color: #D5D5DA;
-}
-[data-theme="light"] .ua-detail-row,
-[data-theme="light"] .ua-post-link {
-  background: #E1E1E5;
-  border-color: #D7D7DC;
-}
-[data-theme="light"] .ua-post-link:hover {
-  background: #DADADE;
-}
 
 /* ── Actions View (birlashtirilgan stats+users) ── */
 /* #actionsView scroll/height .view.on orqali boshqariladi */
@@ -967,24 +947,6 @@
   --ag-row-hover:      var(--bg4);
   --ag-badge-glow:     #202327;
   --ag-overlay:        #000000;
-}
-[data-theme="light"] {
-  --ag-glass:          var(--bg3);
-  --ag-glass-mid:      var(--bg4);
-  --ag-glass-strong:   var(--bg5);
-  --ag-border-top:     rgba(255,255,255,1.0);
-  --ag-border-side:    #f7f7f7;
-  --ag-border-bot:     #f0f0f0;
-  --ag-specular:       none;
-  --ag-blur:           none;
-  --ag-blur-light:     none;
-  --ag-shadow:         0 8px 32px #CCCCD0, 0 32px 80px #D5D5DA, 0 0 0 0.5px #DADADE;
-  --ag-shadow-hover:   0 12px 40px #C2C2C7, 0 40px 100px #D0D0D5, 0 0 0 0.5px #D5D5DA;
-  --ag-modal-bg:       var(--bg3);
-  --ag-row-bg:         var(--bg2);
-  --ag-row-hover:      var(--bg4);
-  --ag-badge-glow:     #ffffff;
-  --ag-overlay:        #96969A;
 }
 
 /* ── Admin row — solid card ── */

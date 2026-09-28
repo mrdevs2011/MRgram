@@ -914,10 +914,6 @@
 .typing-dots span:nth-child(2) { animation-delay: 0s; }
 .typing-dots span:nth-child(3) { animation-delay: 0s; }
 
-
-
-
-
 /* Search button in header */
 .chat-search-btn {
   width: 34px; height: 34px;
@@ -1116,8 +1112,6 @@
 }
 .incoming-call-ring-anim span:nth-child(2) { animation-delay: 0s; }
 .incoming-call-ring-anim span:nth-child(3) { animation-delay: 0s; }
-
-
 
 .incoming-call-avi {
   width: 128px; height: 128px;
@@ -1387,7 +1381,6 @@
 }
 #callActiveModal.video-mode .call-ctrl-btn.end-btn svg { width: 19px; height: 19px; }
 
-
 /* ═══════════════════════════════════════════════════════════════════════
    CHAT — SOLID UI
    ═══════════════════════════════════════════════════════════════════════ */
@@ -1395,7 +1388,6 @@
 /* ── Chat glass variables — removed (unused, was old Telegram-blue palette;
    all consumers migrated to pure-black tokens: --glass, --glass-mid,
    --line2, --bg3, and chat-dark-redesign.css's --c-* vars) ── */
-
 
 /* .chat-row styling now lives in one place, near the top of this file. */
 
@@ -1444,37 +1436,10 @@
 
 /* ── Audio message bubble ── */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .chats-hdr {
   background: transparent !important;
   position: relative;
 }
-
 
 /* ── Openable file name (zip/pdf) — clickable link ── */
 a.cfm-name--link {
@@ -1653,7 +1618,6 @@ a.cfm-name--link:hover {
   font-variant-numeric: tabular-nums;
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════
    CALL MODALS — SOLID UI
    ═══════════════════════════════════════════════════════════════════════ */
@@ -1737,7 +1701,6 @@ a.cfm-name--link:hover {
     0 4px 24px #000000 !important;
   border-radius: 60px !important;
 }
-
 
 /* ── Message sender avatar (DM & Group) ────────────────────────────────── */
 .msg-avi-btn {
@@ -1839,7 +1802,6 @@ a.cfm-name--link:hover {
 
 /* ── 12b. Voice message play button — buffering/loading spinner ── */
 .cvm-spin { animation: none; }
-
 
 /* ── 12. Voice waveform — bar balandliklari endi HAQIQIY audio
  * amplitudasidan olinadi (bar sun'iy ravishda o'ynab turmaydi).
@@ -1985,41 +1947,6 @@ a.cfm-name--link:hover {
    (bu yerdagi eski qator o'lik edi, hamisha yengilardi) */
 
 /* ── Voice message — clean ── */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* .cfm-name / .cfm-size ranglari → CSS/chat-dark-redesign.css'da
    belgilangan (bu yerdagi qatorlar o'lik edi) */
@@ -2185,8 +2112,6 @@ a.cfm-name--link:hover {
   font-size: 11px; white-space: nowrap; flex-shrink: 0;
   color: var(--text3) !important;
 }
-
-
 
 /* ── Voice mini-player — chat almashtirilganda/thread yopilganda ham
  * ovozli xabar ijrosi davom etayotganini ko'rsatadigan doimiy (fixed)

@@ -40,8 +40,6 @@
   letter-spacing: 0.1px;
 }
 
-
-
 .field.input-error {
   border-color: var(--red) !important;
   background: #16181c !important;
@@ -206,7 +204,6 @@
 
 .overlay.show { display: flex; }
 
-
 /* ═══════════════════════
    SHEET — Solid UI
    ═══════════════════════ */
@@ -248,7 +245,6 @@
   opacity: 1;
 }
 
-
 .sheet-title {
   font-size: 16px;
   font-weight: 600;
@@ -268,7 +264,6 @@
   max-width: 500px;
   border-radius: 28px;
 }
-
 
 /* ── Upload Drop Zone ── */
 .upload-drop {
@@ -740,7 +735,6 @@
   display: flex;
 }
 
-
 #zoomImg {
   max-width: 96%;
   max-height: 96dvh;
@@ -753,7 +747,6 @@
   max-height: 96dvh;
   border-radius: 12px;
 }
-
 
 .zoom-x {
   position: absolute;
@@ -792,7 +785,6 @@
 
 #detailModal { z-index: 550 !important; }
 
-
 #detailContent {
   width: 100%;
   max-width: 500px;
@@ -808,7 +800,6 @@
     0 -8px 48px #000000;
   position: relative;
 }
-
 
 .detail-back { display: none; }
 
@@ -1239,7 +1230,6 @@
 
 #sbSearchPanel.show { display: block; }
 
-
 /* ── Theme-aware overrides ── */
 [data-theme="dark"] .nav-btn.on {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
@@ -1252,16 +1242,6 @@
     inset 0 -1px 0 #000000;
 }
 
-[data-theme="light"] .nav-center-btn {
-  box-shadow:
-    0 4px 16px #ffffff,
-    0 8px 32px #ffffff,
-    inset 0 1px 0 #f2f2f2,
-    inset 0 -1px 0 #D0D0D5;
-}
-
-[data-theme="light"] .sb-top { border-bottom-color: #D5D5DA; }
-[data-theme="light"] .sb-bottom { border-top-color: #D5D5DA; }
 /* ── Visibility selector (Max Private) ── */
 .vis-selector {
   display: flex;
@@ -1287,7 +1267,6 @@
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
 }
-
 
 /* Private active */
 .vis-btn--active[data-mode="private"] {

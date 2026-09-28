@@ -4,12 +4,9 @@
 
 /* Auth card entrance animation */
 
-
 /* Auth card floating effect */
 
-
 /* Field focus animation */
-
 
 /* Auth button loading state */
 .auth-btn-loading {
@@ -70,7 +67,6 @@
 #authWrap.show {
   display: flex;
 }
-
 
 .auth-card {
   width: 100%;
@@ -169,8 +165,6 @@
 }
 @keyframes spinner-rotate { to { transform: rotate(360deg); } }
 
-
-
 /* ═══════════════════════
    SKELETON LOADING
    ═══════════════════════ */
@@ -183,8 +177,6 @@
   padding: 14px;
   animation: none;
 }
-
-
 
 .skel {
   background: var(--bg4);
@@ -201,8 +193,6 @@
   background: #202327;
   animation: none;
 }
-
-
 
 .skel-avi  { width: 38px; height: 38px; border-radius: 50%; }
 .skel-line { height: 11px; }
@@ -267,30 +257,10 @@
    qayta belgilangan (keyinroq yuklanadi) — bu yerdagi qoidalar o'lik edi */
 
 /* Light mode auth */
-[data-theme="light"] #authWrap {
-  background: #ffffff;
-  background-color: #ffffff;
-}
-
-[data-theme="light"] .auth-card {
-  background: #fafafa;
-  border: 1px solid #D5D5DA;
-  box-shadow: 0 20px 50px #C5C5C9;
-}
-
-[data-theme="light"] .auth-brand {
-  background: var(--blue);
-}
 
 /* Toast theme aware */
 /* [data-theme="dark"] #toast → to'liq CSS/dark-theme-fix.css'da qayta
    belgilangan (keyinroq yuklanadi) — bu yerdagi qoida o'lik edi */
-
-[data-theme="light"] #toast {
-  background: #FEFEFE;
-  border: 1px solid #D0D0D5;
-  box-shadow: 0 8px 32px #C5C5C9;
-}
 
 [data-theme="dark"] #toast.toast-success {
   background: #16181c;
@@ -307,30 +277,10 @@
   border-color: #2f3336;
 }
 
-[data-theme="light"] #toast.toast-success {
-  background: #D0E4DC;
-  border-color: #ACDFC4;
-}
-
-[data-theme="light"] #toast.toast-error {
-  background: #EAD0D8;
-  border-color: #EEACBA;
-}
-
-[data-theme="light"] #toast.toast-info {
-  background: #ffffff;
-  border-color: #ffffff;
-}
-
 /* Empty state theme aware */
 [data-theme="dark"] .empty-search-icon {
   background: #16181c;
   border: 1px solid #202327;
-}
-
-[data-theme="light"] .empty-search-icon {
-  background: #E1E1E5;
-  border: 1px solid #D5D5DA;
 }
 
 /* ═══════════════════════

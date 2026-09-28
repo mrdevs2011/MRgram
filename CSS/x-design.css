@@ -54,44 +54,6 @@
   --r: 16px; --r2: 12px; --r3: 10px;
 }
 
-[data-theme="light"] {
-  --bg:   #ffffff;
-  --bg2:  #ffffff;
-  --bg3:  #f7f9f9;
-  --bg4:  #eff3f4;
-  --bg5:  #e7e7e8;
-
-  --text:  #0f1419;
-  --text2: #536471;
-  --text3: #536471;
-  --text4: #8b98a5;
-
-  --blue:  #1d9bf0;
-  --blue2: #1a8cd8;
-  --blue3: #1d9bf0;
-  --link:  #1d9bf0;
-  --x-inv-bg: #0f1419; --x-inv-bg-hover: #272c30; --x-inv-fg: #ffffff;
-  --hover:        rgba(15, 20, 25, .03);
-  --hover-strong: rgba(15, 20, 25, .10);
-  --blue-glow:  rgba(29, 155, 240, .10);
-  --blue-glow2: rgba(29, 155, 240, .10);
-  --blue-glow3: #ffffff;
-
-  --line:  #eff3f4;
-  --line2: #eff3f4;
-  --line3: #eff3f4;
-  --glass-border:     #eff3f4;
-  --glass-border-top: #eff3f4;
-
-  --red:   #f4212e;
-  --green: #00ba7c;
-
-  --tg-bg: #ffffff; --tg-surface: #ffffff; --tg-input: #eff3f4;
-  --tg-blue: #1d9bf0; --tg-out: #1d9bf0; --tg-in: #eff3f4;
-  --tg-text: #0f1419; --tg-muted: #536471;
-  --tg-text-muted: #536471; --tg-primary-blue: #1d9bf0; --tg-text-main: #0f1419;
-}
-
 html, body, #app { background: var(--bg); color: var(--text); }
 body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
 ::selection { background: rgba(29, 155, 240, .30); }
@@ -124,8 +86,7 @@ textarea {
 
 /* ── 4. Post: kartasiz qator + ingichka ajratgich (X uslubi) ───────────── */
 .post,
-[data-theme="dark"] .post,
-[data-theme="light"] .post {
+[data-theme="dark"] .post{
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--line);
@@ -135,8 +96,7 @@ textarea {
 
 /* ── 5. Header va navigatsiya: ingichka chiziq ────────────────────────── */
 .app-hdr,
-[data-theme="dark"] .app-hdr,
-[data-theme="light"] .app-hdr {
+[data-theme="dark"] .app-hdr{
   background: var(--bg);
   border-bottom: 1px solid var(--line);
 }
@@ -291,7 +251,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
    Endi hammasi tokenlardan: modal = sahifa rangi + ingichka chiziq. */
 :root,
 [data-theme="dark"]  { --overlay: rgba(4, 6, 8, .72); }
-[data-theme="light"] { --overlay: rgba(91, 112, 131, .40); }
 
 .overlay,
 [data-theme] .overlay,
@@ -561,8 +520,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 
 /* Oyna / sheet: X overlay va soyasi (chegarasiz) */
 :root,
-[data-theme="dark"],
-[data-theme="light"] { --overlay: rgba(91, 112, 131, .40); }
+[data-theme="dark"]{ --overlay: rgba(91, 112, 131, .40); }
 
 .sheet,
 [data-theme] .sheet,
@@ -665,7 +623,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
    ═══════════════════════════════════════════════════════════════════════ */
 [data-theme] .search-overlay,
 [data-theme="dark"] .search-overlay,
-[data-theme="light"] .search-overlay,
 .search-overlay {
   top: 0; bottom: auto; height: auto;
   left: var(--sidebar, 0px); right: 0;
@@ -702,8 +659,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
   font-size: 15px; box-shadow: none;
 }
 [data-theme] .search-overlay-box input:focus { background: transparent; border-color: var(--x-blue); }
-[data-theme="light"] .search-overlay-box input { background: var(--bg4); border-color: transparent; }
-[data-theme="light"] .search-overlay-box input:focus { background: var(--bg); border-color: var(--x-blue); }
 [data-theme] .search-overlay-box input::placeholder { color: var(--text3); }
 
 .search-overlay-icon {
@@ -750,12 +705,10 @@ nav.bot-nav #createBtn.nav-center-btn *,
    ═══════════════════════════════════════════════════════════════════════ */
 :root,
 [data-theme="dark"]  { --overlay: rgba(0, 0, 0, .45); }
-[data-theme="light"] { --overlay: rgba(0, 0, 0, .30); }
 
 .overlay,
 [data-theme] .overlay,
 [data-theme="dark"] .overlay,
-[data-theme="light"] .overlay,
 .ua-modal-overlay,
 #pwdWarnOverlay::before,
 #uploadOverlay,
@@ -821,8 +774,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
   border: 1px solid #2f3336; border-radius: 999px; font-size: 15px;
 }
 [data-theme] .search-overlay .exp-pill input:focus { border-color: var(--x-blue, #1d9bf0); background: transparent; }
-[data-theme="light"] .search-overlay .exp-pill input { background: var(--bg4); border-color: transparent; }
-[data-theme="light"] .search-overlay .exp-pill input:focus { background: var(--bg); border-color: var(--x-blue, #1d9bf0); }
 [data-theme] .search-overlay .exp-pill input::placeholder { color: var(--text3); }
 [data-theme] .search-overlay .exp-pill .search-overlay-icon {
   position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
@@ -915,5 +866,3 @@ nav.bot-nav #createBtn.nav-center-btn *,
 /* soyasiz qolgan ochiladigan kartalar (menyu/typeahead/emoji) — chiziq bilan ajraladi */
 [data-theme] :is(.search-suggestions, .emoji-picker, .chat-emoji-quickpick, #chatContextMenu,
   .settings-more-menu, .sb-acc-menu, .chats-x-menu) { border: 1px solid #2f3336; }
-[data-theme="light"] :is(.search-suggestions, .emoji-picker, .chat-emoji-quickpick, #chatContextMenu,
-  .settings-more-menu, .sb-acc-menu, .chats-x-menu) { border-color: #cfd9de; }

@@ -587,30 +587,6 @@
 }
 
 /* Light mode profile */
-[data-theme="light"] .profile-hdr {
-  background: var(--bg);
-  border-bottom: 1px solid #D5D5DA;
-}
-
-[data-theme="light"] .profile-avi {
-  border: 2px solid #D0D0D5;
-  box-shadow: 0 4px 16px #D0D0D5;
-}
-
-[data-theme="light"] .profile-avi:hover {
-  border-color: var(--blue);
-  box-shadow: 0 4px 20px #ffffff;
-}
-
-[data-theme="light"] .profile-stat {
-  background: #E1E1E5;
-  border: 1px solid #D5D5DA;
-}
-
-[data-theme="light"] .profile-stat:hover {
-  background: #DADADE;
-  border-color: #C5C5C9;
-}
 
 /* Profile grid tabs */
 /* [data-theme="dark"] .profile-grid-tab (color) → CSS/dark-theme-fix.css'da
@@ -619,16 +595,6 @@
 [data-theme="dark"] .profile-grid-tab.active {
   /* color, border-bottom-color → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
   background: #16181c;
-}
-
-[data-theme="light"] .profile-grid-tab {
-  color: var(--text3);
-}
-
-[data-theme="light"] .profile-grid-tab.active {
-  color: var(--blue);
-  border-bottom-color: var(--blue);
-  background: #ffffff;
 }
 
 /* User profile modal */
@@ -641,32 +607,14 @@
   background: #000000;
 }
 
-[data-theme="light"] .up-back {
-  background: #fafafa;
-  border: 1px solid #C5C5C9;
-  color: #000000;
-}
-
-[data-theme="light"] .up-back:hover {
-  background: #ffffff;
-}
-
 /* Grid cell overlay */
 [data-theme="dark"] .grid-cell-overlay {
   background: #000000;
 }
 
-[data-theme="light"] .grid-cell-overlay {
-  background: #454547;
-}
-
 /* User profile grid */
 [data-theme="dark"] .up-grid-cell-overlay {
   background: #000000;
-}
-
-[data-theme="light"] .up-grid-cell-overlay {
-  background: #747476;
 }
 
 /* ── Profile avatar overflow fix ── */
@@ -782,16 +730,6 @@
   --pg-blur:         none;
   --pg-blur-light:   none;
   --pg-hdr-bg:       var(--bg2);
-}
-[data-theme="light"] {
-  --pg-glass:        var(--bg3);
-  --pg-glass-mid:    var(--bg4);
-  --pg-glass-strong: var(--bg5);
-  --pg-border-top:   rgba(255,255,255,1.0);
-  --pg-border-side:  #f7f7f7;
-  --pg-blur:         none;
-  --pg-blur-light:   none;
-  --pg-hdr-bg:       var(--bg3);
 }
 
 /* Profile header — flat (2026-08-30 tozalandi, halo/glow olib tashlandi) */

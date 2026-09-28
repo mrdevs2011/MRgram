@@ -24,7 +24,6 @@
    mumkin bo'ladi — hech narsa buzilmaydi.
    ═══════════════════════════════════════════════════════════════ */
 
-
 /* ── 1. Buttons ─────────────────────────────────────────────── */
 
 .btn-primary {
@@ -80,7 +79,6 @@
 .btn-danger:hover  { background: #16181c; }
 .btn-danger:active { opacity: 0.85; }
 
-
 /* ── 2. Bottom nav / sidebar ────────────────────────────────── */
 
 .bot-nav {
@@ -115,7 +113,6 @@
   }
 }
 
-
 /* ── 3. App header ──────────────────────────────────────────── */
 
 .app-hdr {
@@ -127,7 +124,6 @@
 @media (min-width: 768px) {
   .app-hdr { background: transparent; }
 }
-
 
 /* ── 4. Input fields ────────────────────────────────────────── */
 
@@ -153,7 +149,6 @@ textarea:focus {
 input::placeholder,
 textarea::placeholder,
 .field::placeholder { color: var(--text3); }
-
 
 /* ── 5. Post card (base) ────────────────────────────────────── */
 

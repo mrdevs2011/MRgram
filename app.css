@@ -36,7 +36,6 @@
   overflow: visible;
 }
 
-
 .splash-wordmark {
   font-size: 22px;
   font-weight: 600;
@@ -44,7 +43,6 @@
   color: var(--text);
   margin-top: 18px;
 }
-
 
 /* ═══════════════════════════════════════════
    SPLASH — THEME AWARE (bg saqlanadi, o'zgarmagan)
@@ -58,15 +56,6 @@
 /* [data-theme="dark"] .splash-wordmark → CSS/dark-theme-fix.css'da qayta
    belgilangan (keyinroq yuklanadi) — bu yerdagi qoida o'lik edi */
 
-[data-theme="light"] #splash {
-  background: #F5F4EF;
-  background-color: #ffffff;
-}
-
-[data-theme="light"] .splash-wordmark {
-  color: #1A1A18;
-}
-
 /* ─── CSS/loading.css ─── */
 /* ═══════════════════════
    AUTH SCREEN — Enhanced
@@ -74,12 +63,9 @@
 
 /* Auth card entrance animation */
 
-
 /* Auth card floating effect */
 
-
 /* Field focus animation */
-
 
 /* Auth button loading state */
 .auth-btn-loading {
@@ -140,7 +126,6 @@
 #authWrap.show {
   display: flex;
 }
-
 
 .auth-card {
   width: 100%;
@@ -239,8 +224,6 @@
 }
 @keyframes spinner-rotate { to { transform: rotate(360deg); } }
 
-
-
 /* ═══════════════════════
    SKELETON LOADING
    ═══════════════════════ */
@@ -253,8 +236,6 @@
   padding: 14px;
   animation: none;
 }
-
-
 
 .skel {
   background: var(--bg4);
@@ -271,8 +252,6 @@
   background: #202327;
   animation: none;
 }
-
-
 
 .skel-avi  { width: 38px; height: 38px; border-radius: 50%; }
 .skel-line { height: 11px; }
@@ -337,30 +316,10 @@
    qayta belgilangan (keyinroq yuklanadi) — bu yerdagi qoidalar o'lik edi */
 
 /* Light mode auth */
-[data-theme="light"] #authWrap {
-  background: #ffffff;
-  background-color: #ffffff;
-}
-
-[data-theme="light"] .auth-card {
-  background: #fafafa;
-  border: 1px solid #D5D5DA;
-  box-shadow: 0 20px 50px #C5C5C9;
-}
-
-[data-theme="light"] .auth-brand {
-  background: var(--blue);
-}
 
 /* Toast theme aware */
 /* [data-theme="dark"] #toast → to'liq CSS/dark-theme-fix.css'da qayta
    belgilangan (keyinroq yuklanadi) — bu yerdagi qoida o'lik edi */
-
-[data-theme="light"] #toast {
-  background: #FEFEFE;
-  border: 1px solid #D0D0D5;
-  box-shadow: 0 8px 32px #C5C5C9;
-}
 
 [data-theme="dark"] #toast.toast-success {
   background: #16181c;
@@ -377,30 +336,10 @@
   border-color: #2f3336;
 }
 
-[data-theme="light"] #toast.toast-success {
-  background: #D0E4DC;
-  border-color: #ACDFC4;
-}
-
-[data-theme="light"] #toast.toast-error {
-  background: #EAD0D8;
-  border-color: #EEACBA;
-}
-
-[data-theme="light"] #toast.toast-info {
-  background: #ffffff;
-  border-color: #ffffff;
-}
-
 /* Empty state theme aware */
 [data-theme="dark"] .empty-search-icon {
   background: #16181c;
   border: 1px solid #202327;
-}
-
-[data-theme="light"] .empty-search-icon {
-  background: #E1E1E5;
-  border: 1px solid #D5D5DA;
 }
 
 /* ═══════════════════════
@@ -654,10 +593,6 @@
   opacity: 0;
   pointer-events: none;
   transition: none;
-}
-
-[data-theme="light"] .search-overlay {
-  background: #96969A;
 }
 
 .search-overlay.open {
@@ -1285,31 +1220,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 /* Light mode reels */
-[data-theme="light"] .reel {
-  background: #202327;
-}
-
-[data-theme="light"] .reel-avi {
-  border: 2px solid #B9B9BD;
-}
-
-[data-theme="light"] .reel-avi:hover {
-  border-color: #747476;
-}
-
-[data-theme="light"] .reel-follow {
-  background: #D0D0D5;
-  border: 1px solid #B9B9BD;
-}
-
-[data-theme="light"] .reel-follow:hover {
-  background: #B9B9BD;
-}
-
-[data-theme="light"] .reel-follow.following {
-  background: #ffffff;
-  border-color: #ffffff;
-}
 
 /* Progress bar theme aware */
 [data-theme="dark"] .reel-progress-track {
@@ -1321,24 +1231,10 @@ body:has(.search-overlay.open) .app-hdr {
   box-shadow: 0 0 8px #3f3f3f;
 }
 
-[data-theme="light"] .reel-progress-track {
-  background: #AEAEB1;
-}
-
-[data-theme="light"] .reel-progress-fill {
-  background: var(--blue2);
-  box-shadow: 0 0 8px #ffffff;
-}
-
 /* Reel pause icon theme aware */
 [data-theme="dark"] .reel-pause-icon {
   background: #000000;
   border: 1px solid #2f3336;
-}
-
-[data-theme="light"] .reel-pause-icon {
-  background: #747476;
-  border: 1px solid #D0D0D5;
 }
 
 /* ═══════════════════════
@@ -1642,59 +1538,28 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 /* Light mode: softer shadows */
-/* box-shadow o'chirildi — borderless.css:43 (.post, [data-theme="light"] .post
+/* box-shadow o'chirildi — borderless.css:43 (.post
    guruhida) bir xil specificity bilan keyinroq yuklanadi, box-shadow:none
    g'olib chiqadi, bu qator hech qachon ko'rinmagan (o'lik) */
-
-[data-theme="light"] .post:hover {
-  box-shadow: 0 4px 16px #D0D0D5;
-}
 
 /* Video controls - theme aware */
 [data-theme="dark"] .vid-controls {
   background: #000000;
 }
 
-[data-theme="light"] .vid-controls {
-  background: #2E2E2F;
-}
-
 /* File card hover - theme aware */
 /* [data-theme="dark"] .file-card:hover → CSS/dark-theme-fix.css'da qayta
    belgilangan (keyinroq yuklanadi, g'olib chiqadi) — bu yerdagi qoida o'lik edi */
 
-[data-theme="light"] .file-card:hover {
-  background: var(--bg4);
-  box-shadow: 0 2px 8px #D5D5DA;
-}
-
 /* Badge styles - theme aware */
-[data-theme="light"] .badge-pub {
-  background: #ffffff;
-  color: var(--blue);
-}
-
-[data-theme="light"] .badge-priv {
-  background: #e0e0e0;
-  color: var(--text3);
-}
 
 /* Search overlay - theme aware */
 /* [data-theme="dark"] .search-overlay-box → CSS/dark-theme-fix.css'da qayta
    belgilangan (keyinroq yuklanadi, g'olib chiqadi) — bu yerdagi qoida o'lik edi */
 
-[data-theme="light"] .search-overlay-box {
-  box-shadow: 0 8px 32px #B9B9BD;
-}
-
 /* Empty states - theme aware */
 [data-theme="dark"] .empty-icon,
 [data-theme="dark"] .empty-search-icon {
-  background: var(--blue-glow2);
-}
-
-[data-theme="light"] .empty-icon,
-[data-theme="light"] .empty-search-icon {
   background: var(--blue-glow2);
 }
 
@@ -1753,11 +1618,6 @@ body:has(.search-overlay.open) .app-hdr {
 [data-theme="dark"] .skeleton-post {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
   border-color: #202327;
-}
-
-[data-theme="light"] .skeleton-post {
-  background: var(--bg3);
-  border-color: #D5D5DA;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -2634,30 +2494,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 /* Light mode profile */
-[data-theme="light"] .profile-hdr {
-  background: var(--bg);
-  border-bottom: 1px solid #D5D5DA;
-}
-
-[data-theme="light"] .profile-avi {
-  border: 2px solid #D0D0D5;
-  box-shadow: 0 4px 16px #D0D0D5;
-}
-
-[data-theme="light"] .profile-avi:hover {
-  border-color: var(--blue);
-  box-shadow: 0 4px 20px #ffffff;
-}
-
-[data-theme="light"] .profile-stat {
-  background: #E1E1E5;
-  border: 1px solid #D5D5DA;
-}
-
-[data-theme="light"] .profile-stat:hover {
-  background: #DADADE;
-  border-color: #C5C5C9;
-}
 
 /* Profile grid tabs */
 /* [data-theme="dark"] .profile-grid-tab (color) → CSS/dark-theme-fix.css'da
@@ -2666,16 +2502,6 @@ body:has(.search-overlay.open) .app-hdr {
 [data-theme="dark"] .profile-grid-tab.active {
   /* color, border-bottom-color → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
   background: #16181c;
-}
-
-[data-theme="light"] .profile-grid-tab {
-  color: var(--text3);
-}
-
-[data-theme="light"] .profile-grid-tab.active {
-  color: var(--blue);
-  border-bottom-color: var(--blue);
-  background: #ffffff;
 }
 
 /* User profile modal */
@@ -2688,32 +2514,14 @@ body:has(.search-overlay.open) .app-hdr {
   background: #000000;
 }
 
-[data-theme="light"] .up-back {
-  background: #fafafa;
-  border: 1px solid #C5C5C9;
-  color: #000000;
-}
-
-[data-theme="light"] .up-back:hover {
-  background: #ffffff;
-}
-
 /* Grid cell overlay */
 [data-theme="dark"] .grid-cell-overlay {
   background: #000000;
 }
 
-[data-theme="light"] .grid-cell-overlay {
-  background: #454547;
-}
-
 /* User profile grid */
 [data-theme="dark"] .up-grid-cell-overlay {
   background: #000000;
-}
-
-[data-theme="light"] .up-grid-cell-overlay {
-  background: #747476;
 }
 
 /* ── Profile avatar overflow fix ── */
@@ -2829,16 +2637,6 @@ body:has(.search-overlay.open) .app-hdr {
   --pg-blur:         none;
   --pg-blur-light:   none;
   --pg-hdr-bg:       var(--bg2);
-}
-[data-theme="light"] {
-  --pg-glass:        var(--bg3);
-  --pg-glass-mid:    var(--bg4);
-  --pg-glass-strong: var(--bg5);
-  --pg-border-top:   rgba(255,255,255,1.0);
-  --pg-border-side:  #f7f7f7;
-  --pg-blur:         none;
-  --pg-blur-light:   none;
-  --pg-hdr-bg:       var(--bg3);
 }
 
 /* Profile header — flat (2026-08-30 tozalandi, halo/glow olib tashlandi) */
@@ -3308,8 +3106,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
   letter-spacing: 0.1px;
 }
 
-
-
 .field.input-error {
   border-color: var(--red) !important;
   background: #16181c !important;
@@ -3474,7 +3270,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
 
 .overlay.show { display: flex; }
 
-
 /* ═══════════════════════
    SHEET — Solid UI
    ═══════════════════════ */
@@ -3516,7 +3311,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
   opacity: 1;
 }
 
-
 .sheet-title {
   font-size: 16px;
   font-weight: 600;
@@ -3536,7 +3330,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
   max-width: 500px;
   border-radius: 28px;
 }
-
 
 /* ── Upload Drop Zone ── */
 .upload-drop {
@@ -4008,7 +3801,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
   display: flex;
 }
 
-
 #zoomImg {
   max-width: 96%;
   max-height: 96dvh;
@@ -4021,7 +3813,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
   max-height: 96dvh;
   border-radius: 12px;
 }
-
 
 .zoom-x {
   position: absolute;
@@ -4060,7 +3851,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
 
 #detailModal { z-index: 550 !important; }
 
-
 #detailContent {
   width: 100%;
   max-width: 500px;
@@ -4076,7 +3866,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
     0 -8px 48px #000000;
   position: relative;
 }
-
 
 .detail-back { display: none; }
 
@@ -4507,7 +4296,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
 
 #sbSearchPanel.show { display: block; }
 
-
 /* ── Theme-aware overrides ── */
 [data-theme="dark"] .nav-btn.on {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
@@ -4520,16 +4308,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
     inset 0 -1px 0 #000000;
 }
 
-[data-theme="light"] .nav-center-btn {
-  box-shadow:
-    0 4px 16px #ffffff,
-    0 8px 32px #ffffff,
-    inset 0 1px 0 #f2f2f2,
-    inset 0 -1px 0 #D0D0D5;
-}
-
-[data-theme="light"] .sb-top { border-bottom-color: #D5D5DA; }
-[data-theme="light"] .sb-bottom { border-top-color: #D5D5DA; }
 /* ── Visibility selector (Max Private) ── */
 .vis-selector {
   display: flex;
@@ -4555,7 +4333,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
 }
-
 
 /* Private active */
 .vis-btn--active[data-mode="private"] {
@@ -5552,10 +5329,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
 .typing-dots span:nth-child(2) { animation-delay: 0s; }
 .typing-dots span:nth-child(3) { animation-delay: 0s; }
 
-
-
-
-
 /* Search button in header */
 .chat-search-btn {
   width: 34px; height: 34px;
@@ -5754,8 +5527,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
 }
 .incoming-call-ring-anim span:nth-child(2) { animation-delay: 0s; }
 .incoming-call-ring-anim span:nth-child(3) { animation-delay: 0s; }
-
-
 
 .incoming-call-avi {
   width: 128px; height: 128px;
@@ -6025,7 +5796,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
 }
 #callActiveModal.video-mode .call-ctrl-btn.end-btn svg { width: 19px; height: 19px; }
 
-
 /* ═══════════════════════════════════════════════════════════════════════
    CHAT — SOLID UI
    ═══════════════════════════════════════════════════════════════════════ */
@@ -6033,7 +5803,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
 /* ── Chat glass variables — removed (unused, was old Telegram-blue palette;
    all consumers migrated to pure-black tokens: --glass, --glass-mid,
    --line2, --bg3, and chat-dark-redesign.css's --c-* vars) ── */
-
 
 /* .chat-row styling now lives in one place, near the top of this file. */
 
@@ -6082,37 +5851,10 @@ a.profile-meta-link:hover { text-decoration: underline; }
 
 /* ── Audio message bubble ── */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .chats-hdr {
   background: transparent !important;
   position: relative;
 }
-
 
 /* ── Openable file name (zip/pdf) — clickable link ── */
 a.cfm-name--link {
@@ -6291,7 +6033,6 @@ a.cfm-name--link:hover {
   font-variant-numeric: tabular-nums;
 }
 
-
 /* ═══════════════════════════════════════════════════════════════════════
    CALL MODALS — SOLID UI
    ═══════════════════════════════════════════════════════════════════════ */
@@ -6375,7 +6116,6 @@ a.cfm-name--link:hover {
     0 4px 24px #000000 !important;
   border-radius: 60px !important;
 }
-
 
 /* ── Message sender avatar (DM & Group) ────────────────────────────────── */
 .msg-avi-btn {
@@ -6477,7 +6217,6 @@ a.cfm-name--link:hover {
 
 /* ── 12b. Voice message play button — buffering/loading spinner ── */
 .cvm-spin { animation: none; }
-
 
 /* ── 12. Voice waveform — bar balandliklari endi HAQIQIY audio
  * amplitudasidan olinadi (bar sun'iy ravishda o'ynab turmaydi).
@@ -6623,41 +6362,6 @@ a.cfm-name--link:hover {
    (bu yerdagi eski qator o'lik edi, hamisha yengilardi) */
 
 /* ── Voice message — clean ── */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* .cfm-name / .cfm-size ranglari → CSS/chat-dark-redesign.css'da
    belgilangan (bu yerdagi qatorlar o'lik edi) */
@@ -6823,8 +6527,6 @@ a.cfm-name--link:hover {
   font-size: 11px; white-space: nowrap; flex-shrink: 0;
   color: var(--text3) !important;
 }
-
-
 
 /* ── Voice mini-player — chat almashtirilganda/thread yopilganda ham
  * ovozli xabar ijrosi davom etayotganini ko'rsatadigan doimiy (fixed)
@@ -10275,8 +9977,7 @@ svg { color: inherit; }
 
 /* ── CSS token override: border va shadow tokenlarini o'chiramiz ── */
 :root,
-[data-theme="dark"],
-[data-theme="light"] {
+[data-theme="dark"]{
   --specular-top:    none;
   --specular-edge:   none;
 
@@ -10299,34 +10000,25 @@ svg { color: inherit; }
   --line3: transparent;
 }
 
-[data-theme="light"] {
-  --line:  #e5e5e5;
-  --line2: transparent;
-  --line3: transparent;
-}
-
 /* ════════════════════════════════
    GLOBAL — hamma border lar off
    ════════════════════════════════ */
 
 /* Post kartochkalar */
 .post,
-[data-theme="dark"] .post,
-[data-theme="light"] .post {
+[data-theme="dark"] .post{
   border: none;
   box-shadow: none;
 }
 
 .post:hover,
-[data-theme="dark"] .post:hover,
-[data-theme="light"] .post:hover {
+[data-theme="dark"] .post:hover{
   box-shadow: none;
 }
 
 /* Header — top bar */
 .app-hdr,
-[data-theme="dark"] .app-hdr,
-[data-theme="light"] .app-hdr {
+[data-theme="dark"] .app-hdr{
   border-bottom: none;
   box-shadow: none;
 }
@@ -10334,20 +10026,15 @@ svg { color: inherit; }
 /* Mobile: frosted glass blur */
 @media (max-width: 767px) {
   .app-hdr,
-  [data-theme="dark"] .app-hdr,
-  [data-theme="light"] .app-hdr {
+  [data-theme="dark"] .app-hdr{
     background: rgba(16, 16, 16, 0.72);
   }
-  [data-theme="light"] .app-hdr {
-    background: rgba(244, 244, 244, 0.78);
   }
-}
 
 /* Desktop: shaffof qolsin */
 @media (min-width: 768px) {
   .app-hdr,
-  [data-theme="dark"] .app-hdr,
-  [data-theme="light"] .app-hdr {
+  [data-theme="dark"] .app-hdr{
     background: transparent;
   }
 }
@@ -10360,8 +10047,7 @@ svg { color: inherit; }
 
 /* Bottom nav */
 .bot-nav,
-[data-theme="dark"] .bot-nav,
-[data-theme="light"] .bot-nav {
+[data-theme="dark"] .bot-nav{
   border-top: none;
   border-right: none;
   box-shadow: none;
@@ -10372,16 +10058,12 @@ svg { color: inherit; }
   [data-theme="dark"] .bot-nav {
     background: #000000;
   }
-  [data-theme="light"] .bot-nav {
-    background: rgba(244, 244, 244, 0.78);
   }
-}
 
 /* Desktop: shaffof qolsin */
 @media (min-width: 768px) {
   .bot-nav,
-  [data-theme="dark"] .bot-nav,
-  [data-theme="light"] .bot-nav {
+  [data-theme="dark"] .bot-nav{
     background: transparent;
   }
 }
@@ -10394,29 +10076,24 @@ svg { color: inherit; }
   }
 }
 
-
 /* Nav buttons */
 .nav-btn,
 [data-theme="dark"] .nav-btn:hover,
-[data-theme="dark"] .nav-btn.on,
-[data-theme="light"] .nav-btn:hover,
-[data-theme="light"] .nav-btn.on {
+[data-theme="dark"] .nav-btn.on{
   border: none;
   box-shadow: none;
 }
 
 /* Sheet (bottom panel) */
 .sheet,
-[data-theme="dark"] .sheet,
-[data-theme="light"] .sheet {
+[data-theme="dark"] .sheet{
   border-top: none;
   box-shadow: none;
 }
 
 /* Modal */
 .modal-content,
-[data-theme="dark"] .modal-content,
-[data-theme="light"] .modal-content {
+[data-theme="dark"] .modal-content{
   border: none;
   box-shadow: none;
 }
@@ -10430,50 +10107,43 @@ svg { color: inherit; }
 
 /* Theme button */
 .theme-btn,
-[data-theme="dark"] .theme-btn:hover,
-[data-theme="light"] .theme-btn:hover {
+[data-theme="dark"] .theme-btn:hover{
   border: none;
   box-shadow: none;
 }
 
 /* Auth card */
 .auth-card,
-[data-theme="dark"] .auth-card,
-[data-theme="light"] .auth-card {
+[data-theme="dark"] .auth-card{
   border: none;
   box-shadow: none;
 }
 
 /* Avatar (avi) */
 .avi,
-[data-theme="dark"] .avi,
-[data-theme="light"] .avi {
+[data-theme="dark"] .avi{
   border: none;
   box-shadow: none;
 }
 
-[data-theme="dark"] .avi:hover,
-[data-theme="light"] .avi:hover {
+[data-theme="dark"] .avi:hover{
   box-shadow: none;
 }
 
 /* Profile avatar */
 .profile-avi,
-[data-theme="dark"] .profile-avi,
-[data-theme="light"] .profile-avi {
+[data-theme="dark"] .profile-avi{
   border: none;
   box-shadow: none;
 }
 
-[data-theme="dark"] .profile-avi:hover,
-[data-theme="light"] .profile-avi:hover {
+[data-theme="dark"] .profile-avi:hover{
   box-shadow: none;
 }
 
 /* Edit button */
 .edit-btn,
-[data-theme="dark"] .edit-btn,
-[data-theme="light"] .edit-btn {
+[data-theme="dark"] .edit-btn{
   border: none;
   box-shadow: none;
 }
@@ -10485,8 +10155,7 @@ svg { color: inherit; }
 }
 
 /* Profile grid */
-[data-theme="dark"] .grid-cell,
-[data-theme="light"] .grid-cell {
+[data-theme="dark"] .grid-cell{
   border: none;
   box-shadow: none;
 }
@@ -10534,10 +10203,7 @@ input:not([type="checkbox"]):not([type="radio"]),
 textarea,
 [data-theme="dark"] .field,
 [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
-[data-theme="dark"] textarea,
-[data-theme="light"] .field,
-[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
-[data-theme="light"] textarea {
+[data-theme="dark"] textarea{
   border: none;
   box-shadow: none;
 }
@@ -10547,10 +10213,7 @@ input:focus,
 textarea:focus,
 [data-theme="dark"] .field:focus,
 [data-theme="dark"] input:focus,
-[data-theme="dark"] textarea:focus,
-[data-theme="light"] .field:focus,
-[data-theme="light"] input:focus,
-[data-theme="light"] textarea:focus {
+[data-theme="dark"] textarea:focus{
   border: none;
   box-shadow: none;
   outline: none;
@@ -10594,8 +10257,7 @@ textarea:focus,
 
 /* File card */
 .file-card,
-[data-theme="dark"] .file-card,
-[data-theme="light"] .file-card {
+[data-theme="dark"] .file-card{
   border: none;
   box-shadow: none;
 }
@@ -10782,12 +10444,6 @@ textarea:focus,
 }
 
 /* Feed buttons */
-.follow-btn,
-.unfollow-btn {
-  border: none;
-  box-shadow: none;
-}
-
 /* Story/reel ring */
 .story-ring,
 .reel-ring {
@@ -10835,98 +10491,32 @@ textarea:focus,
   color: var(--text);
 }
 
-[data-theme="light"] .act-btn:hover {
-  background: var(--bg3);
-  color: var(--text);
-}
-
 /* 3. Sidebar nav-btn aktiv holat — dark styled light temada */
-[data-theme="light"] .nav-btn.on {
-  background: var(--bg3);
-  border: none;
-  box-shadow: none;
-}
 
 /* Desktop sidebar nav-btn */
 @media (min-width: 768px) {
-  [data-theme="light"] .nav-btn.on {
-    background: var(--bg3);
-    border: none;
-    box-shadow: none;
+  
   }
-
-  [data-theme="light"] .nav-btn:hover {
-    background: var(--bg3);
-    border: none;
-    box-shadow: none;
-  }
-}
 
 /* 4. Visibility buttons (Private/Public) — light temada dark styled */
-[data-theme="light"] .vis-btn--active[data-mode="private"] {
-  background: var(--blue-glow3);
-  border: none;
-  color: var(--blue);
-}
-
-[data-theme="light"] .vis-btn--active[data-mode="public"] {
-  background: var(--green-glow);
-  border: none;
-  color: var(--green);
-}
 
 /* 5. Input focus — light temada dark border/outline chiqib qolishi */
-[data-theme="light"] input:focus,
-[data-theme="light"] textarea:focus,
-[data-theme="light"] .field:focus {
-  border: none;
-  outline: none;
-  box-shadow: none;
-}
 
 /* 6. nav-center-btn (+ tugma) — light temada shadow o'chish */
-[data-theme="light"] .nav-center-btn {
-  box-shadow: none;
-}
 
 /* 7. Sidebar top/bottom border — light temada */
-[data-theme="light"] .sb-top,
-[data-theme="light"] .sb-bottom {
-  border: none;
-}
 
 /* 8. Sheet handle — light temada */
-[data-theme="light"] .sheet-handle {
-  background: var(--line3);
-}
 
 /* ════════════════════════════════════════════
    CHAT — Audio xabar (voice message) tuzatish
    ════════════════════════════════════════════ */
 
 /* Incoming (theirs) — play button light temada ko'rinsin */
-[data-theme="light"] .chat-msg.theirs .cvm-play {
-  background: var(--bg4);
-  color: var(--text);
-}
-
-[data-theme="light"] .chat-msg.theirs .cvm-play:hover {
-  background: var(--bg5);
-}
 
 /* Incoming waveform bars — light temada ko'rinsin */
-[data-theme="light"] .chat-msg.theirs .cvm-bar {
-  background: var(--text3);
-}
-
-[data-theme="light"] .chat-msg.theirs .cvm-bar.played {
-  background: var(--blue);
-}
 
 /* Incoming duration text */
-[data-theme="light"] .chat-msg.theirs .cvm-dur {
-  color: var(--text2);
-}
 
 /* Dark theme — incoming play button kontrast yaxshilash */
 [data-theme="dark"] .chat-msg.theirs .cvm-play {
@@ -10947,22 +10537,9 @@ textarea:focus,
   outline: none;
 }
 
-[data-theme="light"] .theme-btn {
-  border: none;
-  box-shadow: none;
-}
-
 /* ════════════════════════════════════════════
    AVATAR — light temada placeholder background
    ════════════════════════════════════════════ */
-[data-theme="light"] .avi {
-  background: var(--bg3);
-  box-shadow: none;
-}
-
-[data-theme="light"] .avi:hover {
-  box-shadow: none;
-}
 
 /* avi base — shadow olib tashlash */
 .avi {
@@ -10980,333 +10557,94 @@ textarea:focus,
    ════════════════════════════════════════════════════════════════ */
 
 /* ── CHAT THREAD ── */
-[data-theme="light"] .chat-thread-messages {
-  background: var(--bg);
-}
 
 /* Incoming bubble */
-[data-theme="light"] .chat-msg.theirs .chat-bubble {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* Chat input area */
-[data-theme="light"] .chat-input-bar,
-[data-theme="light"] .chat-thread-input-row {
-  background: var(--bg2);
-}
-
-[data-theme="light"] .chat-input-wrap,
-[data-theme="light"] .chat-thread-input {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* Chat list row hover */
-[data-theme="light"] .chat-row:hover { background: var(--bg3); }
-[data-theme="light"] .chat-row:active { background: var(--bg4); }
 
 /* Chat header */
-[data-theme="light"] .chat-thread-hdr {
-  background: var(--bg);
-}
 
 /* Chat back button */
-[data-theme="light"] .chat-thread-back:hover {
-  background: var(--bg3);
-}
 
 /* Reply preview */
-[data-theme="light"] .chat-reply-preview {
-  background: var(--bg3);
-}
-[data-theme="light"] .chat-msg.theirs .chat-reply-preview:hover {
-  background: var(--bg4);
-}
 
 /* File preview bar */
-[data-theme="light"] .chat-file-preview {
-  background: var(--bg3);
-}
-[data-theme="light"] .cfp-remove:hover {
-  background: var(--bg4);
-}
 
 /* File message */
-[data-theme="light"] .cfm-name { color: var(--text); }
-[data-theme="light"] .chat-msg.theirs .cfm-dl {
-  background: var(--bg4);
-  color: var(--text2);
-}
 
 /* Voice message bubble */
-[data-theme="light"] .chat-voice-msg { background: transparent; }
-[data-theme="light"] .chat-msg.theirs .cvm-play {
-  background: var(--bg4);
-  color: var(--text);
-}
-[data-theme="light"] .cvm-play:hover {
-  background: var(--bg5);
-}
-[data-theme="light"] .chat-msg.theirs .cvm-bar {
-  background: var(--text3);
-}
-[data-theme="light"] .chat-msg.theirs .cvm-bar.played {
-  background: var(--blue);
-}
-[data-theme="light"] .chat-msg.theirs .cvm-dur {
-  color: var(--text2);
-}
 
 /* Call modal */
-[data-theme="light"] #callActiveModal {
-  background: var(--bg);
-}
-[data-theme="light"] .call-ctrl-btn {
-  background: var(--bg3);
-  color: var(--text2);
-}
-[data-theme="light"] .call-ctrl-btn.active {
-  background: var(--blue-glow2);
-  color: var(--blue);
-}
 
 /* Chat photo viewer */
-[data-theme="light"] .chat-photo-viewer {
-  background: rgba(242, 242, 242,0.95);
-}
 
 /* ── FEED ── */
 /* Header search/mute hover */
-[data-theme="light"] .hdr-mute-btn:hover {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* Follow/like buttons */
-[data-theme="light"] .follow-btn {
-  background: var(--bg3);
-}
 
 /* Comment body */
-[data-theme="light"] .cmt-body {
-  background: var(--bg3);
-}
-[data-theme="light"] .cmt-body:hover {
-  background: var(--bg4);
-}
-[data-theme="light"] .cmt-input {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* Reel overlays */
-[data-theme="light"] .reel {
-  background: var(--bg);
-}
-[data-theme="light"] .reel-top-btn,
-[data-theme="light"] .reel-vol-top {
-  background: var(--bg3);
-}
-[data-theme="light"] .reel-top-btn:hover,
-[data-theme="light"] .reel-vol-top:hover {
-  background: var(--bg4);
-}
 
 /* Post gradient overlay (media) */
-[data-theme="light"] .post-media-overlay,
-[data-theme="light"] .reel-gradient-bot {
-  background: rgba(205, 205, 205,0.85);
-}
 
 /* ── PROFILE ── */
-[data-theme="light"] .profile-hdr {
-  background: var(--bg);
-}
 
 /* Profile cover gradient */
-[data-theme="light"] .profile-cover-gradient {
-  background: var(--bg3);
-}
 
 /* Stats edit box */
-[data-theme="light"] .up-stat-box {
-  background: var(--bg3);
-}
 
 /* Profile grid cell */
-[data-theme="light"] .grid-cell,
-[data-theme="light"] .up-grid-cell {
-  background: var(--bg3);
-}
 
 /* Profile actions bar */
-[data-theme="light"] .profile-actions {
-  background: var(--bg);
-}
 
 /* Profile tab header */
-[data-theme="light"] .profile-grid-hdr {
-  background: var(--bg);
-}
 
 /* Avatar cover bg (cover-crop) */
-[data-theme="light"] .avatar-crop-container {
-  background: var(--bg3);
-}
 
 /* ── NAV / SIDEBAR ── */
 /* Notification badge */
-[data-theme="light"] .nav-notif-dot {
-  background: var(--red);
-}
 
 /* Sidebar */
-[data-theme="light"] .sb-panel-input-wrap {
-  background: var(--bg3);
-}
-[data-theme="light"] .sb-panel-input-wrap:focus-within {
-  background: var(--bg4);
-}
 
 /* Search overlay */
-[data-theme="light"] .search-overlay {
-  background: rgba(224, 224, 224,0.95);
-}
-[data-theme="light"] .search-overlay-box {
-  background: var(--bg2);
-}
-[data-theme="light"] .search-overlay-close {
-  background: var(--bg3);
-  color: var(--text2);
-}
-[data-theme="light"] .search-overlay-close:hover {
-  background: var(--bg4);
-}
 
 /* Sheet */
-[data-theme="light"] .sheet {
-  background: var(--bg2);
-}
 
 /* Modal */
-[data-theme="light"] .modal-content,
-[data-theme="light"] #detailContent {
-  background: var(--bg2);
-}
-[data-theme="light"] .overlay {
-  background: rgba(100,100,108,0.6);
-}
 
 /* Upload drop zone */
-[data-theme="light"] .upload-drop {
-  background: var(--bg3);
-}
-[data-theme="light"] .upload-drop:hover {
-  background: var(--bg4);
-}
-[data-theme="light"] .upload-drop.drag-over {
-  background: var(--blue-glow3);
-}
 
 /* Upload float bar */
-[data-theme="light"] .upload-float-bar {
-  background: var(--bg3);
-}
 
 /* Toast */
-[data-theme="light"] #toast {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* Skeleton shimmer */
-[data-theme="light"] .skeleton-post {
-  background: var(--bg3);
-}
-[data-theme="light"] .skel-avi,
-[data-theme="light"] .skel-line,
-[data-theme="light"] .skel-media {
-  background: var(--bg3);
-  background-size: 200% 100%;
-}
 
 /* File card */
-[data-theme="light"] .file-card {
-  background: var(--bg3);
-}
-[data-theme="light"] .file-card:hover {
-  background: var(--bg4);
-}
-[data-theme="light"] .file-dl {
-  background: var(--blue-glow3);
-  color: var(--blue);
-}
-[data-theme="light"] .file-dl:hover {
-  background: var(--blue-glow2);
-}
 
 /* Empty state icons */
-[data-theme="light"] .feed-empty-icon,
-[data-theme="light"] .empty-icon,
-[data-theme="light"] .empty-search-icon {
-  background: var(--bg3);
-}
 
 /* Dm-close button */
-[data-theme="light"] .dm-close {
-  background: var(--bg3);
-}
-[data-theme="light"] .dm-close:hover {
-  background: var(--bg4);
-}
 
 /* del-btn hover */
-[data-theme="light"] .del-btn:hover {
-  background: var(--bg4);
-  color: var(--red);
-}
 
 /* cmt-del hover */
-[data-theme="light"] .cmt-del:hover {
-  background: var(--bg4);
-  color: var(--red);
-}
 
 /* Groups */
-[data-theme="light"] .group-card {
-  background: var(--bg3);
-}
 
 /* Sidebar items active */
-[data-theme="light"] .sb-item.active {
-  background: var(--blue-glow3);
-  color: var(--blue);
-}
-[data-theme="light"] .sb-item:hover {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* hdr-icon-btn hover */
-[data-theme="light"] .hdr-icon-btn:hover {
-  background: var(--bg3);
-}
 
 /* nav-btn.on — active sidebar item */
-[data-theme="light"] .nav-btn.on {
-  background: var(--blue-glow3);
-}
 
 /* Post background */
-[data-theme="light"] .post {
-  background: var(--bg2);
-}
 
 /* Reels dark gradient — light temada oq */
-[data-theme="light"] .reel-avi {
-  border: none;
-}
 
 /* ══════════════════════════════════════════
    BARCHA BARLAR — TRANSPARENT (SEAMLESS)
@@ -11617,7 +10955,6 @@ textarea:focus,
    mumkin bo'ladi — hech narsa buzilmaydi.
    ═══════════════════════════════════════════════════════════════ */
 
-
 /* ── 1. Buttons ─────────────────────────────────────────────── */
 
 .btn-primary {
@@ -11673,7 +11010,6 @@ textarea:focus,
 .btn-danger:hover  { background: #16181c; }
 .btn-danger:active { opacity: 0.85; }
 
-
 /* ── 2. Bottom nav / sidebar ────────────────────────────────── */
 
 .bot-nav {
@@ -11708,7 +11044,6 @@ textarea:focus,
   }
 }
 
-
 /* ── 3. App header ──────────────────────────────────────────── */
 
 .app-hdr {
@@ -11720,7 +11055,6 @@ textarea:focus,
 @media (min-width: 768px) {
   .app-hdr { background: transparent; }
 }
-
 
 /* ── 4. Input fields ────────────────────────────────────────── */
 
@@ -11746,7 +11080,6 @@ textarea:focus {
 input::placeholder,
 textarea::placeholder,
 .field::placeholder { color: var(--text3); }
-
 
 /* ── 5. Post card (base) ────────────────────────────────────── */
 
@@ -15689,26 +15022,6 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 /* ═══════════════════════════════════════════════════════════════════════
    LIGHT THEME — Admin Panel
    ═══════════════════════════════════════════════════════════════════════ */
-[data-theme="light"] .ua-row:hover {
-  background: #E1E1E5;
-}
-[data-theme="light"] .ua-modal {
-  background: #ffffff;
-  border-color: #D3D3D7;
-  box-shadow: 0 24px 64px #BEBEC2;
-}
-[data-theme="light"] .ua-detail-tabs {
-  background: #e0e0e0;
-  border-color: #D5D5DA;
-}
-[data-theme="light"] .ua-detail-row,
-[data-theme="light"] .ua-post-link {
-  background: #E1E1E5;
-  border-color: #D7D7DC;
-}
-[data-theme="light"] .ua-post-link:hover {
-  background: #DADADE;
-}
 
 /* ── Actions View (birlashtirilgan stats+users) ── */
 /* #actionsView scroll/height .view.on orqali boshqariladi */
@@ -15861,24 +15174,6 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
   --ag-row-hover:      var(--bg4);
   --ag-badge-glow:     #202327;
   --ag-overlay:        #000000;
-}
-[data-theme="light"] {
-  --ag-glass:          var(--bg3);
-  --ag-glass-mid:      var(--bg4);
-  --ag-glass-strong:   var(--bg5);
-  --ag-border-top:     rgba(255,255,255,1.0);
-  --ag-border-side:    #f7f7f7;
-  --ag-border-bot:     #f0f0f0;
-  --ag-specular:       none;
-  --ag-blur:           none;
-  --ag-blur-light:     none;
-  --ag-shadow:         0 8px 32px #CCCCD0, 0 32px 80px #D5D5DA, 0 0 0 0.5px #DADADE;
-  --ag-shadow-hover:   0 12px 40px #C2C2C7, 0 40px 100px #D0D0D5, 0 0 0 0.5px #D5D5DA;
-  --ag-modal-bg:       var(--bg3);
-  --ag-row-bg:         var(--bg2);
-  --ag-row-hover:      var(--bg4);
-  --ag-badge-glow:     #ffffff;
-  --ag-overlay:        #96969A;
 }
 
 /* ── Admin row — solid card ── */
@@ -16491,44 +15786,6 @@ meta[name="theme-color"] { color: #000000; }
   --r: 16px; --r2: 12px; --r3: 10px;
 }
 
-[data-theme="light"] {
-  --bg:   #ffffff;
-  --bg2:  #ffffff;
-  --bg3:  #f7f9f9;
-  --bg4:  #eff3f4;
-  --bg5:  #e7e7e8;
-
-  --text:  #0f1419;
-  --text2: #536471;
-  --text3: #536471;
-  --text4: #8b98a5;
-
-  --blue:  #1d9bf0;
-  --blue2: #1a8cd8;
-  --blue3: #1d9bf0;
-  --link:  #1d9bf0;
-  --x-inv-bg: #0f1419; --x-inv-bg-hover: #272c30; --x-inv-fg: #ffffff;
-  --hover:        rgba(15, 20, 25, .03);
-  --hover-strong: rgba(15, 20, 25, .10);
-  --blue-glow:  rgba(29, 155, 240, .10);
-  --blue-glow2: rgba(29, 155, 240, .10);
-  --blue-glow3: #ffffff;
-
-  --line:  #eff3f4;
-  --line2: #eff3f4;
-  --line3: #eff3f4;
-  --glass-border:     #eff3f4;
-  --glass-border-top: #eff3f4;
-
-  --red:   #f4212e;
-  --green: #00ba7c;
-
-  --tg-bg: #ffffff; --tg-surface: #ffffff; --tg-input: #eff3f4;
-  --tg-blue: #1d9bf0; --tg-out: #1d9bf0; --tg-in: #eff3f4;
-  --tg-text: #0f1419; --tg-muted: #536471;
-  --tg-text-muted: #536471; --tg-primary-blue: #1d9bf0; --tg-text-main: #0f1419;
-}
-
 html, body, #app { background: var(--bg); color: var(--text); }
 body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
 ::selection { background: rgba(29, 155, 240, .30); }
@@ -16561,8 +15818,7 @@ textarea {
 
 /* ── 4. Post: kartasiz qator + ingichka ajratgich (X uslubi) ───────────── */
 .post,
-[data-theme="dark"] .post,
-[data-theme="light"] .post {
+[data-theme="dark"] .post{
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--line);
@@ -16572,8 +15828,7 @@ textarea {
 
 /* ── 5. Header va navigatsiya: ingichka chiziq ────────────────────────── */
 .app-hdr,
-[data-theme="dark"] .app-hdr,
-[data-theme="light"] .app-hdr {
+[data-theme="dark"] .app-hdr{
   background: var(--bg);
   border-bottom: 1px solid var(--line);
 }
@@ -16728,7 +15983,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
    Endi hammasi tokenlardan: modal = sahifa rangi + ingichka chiziq. */
 :root,
 [data-theme="dark"]  { --overlay: rgba(4, 6, 8, .72); }
-[data-theme="light"] { --overlay: rgba(91, 112, 131, .40); }
 
 .overlay,
 [data-theme] .overlay,
@@ -16998,8 +16252,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 
 /* Oyna / sheet: X overlay va soyasi (chegarasiz) */
 :root,
-[data-theme="dark"],
-[data-theme="light"] { --overlay: rgba(91, 112, 131, .40); }
+[data-theme="dark"]{ --overlay: rgba(91, 112, 131, .40); }
 
 .sheet,
 [data-theme] .sheet,
@@ -17102,7 +16355,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
    ═══════════════════════════════════════════════════════════════════════ */
 [data-theme] .search-overlay,
 [data-theme="dark"] .search-overlay,
-[data-theme="light"] .search-overlay,
 .search-overlay {
   top: 0; bottom: auto; height: auto;
   left: var(--sidebar, 0px); right: 0;
@@ -17139,8 +16391,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
   font-size: 15px; box-shadow: none;
 }
 [data-theme] .search-overlay-box input:focus { background: transparent; border-color: var(--x-blue); }
-[data-theme="light"] .search-overlay-box input { background: var(--bg4); border-color: transparent; }
-[data-theme="light"] .search-overlay-box input:focus { background: var(--bg); border-color: var(--x-blue); }
 [data-theme] .search-overlay-box input::placeholder { color: var(--text3); }
 
 .search-overlay-icon {
@@ -17187,12 +16437,10 @@ nav.bot-nav #createBtn.nav-center-btn *,
    ═══════════════════════════════════════════════════════════════════════ */
 :root,
 [data-theme="dark"]  { --overlay: rgba(0, 0, 0, .45); }
-[data-theme="light"] { --overlay: rgba(0, 0, 0, .30); }
 
 .overlay,
 [data-theme] .overlay,
 [data-theme="dark"] .overlay,
-[data-theme="light"] .overlay,
 .ua-modal-overlay,
 #pwdWarnOverlay::before,
 #uploadOverlay,
@@ -17258,8 +16506,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
   border: 1px solid #2f3336; border-radius: 999px; font-size: 15px;
 }
 [data-theme] .search-overlay .exp-pill input:focus { border-color: var(--x-blue, #1d9bf0); background: transparent; }
-[data-theme="light"] .search-overlay .exp-pill input { background: var(--bg4); border-color: transparent; }
-[data-theme="light"] .search-overlay .exp-pill input:focus { background: var(--bg); border-color: var(--x-blue, #1d9bf0); }
 [data-theme] .search-overlay .exp-pill input::placeholder { color: var(--text3); }
 [data-theme] .search-overlay .exp-pill .search-overlay-icon {
   position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
@@ -17352,5 +16598,3 @@ nav.bot-nav #createBtn.nav-center-btn *,
 /* soyasiz qolgan ochiladigan kartalar (menyu/typeahead/emoji) — chiziq bilan ajraladi */
 [data-theme] :is(.search-suggestions, .emoji-picker, .chat-emoji-quickpick, #chatContextMenu,
   .settings-more-menu, .sb-acc-menu, .chats-x-menu) { border: 1px solid #2f3336; }
-[data-theme="light"] :is(.search-suggestions, .emoji-picker, .chat-emoji-quickpick, #chatContextMenu,
-  .settings-more-menu, .sb-acc-menu, .chats-x-menu) { border-color: #cfd9de; }

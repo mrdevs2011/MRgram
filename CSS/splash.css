@@ -33,7 +33,6 @@
   overflow: visible;
 }
 
-
 .splash-wordmark {
   font-size: 22px;
   font-weight: 600;
@@ -41,7 +40,6 @@
   color: var(--text);
   margin-top: 18px;
 }
-
 
 /* ═══════════════════════════════════════════
    SPLASH — THEME AWARE (bg saqlanadi, o'zgarmagan)
@@ -55,11 +53,3 @@
 /* [data-theme="dark"] .splash-wordmark → CSS/dark-theme-fix.css'da qayta
    belgilangan (keyinroq yuklanadi) — bu yerdagi qoida o'lik edi */
 
-[data-theme="light"] #splash {
-  background: #F5F4EF;
-  background-color: #ffffff;
-}
-
-[data-theme="light"] .splash-wordmark {
-  color: #1A1A18;
-}

@@ -105,10 +105,6 @@
   transition: none;
 }
 
-[data-theme="light"] .search-overlay {
-  background: #96969A;
-}
-
 .search-overlay.open {
   opacity: 1;
   pointer-events: all;
@@ -734,31 +730,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 /* Light mode reels */
-[data-theme="light"] .reel {
-  background: #202327;
-}
-
-[data-theme="light"] .reel-avi {
-  border: 2px solid #B9B9BD;
-}
-
-[data-theme="light"] .reel-avi:hover {
-  border-color: #747476;
-}
-
-[data-theme="light"] .reel-follow {
-  background: #D0D0D5;
-  border: 1px solid #B9B9BD;
-}
-
-[data-theme="light"] .reel-follow:hover {
-  background: #B9B9BD;
-}
-
-[data-theme="light"] .reel-follow.following {
-  background: #ffffff;
-  border-color: #ffffff;
-}
 
 /* Progress bar theme aware */
 [data-theme="dark"] .reel-progress-track {
@@ -770,24 +741,10 @@ body:has(.search-overlay.open) .app-hdr {
   box-shadow: 0 0 8px #3f3f3f;
 }
 
-[data-theme="light"] .reel-progress-track {
-  background: #AEAEB1;
-}
-
-[data-theme="light"] .reel-progress-fill {
-  background: var(--blue2);
-  box-shadow: 0 0 8px #ffffff;
-}
-
 /* Reel pause icon theme aware */
 [data-theme="dark"] .reel-pause-icon {
   background: #000000;
   border: 1px solid #2f3336;
-}
-
-[data-theme="light"] .reel-pause-icon {
-  background: #747476;
-  border: 1px solid #D0D0D5;
 }
 
 /* ═══════════════════════
@@ -1091,59 +1048,28 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 /* Light mode: softer shadows */
-/* box-shadow o'chirildi — borderless.css:43 (.post, [data-theme="light"] .post
+/* box-shadow o'chirildi — borderless.css:43 (.post
    guruhida) bir xil specificity bilan keyinroq yuklanadi, box-shadow:none
    g'olib chiqadi, bu qator hech qachon ko'rinmagan (o'lik) */
-
-[data-theme="light"] .post:hover {
-  box-shadow: 0 4px 16px #D0D0D5;
-}
 
 /* Video controls - theme aware */
 [data-theme="dark"] .vid-controls {
   background: #000000;
 }
 
-[data-theme="light"] .vid-controls {
-  background: #2E2E2F;
-}
-
 /* File card hover - theme aware */
 /* [data-theme="dark"] .file-card:hover → CSS/dark-theme-fix.css'da qayta
    belgilangan (keyinroq yuklanadi, g'olib chiqadi) — bu yerdagi qoida o'lik edi */
 
-[data-theme="light"] .file-card:hover {
-  background: var(--bg4);
-  box-shadow: 0 2px 8px #D5D5DA;
-}
-
 /* Badge styles - theme aware */
-[data-theme="light"] .badge-pub {
-  background: #ffffff;
-  color: var(--blue);
-}
-
-[data-theme="light"] .badge-priv {
-  background: #e0e0e0;
-  color: var(--text3);
-}
 
 /* Search overlay - theme aware */
 /* [data-theme="dark"] .search-overlay-box → CSS/dark-theme-fix.css'da qayta
    belgilangan (keyinroq yuklanadi, g'olib chiqadi) — bu yerdagi qoida o'lik edi */
 
-[data-theme="light"] .search-overlay-box {
-  box-shadow: 0 8px 32px #B9B9BD;
-}
-
 /* Empty states - theme aware */
 [data-theme="dark"] .empty-icon,
 [data-theme="dark"] .empty-search-icon {
-  background: var(--blue-glow2);
-}
-
-[data-theme="light"] .empty-icon,
-[data-theme="light"] .empty-search-icon {
   background: var(--blue-glow2);
 }
 
@@ -1202,11 +1128,6 @@ body:has(.search-overlay.open) .app-hdr {
 [data-theme="dark"] .skeleton-post {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
   border-color: #202327;
-}
-
-[data-theme="light"] .skeleton-post {
-  background: var(--bg3);
-  border-color: #D5D5DA;
 }
 
 /* ═══════════════════════════════════════════════════════════
