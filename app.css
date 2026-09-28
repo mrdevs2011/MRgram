@@ -1928,7 +1928,19 @@ body:has(.search-overlay.open) .app-hdr {
     padding-top: 0 !important;
   }
   #profileView .profile-hdr {
-    padding-top: 16px;
+    padding-top: 20px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  /* Cover yo'q: avatar tepadan kesilmasin */
+  #profileView .profile-avi-row {
+    margin-top: 0;
+  }
+  #profileView .profile-hdr:has(#profileCover:not([data-empty="true"]):not(:empty)) .profile-avi-row {
+    margin-top: -38px;
+  }
+  #profileView .profile-hdr:has(#profileCover:not([data-empty="true"]):not(:empty)) {
+    padding-top: 0;
   }
   /* cover to'liq view ichida */
   #profileView .profile-cover {
@@ -2818,15 +2830,19 @@ body:has(.search-overlay.open) .app-hdr {
   padding-top: 0;
 }
 
-/* ── Avatar row: cover pastidan yarim chiqib turadi ── */
+/* ── Avatar row: cover bo'lsa yarim chiqadi, yo'q bo'lsa oddiy ── */
 .profile-avi-row {
   display: flex;
   align-items: flex-end;
   gap: 16px;
-  margin-top: -38px;        /* avatar yarim cover ichida, yarim tashqarida */
+  margin-top: 0;
   padding: 0 0 12px;
   position: relative;
   z-index: 2;
+}
+/* Cover ko'rinadigan bo'lsagina avatar yarim cover ichiga chiqadi */
+.profile-hdr:has(#profileCover:not([data-empty="true"]):not(:empty)) .profile-avi-row {
+  margin-top: -38px;
 }
 
 /* Username & meta */
