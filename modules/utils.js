@@ -1,3 +1,4 @@
+// test 4: diff uchun izoh
 import { state }  from './config.js';
 import { toast }  from './toast.js';
 
