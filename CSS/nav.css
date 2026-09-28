@@ -1026,66 +1026,23 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* static glow behind the glass capsule — only on hover now (see :hover rule below) */
-  .sb-logo-row::before {
-    content: '';
-    position: absolute;
-    inset: -7px;
-    border-radius: 18px;
-    background: var(--blue-glow2);
-    opacity: 0;
-    z-index: -1;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-
   .sb-logo-glass {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%; height: 100%;
-    border-radius: 14px;
-    overflow: hidden;
-    background: var(--glass-heavy);
-    border: 0.5px solid var(--glass-border-top);
-    box-shadow: var(--specular-top), var(--specular-edge), 0 4px 16px var(--blue-glow), var(--liquid-shadow-sm);
-    transition: all 0.2s var(--ease-spring);
-  }
-
-  /* glass sheen — sweeps across on hover */
-  .sb-logo-glass::after {
-    content: '';
-    position: absolute;
-    top: -60%; left: -160%;
-    width: 70%; height: 220%;
-    background: #909093;
-    transform: rotate(22deg);
-    transition: left 0.2s var(--ease);
-    pointer-events: none;
+    background: none;
+    border: none;
+    box-shadow: none;
   }
 
   .sb-logo-img {
-    width: 26px; height: 26px;
+    width: 30px; height: 30px;
     position: relative;
     z-index: 1;
-    filter: drop-shadow(0 2px 6px #07070C);
-    transition: transform 0.2s var(--ease-spring);
   }
 
-  .sb-logo-row:hover .sb-logo-glass {
-    border-color: var(--glass-border-top);
-    box-shadow: var(--specular-top), 0 8px 26px var(--blue-glow), var(--liquid-shadow-md);
-  }
-  .sb-logo-row:hover .sb-logo-glass::after { left: 170%; }
-  .sb-logo-row:hover .sb-logo-img {rotate(-5deg); }
-  .sb-logo-row:hover::before { opacity: 1; }
-
-  .sb-logo-row:active .sb-logo-glass {
-    transition: transform 0.08s ease;
-  }
-
-  
   .sb-logo-tip {
     position: absolute;
     left: calc(100% + 12px);

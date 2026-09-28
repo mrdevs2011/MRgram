@@ -2,7 +2,8 @@
  * MRgram — Guruhlar va Kanallar moduli
  * Groups & Channels for MRgram chat
  *
- * Firestore schema:
+ * Ma'lumot shakli (Supabase qatorlaridan config.js dagi mapGroup()/mapMessage()
+ * eski Firestore ko'rinishida yasaydi):
  *   groups/{groupId} {
  *     type: 'group' | 'channel',
  *     name, avatar, description?,
@@ -19,15 +20,10 @@
  *   }
  */
 
-import { db, state, uploadViaController, isAdmin, aiModeratePost } from './config.js';
+import { sb, state, uploadViaController, isAdmin, fetchAllRows, mapProfile, mapGroup, mapMessage, ts } from './config.js';
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, lockScroll, unlockScroll, isOnline } from './utils.js';
 import { toast }                                    from './toast.js';
 import { updateVoiceSendBtn, _toDateSafe, _isSameDay, _dateSepLabel } from './chat.js';
-import {
-  collection, query, where, orderBy, limit,
-  doc, getDoc, getDocs, addDoc, setDoc, updateDoc, deleteDoc,
-  onSnapshot, serverTimestamp, writeBatch, increment, arrayUnion, arrayRemove
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 /* ─────────────────────────────────────────────────────────────────────
    STATE
@@ -39,30 +35,112 @@ export let groupListItems = []; // exported so chat.js can merge
 let _currentGroupId  = null;
 let _currentGroupData = null;
 let _groupChatSelFile = null;
+let _reloadGroupThread = null;
+let _groupsTick = null;
+
+/* ── Yordamchilar (Supabase) ─────────────────────────────────────────── */
+function _isActiveUser(u) {
+  if (u.approval !== 'approved') return false;
+  if (!u.blocked) return true;
+  return !!(u.blockedUntil && u.blockedUntil.toMillis() < Date.now());
+}
+
+/** id lar bo'yicha profillar: { uid: mapProfile(...) } — bitta so'rov */
+async function _profilesByIds(ids) {
+  const out = {};
+  const list = [...new Set((ids || []).filter(Boolean))];
+  for (let i = 0; i < list.length; i += 100) {
+    const { data } = await sb.from('profiles').select('*').in('id', list.slice(i, i + 100));
+    (data || []).forEach(r => { out[r.id] = mapProfile(r); });
+  }
+  return out;
+}
+
+/** Men a'zo bo'lgan guruh/kanallarni yuklab, ro'yxatni yangilaydi */
+async function _loadGroups() {
+  const me = state.me?.uid;
+  if (!me) return;
+  const { data: mine, error: e1 } = await sb.from('group_members').select('group_id').eq('user_id', me);
+  if (state.me?.uid !== me) return;
+  if (e1) { console.warn('[Groups] watcher error:', e1.message); return; }
+  const ids = (mine || []).map(r => r.group_id);
+  let rows = [];
+  if (ids.length) {
+    const { data, error } = await sb.from('groups')
+      .select('*, group_members(user_id, role, unread_count)').in('id', ids);
+    if (state.me?.uid !== me) return;
+    if (error) { console.warn('[Groups] watcher error:', error.message); return; }
+    rows = data || [];
+  }
+  _latestGroupMap = {};
+  groupListItems = [];
+  rows.forEach(r => {
+    const g = mapGroup(r);
+    _latestGroupMap[g.id] = g;
+    groupListItems.push(g);
+  });
+  if (_currentGroupId && _latestGroupMap[_currentGroupId]) _currentGroupData = _latestGroupMap[_currentGroupId];
+  // Notify chat.js list to repaint
+  if (state.view === 'chats') document.dispatchEvent(new CustomEvent('groupsUpdated'));
+}
+
+async function _addMembers(groupId, uids) {
+  const rows = uids.map(uid => ({ group_id: groupId, user_id: uid, role: 'member' }));
+  const { error } = await sb.from('group_members')
+    .upsert(rows, { onConflict: 'group_id,user_id', ignoreDuplicates: true });
+  if (error) throw error;
+  _loadGroups();
+}
+
+async function _removeMember(groupId, uid) {
+  const { data, error } = await sb.from('group_members').delete()
+    .eq('group_id', groupId).eq('user_id', uid).select();
+  if (error) throw error;
+  if (!data || !data.length) throw new Error("Ruxsat yo'q");
+  _loadGroups();
+}
+
+async function _updateGroup(groupId, patch) {
+  const { data, error } = await sb.from('groups').update(patch).eq('id', groupId).select();
+  if (error) throw error;
+  if (!data || !data.length) throw new Error("Ruxsat yo'q");
+  await _loadGroups();
+}
+
+async function _deleteGroup(groupId) {
+  const { data, error } = await sb.from('groups').delete().eq('id', groupId).select();
+  if (error) throw error;
+  if (!data || !data.length) throw new Error("Ruxsat yo'q");
+  await _loadGroups();
+}
+
+function _resetGroupUnread(groupId) {
+  const me = state.me?.uid;
+  if (!me) return;
+  if (_latestGroupMap[groupId]?.unreadCount) _latestGroupMap[groupId].unreadCount[me] = 0;
+  sb.from('group_members').update({ unread_count: 0 })
+    .eq('group_id', groupId).eq('user_id', me).then(() => {}, () => {});
+}
 
 /* ─────────────────────────────────────────────────────────────────────
    WATCHER — real-time listener for groups/channels the user is in
    ───────────────────────────────────────────────────────────────────── */
 export function startGroupsWatcher() {
   if (_groupsUnsub || !state.me?.uid) return;
-  _groupsUnsub = onSnapshot(
-    query(collection(db, 'chats', '_index', 'groups'), where('members', 'array-contains', state.me.uid)),
-    snap => {
-      _latestGroupMap = {};
-      groupListItems = [];
-      snap.docs.forEach(d => {
-        const g = { id: d.id, ...d.data() };
-        _latestGroupMap[d.id] = g;
-        groupListItems.push(g);
-      });
-      // Notify chat.js list to repaint
-      if (state.view === 'chats') {
-        const ev = new CustomEvent('groupsUpdated');
-        document.dispatchEvent(ev);
-      }
-    },
-    err => console.warn('[Groups] watcher error:', err.message)
-  );
+  const me = state.me.uid;
+  let timer = null;
+  const sched = () => { clearTimeout(timer); timer = setTimeout(_loadGroups, 250); };
+  const ch = sb.channel('groups-watcher')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'groups' }, p => {
+      const id = p.new?.id || p.old?.id;
+      if (id && _latestGroupMap[id]) sched();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members', filter: `user_id=eq.${me}` }, sched)
+    .subscribe();
+  // DELETE hodisalari filtr bilan kelmaydi (masalan guruhdan chiqarilish) — zaxira so'rov
+  _groupsTick = setInterval(_loadGroups, 60000);
+  _groupsUnsub = () => { clearTimeout(timer); clearInterval(_groupsTick); _groupsTick = null; sb.removeChannel(ch); };
+  _loadGroups();
 }
 
 export function stopGroupsWatcher() {
@@ -118,12 +196,8 @@ function _renderChannelActionBar(groupId, groupData) {
 
     bar.querySelector('#channelLeaveBtn').addEventListener('click', async () => {
       try {
-        const field = Array.isArray(groupData.memberIds || groupData.members || [])
-          ? (groupData.memberIds != null ? 'memberIds' : 'members')
-          : 'participants';
-        await updateDoc(doc(db, 'chats', '_index', 'groups', groupId), { [field]: arrayRemove(state.me.uid) });
-        // UI ni yangilash
-        groupData[field] = (groupData[field] || []).filter(id => id !== state.me.uid);
+        await _removeMember(groupId, state.me.uid);
+        groupData.members = (groupData.members || []).filter(id => id !== state.me.uid);
         _renderChannelActionBar(groupId, groupData);
         toast("Kanaldan chiqdingiz", 'info');
       } catch (e) { toast("Xato: " + e.message, 'error'); }
@@ -155,10 +229,8 @@ function _renderChannelActionBar(groupId, groupData) {
 
     bar.querySelector('#channelJoinBtn').addEventListener('click', async () => {
       try {
-        const field = groupData.memberIds != null ? 'memberIds'
-          : groupData.members != null ? 'members' : 'participants';
-        await updateDoc(doc(db, 'chats', '_index', 'groups', groupId), { [field]: arrayUnion(state.me.uid) });
-        groupData[field] = [...(groupData[field] || []), state.me.uid];
+        await _addMembers(groupId, [state.me.uid]);
+        groupData.members = [...(groupData.members || []), state.me.uid];
         _renderChannelActionBar(groupId, groupData);
         toast("Kanalga qo'shildingiz!", 'success');
       } catch (e) { toast("Xato: " + e.message, 'error'); }
@@ -269,25 +341,35 @@ export async function openGroupThread(groupId) {
   $('chatThreadMessages').innerHTML = `<div class="spin-wrap pt-60px"><div class="spinner"></div></div>`;
 
   // Mark my unread as 0
-  try {
-    await updateDoc(doc(db, 'chats', '_index', 'groups', groupId), {
-      [`unreadCount.${state.me.uid}`]: 0
-    });
-  } catch(_) {}
+  _resetGroupUnread(groupId);
 
   // Subscribe to messages
   if (_groupThreadUnsub) { _groupThreadUnsub(); _groupThreadUnsub = null; }
-  _groupThreadUnsub = onSnapshot(
-    query(collection(db, 'chats', '_index', 'groups', groupId, 'messages'), orderBy('createdAt', 'asc')),
-    snap => {
-      const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      paintGroupMessages(msgs, groupData);
-    },
-    err => {
-      console.warn('[Groups] thread error:', err.message);
+  let _gDead = false, _gTimer = null;
+  const loadMsgs = async () => {
+    const { data, error } = await sb.from('group_messages').select('*')
+      .eq('group_id', groupId).order('created_at', { ascending: false }).limit(1000);
+    if (_gDead || _currentGroupId !== groupId) return;
+    if (error) {
+      console.warn('[Groups] thread error:', error.message);
       $('chatThreadMessages').innerHTML = `<div class="empty pt-30vh tac"><div class="fs-13px c-text2">Xabarlar yuklanmadi</div></div>`;
+      return;
     }
-  );
+    const msgs = (data || []).map(mapMessage).reverse();
+    paintGroupMessages(msgs, _currentGroupData || groupData);
+    // Thread ochiq turganda kelgan xabarlar o'qilmagan bo'lib qolmasin
+    if ((_latestGroupMap[groupId]?.unreadCount?.[state.me.uid] || 0) > 0) _resetGroupUnread(groupId);
+  };
+  const sched = () => { clearTimeout(_gTimer); _gTimer = setTimeout(loadMsgs, 80); };
+  const gch = sb.channel('gthread-' + groupId)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_messages', filter: `group_id=eq.${groupId}` }, sched)
+    .subscribe(st => { if (st === 'SUBSCRIBED') sched(); });
+  _groupThreadUnsub = () => {
+    _gDead = true; clearTimeout(_gTimer); sb.removeChannel(gch);
+    if (_reloadGroupThread === loadMsgs) _reloadGroupThread = null;
+  };
+  _reloadGroupThread = loadMsgs;
+  loadMsgs();
 }
 
 export function closeGroupThread() {
@@ -343,13 +425,7 @@ async function paintGroupMessages(msgs, groupData) {
 
   // Build a cache of sender names for non-DM display
   const senderIds = [...new Set(msgs.map(m => m.senderId).filter(Boolean))];
-  const senderMap = {};
-  await Promise.all(senderIds.map(async uid => {
-    try {
-      const snap = await getDoc(doc(db, 'users', uid));
-      if (snap.exists()) senderMap[uid] = snap.data();
-    } catch(_) {}
-  }));
+  const senderMap = await _profilesByIds(senderIds);
 
   if (!msgs.length) {
     box.innerHTML = `<div class="empty pt-30vh tac">
@@ -443,49 +519,16 @@ export async function sendGroupMessage() {
   const members   = groupData?.members || [];
 
   try {
-    // Unread count: increment for everyone except sender
-    const unreadUpdate = {};
-    members.forEach(uid => {
-      if (uid !== state.me.uid) unreadUpdate[`unreadCount.${uid}`] = increment(1);
-    });
-    await updateDoc(doc(db, 'chats', '_index', 'groups', groupId), {
-      lastMessage:   text,
-      lastSenderId:  state.me.uid,
-      lastMessageAt: serverTimestamp(),
-      ...unreadUpdate
-    });
-    await addDoc(collection(db, 'chats', '_index', 'groups', groupId, 'messages'), {
-      senderId:  state.me.uid,
-      text,
-      type:      'text',
-      createdAt: serverTimestamp(),
-    });
+    const { error } = await sb.from('group_messages')
+      .insert({ group_id: groupId, sender_id: state.me.uid, type: 'text', text });
+    if (error) throw error;
+    _reloadGroupThread && _reloadGroupThread();
   } catch (err) {
     console.error('[Groups] send failed:', err);
     toast('Xabar yuborilmadi', 'error');
     inp.value = text;
     updateVoiceSendBtn();
     return;
-  }
-
-  // ── YENGIL AI TEKSHIRUV: faqat GURUHLARDA (kanalda emas) ──
-  // Kanal (masalan kanal egasi joylagan xabar) umuman tekshirilmaydi.
-  // Guruh xabari bo'lsa — fonda yengil tekshiruv o'tadi, faqat aniq va
-  // og'ir qoidabuzarlik bo'lsagina xabar egasiga ogohlantirish beriladi.
-  if (groupData?.type !== 'channel') {
-    const textToCheck = text;
-    setTimeout(async () => {
-      try {
-        const aiResult = await aiModeratePost({ text: textToCheck, light: true });
-        if (aiResult.flagged) {
-          toast('⚠️ Guruhdagi xabaringiz qoidalarga zid deb topildi: ' + (aiResult.reason || ''), 'error', 8000);
-          const { _recordViolationAndWarn, VIOLATION_SOURCE } = await import('./upload.js');
-          await _recordViolationAndWarn(state.me.uid, aiResult.reason, VIOLATION_SOURCE.CHAT);
-        }
-      } catch (e) {
-        console.warn('[Group AI] Tekshiruvda xato:', e.message);
-      }
-    }, 0);
   }
 }
 
@@ -498,27 +541,13 @@ export async function sendGroupFile(file) {
   toast('Fayl yuklanmoqda...', 'info', 3000);
   try {
     const result = await uploadViaController(file, 'group-files');
-    const unreadUpdate = {};
-    members.forEach(uid => {
-      if (uid !== state.me.uid) unreadUpdate[`unreadCount.${uid}`] = increment(1);
+    const { error } = await sb.from('group_messages').insert({
+      group_id: groupId, sender_id: state.me.uid, type: 'file',
+      media_path: result.path, media_type: file.type || null,
+      file_name: file.name, file_size: file.size,
     });
-    await updateDoc(doc(db, 'chats', '_index', 'groups', groupId), {
-      lastMessage:   file.name,
-      lastSenderId:  state.me.uid,
-      lastMessageAt: serverTimestamp(),
-      ...unreadUpdate
-    });
-    await addDoc(collection(db, 'chats', '_index', 'groups', groupId, 'messages'), {
-      senderId:     state.me.uid,
-      type:         'file',
-      mediaUrl:     result.url,
-      mediaPath:    result.path,
-      storageIndex: result.storageIndex,
-      mediaType:    file.type,
-      fileName:     file.name,
-      fileSize:     file.size,
-      createdAt:    serverTimestamp(),
-    });
+    if (error) throw error;
+    _reloadGroupThread && _reloadGroupThread();
     toast('Fayl yuborildi', 'success');
   } catch (err) {
     console.error('[Groups] file send failed:', err);
@@ -582,7 +611,7 @@ export async function openGroupInfo(groupId) {
               toast('Yuklanmoqda...', 'info');
               try {
                 const result = await uploadViaController(f, 'group-avatars');
-                await updateDoc(doc(db, 'chats', '_index', 'groups', groupId), { avatar: result.url });
+                await _updateGroup(groupId, { avatar: result.url });
                 toast('Rasm yangilandi', 'success');
                 openGroupInfo(groupId);
               } catch(e2) { toast('Xato: ' + e2.message, 'error'); }
@@ -647,7 +676,7 @@ export async function openGroupInfo(groupId) {
   panel.querySelector('#grpInfoLeaveBtn').onclick = async () => {
     if (!confirm(`${typeLabel}dan chiqmoqchimisiz?`)) return;
     try {
-      await updateDoc(doc(db, 'chats', '_index', 'groups', groupId), { members: arrayRemove(state.me.uid) });
+      await _removeMember(groupId, state.me.uid);
       panel.classList.remove('show');
       closeGroupThread();
       $('chatThreadModal').classList.remove('show');
@@ -658,7 +687,7 @@ export async function openGroupInfo(groupId) {
   panel.querySelector('#grpInfoDeleteBtn').onclick = async () => {
     if (!confirm(`${typeLabel}ni o'chirasizmi? Bu amalni qaytarib bo'lmaydi!`)) return;
     try {
-      await deleteDoc(doc(db, 'chats', '_index', 'groups', groupId));
+      await _deleteGroup(groupId);
       panel.classList.remove('show');
       closeGroupThread();
       $('chatThreadModal').classList.remove('show');
@@ -681,13 +710,12 @@ export async function openGroupInfo(groupId) {
     const membersEl = panel.querySelector('#grpMembersList');
     if (membersEl) {
       membersEl.innerHTML = '<div class="gi-media-spin"><div class="spinner"></div></div>';
-      Promise.all(members.map(uid => getDoc(doc(db, 'users', uid)).catch(()=>null)))
-        .then(snaps => {
-          const html = snaps.map(s => {
-            if (!s || !s.exists()) return '';
-            const u    = s.data();
+      _profilesByIds(members)
+        .then(pmap => {
+          const html = members.map(uid => {
+            const u = pmap[uid];
+            if (!u) return '';
             const av   = u.avatar || defAvi(u.fullName || 'U');
-            const uid  = s.id;
             const role = uid === g.ownerId ? 'Egasi' : (g.adminIds||[]).includes(uid) ? 'Admin' : '';
             const isSelf = uid === state.me?.uid;
             const online = isOnline(u.lastSeenAt);
@@ -711,7 +739,7 @@ export async function openGroupInfo(groupId) {
               const uid = btn.dataset.uid;
               if (!confirm('Bu foydalanuvchini chiqarasizmi?')) return;
               try {
-                await updateDoc(doc(db, 'chats', '_index', 'groups', groupId), { members: arrayRemove(uid) });
+                await _removeMember(groupId, uid);
                 toast("A'zo chiqarildi", 'success');
                 openGroupInfo(groupId);
               } catch(e) { toast('Xato yuz berdi', 'error'); }
@@ -728,15 +756,12 @@ export async function openGroupInfo(groupId) {
   if (mediaGrid) {
     mediaGrid.innerHTML = '<div class="gi-media-spin"><div class="spinner"></div></div>';
     try {
-      const msgSnap = await getDocs(
-        query(collection(db, 'chats', '_index', 'groups', groupId, 'messages'),
-          where('type', '==', 'file'),
-          orderBy('createdAt', 'desc'),
-          limit(60)
-        )
-      );
-      const mediaMsgs = msgSnap.docs
-        .map(d => d.data())
+      const { data: mrows, error: mErr } = await sb.from('group_messages').select('*')
+        .eq('group_id', groupId).eq('type', 'file')
+        .order('created_at', { ascending: false }).limit(60);
+      if (mErr) throw mErr;
+      const mediaMsgs = (mrows || [])
+        .map(mapMessage)
         .filter(m => {
           const mime = (m.mediaType || '').toLowerCase();
           const ext  = (m.fileName || '').toLowerCase().split('.').pop();
@@ -850,15 +875,15 @@ export function openGroupEdit(groupId, g) {
 
     if (isChannel) {
       const uname = panel.querySelector('#grpEditUsername').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
-      if (uname) updates.username = uname;
-      updates.isPrivate = panel.querySelector('#grpEditPrivacy').value === 'private';
+      if (uname) updates.invite_code = uname;
+      updates.is_private = panel.querySelector('#grpEditPrivacy').value === 'private';
     } else {
-      updates.isPrivate = panel.querySelector('#grpEditGroupPrivacy').value === 'private';
-      updates.msgPermission = panel.querySelector('#grpEditMsgPerm').value;
+      updates.is_private = panel.querySelector('#grpEditGroupPrivacy').value === 'private';
+      updates.msg_permission = panel.querySelector('#grpEditMsgPerm').value;
     }
 
     try {
-      await updateDoc(doc(db, 'chats', '_index', 'groups', groupId), updates);
+      await _updateGroup(groupId, updates);
       panel.classList.remove('show');
       unlockScroll();
       toast(`${typeLabel} yangilandi`, 'success');
@@ -1013,10 +1038,8 @@ function _renderLinkBody(body) {
 
 async function _loadUsersForPicker() {
   try {
-    const snap = await getDocs(collection(db, 'users'));
-    return snap.docs
-      .map(d => ({ uid: d.id, ...d.data() }))
-      .filter(u => u.uid !== state.me?.uid);
+    const rows = await fetchAllRows('profiles', '*', 'created_at');
+    return rows.map(mapProfile).filter(u => u.uid !== state.me?.uid && _isActiveUser(u));
   } catch(_) { return []; }
 }
 
@@ -1148,20 +1171,22 @@ export async function joinGroupByCode(code) {
   code = (code || '').trim();
   if (!code) return { ok: false, reason: 'empty' };
   try {
-    const snap = await getDocs(query(collection(db, 'chats', '_index', 'groups'), where('inviteCode', '==', code)));
-    if (snap.empty) return { ok: false, reason: 'not-found' };
+    const { data: gid, error } = await sb.rpc('join_group_by_code', { p_code: code });
+    if (error || !gid) {
+      return { ok: false, reason: /noto.?g.?ri/i.test(error?.message || '') ? 'not-found' : 'error' };
+    }
+    const wasMember = !!_latestGroupMap[gid];
+    await _loadGroups();
+    const g = _latestGroupMap[gid];
+    if (!g) return { ok: false, reason: 'error' };
 
-    const groupSnap = snap.docs[0];
-    const g = groupSnap.data();
-
-    if ((g.members || []).includes(state.me.uid)) {
-      openGroupThread(groupSnap.id);
+    if (wasMember) {
+      openGroupThread(gid);
       return { ok: true, joined: false, group: g };
     }
 
-    await updateDoc(doc(db, 'chats', '_index', 'groups', groupSnap.id), { members: arrayUnion(state.me.uid) });
     toast(`${g.type === 'channel' ? 'Kanalga' : 'Guruhga'} qo'shildingiz!`, 'success');
-    setTimeout(() => openGroupThread(groupSnap.id), 200);
+    setTimeout(() => openGroupThread(gid), 200);
     return { ok: true, joined: true, group: g };
   } catch (e) {
     return { ok: false, reason: 'error' };
@@ -1237,9 +1262,7 @@ export async function submitCreateGroup() {
     // Add members to existing group
     if (!_selectedMembers.size) { toast('Kamida 1 ta a\'zo tanlang', 'error'); return; }
     try {
-      await updateDoc(doc(db, 'chats', '_index', 'groups', addMode), {
-        members: arrayUnion(...Array.from(_selectedMembers))
-      });
+      await _addMembers(addMode, Array.from(_selectedMembers));
       overlay.classList.remove('show');
       overlay.dataset.addMode = '';
       // Reset hidden elements
@@ -1259,54 +1282,50 @@ export async function submitCreateGroup() {
   btn.textContent = 'Yaratilmoqda...';
 
   try {
-    if (_inviteCode) {
-      // 1) boshqa guruh/kanal shu havolani band qilmaganini tekshiramiz
-      const dupSnap = await getDocs(query(collection(db, 'chats', '_index', 'groups'), where('inviteCode', '==', _inviteCode)));
-      if (!dupSnap.empty) {
+    // Havola foydalanuvchi username'i bilan bir xil bo'lmasin
+    const unameKey = (_inviteCode || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (unameKey) {
+      try {
+        const { data: free } = await sb.rpc('username_available', { p_username: unameKey });
+        if (free === false) {
+          toast('Bu havola band (foydalanuvchi havolasi bilan mos), boshqa havola tanlang', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Yaratish';
+          return;
+        }
+      } catch(_) { /* tekshirib bo'lmasa — davom etamiz */ }
+    }
+
+    // id ni o'zimiz beramiz: yopiq guruhda insert...select RLS'dan o'tmasligi mumkin
+    const newId = crypto.randomUUID();
+    const { error: gErr } = await sb.from('groups').insert({
+      id:          newId,
+      type:        _createType,
+      name,
+      avatar:      _pendingPhotoUrl || '',
+      description: overlay.querySelector('#grpFormDesc')?.value?.trim() || '',
+      owner_id:    state.me.uid,
+      is_private:  _isPrivate,
+      invite_code: _inviteCode || null,
+    });
+    if (gErr) {
+      if (gErr.code === '23505') {
         toast('Bu havola band, boshqa havola tanlang', 'error');
         btn.disabled = false;
         btn.textContent = 'Yaratish';
         return;
       }
-      // 2) guruh/kanal havolasi biror foydalanuvchining username'i (uning
-      //    shaxsiy havolasi) bilan bir xil bo'lmasligi kerak
-      const unameKey = _inviteCode.toLowerCase().replace(/[^a-z0-9]/g, '');
-      if (unameKey) {
-        try {
-          const unameSnap = await getDoc(doc(db, 'users', '_index', 'usernames', unameKey));
-          if (unameSnap.exists()) {
-            toast('Bu havola band (foydalanuvchi havolasi bilan mos), boshqa havola tanlang', 'error');
-            btn.disabled = false;
-            btn.textContent = 'Yaratish';
-            return;
-          }
-        } catch(_) { /* tekshirib bo'lmasa — davom etamiz */ }
-      }
+      throw gErr;
     }
-
-    const members = [state.me.uid, ...Array.from(_selectedMembers)];
-    const groupDoc = {
-      type:         _createType,
-      name,
-      avatar:       _pendingPhotoUrl || '',
-      description:  overlay.querySelector('#grpFormDesc')?.value?.trim() || '',
-      ownerId:      state.me.uid,
-      adminIds:     [state.me.uid],
-      members,
-      isPrivate:    _isPrivate,
-      inviteCode:   _inviteCode || null,
-      lastMessage:   '',
-      lastSenderId:  '',
-      lastMessageAt: serverTimestamp(),
-      unreadCount:   {},
-      createdAt:     serverTimestamp(),
-    };
-    if (_createType === 'channel') groupDoc.subscriberCount = members.length;
-
-    const ref = await addDoc(collection(db, 'chats', '_index', 'groups'), groupDoc);
+    // Egasi trigger orqali qo'shiladi; tanlangan a'zolarni qo'shamiz
+    if (_selectedMembers.size) {
+      try { await _addMembers(newId, Array.from(_selectedMembers)); }
+      catch (e) { console.warn('[Groups] a\'zolarni qo\'shib bo\'lmadi:', e.message); }
+    }
+    await _loadGroups();
     overlay.classList.remove('show');
     toast(`${_createType === 'channel' ? 'Kanal' : 'Guruh'} yaratildi!`, 'success');
-    setTimeout(() => openGroupThread(ref.id), 300);
+    setTimeout(() => openGroupThread(newId), 100);
   } catch(err) {
     console.error('[Groups] create failed:', err);
     toast('Yaratib bo\'lmadi: ' + err.message, 'error');

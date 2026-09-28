@@ -1,14 +1,9 @@
-import { db, state, CAP_LIMIT, getMediaUrl, isAdmin, aiAboutPost, rephraseAiAbout, createThinkingUI } from './config.js';
+import { sb, state, CAP_LIMIT, getMediaUrl, isAdmin, mapProfile, MEDIA_BUCKET } from './config.js';
 import { $, esc, renderMarkdown, fmt, fmtSz, defAvi,
          initVidWrap, showConfirm,
          buildSkeletons, dlFile, openZoom, showHeartBurst } from './utils.js';
 import { toast }                            from './toast.js';
 import { follow, unfollow }                 from './auth.js';
-import {
-  collection, doc, getDoc, getDocs, query, orderBy,
-  deleteDoc, setDoc, updateDoc, arrayUnion,
-  serverTimestamp, increment, where
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 // ── Ko'rishlar (views) hisoblagichi ────────────────────────────────────
 // Ilgari bu funksiya bo'sh edi ("placeholder") — postlar millionlab marta
@@ -54,7 +49,8 @@ async function _countView(postId) {
   if (post?.userId && post.userId === state.me?.uid) return; // o'z posti — hisoblanmaydi
 
   try {
-    await updateDoc(doc(db, 'posts', postId), { views: increment(1) });
+    const { error: viewErr } = await sb.rpc('increment_post_view', { p_post: postId });
+    if (viewErr) throw viewErr;
     if (post) post.views = (post.views || 0) + 1;
     const card = document.querySelector(`.post[data-id="${postId}"] .post-stats span`);
     if (card && post) card.textContent = `${post.views} ko'rishlar`;
@@ -244,9 +240,11 @@ export async function renderFeedTo(feedEl, posts) {
 
   // Faqat cache da yo'qlarni yuklash
   if (uidsToFetch.length) {
-    const userDocs = await Promise.all(uidsToFetch.map(u => getDoc(doc(db,'users',u))));
-    uidsToFetch.forEach((u,i) => {
-      const d = userDocs[i].data() || {};
+    const { data: _uRows } = await sb.from('profiles')
+      .select('id,full_name,avatar,username').in('id', uidsToFetch);
+    const _uById = new Map((_uRows || []).map(r => [r.id, mapProfile(r)]));
+    uidsToFetch.forEach(u => {
+      const d = _uById.get(u) || {};
       state._userCache[u] = {
         uid: u,
         fullName: d.fullName,
@@ -261,13 +259,18 @@ export async function renderFeedTo(feedEl, posts) {
   // Like status cache dan foydalanish (local va Firestore postlar alohida collection)
   const unknownPosts = posts.filter(p => !state.myLikedPosts.has(p.id) && !state._knownUnliked.has(p.id));
   if (unknownPosts.length) {
-    const lS = await Promise.all(unknownPosts.map(p => {
-      return getDoc(doc(db, 'posts', p.id, 'likes', state.me.uid)).catch(() => null);
-    }));
-    unknownPosts.forEach((p,i) => {
-      if (lS[i]?.exists()) state.myLikedPosts.add(p.id);
-      else state._knownUnliked.add(p.id);
-    });
+    let likedRows = null;
+    try {
+      const { data, error } = await sb.from('post_likes').select('post_id')
+        .eq('user_id', state.me.uid).in('post_id', unknownPosts.map(p => p.id));
+      if (!error) likedRows = new Set((data || []).map(r => r.post_id));
+    } catch (_) {}
+    if (likedRows) {
+      unknownPosts.forEach(p => {
+        if (likedRows.has(p.id)) state.myLikedPosts.add(p.id);
+        else state._knownUnliked.add(p.id);
+      });
+    }
   }
   const likedSet = new Set(posts.filter(p => state.myLikedPosts.has(p.id)).map(p => p.id));
 
@@ -329,18 +332,6 @@ export async function renderFeedTo(feedEl, posts) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-          </svg>
-        </button>
-        <button class="act-btn ai-about-btn" data-id="${p.id}" title="AI fikri">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/>
-            <path d="m14 7 3 3"/>
-            <path d="M5 6v4"/>
-            <path d="M19 14v4"/>
-            <path d="M10 2v2"/>
-            <path d="M7 8H3"/>
-            <path d="M21 16h-4"/>
-            <path d="M11 3H9"/>
           </svg>
         </button>
       </div>
@@ -557,10 +548,6 @@ function bindFeedEvents(feedEl) {
     e.stopPropagation();
     showSharePopup(b);
   }));
-  feedEl.querySelectorAll('.ai-about-btn').forEach(b => b.addEventListener('click', (e) => {
-    e.stopPropagation();
-    doAiAboutPost(b.dataset.id, b);
-  }));
   feedEl.querySelectorAll('.post-media').forEach(m => m.addEventListener('click', async e => {
     if (e.target.closest('.file-dl')) return;
     if (e.target.closest('.vid-controls') || e.target.closest('.vc-progress')) return;
@@ -598,250 +585,6 @@ function bindFeedEvents(feedEl) {
   setupFeedVideoObs(feedEl);
 }
 
-/* ── AI fikri ("✨ magic" tugma) ─────────────────────────────────────── */
-// ── Taqiqlangan kontent uchun AI javob bermaydi ─────────────────────────
-const BLOCKED_AI_REPLIES = [
-  "Bu post taqiqlangan kontent sifatida belgilangan. AI bu post haqida fikr bildira olmaydi.",
-  "AI bu post bo'yicha izoh bera olmaydi — post qoidalarga zid kontent tufayli yashirilgan.",
-  "Taqiqlangan material: AI ushbu post haqida javob bermaydi.",
-];
-
-/* ── AI "thinking" animatsiyasi uchun yordamchi funksiyalar ────────────── */
-
-export async function doAiAboutPost(postId, btn) {
-  if (btn.disabled) return;
-  const post = state.allPosts.find(p => p.id === postId);
-  if (!post) return;
-
-  // Post aiHidden bo'lsa — AI javob bermaydi
-  if (post.aiHidden) {
-    const msg = BLOCKED_AI_REPLIES[Math.floor(Math.random() * BLOCKED_AI_REPLIES.length)];
-    toast(msg, 'error', 5000);
-    return;
-  }
-
-  // Agar bubble allaqachon ochiq bo'lsa — yopamiz (yangi javob so'raymiz)
-  const postEl = btn.closest('.post');
-  const existing = postEl?.querySelector('.ai-reply-bubble');
-  if (existing) existing.remove();
-
-  const origHtml = btn.innerHTML;
-  btn.disabled = true;
-  btn.style.opacity = '0.5';
-
-  // Thinking bubble
-  const bubble = document.createElement('div');
-  bubble.className = 'ai-reply-bubble';
-  bubble.innerHTML = `
-    <div class="ai-reply-header">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>
-      <span>AI tahlili</span>
-      <button class="ai-reply-close" aria-label="Yopish">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="ai-reply-body ai-reply-thinking"></div>`;
-
-  // Post actions dan oldin qo'shamiz
-  const actionsEl = postEl?.querySelector('.post-actions');
-  if (actionsEl) actionsEl.before(bubble);
-  else postEl?.append(bubble);
-
-  // Real-status thinking UI
-  const thinkingBody = bubble.querySelector('.ai-reply-body');
-  const thinkUI = createThinkingUI(thinkingBody);
-
-  // Yopish tugmasi
-  bubble.querySelector('.ai-reply-close').addEventListener('click', () => {
-    thinkUI.destroy();
-    bubble.remove();
-  });
-
-  // ── Cache pool: bu post uchun eng ko'pi bilan 2 ta AI natijasi saqlanadi.
-  //    Pool 2 taga to'lguncha — kesh asosida ARZON qayta so'zlash (rephrase)
-  //    bilan yangi variant qo'shiladi. Pool to'lgach — hech qanday AI so'rov
-  //    yuborilmasdan, mavjud 2 tadan tasodifiy biri ko'rsatiladi (bepul). ────
-  const CACHE_POOL_SIZE = 2;
-  let pool = Array.isArray(post.aiAbout) ? post.aiAbout : [];
-  if (!pool.length) {
-    // state.allPosts eskirgan bo'lishi mumkin (masalan snapshot hali yetib
-    // kelmagan bo'lsa) — Firestore'dan to'g'ridan-to'g'ri ham tekshiramiz.
-    try {
-      const freshSnap = await getDoc(doc(db, 'posts', postId));
-      const freshVal = freshSnap.data()?.aiAbout;
-      pool = Array.isArray(freshVal) ? freshVal : [];
-    } catch {}
-  }
-
-  // Admin "AI fikri" tugmasini bossa — eski pool/rephrase keshi butunlay
-  // chetlab o'tiladi va pastdagi asosiy blok (haqiqiy AI so'rovi) ishga
-  // tushadi; natija esa pastda pool'ni to'liq ALMASHTIRADI (arrayUnion
-  // emas), shu bilan barcha foydalanuvchilar uchun yangi bo'lib qoladi.
-  const forceRegenerate = isAdmin();
-
-  if (pool.length && !forceRegenerate) {
-    let shown;
-    if (pool.length >= CACHE_POOL_SIZE) {
-      // Pool to'la — hech qanday AI so'rov yuborilmaydi, shunchaki tasodifiy tanlaymiz.
-      shown = pool[Math.floor(Math.random() * pool.length)];
-    } else {
-      // Pool hali to'lmagan — mavjud variantlardan birini arzon TEXT_MODEL
-      // orqali qayta so'zlaymiz va pool'ga yangi variant sifatida qo'shamiz.
-      const base = pool[Math.floor(Math.random() * pool.length)];
-      shown = base;
-      try {
-        const variant = await rephraseAiAbout(base);
-        const entry = { title: variant.title || '', comment: variant.comment, mood: base.mood || 'neutral', createdAt: Date.now() };
-        shown = entry;
-        updateDoc(doc(db, 'posts', postId), { aiAbout: arrayUnion(entry) }).catch(() => {});
-        post.aiAbout = [...pool, entry]; // local state'ni tezroq yangilash
-      } catch {}
-    }
-
-    thinkUI.finish();
-    const body = bubble.querySelector('.ai-reply-body');
-    body.classList.remove('ai-reply-thinking');
-    bubble.classList.add('ai-mood-' + (shown.mood || 'neutral'));
-    body.innerHTML = '';
-    if (shown.title) {
-      const h = document.createElement('div');
-      h.className = 'ai-h2';
-      h.textContent = shown.title;
-      body.append(h);
-    }
-    const p = document.createElement('p');
-    p.className = 'ai-p';
-    p.textContent = shown.comment || 'AI javob bera olmadi';
-    body.append(p);
-
-    btn.disabled = false;
-    btn.style.opacity = '';
-    btn.innerHTML = origHtml;
-    return;
-  }
-
-  try {
-    // Post egasining ismini cache yoki Firebase dan olamiz
-    let posterName = null;
-    if (post.userId) {
-      try {
-        if (state._userCache?.[post.userId]?.fullName) {
-          posterName = state._userCache[post.userId].fullName;
-        } else {
-          const { doc: fsDoc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-          const uSnap = await getDoc(fsDoc(db, 'users', post.userId));
-          posterName = uSnap.data()?.fullName || null;
-        }
-      } catch {}
-    }
-
-    // Haqiqiy izoh matnlarini Firestore dan olamiz
-    thinkUI.step('comments');
-    let userComments = [];
-    try {
-      const { collection: col, query, orderBy, limit, getDocs } =
-        await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-      const cmtSnap = await getDocs(
-        query(col(db, 'posts', postId, 'comments'), orderBy('createdAt', 'asc'), limit(12))
-      );
-      userComments = cmtSnap.docs
-        .map(d => ({ role: 'user', userName: d.data().userName || '?', text: (d.data().text || '').trim() }))
-        .filter(c => c.text.length > 0);
-    } catch {}
-
-    // Faqat user izohlari kontekst sifatida beriladi (AI bu postga faqat
-    // bir marta javob beradi, shuning uchun oldingi AI javoblar tarixi shart emas)
-    const prevComments = userComments;
-
-    // Media URL ni resolve qilamiz
-    let resolvedMediaUrl = post.mediaUrl || null;
-    if (!resolvedMediaUrl && (post.mediaPath || post.storageIndex)) {
-      try { resolvedMediaUrl = await getMediaUrl(post); } catch {}
-    }
-
-    const result = await aiAboutPost({
-      mediaUrl:     resolvedMediaUrl,
-      fileName:     post.fileName      || null,
-      mediaType:    post.mediaType     || null,
-      text:         post.text          || null,
-      posterName,
-      likes:        post.likes         ?? null,
-      views:        post.views         ?? null,
-      commentCount: post.commentCount  ?? null,
-      createdAt:    post.createdAt     || null,
-      prevComments,
-      postId,
-      onStep:       (name) => thinkUI.step(name),
-    });
-
-    thinkUI.finish();
-    const body = bubble.querySelector('.ai-reply-body');
-    // Kichik pauza — oxirgi SUCCESS ko'rinsin
-    await new Promise(r => setTimeout(r, 320));
-    body.classList.remove('ai-reply-thinking');
-
-    // Moderatsiyadan o'tmagan javob
-    if (result?._blocked) {
-      bubble.remove();
-      toast('AI bu kontent uchun fikr bildira olmadi.', 'error', 4000);
-      return;
-    }
-
-    bubble.classList.add('ai-mood-' + (result?.mood || 'neutral'));
-    body.innerHTML = '';
-    if (result?.title) {
-      const h = document.createElement('div');
-      h.className = 'ai-h2';
-      h.textContent = result.title;
-      body.append(h);
-    }
-    const p = document.createElement('p');
-    p.className = 'ai-p';
-    p.textContent = result?.comment || 'AI javob bera olmadi';
-    body.append(p);
-
-    // Natijani Firestore'ga pool'ning birinchi a'zosi sifatida saqlaymiz —
-    // bundan keyingi userlar arzon rephrase orqali pool'ni 2 tagacha to'ldiradi,
-    // pool to'lgach esa hech qanday AI so'rov yuborilmaydi.
-    if (result?.comment) {
-      const aiAboutEntry = {
-        title:     result.title || '',
-        comment:   result.comment,
-        mood:      result.mood || 'neutral',
-        createdAt: Date.now(),
-      };
-      if (forceRegenerate) {
-        // Admin qayta yaratdi — eski keshlangan pool butunlay yangi natija
-        // bilan ALMASHTIRILADI, shu bilan barcha foydalanuvchilar uchun
-        // (keyingi bosishlarda ham) yangi variant ko'rinadi.
-        setDoc(doc(db, 'posts', postId), { aiAbout: [aiAboutEntry] }, { merge: true }).catch(() => {});
-        post.aiAbout = [aiAboutEntry];
-      } else {
-        updateDoc(doc(db, 'posts', postId), { aiAbout: arrayUnion(aiAboutEntry) })
-          .catch(() => setDoc(doc(db, 'posts', postId), { aiAbout: [aiAboutEntry] }, { merge: true }))
-          .catch(() => {});
-        // Local state'ni ham darhol yangilaymiz (keyingi bosishda tezroq ko'rinishi uchun)
-        post.aiAbout = [...(Array.isArray(post.aiAbout) ? post.aiAbout : []), aiAboutEntry];
-      }
-    }
-  } catch (err) {
-    thinkUI.finish();
-    const body = bubble.querySelector('.ai-reply-body');
-    body.classList.remove('ai-reply-thinking');
-    body.innerHTML = '';
-    const p = document.createElement('p');
-    p.className = 'ai-p';
-    p.textContent = `Xato: ${err.message || 'AI javob bera olmadi'}`;
-    body.append(p);
-    body.style.color = 'var(--red, #ef4444)';
-  } finally {
-    btn.disabled = false;
-    btn.style.opacity = '';
-    btn.innerHTML = origHtml;
-  }
-}
-
-
 /* ── Like ────────────────────────────────────────────────────────────── */
 export async function doLike(postId, btn) {
   if (!state.me) return;
@@ -869,31 +612,30 @@ export async function doLike(postId, btn) {
     setTimeout(() => btn.classList.remove('like-pop'), 400);
   }
 
-  const lRef  = doc(db, 'posts', postId, 'likes', state.me.uid);
-  const pRef  = doc(db, 'posts', postId);
+  // Like sonini DB trigger yangilaydi (post_likes → posts.likes_count)
   try {
     if (wasLiked) {
-      await Promise.all([
-        deleteDoc(lRef),
-        updateDoc(pRef, { likes: increment(-1) }).catch(() =>
-          setDoc(pRef, { likes: Math.max(0,(post?.likes||1)-1) }, { merge: true })
-        )
-      ]);
+      const { error } = await sb.from('post_likes').delete()
+        .eq('post_id', postId).eq('user_id', state.me.uid);
+      if (error) throw error;
     } else {
-      await Promise.all([
-        setDoc(lRef, { userId: state.me.uid, createdAt: serverTimestamp() }),
-        updateDoc(pRef, { likes: increment(1) }).catch(() =>
-          setDoc(pRef, { likes: (post?.likes||0)+1 }, { merge: true })
-        )
-      ]);
+      const { error } = await sb.from('post_likes')
+        .insert({ post_id: postId, user_id: state.me.uid });
+      if (error && error.code !== '23505') throw error; // 23505 = allaqachon like
     }
-  } catch {}
+  } catch (err) {
+    console.warn('[Feed] Like saqlanmadi:', err?.message);
+  }
 }
 
 /* ── Delete ──────────────────────────────────────────────────────────── */
 async function doDelete(id) {
   showConfirm('Bu post butunlay o\'chiriladi.', async () => {
-    await deleteDoc(doc(db,'posts',id));
+    const post = state.allPosts?.find(p => p.id === id);
+    const { error } = await sb.from('posts').delete().eq('id', id);
+    if (error) { toast('O\'chirib bo\'lmadi: ' + error.message, 'error'); return; }
+    if (post?.mediaPath) sb.storage.from(MEDIA_BUCKET).remove([post.mediaPath]).catch(() => {});
+    if (post) state.allPosts = state.allPosts.filter(p => p.id !== id);
     toast('Post o\'chirildi', 'success');
   }, 'Postni o\'chirasizmi?');
 }

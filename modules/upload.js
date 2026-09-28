@@ -1,10 +1,6 @@
-import { db, state, MAX_FILE, uploadViaController, aiGenerateCaption, aiModeratePost, createThinkingUI, clearControllerCache } from './config.js';
+import { sb, state, MAX_FILE, uploadViaController } from './config.js';
 import { $, esc, fmtSz, lockScroll, unlockScroll }  from './utils.js';
 import { toast }                                   from './toast.js';
-import {
-  collection, addDoc, doc, getDoc,
-  serverTimestamp, updateDoc, arrayUnion
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 /* ═══════════════════════════════════════════════════════════════════════
    FILE TYPE → SVG icon + label + accent color
@@ -244,7 +240,6 @@ export function resetUpload() {
   $('previewArea').innerHTML = '';
   $('captionInput').value = '';
   $('pubToggle').checked = false;
-  const ab = $('aiCaptionBtn'); if (ab) ab.style.display = 'none';
   /* Visibility tugmalarni reset qilish */
   setVisMode('private');
   $('uploadBtn').disabled = true;
@@ -290,13 +285,10 @@ export function pickFile(f) {
     $('previewArea').innerHTML = `<div class="preview-wrap"><img src="${state._objUrl}"><button class="preview-clear" data-action="clear-file">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button></div>`;
-    const ab = $('aiCaptionBtn'); if (ab) ab.style.display = 'inline-block';
   } else if (f.type.startsWith('video')) {
     $('previewArea').innerHTML = `<div class="preview-wrap"><video class="max-h-150px w-full brr-10px" src="${state._objUrl}" controls muted></video><button class="preview-clear" data-action="clear-file">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button></div>`;
-    // Video uchun ham AI caption tugmasi ko'rsatiladi
-    const ab = $('aiCaptionBtn'); if (ab) ab.style.display = 'inline-block';
   } else {
     const info = getFileTypeInfo(f.name, f.type);
     $('previewArea').innerHTML = `<div class="preview-file">
@@ -309,190 +301,13 @@ export function pickFile(f) {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>`;
-    // Boshqa fayllar (html, js, css, pdf va h.k.) uchun AI caption ko'rsatiladi
-    const ab = $('aiCaptionBtn'); if (ab) ab.style.display = 'inline-block';
   }
   refreshPostBtn();
-  _startCaptionPrefetch(f);
-}
-
-/* ══════════════════════════════════════════════════════════════════════
-   AI CAPTION PREFETCH — "ayyorona 1 soniya" triki
-   ══════════════════════════════════════════════════════════════════════
-   Rasm/video kadrlarini AI orqali tahlil qilish haqiqatan ham ~15-20
-   soniya vaqt oladi (bir necha kadr ajratib olish + har biri uchun vision
-   modelga so'rov) — buni tezlashtirib bo'lmaydi. LEKIN foydalanuvchi fayl
-   tanlagandan keyin odatda darhol "AI caption" tugmasini bosmaydi — u
-   avval sarlavha yozadi, joylashuv/ko'rinish sozlamalarini tanlaydi va h.k.
-   Shu "bo'sh" vaqtdan foydalanib, tahlilni FAYL TANLANGAN ZAHOTI, hali
-   hech qanday UI ko'rsatmasdan, FONDA boshlab qo'yamiz. Natijada tugma
-   bosilganda ko'pincha natija ALLAQACHON tayyor bo'ladi va foydalanuvchiga
-   deyarli DARHOL (~1s) ko'rinadi — aslida hech narsa tezlashmagan,
-   shunchaki ish foydalanuvchi band bo'lgan vaqtda oldindan bajarilgan.
-   ────────────────────────────────────────────────────────────────────── */
-let _captionPrefetch = null; // { file, promise, lastStep, onStepBridge }
-
-/* ── Caption generatsiyasi paytida qwen allaqachon hisoblab bergan
-   "neytral tasvir"ni saqlab turamiz (fayl obyekti bo'yicha). Post
-   yaratilgach, shu tasvirni to'g'ridan-to'g'ri posts/{id}.visionDesc
-   maydoniga yozamiz — shunda aiSuggestComment/aiAboutPost keyinroq
-   ishga tushsa, qwen'ni qayta chaqirmasdan shu tayyor tasvirdan
-   foydalanadi (caption qwen so'rovi baribir sodir bo'ladi, lekin
-   endi u ISROF bo'lmaydi — qolgan ikkitasiga xizmat qiladi). ────────── */
-let _pendingVisionDesc = null; // { file, desc }
-
-function _startCaptionPrefetch(file) {
-  if (!file) return;
-  const entry = { file, promise: null, lastStep: null, onStepBridge: null };
-  const onStep = (n) => {
-    entry.lastStep = n;
-    entry.onStepBridge?.(n); // agar shu payt tugma bosilib, thinkUI ulangan bo'lsa — real vaqtda ko'rsatamiz
-  };
-
-  entry.promise = (async () => {
-    let uploaderName = null;
-    if (state.me) {
-      try {
-        const uSnap = await getDoc(doc(db, 'users', state.me.uid));
-        uploaderName = uSnap?.data()?.fullName || state.me.displayName || null;
-      } catch {
-        uploaderName = state.me.displayName || null;
-      }
-    }
-    if (file.type.startsWith('image/')) {
-      const base64 = await new Promise((res, rej) => {
-        const reader = new FileReader();
-        reader.onload = e => res(e.target.result);
-        reader.onerror = rej;
-        reader.readAsDataURL(file);
-      });
-      return aiGenerateCaption(base64, null, null, uploaderName, onStep, (desc) => {
-        _pendingVisionDesc = { file, desc };
-      });
-    }
-    return aiGenerateCaption(file, file.name, file.type, uploaderName, onStep);
-  })();
-
-  // Kutilmagan xatoni shu yerda "yutib" qo'yamiz (silent) — chunki bu
-  // hali hech qanday UI'ga bog'lanmagan fon jarayoni; tugma bosilganda
-  // asosiy kod baribir `await entry.promise` orqali xatoni ushlaydi
-  // (rad etilgan promise'ga ikkinchi marta `.then/.catch` ulanishi buni
-  // "unhandled rejection" sifatida qayta belgilamaydi).
-  entry.promise.catch(() => {});
-
-  _captionPrefetch = entry;
 }
 
 /* ── Caption input → enable/disable Post btn ─────────────────────────── */
 $('captionInput').addEventListener('input', refreshPostBtn);
 
-// AI Caption tugmasi
-const aiCaptionBtn = document.createElement('button');
-aiCaptionBtn.id = 'aiCaptionBtn';
-aiCaptionBtn.type = 'button';
-aiCaptionBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg> AI caption';
-aiCaptionBtn.style.cssText = 'display:none;margin-bottom:8px;padding:6px 14px;border-radius:20px;border:1.5px solid var(--accent,#a78bfa);background:transparent;color:var(--accent,#a78bfa);font-size:13px;cursor:pointer;transition:all 0.2s;';
-aiCaptionBtn.onmouseenter = () => { aiCaptionBtn.style.background = 'var(--accent,#a78bfa)'; aiCaptionBtn.style.color = '#fff'; };
-aiCaptionBtn.onmouseleave = () => { aiCaptionBtn.style.background = 'transparent'; aiCaptionBtn.style.color = 'var(--accent,#a78bfa)'; };
-
-const captionEl = $('captionInput');
-captionEl.parentNode.insertBefore(aiCaptionBtn, captionEl);
-
-aiCaptionBtn.addEventListener('click', async () => {
-  if (!state.selFile) return;
-
-  // Eski bubble bo'lsa olib tashlaymiz
-  const captionEl2 = $('captionInput');
-  captionEl2?.parentNode?.querySelector('.ai-cap-bubble')?.remove();
-
-  // Bubble yaratamiz — captionInput dan oldin
-  const bubble = document.createElement('div');
-  bubble.className = 'ai-cap-bubble ai-reply-thinking';
-  captionEl2?.parentNode?.insertBefore(bubble, captionEl2);
-
-  aiCaptionBtn.disabled = true;
-  const thinkUI = createThinkingUI(bubble);
-
-  try {
-    let caption = '';
-
-    if (_captionPrefetch && _captionPrefetch.file === state.selFile) {
-      // FONDA allaqachon boshlangan (yoki hatto tugagan) tahlil bor —
-      // shunchaki shunga ulanamiz. Agar hali tugamagan bo'lsa, keyingi
-      // qadamlar shu thinkUI'da real vaqtda ko'rsatiladi (onStepBridge);
-      // hozirgacha o'tgan oxirgi qadam bo'lsa — darhol ko'rsatamiz, aks
-      // holda foydalanuvchi "hech narsa bo'lyapti" deb o'ylab qolmasin.
-      if (_captionPrefetch.lastStep) thinkUI.step(_captionPrefetch.lastStep);
-      _captionPrefetch.onStepBridge = (n) => thinkUI.step(n);
-      try {
-        caption = await _captionPrefetch.promise;
-      } finally {
-        _captionPrefetch.onStepBridge = null;
-      }
-    } else {
-      // Prefetch mos kelmasa (masalan fayl juda tez almashtirilgan
-      // bo'lsa) — odatdagidek, noldan boshlaymiz.
-      let uploaderName = null;
-      if (state.me) {
-        try {
-          const uSnap = await getDoc(doc(db, 'users', state.me.uid));
-          uploaderName = uSnap?.data()?.fullName || state.me.displayName || null;
-        } catch {
-          uploaderName = state.me.displayName || null;
-        }
-      }
-
-      if (state.selFile.type.startsWith('image/')) {
-        const reader = new FileReader();
-        const base64 = await new Promise((res, rej) => {
-          reader.onload = e => res(e.target.result);
-          reader.onerror = rej;
-          reader.readAsDataURL(state.selFile);
-        });
-        caption = await aiGenerateCaption(base64, null, null, uploaderName, (n) => thinkUI.step(n), (desc) => {
-          _pendingVisionDesc = { file: state.selFile, desc };
-        });
-      } else {
-        caption = await aiGenerateCaption(
-          state.selFile, state.selFile.name, state.selFile.type, uploaderName,
-          (n) => thinkUI.step(n)
-        );
-      }
-    }
-
-    thinkUI.finish();
-
-    if (!caption) {
-      bubble.remove();
-      toast('AI caption yoza olmadi.', 'error', 3000);
-      return;
-    }
-
-    // Taklif + OK tugma
-    bubble.classList.remove('ai-reply-thinking');
-    bubble.innerHTML = `
-      <p class="ai-cmt-suggestion">${caption.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
-      <div class="ai-cmt-actions">
-        <button class="ai-cmt-ok">Inputga qo'yish</button>
-        <button class="ai-cmt-cancel">Bekor</button>
-      </div>`;
-
-    bubble.querySelector('.ai-cmt-ok').addEventListener('click', () => {
-      $('captionInput').value = caption;
-      refreshPostBtn();
-      $('captionInput').focus();
-      bubble.remove();
-    });
-    bubble.querySelector('.ai-cmt-cancel').addEventListener('click', () => bubble.remove());
-
-  } catch (e) {
-    thinkUI.destroy();
-    bubble.remove();
-    toast('AI xatosi: ' + e.message, 'error');
-  } finally {
-    aiCaptionBtn.disabled = false;
-  }
-});
 /* ── Preview clear ───────────────────────────────────────────────────── */
 $('previewArea').addEventListener('click', e => {
   if (e.target.closest('[data-action="clear-file"]')) clearFile();
@@ -504,8 +319,6 @@ function clearFile() {
   $('previewArea').style.display = 'none';
   $('previewArea').innerHTML = '';
   $('fileInput').value = '';
-  _captionPrefetch = null; // eski faylga tegishli fon tahlili endi kerak emas
-  _pendingVisionDesc = null;
   refreshPostBtn();
 }
 
@@ -601,9 +414,6 @@ $('uploadBtn').onclick = async () => {
   $('uploadBtn').disabled    = true;
   $('uploadBtn').textContent = 'Yuklanmoqda…';
 
-  // Controller cache ni tozalash — eski/o'chirilgan konfiguratsiya bilan yuklash xatosini oldini oladi
-  clearControllerCache();
-
   /* Fayl bo'lsa overlay ni darhol yopamiz — foydalanuvchi reels ko'ra olsin */
   const hasFile = !!state.selFile;
   if (hasFile) {
@@ -616,14 +426,12 @@ $('uploadBtn').onclick = async () => {
   }
 
   try {
-    const uD = await getDoc(doc(db, 'users', state.me.uid));
-    const ud  = uD.data() || {};
+    const { data: ud } = await sb.from('profiles').select('full_name').eq('id', state.me.uid).maybeSingle();
     let mediaPath = null;
     let mediaUrl  = null;
     let mediaType = null;
     let fileName  = null;
     let fileSize  = null;
-    let storageIndex = null;
 
     /* ── Private / Public uchun Firestore ── */
     if (hasFile) {
@@ -645,54 +453,27 @@ $('uploadBtn').onclick = async () => {
 
       mediaPath    = result.path;
       mediaUrl     = result.url;
-      storageIndex = result.storageIndex;
       mediaType    = file.type;
       fileName     = file.name;
       fileSize     = file.size;
     }
 
-    const newPostRef = await addDoc(collection(db, 'posts'), {
-      text:         caption || null,
-      mediaPath,
-      storageIndex,
-      mediaType,
-      mediaWidth:   hasFile ? (state._selMediaW || null) : null,
-      mediaHeight:  hasFile ? (state._selMediaH || null) : null,
-      fileName,
-      fileSize,
-      isPublic,
-      userId:       state.me.uid,
-      userFullName: ud.fullName || state.me.displayName || 'Foydalanuvchi',
-      createdAt:    serverTimestamp(),
-      views:        0,
-      likes:        0,
-      commentCount: 0,
-      aiHidden:     false,
-      // Faqat PUBLIC postlar AI moderatsiyadan o'tadi — shuning uchun
-      // private post darhol "tekshirilgan" deb belgilanadi (aslida
-      // tekshiruv umuman ishga tushmaydi, lekin egasi doim o'z postini
-      // ko'rishi kerak bo'lgani uchun bu holat hech qanday farq qilmaydi).
-      aiChecked:    !isPublic,
+    const { error: postErr } = await sb.from('posts').insert({
+      user_id:        state.me.uid,
+      user_full_name: ud?.full_name || state.me.displayName || 'Foydalanuvchi',
+      text:           caption || null,
+      media_path:     mediaPath,
+      media_type:     mediaType,
+      media_width:    hasFile ? (state._selMediaW || null) : null,
+      media_height:   hasFile ? (state._selMediaH || null) : null,
+      file_name:      fileName,
+      file_size:      fileSize,
+      is_public:      !!isPublic,
     });
-
-    // Caption generatsiyasi paytida qwen allaqachon shu aniq fayl uchun
-    // neytral tasvirni hisoblab bergan bo'lsa (fayl obyekti moslik
-    // bo'yicha tekshiriladi — noto'g'ri faylga bog'lab qo'ymaslik uchun) —
-    // uni post ustiga yozamiz. Shu bilan aiSuggestComment/aiAboutPost
-    // keyinroq ishga tushganda qwen'ni QAYTA CHAQIRMAYDI, tayyor
-    // tasvirdan foydalanadi (moderatsiya bunga aloqasi yo'q — u alohida).
-    if (hasFile && _pendingVisionDesc && _pendingVisionDesc.file === state.selFile && _pendingVisionDesc.desc) {
-      updateDoc(doc(db, 'posts', newPostRef.id), { visionDesc: _pendingVisionDesc.desc }).catch(() => {});
-    }
-
-    /* ── AI moderatsiya: FAQAT PUBLIC postlar uchun, fon rejimida ──
-       Shaxsiy (private) postlar boshqalarga umuman ko'rinmaydi, shuning
-       uchun ularni AI bilan tekshirishning hojati yo'q — foydalanuvchining
-       shaxsiy fayllarini keraksiz AI so'roviga yubormaslik uchun ham bu
-       muhim. Faqat isPublic bo'lsa AI so'rovi yuboriladi. */
-    if (isPublic) {
-      const isImageMedia = (mediaType || '').startsWith('image/');
-      runAiModeration(newPostRef.id, isImageMedia ? mediaUrl : null, caption);
+    if (postErr) {
+      // Post yozilmadi — yuklangan faylni yetim qoldirmaymiz
+      if (mediaPath) sb.storage.from('media').remove([mediaPath]).catch(() => {});
+      throw postErr;
     }
 
     revokeObjUrl();
@@ -718,146 +499,6 @@ $('uploadBtn').onclick = async () => {
     resetUpload();
   }
 };
-
-/* ══════════════════════════════════════════════════════════════════════
-   AI MODERATSIYA — yangi post yuklanganidan keyin fon rejimida ishlaydi.
-   Yomon (SEX / zo'ravonlik / nafrat va h.k.) deb topilsa, postni hech kimga
-   (egasiga ham) ko'rsatmasdan avtomatik yashiradi — admin "AI moderatsiya"
-   ro'yxatida ko'radi va xohlasa qaytarishi mumkin.
-   ══════════════════════════════════════════════════════════════════════ */
-// ── Qoidabuzarlik kategoriyalari ───────────────────────────────────────
-const VIOLATION_CATEGORIES = [
-  '18+ va kattalar uchun kontent (yalangochlik, erotika, pornografiya)',
-  'Zoravonlik va shafqatsizlik (qon, tajovuz, hayvonlarga shafqatsizlik)',
-  'Noqonuniy moddalar va buyumlar (giyohvandlik, qurol, portlovchi)',
-  'Firibgarlik va scam (fishing, moliyaviy aldov, soxta yutuq)',
-  'Shaxsiy malumotar (PII) - pasport, karta, telefon ruxsatsiz tarqatish',
-  'Nafrat tili va bulling (millat, din, jins boyicha haqorat, tahdid)',
-];
-
-// ── Ogohlantiruv xabarlari (violation soni boyicha) ─────────────────────
-const VIOLATION_MESSAGES = {
-  // 2-3 ta violation: yumshoq ogohlantirish
-  soft: [
-    'Sizning bir nechta postlaringiz qoidalarga zid kontent sifatida belgilandi. Iltimos, MRgram qoidalariga rioya qiling.',
-    'Diqqat! Siz taqiqlangan kontent joylashtirayotgansiz. Qoidalarni buzishda davom etsangiz, hisobingiz cheklanishi mumkin.',
-  ],
-  // 4 ta violation: qattiq ogohlantirish
-  hard: [
-    "Ko'p marta taqiqlangan kontent (18+, zo'ravonlik, noqonuniy material va hokazo) joylashtirgansiz. Agar bunday postlar qo'yishda davom etsangiz — hisobingizdan ayrilasiz.",
-    "OGOHLANTIRUV: Siz taqiqlangan materiallarni qayta-qayta joylashtiryapsiz. Keyingi qoidabuzarlik hisobingizning doimiy bloklanishiga olib keladi.",
-  ],
-  // 5 ta violation: oxirgi ogohlantirish (6-da bloklash bo'ladi)
-  final: [
-    "⚠️ OXIRGI OGOHLANTIRISH: Bu sizning 5-chi qoidabuzarligingiz. Yana BITTA taqiqlangan post yoki xabar — va hisobingiz AI tomonidan doimiy ravishda bloklanadi.",
-  ],
-};
-
-function _randMsg(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
-// Violation source turlari
-export const VIOLATION_SOURCE = {
-  POST:  'post',
-  CHAT:  'chat',
-  FILE:  'file',
-};
-
-/**
- * Violation yozish + ogohlantirish + 6+ bo'lsa avtomatik bloklash.
- * source: 'post' | 'chat' | 'file'
- */
-export async function _recordViolationAndWarn(userId, reason, source = VIOLATION_SOURCE.POST) {
-  try {
-    const violation = {
-      at:     new Date().toISOString(),
-      reason: reason || 'Nomalum sabab',
-      source,
-    };
-
-    // users/{uid} ga violations array qoshish
-    const userRef = doc(db, 'users', userId);
-    await updateDoc(userRef, {
-      aiViolations: arrayUnion(violation),
-    });
-
-    // Violations sonini hisoblash uchun qayta olish
-    const snap     = await getDoc(userRef);
-    const userData = snap.data() || {};
-    const violations = userData.aiViolations || [];
-    const count      = violations.length;
-
-    // ── 6+ violation: admin ga avtomatik bloklash TOPSHIRIG'I ──────────
-    // Xavfsizlik: foydalanuvchi o'zini bloklayolmaydi (rules da taqiqlangan).
-    // Buning o'rniga adminTasks kolleksiyasiga yozamiz — admin (yoki Cloud Function)
-    // bu taskni ko'rib foydalanuvchini bloklaydi.
-    if (count >= 6 && !userData.blocked && !userData.aiPendingBlock) {
-      const blockReason = `AI avtomatik bloklash: ${count} ta qoidabuzarlik. Oxirgi: ${reason || 'Nomalum'}`;
-      try {
-        await addDoc(collection(db, 'ADMIN', '_index', 'adminTasks'), {
-          type:      'autoBlock',
-          uid:       userId,
-          reason:    blockReason,
-          count,
-          createdAt: new Date().toISOString(),
-          done:      false,
-        });
-        // aiPendingBlock ni yozib qo'yamiz — bir xil task bir necha marta yaratilmasin
-        await updateDoc(userRef, { aiPendingBlock: true });
-      } catch (e) {
-        console.warn('adminTask yozishda xato:', e.message);
-      }
-      setTimeout(() => toast(
-        '🚫 Hisobingiz ko\'p marta qoidabuzarlik sababli bloklash uchun admin ko\'rib chiqishga yuborildi.',
-        'error', 15000
-      ), 1500);
-      return;
-    }
-
-    // Ogohlantirish darajasiga qarab xabar ko'rsatish
-    let msg = null;
-    if (count >= 5) {
-      msg = _randMsg(VIOLATION_MESSAGES.final);
-    } else if (count >= 4) {
-      msg = _randMsg(VIOLATION_MESSAGES.hard);
-    } else if (count >= 2) {
-      msg = _randMsg(VIOLATION_MESSAGES.soft);
-    }
-
-    if (msg) {
-      // Toast 10 soniya ko'rsatamiz — jiddiy xabar
-      setTimeout(() => toast(msg, 'error', 10000), 2000);
-    }
-  } catch (err) {
-    console.warn('Violation yozishda xato:', err.message);
-  }
-}
-
-async function runAiModeration(postId, imageUrl, text) {
-  try {
-    const result = await aiModeratePost({ imageUrl, text });
-    const patch = { aiChecked: true };
-    if (result.flagged) {
-      patch.aiHidden   = true;
-      patch.aiReason   = result.reason || 'AI tomonidan nomaqul deb topildi';
-      patch.aiFlaggedAt = serverTimestamp();
-    }
-    await updateDoc(doc(db, 'posts', postId), patch);
-
-    // Flaglangan bo'lsa — foydalanuvchi violations ro'yxatiga qo'shamiz
-    if (result.flagged && state.me?.uid) {
-      await _recordViolationAndWarn(state.me.uid, result.reason, VIOLATION_SOURCE.POST);
-    }
-  } catch (err) {
-    // AI tekshiruvi ishlamasa ham — postni abadiy "tekshirilmagan" holda
-    // ushlab turmaymiz (aks holda API/tarmoq xatosi postni boshqalarga
-    // umuman ko'rsatmay qo'yishi mumkin edi). Xavfsiz fallback: tekshirildi
-    // deb belgilaymiz, lekin yashirmaymiz.
-    console.warn('AI moderatsiya xatosi:', err.message);
-    try { await updateDoc(doc(db, 'posts', postId), { aiChecked: true }); } catch(_) {}
-  }
-}
 
 /* ── Overlay open/close ──────────────────────────────────────────────── */
 $('createBtn').onclick     = () => { $('uploadOverlay').classList.add('show'); lockScroll(); resetUpload(); };

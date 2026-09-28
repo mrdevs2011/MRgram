@@ -3,11 +3,7 @@
  * Firebase Firestore Overview grafigi ko'rinishida
  */
 
-import { db, state } from './config.js';
-import { ADMIN_UID } from './view-users.js';
-import {
-  collection, getDocs, query, orderBy
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { state, isAdmin, mapProfile, mapPost, fetchAllRows } from './config.js';
 
 /* ── CSS ─────────────────────────────────────────────────────────────── */
 function _injectCSS() {
@@ -378,7 +374,7 @@ let _currentWrap = null;
 
 /* ── initView ── */
 export async function initView(containerEl) {
-  if (!state.me || state.me.uid !== ADMIN_UID) return;
+  if (!isAdmin()) return;
   if (_statsInitialized) { return; } // Guard: qayta render qilma
   _statsInitialized = true;
   _injectCSS();
@@ -436,10 +432,12 @@ async function _load() {
 
 /* ── Fetch ── */
 async function _fetchData() {
-  const [usersSnap, postsSnap] = await Promise.all([
-    getDocs(collection(db, 'users')),
-    getDocs(query(collection(db, 'posts'), orderBy('createdAt', 'desc')))
+  const [userRows, postRows] = await Promise.all([
+    fetchAllRows('profiles', '*'),
+    fetchAllRows('posts', '*'),
   ]);
+  const usersSnap = userRows.map(r => ({ id: r.id, data: () => mapProfile(r) }));
+  const postsSnap = postRows.map(r => ({ id: r.id, data: () => mapPost(r) }));
 
   const now = Date.now();
   const DAY = 86400000;

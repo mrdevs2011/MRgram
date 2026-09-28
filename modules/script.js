@@ -11,7 +11,6 @@ import { renderFeed, patchCounts } from './feed.js';
 import { renderProfile, renderUserProfileModal } from './profile.js';
 import { initRouter, navigateTo } from './router.js';
 import { initNavigation } from './bar.js';
-import { initTokenUsageBubble } from './token-usage.js';
 
 /* ── Splash ──────────────────────────────────────────────────────────── */
 setTimeout(() => {
@@ -31,11 +30,6 @@ setRenderCallbacks({
   renderUserProfileModal,
   patchCounts,
 });
-
-/* ── AI token sarfi bubble (ADVANCED/DEBUG) — DOM tayyorlanadi, lekin
-   boshida yashirin; faqat admin uchun modules/router.js -> applyAdminNav()
-   orqali ko'rsatiladi ── */
-initTokenUsageBubble();
 
 /* ── Router ──────────────────────────────────────────────────────────── */
 initRouter();

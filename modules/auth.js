@@ -1,25 +1,14 @@
-import { auth, db, state, uploadViaController, isAdmin, clearControllerCache, getAiVoiceGender, setAiVoiceGender } from './config.js';
+import { sb, state, uploadViaController, mapProfile, mapPost, purgeUserMedia } from './config.js';
 import { $, esc, defAvi, uToEmail, lockScroll, unlockScroll, showConfirm } from './utils.js';
 import { toast }                       from './toast.js';
 import { initPush, removePushToken, areNotificationsEnabled, setNotificationsEnabled, notificationsUserDisabled } from './push.js';
-import { startChatsWatcher, stopChatsWatcher, repaintNoticeBanner, repaintForVoiceGenderChange } from './chat.js';
+import { startChatsWatcher, stopChatsWatcher, repaintNoticeBanner } from './chat.js';
 import { startCallWatcher, stopCallWatcher } from './call.js';
 import { clearAllCache, cachePosts, getCachedPosts, clearRuntimeCache, getCachedProfile } from './local-cache.js';
-import {
-  signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  signOut, onAuthStateChanged,
-  updateProfile as fbUpdateProfile,
-  updateEmail,
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import {
-  collection, query, where, orderBy, limit, onSnapshot,
-  doc, getDoc, getDocFromCache, setDoc, serverTimestamp, addDoc,
-  updateDoc, arrayUnion, arrayRemove, deleteDoc, getDocs, writeBatch
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 /* ── Server vaqti sinxronizatsiyasi ────────────────────────────────────
    Foydalanuvchi lokal soatini o'zgartirsa ham ban muddati to'g'ri ishlaydi.
-   Firestore serverTimestamp() dan real vaqt olib, local offset saqlanadi.
+   Supabase server_now() dan real vaqt olib, local offset saqlanadi.
    serverNow() => real server vaqti (ms) — Date.now() o'rniga ishlatiladi.
 
    ESLATMA (tuzatish): ilgari offline bo'lganda offset 0 ga qaytarilar edi —
@@ -38,29 +27,21 @@ let _syncedServerMs = null; // oxirgi sinxronizatsiyadagi server vaqti (ms)
 let _syncedPerf      = null; // o'sha paytdagi performance.now() (monotonik nuqta)
 
 async function _syncServerTime() {
-  // Offline bo'lsa umuman urinmaymiz — LEKIN oldingi sinxronlangan qiymatlarni
-  // (agar bo'lsa) hech qachon 0/tizim-vaqtiga qaytarmaymiz, aks holda soat
-  // firibgarligiga eshik ochiladi.
+  // Offline bo'lsa urinmaymiz — oldingi sinxronlangan qiymatlar saqlanadi
+  // (aks holda soatni surib blokdan qochish mumkin bo'lib qolardi).
   if (!navigator.onLine) return;
   try {
-    // Firestore'ga vaqtinchalik doc yozib, serverTimestamp() ni olib o'chiramiz
-    // Rule: myUid() == docId.split('_')[0] — shuning uchun uid prefiksli ID ishlatamiz
-    const uid = auth.currentUser?.uid;
-    if (!uid) return; // Auth yo'q bo'lsa skip
-    const tmpRef = doc(db, '_servertime_sync', uid + '_tmp');
-    await setDoc(tmpRef, { t: serverTimestamp() });
-    const snap = await getDoc(tmpRef);
-    if (snap.exists()) {
-      const serverMs = snap.data().t?.toMillis?.() ?? Date.now();
-      _syncedServerMs   = serverMs;
-      _syncedPerf       = performance.now();
-      _serverTimeOffset = serverMs - Date.now();
-      _serverTimeSynced = true;
-    }
-    // Tozalash (xato bo'lsa ham davom etaveradi)
-    try { await deleteDoc(tmpRef); } catch(_) {}
+    const t0 = performance.now();
+    const { data, error } = await sb.rpc('server_now');
+    if (error || !data) throw error || new Error('server_now bo\'sh');
+    const rtt = performance.now() - t0;
+    const serverMs = Date.parse(data) + rtt / 2;
+    _syncedServerMs   = serverMs;
+    _syncedPerf       = performance.now();
+    _serverTimeOffset = serverMs - Date.now();
+    _serverTimeSynced = true;
   } catch (err) {
-    console.warn('[Auth] Server vaqti sinxronizatsiya xatosi:', err.message);
+    console.warn('[Auth] Server vaqti sinxronizatsiya xatosi:', err?.message);
     // Oldingi _syncedServerMs/_syncedPerf qiymatlarini SAQLAB QOLAMIZ.
   }
 }
@@ -84,7 +65,7 @@ function serverNow() {
    "blocked: false" ma'lumoti abadiy ishlatilaverar edi.
 
    YECHIM: har safar SERVERDAN tasdiqlangan (fromCache=false) holatni
-   localStorage'ga yozib boramiz. Keyingi safar getDoc/onSnapshot natijasi
+   localStorage'ga yozib boramiz. Keyingi safar profil so'rovi natijasi
    fromCache=true (ya'ni internetga yetib bormagan) bo'lsa, ushbu oxirgi
    tasdiqlangan holatga qaraymiz — agar u "blocked" bo'lsa, offline bo'lsa
    ham ilovaga kiritilmaydi. Bundan tashqari, tasdiqlangan holat juda eski
@@ -134,10 +115,10 @@ function _offlineAccessDecision(uid) {
 /* ── Kirish tarixi: har bir login/sessiya tiklanganda yangi yozuv ────── */
 async function _logLoginHistory(uid, type) {
   try {
-    await addDoc(collection(db, 'users', uid, 'loginHistory'), {
+    await sb.from('login_history').insert({
+      user_id: uid,
       type, // 'login' | 'session'
-      at: serverTimestamp(),
-      userAgent: navigator.userAgent || null,
+      user_agent: navigator.userAgent || null,
       platform: navigator.platform || null,
     });
   } catch (_) { /* tarixni yoza olmasak ham ilova ishlashda davom etsin */ }
@@ -166,106 +147,42 @@ if (authSwitchBtn) {
   };
 }
 
-/* ── Firebase xato kodlarini o'zbekchaga tarjima ─────────────────────── */
-function fbErrUz(code) {
-  switch (code) {
-    case 'auth/invalid-credential':
-    case 'auth/wrong-password':
-    case 'auth/user-not-found':
-    case 'auth/invalid-email':
-      return 'Foydalanuvchi nomi yoki parol xato';
-    case 'auth/email-already-in-use':
-      return 'Bu login allaqachon band';
-    case 'auth/weak-password':
-      return `Parol kamida 6 ta belgi bo'lishi kerak`;
-    case 'auth/too-many-requests':
-      return `Juda ko'p urinish. Biroz kuting`;
-    case 'auth/network-request-failed':
-      return `Internet aloqasi yo'q`;
-    case 'auth/user-disabled':
-      return 'Bu hisob bloklangan';
-    case 'auth/operation-not-allowed':
-      return 'Bu amalga ruxsatingiz yo\'q';
-    default:
-      return `Xatolik yuz berdi. Qayta urinib ko'ring`;
+/* ── Supabase xatolarini o'zbekchaga tarjima ─────────────────────────── */
+function sbErrUz(err) {
+  const msg = String(err?.message || '').toLowerCase();
+  const code = err?.code || '';
+  if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
+    return 'Foydalanuvchi nomi yoki parol xato';
   }
+  if (msg.includes('already registered') || msg.includes('already been registered') || code === 'user_already_exists') {
+    return 'Bu login allaqachon band';
+  }
+  if (msg.includes('password should be at least') || code === 'weak_password') {
+    return `Parol kamida 6 ta belgi bo'lishi kerak`;
+  }
+  if (err?.status === 429 || msg.includes('rate limit') || msg.includes('too many')) {
+    return `Juda ko'p urinish. Biroz kuting`;
+  }
+  if (msg.includes('failed to fetch') || msg.includes('network') || err?.name === 'AuthRetryableFetchError') {
+    return `Internet aloqasi yo'q`;
+  }
+  if (msg.includes('banned') || msg.includes('disabled')) {
+    return 'Bu hisob bloklangan';
+  }
+  return `Xatolik yuz berdi. Qayta urinib ko'ring`;
 }
 
-/* ── Domen tarixi ───────────────────────────────────────────────────────
- * uToEmail() dagi domen oxirgi 3 kunda bir necha marta o'zgargan
- * (mrtube.uz → mrgram.uz → mrdatabase.uz → mrtube.uz → mrdatabase.uz)
- * Joriy domen: mrdatabase.uz. Legacy: mrtube.uz, mrgram.uz, mrdatabase.uz.
- * lekin Firebase Auth'dagi eski akkauntlar hech qachon yangi domenga
- * migratsiya qilinmagan. Shu sabab login paytida eski domenlarni ham
- * sinab ko'ramiz — agar topilsa, shu bilan kiritamiz (parol o'zi to'g'ri,
- * faqat domen eski edi). Yangi ro'yxatdan o'tish har doim joriy domenda
- * (uToEmail) davom etadi, shuning uchun bu ro'yxat faqat LOGIN uchun. ── */
-const LEGACY_EMAIL_DOMAINS = ['mrtube.uz', 'mrgram.uz', 'mrdatabase.uz'];
+/** Login normalizatsiyasi: kichik harf, faqat a-z 0-9 _ */
+const _cleanUsername = u => String(u || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
 
-async function signInWithDomainFallback(usernameRaw, password) {
-  const localPart = usernameRaw.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-  /* ── 1-QADAM: "/usernames/{key}" xaritasidan haqiqiy emailni topamiz ──
-     Username o'zgartirilgan bo'lsa ham Firebase Auth dagi email o'zgarmaydi.
-     Avval "/usernames" (faqat uid+email saqlaydigan, ochiq, MINIMAL hujjat)
-     dan qidiramiz — bu to'liq /users/{uid} hujjatini (email, bio, push-token
-     va h.k.) hammaga ochiq qilib qo'yishning oldini oladi.               ── */
+/** Username → auth email. Avval DB'dagi haqiqiy email (email_for_username),
+ *  topilmasa uToEmail() bilan taxmin qilinadi. */
+async function _emailForLogin(cleaned) {
   try {
-    const unameSnap = await getDoc(doc(db, 'users', '_index', 'usernames', localPart));
-    if (unameSnap.exists()) {
-      const userEmail = unameSnap.data().email;
-      if (userEmail) {
-        try {
-          return await signInWithEmailAndPassword(auth, userEmail, password);
-        } catch (err) {
-          // Parol xato bo'lsa — xatoni qaytaramiz (fallback ma'nosiz)
-          if (err.code !== 'auth/invalid-credential') throw err;
-          // Agar Firestore dagi email Firebase Auth da mavjud bo'lmasa (eski/o'chirilgan)
-          // — 2-qadam (domen fallback) ga o'tishiga ruxsat beramiz
-          console.warn('[Auth] Firestore email bilan login bo\'lmadi, domen fallback ga o\'tilmoqda:', userEmail);
-          // throw qilmaymiz — tashqi try/catch 2-qadam ga o'tadi
-        }
-      }
-    }
-  } catch (err) {
-    // Firestore query xatosi (network va h.k.) — email/domen fallback ga o'tamiz
-    if (err.code && err.code.startsWith('auth/')) throw err;
-    console.warn('[Auth] usernames xaritasidan qidirish muvaffaqiyatsiz, email taxmin qilishga o\'tilmoqda:', err.message);
-  }
-
-  /* ── 2-QADAM: Firestore da topilmasa — eski usul (email generatsiya) ──
-     Yangi ro'yxatdan o'tganlar yoki Firestore query ishlamagan holat uchun. ── */
-  const primaryEmail = uToEmail(usernameRaw);
-  const fallbackEmails = LEGACY_EMAIL_DOMAINS
-    .map(domain => `${localPart}@${domain}`)
-    .filter(email => email !== primaryEmail);
-
-  let lastErr;
-  for (const email of [primaryEmail, ...fallbackEmails]) {
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      if (email !== primaryEmail) {
-        console.warn(`⚠️ Login eski domen bilan o'tdi (${email}). Avtomatik migratsiya boshlanmoqda...`);
-        // Avtomatik migratsiya: Firebase Auth emailni yangi domendaga o'tkazamiz
-        try {
-          await updateEmail(cred.user, primaryEmail);
-          // Firestore da ham email yangilaymiz
-          await updateDoc(doc(db, 'users', cred.user.uid), { email: primaryEmail });
-          console.log(`✅ Migratsiya muvaffaqiyatli: ${email} → ${primaryEmail}`);
-        } catch (migErr) {
-          // Migratsiya xatosi login jarayonini to'xtatmasin
-          console.warn(`⚠️ Migratsiya amalga oshmadi (keyingi logindan keyin qayta uriniladi):`, migErr.message);
-        }
-      }
-      return cred;
-    } catch (err) {
-      lastErr = err;
-      // Faqat "topilmadi/parol xato" bo'lsa keyingi domenni sinaymiz;
-      // boshqa xato turlarida (network, too-many-requests, ...) darrov to'xtaymiz.
-      if (err.code !== 'auth/invalid-credential') throw err;
-    }
-  }
-  throw lastErr;
+    const { data } = await sb.rpc('email_for_username', { p_username: cleaned });
+    if (data) return data;
+  } catch (_) { /* tarmoq xatosi — taxmin qilamiz */ }
+  return uToEmail(cleaned);
 }
 
 const authBtn = $('authBtn');
@@ -275,66 +192,72 @@ if (authBtn) {
     const p = $('aPassword')?.value || '';
     const e = $('authErr');
 
-  /* ── Xato ko'rsatish: matn + shake + qizil border ── */
-  const showErr = (msg, fields = []) => {
-    e.textContent = msg;
-    if ('vibrate' in navigator) navigator.vibrate([14, 6, 14, 6, 14]);
+    /* ── Xato ko'rsatish: matn + shake + qizil border ── */
+    const showErr = (msg, fields = []) => {
+      e.textContent = msg;
+      if ('vibrate' in navigator) navigator.vibrate([14, 6, 14, 6, 14]);
 
-    /* Inputlarga qizil border */
+      ['aUsername','aPassword','aConfirm','aFullname'].forEach(id => {
+        const el = $(id);
+        if (el) el.classList.remove('input-error');
+      });
+      fields.forEach(id => {
+        const el = $(id);
+        if (el) el.classList.add('input-error');
+      });
+
+      const card = document.querySelector('.auth-card');
+      if (card) {
+        card.classList.remove('shake');
+        void card.offsetWidth;
+        card.classList.add('shake');
+      }
+    };
+
+    /* Inputga yozganda qizil border ketadi */
     ['aUsername','aPassword','aConfirm','aFullname'].forEach(id => {
       const el = $(id);
-      if (el) el.classList.remove('input-error');
+      if (el && !el._errListenerAdded) {
+        el._errListenerAdded = true;
+        el.addEventListener('input', () => el.classList.remove('input-error'));
+      }
     });
-    fields.forEach(id => {
-      const el = $(id);
-      if (el) el.classList.add('input-error');
-    });
 
-    /* Shake animatsiya */
-    const card = document.querySelector('.auth-card');
-    if (card) {
-      card.classList.remove('shake');
-      void card.offsetWidth;
-      card.classList.add('shake');
-    }
-  };
-
-  /* Inputdan focus ketganda qizil borderini olib tashlash */
-  ['aUsername','aPassword','aConfirm','aFullname'].forEach(id => {
-    const el = $(id);
-    if (el && !el._errListenerAdded) {
-      el._errListenerAdded = true;
-      el.addEventListener('input', () => el.classList.remove('input-error'));
-    }
-  });
-
-  /* ── Validatsiya ── */
-  if (!u || u.length < 1) {
-    showErr(`Foydalanuvchi nomi bo'sh bo'lishi mumkin emas`, ['aUsername']);
-    return;
-  }
-  if (!p || p.length < 6) {
-    showErr(`Parol kamida 6 ta belgi bo'lishi kerak`, ['aPassword']);
-    return;
-  }
-  e.textContent = '';
-  authBtn.disabled = true;
-  authBtn.textContent = isLogin ? 'Kirilmoqda...' : 'Hisob yaratilmoqda...';
-
-  try {
-    if (isLogin) {
-      const cred = await signInWithDomainFallback(u, p);
-      try {
-        await updateDoc(doc(db, 'users', cred.user.uid), {
-          lastLoginAt: serverTimestamp(),
-          lastUserAgent: navigator.userAgent || null,
-          lastPlatform: navigator.platform || null,
-        });
-        await _logLoginHistory(cred.user.uid, 'login');
-      } catch (_) { /* profil yo'q bo'lsa ham loginni to'xtatmaymiz */ }
-      // location.reload() kerak emas — onAuthStateChanged o'zi pending screen ko'rsatadi
+    /* ── Validatsiya ── */
+    const cleaned = _cleanUsername(u);
+    if (!cleaned) {
+      showErr(`Foydalanuvchi nomi bo'sh bo'lishi mumkin emas`, ['aUsername']);
       return;
-    } else {
+    }
+    if (cleaned.length < 2) {
+      showErr(`Foydalanuvchi nomi kamida 2 ta belgi (a-z, 0-9, _)`, ['aUsername']);
+      return;
+    }
+    if (!p || p.length < 6) {
+      showErr(`Parol kamida 6 ta belgi bo'lishi kerak`, ['aPassword']);
+      return;
+    }
+    e.textContent = '';
+    authBtn.disabled = true;
+    authBtn.textContent = isLogin ? 'Kirilmoqda...' : 'Hisob yaratilmoqda...';
+
+    try {
+      if (isLogin) {
+        const email = await _emailForLogin(cleaned);
+        const { data, error } = await sb.auth.signInWithPassword({ email, password: p });
+        if (error) throw error;
+        try {
+          await sb.from('profiles').update({
+            last_login: new Date().toISOString(),
+            last_user_agent: navigator.userAgent || null,
+            last_platform: navigator.platform || null,
+          }).eq('id', data.user.id);
+          await _logLoginHistory(data.user.id, 'login');
+        } catch (_) { /* profil yo'q bo'lsa ham loginni to'xtatmaymiz */ }
+        // onAuthStateChange o'zi ilovani yoki pending ekranni ko'rsatadi
+        return;
+      }
+
       const fn = $('aFullname').value.trim();
       const c  = $('aConfirm').value;
       if (!fn) {
@@ -349,55 +272,50 @@ if (authBtn) {
         showErr('Parollar mos emas', ['aPassword','aConfirm']);
         return;
       }
-      // onAuthStateChanged race condition dan himoya — createUserWithEmailAndPassword DAN OLDIN flag o'rnatamiz
-      sessionStorage.setItem('mrdatabase_new_signup', '1');
-      const cr = await createUserWithEmailAndPassword(auth, uToEmail(u), p);
-      await fbUpdateProfile(cr.user, { displayName: fn });
-      await setDoc(doc(db,'users',cr.user.uid), {
-        uid: cr.user.uid, username: u, fullName: fn,
-        email: uToEmail(u), bio: '', avatar: defAvi(fn),
-        followers: [], following: [], createdAt: serverTimestamp(),
-        approved: false
-      });
-      // Login paytida (autentifikatsiyasiz) username -> email topish uchun
-      // ALOHIDA, kichik va ochiq "/usernames/{key}" xaritasi. Bu — to'liq
-      // /users/{uid} hujjatini (email, bio, push-token va h.k.) ochiq
-      // qilib qo'yishning o'rniga, faqat shu yozuv uchun kerakli minimal
-      // ma'lumotni (uid+email) ochiq qiladi. `key` — login normalizatsiyasi
-      // bilan bir xil (pastki registr, faqat harf-raqam).
-      try {
-        const unameKey = u.toLowerCase().replace(/[^a-z0-9]/g, '');
-        await setDoc(doc(db, 'users', '_index', 'usernames', unameKey), { uid: cr.user.uid, email: uToEmail(u) });
-      } catch (unameErr) {
-        console.warn('[Auth] usernames xaritasi yozilmadi:', unameErr.message);
+
+      const { data: free, error: freeErr } = await sb.rpc('username_available', { p_username: cleaned });
+      if (freeErr) throw freeErr;
+      if (!free) {
+        authBtn.disabled = false;
+        authBtn.textContent = "Ro'yxatdan o'tish";
+        showErr(sbErrUz({ code: 'user_already_exists' }), ['aUsername']);
+        return;
       }
-      // location.reload() kerak emas — onAuthStateChanged o'zi pending screen ko'rsatadi
-    }
-    } catch(err) {
-      const code = err.code || '';
-      console.error('❌ Auth error:', code, err.message);
-      // Signup muvaffaqiyatsiz bo'lsa flagni tozalaymiz
-      if (!isLogin) sessionStorage.removeItem('mrdatabase_new_signup');
+
+      // Onboarding flagi signUp'dan OLDIN — onAuthStateChange tezroq ishlab ketishi mumkin
+      sessionStorage.setItem('mrgram_new_signup', '1');
+      const { data, error } = await sb.auth.signUp({
+        email: uToEmail(cleaned),
+        password: p,
+        // Profilni DB trigger (handle_new_user) yaratadi; approval doim 'pending'
+        options: { data: { username: cleaned, full_name: fn, avatar: defAvi(fn) } },
+      });
+      if (error) throw error;
+      if (!data.session) {
+        // "Confirm email" yoqilgan — soxta email'ga xat hech qachon yetmaydi
+        throw new Error('Supabase: Authentication → Email → "Confirm email" ni o\'chiring');
+      }
+      // Keyingi qadamni onAuthStateChange bajaradi (pending ekran)
+    } catch (err) {
+      console.error('❌ Auth error:', err?.code || '', err?.message);
+      if (!isLogin) sessionStorage.removeItem('mrgram_new_signup');
       authBtn.disabled = false;
       authBtn.textContent = isLogin ? 'Kirish' : "Ro'yxatdan o'tish";
-      if (code.includes('invalid-credential') || code.includes('wrong-password') || code.includes('user-not-found')) {
-        showErr(fbErrUz(code), ['aUsername','aPassword']);
-      } else if (code.includes('email-already-in-use')) {
-        showErr(fbErrUz(code), ['aUsername']);
-      } else if (code.includes('auth/')) {
-        // Boshqa Firebase xatolar - to'liq xabar ko'rsatish
-        showErr(code + ': ' + err.message);
+      const known = sbErrUz(err);
+      if (known === 'Foydalanuvchi nomi yoki parol xato') {
+        showErr(known, ['aUsername','aPassword']);
+      } else if (known === 'Bu login allaqachon band') {
+        showErr(known, ['aUsername']);
+      } else if (known === `Parol kamida 6 ta belgi bo'lishi kerak`) {
+        showErr(known, ['aPassword']);
+      } else if (/Confirm email/.test(err?.message || '')) {
+        showErr(err.message);
       } else {
-        showErr(fbErrUz(code));
+        showErr(known);
       }
     }
   };
 }
-
-['aUsername','aPassword','aConfirm'].forEach(id => {
-  const el = $(id);
-  if (el) el
-});
 
 /* ── Parol warning modal (signup only) ────────────────────────────── */
 let _pwdWarnShown = false;
@@ -468,9 +386,20 @@ function _updatePendingNotice(noticeData) {
 
 function _startPendingNoticeWatcher() {
   if (_noticeUnsubPending) return;
-  _noticeUnsubPending = onSnapshot(doc(db, 'ADMIN', '_index', 'adminNotice', 'global'), snap => {
-    _updatePendingNotice(snap.exists() ? snap.data() : null);
-  }, () => {});
+  let dead = false, ch = null;
+  const load = async () => {
+    try {
+      const { data } = await sb.from('admin_notice').select('text,target').eq('id', 'global').maybeSingle();
+      if (!dead) _updatePendingNotice(data || null);
+    } catch (_) {}
+  };
+  load();
+  try {
+    ch = sb.channel('pending-notice')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_notice' }, () => load())
+      .subscribe();
+  } catch (_) {}
+  _noticeUnsubPending = () => { dead = true; if (ch) sb.removeChannel(ch); };
 }
 
 function _stopPendingNoticeWatcher() {
@@ -552,7 +481,7 @@ function showPendingScreen(reason = 'pending', blockedUntilMs = null) {
           hidePendingScreen();
           if (state.me) {
             await _enterApp(state.me);
-            _startRealtimeUserWatch(doc(db, 'users', state.me.uid), state.me, true);
+            _startRealtimeUserWatch(state.me);
           }
         });
       } else {
@@ -601,288 +530,136 @@ if (pendingSignOutBtn) {
     if (_approvalListener) { _approvalListener(); _approvalListener = null; }
     if (_activeUserUnsub) { _activeUserUnsub(); _activeUserUnsub = null; }
     hidePendingScreen();
-    await signOut(auth);
+    try { await sb.auth.signOut(); } catch (_) {}
     location.replace('/');
   });
 }
 
-/* ── Realtime user doc kuzatuvi ────────────────────────────────────────
- * Kirgan har bir user uchun: blok, o'chirish, ruxsat — hammasi real-time.
+/* ── Profil holati kuzatuvi (blok / ruxsat / o'chirilish) ──────────────
+ * Kirgan har bir user uchun: realtime (profiles qatori) + 60s zaxira
+ * so'rov (realtime uzilib qolsa ham blok/ruxsat kechikmasin).
  * ─────────────────────────────────────────────────────────────────────── */
 let _activeUserUnsub = null;
+let _currentUid = null;   // hozir ishlanayotgan sessiya (takroriy SIGNED_IN'dan himoya)
+let _entering = false;    // _enterApp ikki marta parallel ishlamasin
+let _shownKey = null;     // bir xil pending/blocked ekran qayta-qayta chizilmasin
+const PROFILE_POLL_MS = 60 * 1000;
 
-function _startRealtimeUserWatch(ref, user, banJustExpired = false) {
-  if (_activeUserUnsub) { _activeUserUnsub(); _activeUserUnsub = null; }
-
-  _activeUserUnsub = onSnapshot(ref, async snapLive => {
-    // Doc o'chirilgan — hisobdan chiqaramiz
-    // Yangi signup bo'lsa doc hali serverga yetib bormagan bo'lishi mumkin — signOut qilmaymiz
-    if (!snapLive.exists()) {
-      if (sessionStorage.getItem('mrdatabase_new_signup')) return; // race condition — kutamiz
-      if (_activeUserUnsub) { _activeUserUnsub(); _activeUserUnsub = null; }
-      if (_approvalListener) { _approvalListener(); _approvalListener = null; }
-      try { await signOut(auth); } catch(_) {}
-      location.replace('/');
-      return;
-    }
-
-    const d = snapLive.data();
-    const app = $('app');
-    const isInApp = app && app.classList.contains('show');
-
-    // Realtime listener orqali serverdan HAQIQATDA tasdiqlangan yangilanish
-    // kelsa — "oxirgi tasdiqlangan holat"ni yangilab boramiz (offline-trust
-    // oynasini uzaytiradi va eng so'nggi blok holatini saqlaydi).
-    if (snapLive.metadata?.fromCache === false) {
-      _saveVerifiedState(user.uid, d);
-    }
-
-    // Ban muddati allaqachon o'tgan bo'lsa — blocked tekshiruvini o'tkazib yuboramiz
-    if (banJustExpired && d.blocked === true) {
-      const untilChk = d.blockedUntil?.toMillis ? d.blockedUntil.toMillis() : null;
-      if (untilChk && untilChk <= serverNow()) {
-        // Hali admin tozalamagan — ignore qilamiz, user app da
-        return;
-      }
-      // Admin yangi ban qo'ygan — normal holatga qaytamiz
-      banJustExpired = false;
-    }
-
-    // Bloklangan
-    if (d.blocked === true) {
-      // blockedUntil tekshiruvi — vaqt o'tgan bo'lsa bloklamas
-      const until = d.blockedUntil?.toMillis ? d.blockedUntil.toMillis() : (d.blockedUntil || null);
-      if (until && until <= serverNow()) {
-        // Ban muddati o'tgan — Firestore blocked:true turibdi lekin biz kiritamiz
-        // onSnapshot ni to'xtatib, app ga kiritamiz (loop oldini olish)
-        if (_activeUserUnsub) { _activeUserUnsub(); _activeUserUnsub = null; }
-        if (!isInApp) {
-          hidePendingScreen();
-          await _enterApp(user);
-        }
-        // 5 soniyadan so'ng oddiy realtime listener qayta ulanadi
-        // (admin Firestore ni tozalaguncha kutamiz)
-        setTimeout(() => _startRealtimeUserWatch(ref, user, true), 5000);
-        return;
-      }
-      // App'da yoki boshqa joyda bo'lsa — blocked screen ko'rsat (logout emas!)
-      if (isInApp) {
-        // Ilovadan chiqarib blocked screen ko'rsatamiz
-        stopChatsWatcher();
-        stopCallWatcher();
-        stopPresenceHeartbeat();
-        const appEl = $('app');
-        if (appEl) appEl.classList.remove('show');
-      }
-      showPendingScreen('blocked', until);
-      return;
-    }
-
-    // Ilovada bo'lgan user uchun: approved false yoki rejected bo'lsa chiqarish
-    if (isInApp && d.approved === false) {
-      if (_activeUserUnsub) { _activeUserUnsub(); _activeUserUnsub = null; }
-      try { await signOut(auth); } catch(_) {}
-      location.replace('/');
-      return;
-    }
-
-    // Pending ekranda bo'lgan user uchun: rad etildi
-    if (!isInApp && d.approved === 'rejected' && d.blocked !== true) {
-      showPendingScreen('rejected');
-      return;
-    }
-
-    // Pending ekranda bo'lgan user uchun: ruxsat berildi
-    if (!isInApp && d.approved === true && d.blocked !== true) {
-      if (_activeUserUnsub) { _activeUserUnsub(); _activeUserUnsub = null; }
-      hidePendingScreen();
-      _enterApp(user);
-      _startRealtimeUserWatch(ref, user); // qayta ulash (enterApp ichida)
-      return;
-    }
-  }, err => {
-    console.warn('[Auth] Realtime user watch error:', err.message);
-  });
+function _buildMe(user, p) {
+  return {
+    uid: user.id,
+    email: user.email || p?.email || null,
+    displayName: p?.fullName || '',
+    photoURL: p?.avatar || null,
+    username: p?.username || '',
+    isAdmin: !!p?.isAdmin,
+  };
 }
 
-/* ── Auth state observer ─────────────────────────────────────────────── */
-onAuthStateChanged(auth, async user => {
-  // Har safar auth holati o'zgarganda server vaqtini sinxronlashtirish
-  if (!_serverTimeSynced) {
-    await _syncServerTime();
+function _blockedUntilMs(p) {
+  return p?.blockedUntil?.toMillis ? p.blockedUntil.toMillis() : null;
+}
+
+/** blocked=true, lekin muddati o'tgan bo'lsa — bloklanmagan hisoblanadi
+ *  (DB'dagi is_approved() ham shunday qaraydi). */
+function _isBlockedNow(p) {
+  if (!p?.blocked) return false;
+  const until = _blockedUntilMs(p);
+  return !until || until > serverNow();
+}
+
+async function _fetchProfile(uid) {
+  const { data, error } = await sb.from('profiles').select('*').eq('id', uid).maybeSingle();
+  if (error) throw error;
+  return mapProfile(data); // qator yo'q bo'lsa null
+}
+
+function _showOnce(reason, until = null) {
+  const key = reason + ':' + (until || '');
+  if (_shownKey === key) return;
+  _shownKey = key;
+  showPendingScreen(reason, until);
+}
+
+function _stopUserWatch() {
+  if (_activeUserUnsub) { _activeUserUnsub(); _activeUserUnsub = null; }
+  if (_approvalListener) { _approvalListener(); _approvalListener = null; }
+}
+
+async function _forceSignOut() {
+  _stopUserWatch();
+  try { await sb.auth.signOut(); } catch (_) {}
+  location.replace('/');
+}
+
+/** Profilning eng so'nggi holatiga qarab ekranni to'g'irlaydi (idempotent). */
+async function _onLiveProfile(p, me) {
+  if (!p) return;
+  _saveVerifiedState(me.uid, p);
+  Object.assign(me, _buildMe({ id: me.uid, email: me.email }, p));
+
+  const appEl = $('app');
+  const isInApp = !!(appEl && appEl.classList.contains('show'));
+
+  // Bloklangan (muddati o'tmagan)
+  if (_isBlockedNow(p)) {
+    if (isInApp) {
+      stopChatsWatcher();
+      stopCallWatcher();
+      stopPresenceHeartbeat();
+      appEl.classList.remove('show');
+    }
+    _showOnce('blocked', _blockedUntilMs(p));
+    return;
   }
 
-  if (user) {
-    state.me = user;
-
-    // Admin nav tugmasini ko'rsatish
-    try {
-      const { applyAdminNav } = await import('./router.js');
-      applyAdminNav();
-    } catch(_) {}
-
-    try {
-      const ref  = doc(db,'users',user.uid);
-      // MUAMMO (tuzatildi): ilgari bu yerda to'g'ridan-to'g'ri getDoc(ref)
-      // chaqirilardi — u ONLAYN bo'lganda ham AVVAL SERVERGA so'rov yuborib,
-      // javobni kutib turadi (kesh faqat OFLAYN holatda ishlatiladi). Shu
-      // sabab ilova internet bilan ochilganda ham har safar tarmoqni kutar,
-      // garchi qurilmada tayyor kesh bo'lsa ham (splash/qora ekran sekinligi).
-      //
-      // YECHIM: avval getDocFromCache() bilan LOKAL keshni sinaymiz — bu
-      // tarmoqqa chiqmaydi, deyarli 0ms da javob beradi. Agar bu qurilmada
-      // shu user uchun kesh umuman bo'lmasa (masalan birinchi marta kirish),
-      // getDocFromCache xato tashlaydi — o'shandagina noiloj getDoc(ref)
-      // bilan serverni kutamiz. Keshdan olingan natija "stale" deb
-      // belgilanadi va pastdagi mavjud mantiq (isStale) uni ko'r-ko'rona
-      // ishonmasdan, oxirgi tasdiqlangan holat asosida tekshiradi — so'ng
-      // _startRealtimeUserWatch() fon rejimida serverdan HAQIQIY holatni
-      // olib, agar farq bo'lsa (masalan shu orada admin bloklagan bo'lsa)
-      // avtomatik tuzatadi.
-      let snap;
-      let servedFromLocalCache = false;
-      try {
-        snap = await getDocFromCache(ref);
-        servedFromLocalCache = true;
-      } catch (_) {
-        // Keshda hech narsa yo'q — noiloj serverni kutamiz (faqat shu holatda)
-        snap = await getDoc(ref);
-      }
-      // fromCache=true => bu javob serverga yetib bormadi, faqat mahalliy
-      // Firestore keshidan olindi — u ESKI (masalan blok qo'yilishidan oldingi)
-      // bo'lishi mumkin. Bunga ko'r-ko'rona ishonmaymiz.
-      const isStale = servedFromLocalCache || snap.metadata?.fromCache === true;
-
-      if (!snap.exists()) {
-        // Offline bo'lsa: bu "hujjat serverda yo'q" degani EMAS — shunchaki
-        // hali mahalliy keshda yo'q. Bunday holatda signOut/reload qilish —
-        // har safar qayta autentifikatsiyadan keyin AYNAN shu xatoga
-        // qaytadi, ya'ni cheksiz "splash → qora ekran" loop hosil qiladi.
-        // Shuning uchun offline'da signOut QILMAYMIZ — lekin ko'r-ko'rona
-        // ham kiritmaymiz: oxirgi tasdiqlangan holatga qaraymiz.
-        if (!navigator.onLine) {
-          const decision = _offlineAccessDecision(user.uid);
-          if (!decision.allow) {
-            if (decision.blocked) showPendingScreen('blocked', decision.blockedUntil);
-            else showPendingScreen('offline-verify');
-            return;
-          }
-          console.warn('[Auth] Offline: user hujjati keshda topilmadi — tasdiqlangan tarix asosida ehtiyotkorlik bilan kiritilmoqda');
-          _enterApp(user);
-          _startRealtimeUserWatch(ref, user);
-          return;
-        }
-        // Email signup race condition: setDoc hali bajarilmagan bo'lishi mumkin
-        if (sessionStorage.getItem('mrdatabase_new_signup')) {
-          sessionStorage.removeItem('mrdatabase_new_signup');
-          showPendingScreen('pending');
-          _startRealtimeUserWatch(ref, user);
-          return;
-        }
-        // Yangi user doc yo'q — hisobdan chiqaramiz
-        try { await signOut(auth); } catch(_) {}
-        location.replace('/');
-        return;
-      } else {
-        const data = snap.data();
-
-        if (isStale) {
-          if (navigator.onLine) {
-            // ONLAYNMIZ: kesh bu yerda faqat TEZ OCHILISH uchun ishlatiladi,
-            // xavfsizlik tekshiruvi uchun emas — shuning uchun 15-daqiqalik
-            // oflayn-ishonch oynasi (_offlineAccessDecision) BU YERDA
-            // qo'llanilmaydi (aks holda onlayn bo'lsak ham, oxirgi
-            // tasdiqlashdan 15+ daqiqa o'tgan bo'lsa, keraksiz "Internetga
-            // ulaning" ekrani bir lahzaga chaqib ketishi mumkin edi).
-            // Kesh ma'lumotidagi blocked/approved holatiga qarab DARHOL
-            // (0ms) qaror qabul qilamiz; pastdagi _startRealtimeUserWatch
-            // (onSnapshot) millisekundlar ichida serverdan HAQIQIY holatni
-            // tasdiqlab, agar farq bo'lsa (masalan shu orada admin
-            // bloklagan bo'lsa) avtomatik tuzatadi.
-            const until = data.blockedUntil?.toMillis ? data.blockedUntil.toMillis() : (data.blockedUntil || null);
-            if (data.blocked === true && (!until || until > serverNow())) {
-              showPendingScreen('blocked', until);
-            } else if (data.approved === false) {
-              showPendingScreen('pending');
-            } else if (data.approved === 'rejected') {
-              showPendingScreen('rejected');
-            } else {
-              _enterApp(user);
-            }
-            _startRealtimeUserWatch(ref, user);
-            return;
-          }
-          // OFLAYNMIZ: bu yerda kesh haqiqatan ham eski/tasdiqlanmagan
-          // bo'lishi xavfi bor — shuning uchun oxirgi TASDIQLANGAN holat va
-          // 15-daqiqalik ishonch oynasiga (_offlineAccessDecision) tayanib
-          // qaror qabul qilamiz (ilgarigi xavfsizlik mantig'i o'zgarmaydi).
-          const decision = _offlineAccessDecision(user.uid);
-          if (!decision.allow) {
-            if (decision.blocked) showPendingScreen('blocked', decision.blockedUntil);
-            else showPendingScreen('offline-verify');
-            return;
-          }
-          _enterApp(user);
-          _startRealtimeUserWatch(ref, user);
-          return;
-        }
-
-        // Bu yerga faqat serverdan HAQIQATDA tasdiqlangan (fromCache=false)
-        // ma'lumot bilan yetib kelamiz — shu tasdiqlangan holatni saqlaymiz.
-        _saveVerifiedState(user.uid, data);
-
-        // Bloklangan foydalanuvchi
-        if (data.blocked === true) {
-          const until = data.blockedUntil?.toMillis ? data.blockedUntil.toMillis() : (data.blockedUntil || null);
-          if (until && until <= serverNow()) {
-            // Ban muddati o'tgan — app ga kiritamiz, listener blocked:true ni ignore qilsin
-            _enterApp(user);
-            _startRealtimeUserWatch(ref, user, true);
-            return;
-          } else {
-            showPendingScreen('blocked', until);
-            _startRealtimeUserWatch(ref, user);
-            return;
-          }
-        }
-        // approved === false — ruxsat kutilmoqda
-        if (data.approved === false) {
-          showPendingScreen('pending');
-          _startRealtimeUserWatch(ref, user);
-          return;
-        }
-        // approved === 'rejected' — rad etilgan
-        if (data.approved === 'rejected') {
-          showPendingScreen('rejected');
-          _startRealtimeUserWatch(ref, user);
-          return;
-        }
-      }
-    } catch (err) {
-      console.warn('[Auth] Failed to get/create user doc:', err.message);
-      if (!navigator.onLine) {
-        const decision = _offlineAccessDecision(user.uid);
-        if (!decision.allow) {
-          if (decision.blocked) showPendingScreen('blocked', decision.blockedUntil);
-          else showPendingScreen('offline-verify');
-          return;
-        }
-        _enterApp(user);
-        _startRealtimeUserWatch(doc(db, 'users', user.uid), user);
-        return;
-      }
-      // Xato bo'lsa pending screen ko'rsatamiz — ruxsatsiz app ga kiritmaymiz
-      showPendingScreen('pending');
-      return;
+  // Ruxsat berilgan
+  if (p.approved === true) {
+    if (!isInApp && !_entering) {
+      hidePendingScreen();
+      _shownKey = null;
+      await _enterApp(me);
     }
+    return;
+  }
 
-    _enterApp(user);
-    // Ilovaga kirgan user uchun ham realtime kuzatuv
-    _startRealtimeUserWatch(doc(db, 'users', user.uid), user);
-  } else {
+  // Pending yoki rejected
+  if (isInApp) { await _forceSignOut(); return; }
+  _showOnce(p.approved === 'rejected' ? 'rejected' : 'pending');
+}
+
+function _startRealtimeUserWatch(me) {
+  _stopUserWatch();
+  const uid = me.uid;
+  const ch = sb.channel('profile-' + uid)
+    .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` },
+        async payload => {
+          if (payload.eventType === 'DELETE') { await _forceSignOut(); return; }
+          await _onLiveProfile(mapProfile(payload.new), me);
+        })
+    .subscribe();
+  const poll = setInterval(async () => {
+    if (!navigator.onLine) return;
+    try {
+      const p = await _fetchProfile(uid);
+      if (!p) await _forceSignOut();
+      else await _onLiveProfile(p, me);
+    } catch (_) { /* keyingi tikda qayta urinadi */ }
+  }, PROFILE_POLL_MS);
+  _activeUserUnsub = () => { clearInterval(poll); sb.removeChannel(ch); };
+}
+
+/* ── Sessiya boshqaruvi ──────────────────────────────────────────────── */
+async function _handleSession(session) {
+  const user = session?.user || null;
+
+  if (!user) {
+    _currentUid = null;
+    _shownKey = null;
     state.me = null;
-    if (_approvalListener) { _approvalListener(); _approvalListener = null; }
-    if (_activeUserUnsub) { _activeUserUnsub(); _activeUserUnsub = null; }
+    _stopUserWatch();
+    if (_postsUnsub) { _postsUnsub(); _postsUnsub = null; }
     hidePendingScreen();
     stopChatsWatcher();
     stopCallWatcher();
@@ -891,11 +668,61 @@ onAuthStateChanged(auth, async user => {
     const authWrap = $('authWrap');
     if (app) app.classList.remove('show');
     if (authWrap) authWrap.classList.add('show');
-
-    // Chiqishda AI token bubble ham yashirinsin (admin bo'lmagan holatga qaytadi)
-    import('./token-usage.js').then(m => m.setTokenUsageBubbleVisible(false)).catch(() => {});
+    return;
   }
+
+  // Token yangilanishi / takroriy SIGNED_IN — qayta ishlamaymiz
+  if (_currentUid === user.id) return;
+  _currentUid = user.id;
+
+  if (!_serverTimeSynced) await _syncServerTime();
+
+  let p = null, fetchErr = null;
+  try { p = await _fetchProfile(user.id); } catch (err) { fetchErr = err; }
+
+  const me = _buildMe(user, p);
+  state.me = me;
+
+  // Profil xato bilan olinmadi yoki offline
+  if (fetchErr || (!p && !navigator.onLine)) {
+    console.warn('[Auth] Profil olinmadi:', fetchErr?.message);
+    if (!navigator.onLine) {
+      const decision = _offlineAccessDecision(user.id);
+      if (!decision.allow) {
+        if (decision.blocked) _showOnce('blocked', decision.blockedUntil);
+        else _showOnce('offline-verify');
+        return;
+      }
+      _enterApp(me);
+      _startRealtimeUserWatch(me);
+      return;
+    }
+    // Onlayn, lekin server xato berdi — ruxsatsiz kiritmaymiz
+    _showOnce('pending');
+    _startRealtimeUserWatch(me);
+    return;
+  }
+
+  // Profil qatori yo'q (o'chirilgan) — hisobdan chiqaramiz
+  if (!p) { await _forceSignOut(); return; }
+
+  try {
+    const { applyAdminNav } = await import('./router.js');
+    applyAdminNav();
+  } catch (_) {}
+
+  // Faqat serverdan haqiqatan olingan holat — tasdiqlangan holat sifatida saqlanadi
+  await _onLiveProfile(p, me);
+  _startRealtimeUserWatch(me);
+}
+
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') return;
+  // Callback ichida supabase chaqiruvlarini kutmaymiz (deadlock xavfi)
+  setTimeout(() => { _handleSession(session); }, 0);
 });
+// INITIAL_SESSION hodisasi versiyaga bog'liq — kafolat uchun bir marta o'zimiz ham so'raymiz
+sb.auth.getSession().then(({ data }) => { _handleSession(data?.session || null); });
 
 /* ── User cache invalidation helper ────────────────────────────────── */
 export function invalidateUserCache(uid) {
@@ -905,58 +732,59 @@ export function invalidateUserCache(uid) {
 }
 
 async function _enterApp(user) {
-  const authWrap = $('authWrap');
-  const app = $('app');
-  if (authWrap) authWrap.classList.remove('show');
-  if (app) app.classList.add('show');
-
-  /* Faqat yangi ro'yxatdan o'tgan foydalanuvchilarga onboarding */
-  if (sessionStorage.getItem('mrdatabase_new_signup')) {
-    sessionStorage.removeItem('mrdatabase_new_signup');
-    setTimeout(() => {
-      if (typeof window._startOnboarding === 'function') window._startOnboarding(true);
-    }, 1100);
-  }
-
-  await refreshMyFollowing();
-  listenPosts();
-  if (!notificationsUserDisabled()) initPush();
-  startChatsWatcher();
-  startCallWatcher();
-
-  // "Oxirgi faollik" — admin panelida ko'rsatish uchun
+  if (_entering) return;
+  _entering = true;
   try {
-    await updateDoc(doc(db, 'users', user.uid), {
-      lastSeenAt: serverTimestamp(),
-      lastUserAgent: navigator.userAgent || null,
-      lastPlatform: navigator.platform || null,
-    });
-    await _logLoginHistory(user.uid, 'session');
-  } catch (_) { /* jim o'tkazib yuboramiz */ }
+    const authWrap = $('authWrap');
+    const app = $('app');
+    if (authWrap) authWrap.classList.remove('show');
+    if (app) app.classList.add('show');
+    _shownKey = null;
 
-  startPresenceHeartbeat();
+    /* Faqat yangi ro'yxatdan o'tgan foydalanuvchilarga onboarding */
+    if (sessionStorage.getItem('mrgram_new_signup')) {
+      sessionStorage.removeItem('mrgram_new_signup');
+      setTimeout(() => {
+        if (typeof window._startOnboarding === 'function') window._startOnboarding(true);
+      }, 1100);
+    }
+
+    await refreshMyFollowing();
+    listenPosts();
+    if (!notificationsUserDisabled()) initPush();
+    startChatsWatcher();
+    startCallWatcher();
+
+    // "Oxirgi faollik" — admin panelida ko'rsatish uchun
+    try {
+      await sb.from('profiles').update({
+        last_seen: new Date().toISOString(),
+        last_user_agent: navigator.userAgent || null,
+        last_platform: navigator.platform || null,
+      }).eq('id', user.uid);
+      await _logLoginHistory(user.uid, 'session');
+    } catch (_) { /* jim o'tkazib yuboramiz */ }
+
+    startPresenceHeartbeat();
+  } finally {
+    _entering = false;
+  }
 }
 
 /* ── Onlayn holat (presence) heartbeat ─────────────────────────────────
- * Firestore'da alohida "online" boolean maydon ishlatilmaydi — buning
- * o'rniga mavjud `lastSeenAt` maydoni tez-tez (har ~25s) yangilanadi.
- * Boshqa foydalanuvchilar `isOnline(lastSeenAt)` (utils.js) yordamida
- * "onlayn/oxirgi faollik"ni hisoblab chiqaradi — bu qo'shimcha rules
- * maydoni yoki Realtime Database talab qilmaydi.
- *
- * Sahifa fonda (background tab) bo'lganda heartbeat to'xtaydi — batareya
- * va yozish sonini tejash uchun; foydalanuvchi qaytib kelganda darhol
- * yangilanadi va davom etadi.
+ * profiles.last_seen har ~25s yangilanadi; boshqalar isOnline(lastSeenAt)
+ * (utils.js) bilan "onlayn/oxirgi faollik"ni hisoblaydi.
+ * Sahifa fonda bo'lsa to'xtaydi (batareya va yozuvlarni tejash).
  ─────────────────────────────────────────────────────────────────────── */
 const HEARTBEAT_MS = 25 * 1000;
 let _heartbeatTimer = null;
 
 async function _pingPresence() {
-  const uid = auth.currentUser?.uid;
+  const uid = state.me?.uid;
   if (!uid || document.visibilityState !== 'visible') return;
   try {
-    await updateDoc(doc(db, 'users', uid), { lastSeenAt: serverTimestamp() });
-  } catch (_) { /* tarmoq yo'q bo'lsa — jim o'tkazib yuboramiz, keyingi tikda qayta urinadi */ }
+    await sb.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', uid);
+  } catch (_) { /* tarmoq yo'q — keyingi tikda qayta urinadi */ }
 }
 
 function startPresenceHeartbeat() {
@@ -979,59 +807,36 @@ function _onVisibilityChangeForPresence() {
 export async function refreshMyFollowing() {
   if (!state.me) return;
   try {
-    const snap = await getDoc(doc(db,'users',state.me.uid));
-    state.myFollowing = new Set(snap.data()?.following || []);
+    const { data, error } = await sb.from('follows').select('following_id').eq('follower_id', state.me.uid);
+    if (error) throw error;
+    state.myFollowing = new Set((data || []).map(r => r.following_id));
   } catch (err) {
-    console.warn('[Auth] Failed to refresh following:', err.message);
+    console.warn('[Auth] Failed to refresh following:', err?.message);
   }
 }
 
-
 /* ── Live posts listener ─────────────────────────────────────────────────
-   ESLATMA: Firestore xavfsizlik qoidalari "posts" uchun resource.data ga
-   bog'liq (isPublic / userId). Filtersiz "list" so'rovi (where() siz)
-   Firestore tomonidan STATIK tekshiriladi — agar qoida har bir mumkin
-   bo'lgan hujjat uchun to'g'ri ekanini oldindan isbotlay olmasa (chunki
-   so'rov hech narsani filtrlamaydi), Firestore HAR DOIM butun so'rovni
-   "Missing or insufficient permissions" bilan rad etadi — hatto haqiqatda
-   qaytariladigan hujjatlar ruxsatga ega bo'lsa ham. Shu sababli oldingi
-   bitta umumiy onSnapshot(query(collection(db,'posts'), orderBy(...)))
-   har doim xato berardi (admin bo'lmagan har bir foydalanuvchi uchun).
-
-   Yechim: qoidaning o'ziga mos ikkita filterlangan listener ishlatamiz —
-     1) isPublic == true bo'lgan postlar (hammaga ko'rinadigan)
-     2) o'zining postlari (userId == myUid, private bo'lsa ham ko'radi)
-   Admin uchun esa qoida resource.data dan qat'i nazar ruxsat beradi,
-   shuning uchun to'liq kolleksiyani filtersiz tinglashi mumkin.
-
-   orderBy() ataylab so'rovdan olib tashlandi — where() + orderBy() turli
-   maydonlarda composite index talab qiladi; buning o'rniga saralash
-   pastda JavaScript tomonida amalga oshiriladi. ──────────────────────── */
+   RLS o'zi filtrlaydi: oddiy user public + o'z postlarini, admin hammasini
+   oladi. Boshida bitta so'rov, keyin realtime (posts jadvali) orqali
+   INSERT/UPDATE/DELETE. Like/izoh/ko'rish sonlarini DB triggerlari
+   yangilaydi — UPDATE hodisasi patchCounts()ga olib boradi. ─────────── */
 let _postsUnsub = null;
 export function listenPosts() {
-  if (_postsUnsub) return; // Allaqachon tinglayapti — yana qo'shma
-  if (!state.me?.uid) return; // Login bo'lmagan
+  if (_postsUnsub) return; // Allaqachon tinglayapti
+  if (!state.me?.uid) return;
   let _lastPostIds = '';
 
   const myUid = state.me.uid;
-  let _publicDocs = [];
-  let _ownDocs    = [];
+  const byId = new Map();
 
-  // Bitta post yaratilganda/o'zgarganda IKKALA listener (public + own) bir
-  // necha marta ketma-ket ishga tushishi mumkin (pending write + server
-  // tasdiqlashi) — har biri to'liq feed qayta chizishga (innerHTML) olib
-  // kelsa, bu "qotib qolish" va miltillash (flicker) hissini beradi.
-  // Shu sababli haqiqiy render() chaqiruvini qisqa vaqt debounce qilamiz —
-  // bir necha snapshot yangilanishi bitta render'ga birlashtiriladi.
+  // Bir necha hodisa ketma-ket kelsa — bitta render'ga birlashtiramiz
   let _renderDebounceTimer = null;
   function _scheduleRender() {
     clearTimeout(_renderDebounceTimer);
     _renderDebounceTimer = setTimeout(() => { render(); }, 120);
   }
 
-  // ── KESH-BIRINCHI: internetni kutmasdan, oldingi safar saqlangan
-  // postlarni DARHOL ko'rsatamiz. Firestore listener javob berishi
-  // bilan (pastda) ekran jimgina haqiqiy ma'lumot bilan yangilanadi. ──
+  // ── KESH-BIRINCHI: oldingi safar saqlangan postlarni darhol ko'rsatamiz ──
   const _cachedPosts = getCachedPosts(myUid);
   if (_cachedPosts && _cachedPosts.length) {
     state.allPosts = _cachedPosts;
@@ -1042,94 +847,37 @@ export function listenPosts() {
   }
 
   const render = async () => {
-    // Ikki listenerdan kelgan natijalarni birlashtirish (id bo'yicha
-    // dublikatlarsiz) va createdAt bo'yicha yangi → eski saralash
-    const byId = new Map();
-    for (const d of _publicDocs) byId.set(d.id, d);
-    for (const d of _ownDocs)    byId.set(d.id, d);
-    // ESLATMA: serverTimestamp() serverdan tasdiqlanguncha (odatda <1s)
-    // createdAt = null bo'lib turadi. Buni "0" (eng eski) deb hisoblash
-    // yangi yuklangan postni ro'yxat OXIRIGA tushirib yuborardi — post
-    // bir lahza g'oyib bo'lib, server tasdiqlagach tepaga "sakrardi"
-    // (va shu sabab feed to'liq qayta chizilib, "qotib qolish" hissi
-    // paydo bo'lardi). Hali tasdiqlanmagan postni ENG YANGI deb
-    // hisoblab, darhol to'g'ri joyda (tepada) ko'rsatamiz.
-    const _now = Date.now();
-    const firestorePosts = [...byId.values()].sort((a, b) => {
-      const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : _now;
-      const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : _now;
+    const newPosts = [...byId.values()].sort((a, b) => {
+      const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+      const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
       return bt - at;
     });
 
-    // AI tomonidan yashirilgan postlar (aiHidden=true) hech kimga ko'rsatilmaydi —
-    // egasiga ham. Faqat admin "AI Moderatsiya" panelida alohida so'rov orqali ko'radi.
-    //
-    // MUHIM: AI tekshiruvi fon rejimida ~5 soniya davom etadi. Ilgari shu
-    // oraliqda post HAMMAGA (aiHidden hali false bo'lgani uchun) ko'rinib
-    // turardi — taqiqlangan kontent uchun qisqa "erkin oyna" hosil bo'lardi.
-    // Endi: AI hali tekshirmagan (aiChecked !== true) postni FAQAT o'z egasi
-    // ko'radi (o'z yuklaganini darhol ko'rishi kerak), boshqalarga esa AI
-    // "toza" deb tasdiqlagandan keyingina ko'rinadi.
-    //
-    // XAVFSIZLIK TARMOG'I: AI tekshiruvi muallifning O'Z BRAUZER sessiyasi
-    // orqali ishlaydi (runAiModeration — upload.js). Agar muallif postni
-    // yuklab, tekshiruv tugashidan oldin (~5s) ilovani yopib qo'ysa yoki
-    // sahifani tark etsa, `aiChecked` ABADIY `false` bo'lib qolib, post
-    // hech kimga (hatto yangi foydalanuvchilarga ham) umuman ko'rinmay
-    // qoladi. Buning oldini olish uchun: yaratilganiga MODERATION_GRACE_MS
-    // dan ko'proq vaqt o'tgan, lekin hali tekshirilmagan postlarni ham
-    // "xavfsiz" deb hisoblab ko'rsatamiz (aiHidden bo'lmasa).
-    const MODERATION_GRACE_MS = 20000; // 20 soniya
-    const _nowMs = Date.now();
-    const newPosts = firestorePosts.filter(p => {
-      if (p.aiHidden === true) return false;
-      if (p.userId === myUid) return true;
-      if (p.aiChecked === true) return true;
-      const createdMs = p.createdAt?.toMillis ? p.createdAt.toMillis() : 0;
-      return createdMs > 0 && (_nowMs - createdMs) > MODERATION_GRACE_MS;
-    });
-
-    // O'Z-O'ZINI TUZATISH: agar shu render paytida O'ZIMIZNING biror postimiz
-    // "tekshiruv muddati o'tib ketgan" holatda topilsa (ya'ni muallif sifatida
-    // biz hozir qaytib kirdik, lekin aiChecked hamon false) — Firestore'da
-    // ham to'g'irlab qo'yamiz, shunda u boshqalarga ham doimiy ravishda
-    // (grace-window'siz ham) ko'rinadigan bo'ladi. Best-effort, xato bo'lsa
-    // jim o'tkazib yuboramiz.
-    firestorePosts.forEach(p => {
-      if (p.userId !== myUid || p.aiChecked === true || p.aiHidden === true) return;
-      const createdMs = p.createdAt?.toMillis ? p.createdAt.toMillis() : 0;
-      if (createdMs > 0 && (_nowMs - createdMs) > MODERATION_GRACE_MS) {
-        updateDoc(doc(db, 'posts', p.id), { aiChecked: true }).catch(() => {});
-      }
-    });
-
-    // User cache update - har bir post uchun user ma'lumotini cache qilish
-    const uniqueUids = [...new Set(newPosts.map(p => p.userId).filter(Boolean))];
-    if (uniqueUids.length) {
-      // Cache dan borlarni olib tashlash, yangilarini yuklash
-      const uidsToFetch = uniqueUids.filter(uid => !state._userCache[uid]);
-      if (uidsToFetch.length) {
-        const userDocs = await Promise.all(uidsToFetch.map(u => getDoc(doc(db,'users',u))));
-        uidsToFetch.forEach((u, i) => {
-          const d = userDocs[i].data() || {};
-          state._userCache[u] = {
-            uid: u,
-            fullName: d.fullName,
-            avatar: d.avatar,
-            username: d.username,
-            blocked: d.blocked,
-            approved: d.approved
+    // Muallif ma'lumotlarini keshlash (bitta so'rov bilan)
+    const uidsToFetch = [...new Set(newPosts.map(p => p.userId).filter(Boolean))]
+      .filter(uid => !state._userCache[uid]);
+    if (uidsToFetch.length) {
+      try {
+        const { data } = await sb.from('profiles')
+          .select('id,full_name,avatar,username,blocked,approval')
+          .in('id', uidsToFetch);
+        for (const row of data || []) {
+          const d = mapProfile(row);
+          state._userCache[d.uid] = {
+            uid: d.uid, fullName: d.fullName, avatar: d.avatar,
+            username: d.username, blocked: d.blocked, approved: d.approved,
           };
-        });
+        }
+      } catch (err) {
+        console.warn('[Auth] Muallif profillarini olishda xato:', err?.message);
       }
     }
 
-    // Structural change detection - faqat post ID o'zgarganda re-render
+    // Faqat post ID'lari o'zgarganda to'liq re-render
     const currentIds = newPosts.map(p => p.id).join(',');
     const structural = _lastPostIds !== currentIds;
 
-    // Like/views/commentCount o'zgarishini aniqlash
-    const countChanged = state.allPosts && state.allPosts.some((oldP) => {
+    const countChanged = state.allPosts && state.allPosts.some(oldP => {
       const newP = newPosts.find(p => p.id === oldP.id);
       return newP && (
         newP.likes !== oldP.likes ||
@@ -1141,13 +889,9 @@ export function listenPosts() {
     state.allPosts = newPosts;
     _lastPostIds = currentIds;
 
-    // Keyingi safar DARHOL ko'rsatish uchun keshga yozib qo'yamiz
-    // (faqat structural o'zgarish bo'lganda — like/views sonini har safar
-    // keshga yozib turishning hojati yo'q).
     if (structural) cachePosts(myUid, newPosts);
 
     if (structural) {
-      // Faqat post qo'shilganda/o'chirilganda to'liq re-render
       if (state.view === 'home')      _cb.renderFeed?.();
       if (state.view === 'reels')     _cb.renderReels?.();
       if (state.view === 'profile')   _cb.renderProfile?.();
@@ -1156,58 +900,55 @@ export function listenPosts() {
         if (modal?.classList.contains('show')) _cb.renderUserProfileModal?.(state.currentViewingUserId);
       }
     } else if (countChanged) {
-      // Faqat count o'zgarganda - patch only
       _cb.patchCounts?.(newPosts);
     }
   };
 
-  const onErr = label => err => {
-    console.warn(`[Auth] Posts listener error (${label}):`, err.message);
+  const POST_LIMIT = 1000; // scroll orqali 10 tadan ko'rsatiladi
+
+  const load = async () => {
+    const { data, error } = await sb.from('posts')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(POST_LIMIT);
+    if (error) { console.warn('[Auth] Posts yuklashda xato:', error.message); return; }
+    byId.clear();
+    for (const r of data || []) byId.set(r.id, mapPost(r));
+    _scheduleRender();
   };
 
-  const POST_LIMIT = 1000; // Barcha postlarni yuklash (scroll orqali 10 tadan ko'rsatiladi)
+  load();
 
-  {
-    // ESLATMA: Ilgari admin uchun alohida, where()siz (butun kolleksiyani
-    // filtrsiz o'qiydigan) onSnapshot ishlatilar edi — "qoida resource.data
-    // dan qat'i nazar ruxsat beradi" degan taxmin bilan. Amalda bu so'rov
-    // ba'zan "Missing or insufficient permissions" bilan rad etilib,
-    // _publicDocs hech qachon to'lmasdi — natijada admin faqat ESKI
-    // keshdagi (odatda faqat o'zining) postlarini ko'rardi. Bu yerda ham
-    // xuddi shu ikkita filterlangan (va ISHONCHLI ishlaydigan) so'rov
-    // ishlatiladi — chunki uy feedida baribir faqat isPublic==true va
-    // o'z postlari ko'rsatiladi (pastda, filtered() orqali); admin panelidagi
-    // statistika/moderatsiya esa mutlaqo alohida getDocs so'rovi bilan
-    // ishlaydi (view-users.js) va bunga bog'liq emas.
-    const unsubPublic = onSnapshot(
-      query(collection(db,'posts'), where('isPublic','==', true), limit(POST_LIMIT)),
-      snap => { _publicDocs = snap.docs.map(d => ({ id: d.id, ...d.data() })); _scheduleRender(); },
-      onErr('public')
-    );
-    const unsubOwn = onSnapshot(
-      query(collection(db,'posts'), where('userId','==', myUid), limit(POST_LIMIT)),
-      snap => { _ownDocs = snap.docs.map(d => ({ id: d.id, ...d.data() })); _scheduleRender(); },
-      onErr('own')
-    );
-    _postsUnsub = () => { clearTimeout(_renderDebounceTimer); unsubPublic(); unsubOwn(); };
-  }
+  let _subscribedOnce = false;
+  const ch = sb.channel('posts-feed')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, payload => {
+      if (payload.eventType === 'DELETE') byId.delete(payload.old?.id);
+      else if (payload.new?.id) byId.set(payload.new.id, mapPost(payload.new));
+      _scheduleRender();
+    })
+    .subscribe(status => {
+      if (status === 'SUBSCRIBED') {
+        // Uzilib qayta ulanganda o'tkazib yuborilgan o'zgarishlarni to'ldiramiz
+        if (_subscribedOnce) load();
+        _subscribedOnce = true;
+      }
+    });
+
+  _postsUnsub = () => { clearTimeout(_renderDebounceTimer); sb.removeChannel(ch); };
 }
 
 /* ── Follow / Unfollow ───────────────────────────────────────────────── */
 export async function follow(uid, silent = false) {
-  await Promise.all([
-    updateDoc(doc(db,'users',state.me.uid), { following: arrayUnion(uid) }),
-    updateDoc(doc(db,'users',uid),          { followers: arrayUnion(state.me.uid) })
-  ]);
+  const { error } = await sb.from('follows').insert({ follower_id: state.me.uid, following_id: uid });
+  if (error && error.code !== '23505') throw error; // 23505 = allaqachon obuna
   state.myFollowing.add(uid);
   if (!silent) toast('Obuna bo\'lindi', 'success');
 }
 
 export async function unfollow(uid, silent = false) {
-  await Promise.all([
-    updateDoc(doc(db,'users',state.me.uid), { following: arrayRemove(uid) }),
-    updateDoc(doc(db,'users',uid),          { followers: arrayRemove(state.me.uid) })
-  ]);
+  const { error } = await sb.from('follows').delete()
+    .eq('follower_id', state.me.uid).eq('following_id', uid);
+  if (error) throw error;
   state.myFollowing.delete(uid);
   if (!silent) toast('Obunadan chiqildi', 'info');
 }
@@ -1222,7 +963,8 @@ const editProfileBtn = $('editProfileBtn');
 if (editProfileBtn) {
   editProfileBtn.onclick = async () => {
     if (!state.me) return;
-    const d = (await getDoc(doc(db,'users',state.me.uid))).data() || {};
+    const { data: _row } = await sb.from('profiles').select('*').eq('id', state.me.uid).maybeSingle();
+    const d = mapProfile(_row) || {};
     _peOriginalUsername = d.username || '';
 
     const editName = $('editName');
@@ -1315,59 +1057,34 @@ if (saveProfileBtn) {
     if (!fn) { toast('Ismingizni kiriting', 'error'); return; }
 
     const updates = {
-      fullName: fn,
-      bio:      $('editBioInput')?.value?.trim() || '',
-      website:  $('editWebsite')?.value?.trim() || '',
-      location: $('editLocation')?.value?.trim() || '',
+      full_name: fn,
+      bio:       $('editBioInput')?.value?.trim() || '',
+      website:   $('editWebsite')?.value?.trim() || '',
+      location:  $('editLocation')?.value?.trim() || '',
     };
 
     const rawUser = $('editUsername')?.value?.trim() || '';
     if (rawUser) {
       const cleaned = rawUser.toLowerCase().replace(/[^a-z0-9_]/g, '');
-      if (cleaned.length < 1) { toast("Username bo'sh bo'lishi mumkin emas", 'error'); return; }
+      if (cleaned.length < 2) { toast("Username kamida 2 ta belgi bo'lishi kerak (a-z, 0-9, _)", 'error'); return; }
       updates.username = cleaned;
     }
 
-    if (_peAviPending)   updates.avatar   = _peAviPending;
-    if (_peCoverPending) updates.coverUrl  = _peCoverPending;
+    if (_peAviPending)   updates.avatar    = _peAviPending;
+    if (_peCoverPending) updates.cover_url = _peCoverPending;
 
     try {
-      await updateDoc(doc(db,'users',state.me.uid), updates);
-      await fbUpdateProfile(state.me, { displayName: fn, ...(updates.avatar ? { photoURL: updates.avatar } : {}) });
-
-      // Agar username o'zgartirilgan bo'lsa — /usernames xaritasini ham
-      // yangilaymiz (eski kalitni o'chirib, yangisini yozamiz), aks holda
-      // login paytidagi qidiruv eski username bilan ishlab, yangisi bilan
-      // ishlamay qoladi.
-      if (updates.username) {
-        try {
-          const oldKey = _peOriginalUsername.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const newKey = updates.username.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const email  = auth.currentUser?.email || uToEmail(updates.username);
-          if (oldKey && oldKey !== newKey) {
-            try { await deleteDoc(doc(db, 'users', '_index', 'usernames', oldKey)); } catch(_) {}
-          }
-          await setDoc(doc(db, 'users', '_index', 'usernames', newKey), { uid: state.me.uid, email });
-        } catch (unameErr) {
-          console.warn('[Auth] usernames xaritasi yangilanmadi:', unameErr.message);
-        }
+      const { error } = await sb.from('profiles').update(updates).eq('id', state.me.uid);
+      if (error) {
+        if (error.code === '23505') { toast('Bu username band', 'error'); return; }
+        throw error;
       }
-
-      // Agar username o'zgartirilgan bo'lsa — eski postlardagi author maydonini ham yangilash
-      if (updates.username) {
-        try {
-          const postsSnap = await getDocs(
-            query(collection(db,'posts'), where('userId','==',state.me.uid))
-          );
-          if (!postsSnap.empty) {
-            const batch = writeBatch(db);
-            postsSnap.docs.forEach(d => batch.update(d.ref, { author: updates.username }));
-            await batch.commit();
-          }
-        } catch(batchErr) {
-          console.warn('Postlar username yangilanmadi:', batchErr);
-        }
-      }
+      // Login username'dan email'ni DB'dan topadi (email_for_username) —
+      // username o'zgarsa ham login yangi nom bilan ishlayveradi.
+      state.me.displayName = fn;
+      if (updates.username) state.me.username = updates.username;
+      if (updates.avatar)   state.me.photoURL = updates.avatar;
+      invalidateUserCache(state.me.uid);
 
       const profileEditOverlay = $('profileEditOverlay');
       if (profileEditOverlay) { profileEditOverlay.classList.remove('show'); unlockScroll(); }
@@ -1389,20 +1106,13 @@ const logoutBtn = $('logoutBtn');
 if (logoutBtn) {
   logoutBtn.onclick = async () => {
     await removePushToken();
-    clearControllerCache();
     clearAllCache();
-    await signOut(auth);
+    try { await sb.auth.signOut(); } catch (_) {}
     location.replace('/');
   };
 }
 
-/* ── Sozlamalar (Settings) sheet — AI ovoz tanlovi + hisobni o'chirish ── */
-function _applyVoiceToggleUI(gender) {
-  const male   = $('voiceOptMale');
-  const female = $('voiceOptFemale');
-  if (male)   male.classList.toggle('active', gender === 'male');
-  if (female) female.classList.toggle('active', gender === 'female');
-}
+/* ── Sozlamalar (Settings) sheet — bildirishnoma + hisobni o'chirish ── */
 
 function _applyNotifToggleUI() {
   const toggle = $('notifToggle');
@@ -1442,7 +1152,6 @@ const settingsBtn = $('settingsBtn');
 if (settingsBtn) {
   settingsBtn.onclick = () => {
     _paintSettingsProfileCard();
-    _applyVoiceToggleUI(getAiVoiceGender());
     _applyNotifToggleUI();
     $('settingsMoreMenu')?.classList.remove('show');
     const settingsOverlay = $('settingsOverlay');
@@ -1469,21 +1178,6 @@ if (settingsOverlay) {
     }
   };
 }
-
-['voiceOptMale', 'voiceOptFemale'].forEach(id => {
-  const btn = $(id);
-  if (!btn) return;
-  btn.onclick = () => {
-    const gender = btn.dataset.voice === 'female' ? 'female' : 'male';
-    setAiVoiceGender(gender);
-    _applyVoiceToggleUI(gender);
-    // Hozir ochiq turgan "MRgram AI" suhbatini DARHOL qayta chizamiz —
-    // shu bilan HATTO tarixdagi (avval boshqa ovozda tayyorlangan) ovozli
-    // xabarlar ham yangi tanlangan ovozga zudlik bilan o'tib qoladi.
-    repaintForVoiceGenderChange();
-    toast(gender === 'female' ? "Ovoz: Madina (ayol)" : 'Ovoz: Sardor (erkak)', 'success');
-  };
-});
 
 const notifToggle = $('notifToggle');
 if (notifToggle) {
@@ -1515,7 +1209,6 @@ if (clearCacheBtn) {
     clearCacheBtn.disabled = true;
     try {
       clearAllCache();
-      clearControllerCache();
       await clearRuntimeCache();
       toast('Kesh tozalandi', 'success');
     } catch (e) {
@@ -1542,6 +1235,8 @@ if (settingsMoreBtn && settingsMoreMenu) {
   });
 }
 
+const _purgeMyMedia = () => purgeUserMedia(state.me?.uid);
+
 const deleteAccountBtn = $('deleteAccountBtn');
 if (deleteAccountBtn) {
   deleteAccountBtn.onclick = () => {
@@ -1553,23 +1248,13 @@ if (deleteAccountBtn) {
         deleteAccountBtn.disabled = true;
         toast("Hisob o'chirilmoqda...", 'info');
         try {
-          const idToken = await auth.currentUser?.getIdToken();
-          const res = await fetch('/api/delete-user', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${idToken}`,
-            },
-            body: JSON.stringify({ uid: state.me.uid }),
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok || !data.ok) {
-            throw new Error(data?.error || `Server xatosi (${res.status})`);
-          }
+          await _purgeMyMedia();
+          const { error: delErr } = await sb.rpc('delete_my_account');
+          if (delErr) throw delErr;
           await removePushToken().catch(() => {});
-          clearControllerCache();
           clearAllCache();
-          await signOut(auth).catch(() => {});
+          try { await sb.auth.signOut(); } catch (_) {}
+          try { localStorage.removeItem('mrgram-auth'); } catch (_) {}
           location.replace('/');
         } catch (e) {
           deleteAccountBtn.disabled = false;

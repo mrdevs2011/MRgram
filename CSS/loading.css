@@ -98,10 +98,8 @@
   align-items: center;
   justify-content: center;
   width: 44px; height: 44px;
-  border-radius: 14px;
-  overflow: hidden;
-  background: var(--bg3);
-  border: 0.5px solid var(--line2);
+  background: none;
+  border: none;
 }
 
 .auth-logo-glass img {

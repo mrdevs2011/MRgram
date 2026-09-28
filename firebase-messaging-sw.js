@@ -1,48 +1,44 @@
 /**
- * firebase-messaging-sw.js
- * Background push notification handler.
- * Android: sayt yopiq bo'lsa ham ishlaydi.
- * Desktop: sayt ochiq bo'lsa ishlaydi (SW aktiv bo'lganda).
+ * firebase-messaging-sw.js  (fayl nomi eski — index.html shu nom bilan ro'yxatdan o'tkazadi)
+ * Firebase endi ishlatilmaydi: standart Web Push ('push' hodisasi).
+ * Payload Edge Function'dan keladi: { title, body, type, fromUid, chatId, groupId }
+ * Android: sayt yopiq bo'lsa ham ishlaydi. Desktop: brauzer ochiq bo'lsa.
  */
 
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
-
-firebase.initializeApp({
-  apiKey:            "AIzaSyBhzWWFFgrOH84J2RIW5o7l_8192iPtbOg",
-  authDomain:        "code-vibe-df610.firebaseapp.com",
-  projectId:         "code-vibe-df610",
-  storageBucket:     "code-vibe-df610.firebasestorage.app",
-  messagingSenderId: "747762490655",
-  appId:             "1:747762490655:web:a6aba637700668ebf3a42a",
-});
-
-const messaging = firebase.messaging();
-
-// Background xabar kelganda (sayt yopiq / fokusda emas)
-messaging.onBackgroundMessage((payload) => {
-  const { title, body } = payload.notification || {};
-  const data = payload.data || {};
+self.addEventListener('push', (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; }
+  catch (_) { data = { body: event.data ? event.data.text() : '' }; }
 
   const isCall = data.type === 'call';
 
-  self.registration.showNotification(title || 'MRgram', {
-    body:  body || '',
-    icon:  '/icons/icon-192.png',
-    badge: '/icons/icon-192.png',
-    tag:   isCall ? 'mrgram-call' : (data.fromUid || data.chatId || 'mrgram'),
-    data:  { url: '/', ...data },
-    // Qo'ng'iroqda kuchli tebranish pattern
-    vibrate: isCall
-      ? [500, 200, 500, 200, 500, 200, 500, 200, 500]
-      : [200, 100, 200],
-    requireInteraction: isCall, // Qo'ng'iroq bildirishnomasi o'z-o'zidan yopilmaydi
-    silent: false,
-    actions: isCall ? [
-      { action: 'accept', title: 'Qabul qilish' },
-      { action: 'reject', title: 'Rad etish' },
-    ] : [],
-  });
+  event.waitUntil((async () => {
+    // Ilova ochiq va ko'rinib turgan bo'lsa (qo'ng'iroqdan tashqari) bildirishnoma ko'rsatmaymiz —
+    // xabarni foydalanuvchi allaqachon ilovada ko'rib turibdi.
+    if (!isCall) {
+      const wins = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+      if (wins.some((c) => c.visibilityState === 'visible')) return;
+    }
+
+    await self.registration.showNotification(data.title || 'MRgram', {
+      body:  data.body || '',
+      icon:  '/icons/icon-192.png',
+      badge: '/icons/icon-192.png',
+      tag:   isCall ? 'mrgram-call' : (data.chatId || data.groupId || data.fromUid || 'mrgram'),
+      renotify: !isCall,
+      data:  { url: '/', ...data },
+      // Qo'ng'iroqda kuchli tebranish pattern
+      vibrate: isCall
+        ? [500, 200, 500, 200, 500, 200, 500, 200, 500]
+        : [200, 100, 200],
+      requireInteraction: isCall, // Qo'ng'iroq bildirishnomasi o'z-o'zidan yopilmaydi
+      silent: false,
+      actions: isCall ? [
+        { action: 'accept', title: "Qabul qilish" },
+        { action: 'reject', title: "Rad etish" },
+      ] : [],
+    });
+  })());
 });
 
 // Notification bosilganda saytni ochish
@@ -77,7 +73,7 @@ self.addEventListener('notificationclick', (event) => {
 /* ── Cache versiyasi ── */
 // Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
 // bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 'v65';
+const CACHE_VERSION  = 'v68';
 const STATIC_CACHE   = `mrgram-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
 
@@ -124,7 +120,6 @@ const PRECACHE_URLS = [
   '/modules/comments.js',
   '/modules/cover-crop.js',
   '/modules/duration-picker.js',
-  '/modules/file-extract.js',
   '/modules/groups.js',
   '/modules/local-cache.js',
   '/modules/profile.js',
@@ -133,10 +128,6 @@ const PRECACHE_URLS = [
   '/modules/admin-audit.js',
   '/modules/admin-badge.js',
   '/modules/dashboard-summary.js',
-  '/modules/mrgram-ai.js',
-  '/modules/voice-fx-player.js',
-  '/modules/token-usage.js',
-  '/modules/view-ai-usage.js',
   '/modules/view-actions.js',
   '/modules/view-chats.js',
   '/modules/view-home.js',
@@ -149,43 +140,14 @@ const PRECACHE_URLS = [
   '/svg/MRgram.svg',
   '/svg/favicon.svg',
   '/svg/splash.svg',
-  // "MRgram AI" ovozli xabar effekti (qisqa nafas) — offline holatda ham
-  // javob eshittirilganda effekt ijro etilishi uchun. ([pauza] marker
-  // audio fayl talab qilmaydi, shu sabab bu yerda yo'q. Boshqa eski
-  // effektlar — tomoq-qirish/yo'tal/chuqur-nafas/kulgi — v58 patchda
-  // butunlay olib tashlandi, endi ular ishlatilmaydi.)
-  '/audio/sardor/qisqa-nafas.mp3',
-  '/audio/madina/qisqa-nafas.mp3',
-  // Firebase SDK (gstatic.com) — bular ES-import orqali chaqiriladi.
-  // Bularsiz config.js import bosqichida XATO berib, offline'da BUTUN
-  // ilova ishdan chiqadi — shuning uchun ular ham shart precache qilinadi.
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js',
 ];
 
-// Qaysi so'rovlarga tegmaymiz (Firebase backend API, tashqi CDN va h.k.).
-// DIQQAT: gstatic.com/firebasejs/* (Firebase SDK JS fayllari) BU YERDA
-// bypass qilinmaydi — ular statik kutubxona fayllari, offline uchun
-// keshlanishi SHART. Faqat haqiqiy jonli backend chaqiruvlari (Firestore
-// so'rovlari, auth so'rovlari) bypass qilinadi — ular hech qachon
-// keshlanmasligi kerak, chunki oni doim eng yangi ma'lumotni talab qiladi.
+// Qaysi so'rovlarga tegmaymiz: jonli backend (Supabase), tashqi CDN va /api/ —
+// ular hech qachon keshlanmaydi, to'g'ridan-to'g'ri tarmoqqa ketadi.
 function _isBypassed(url) {
-  // Firebase SDK statik fayllari (gstatic.com/firebasejs/*) — bypass QILINMAYDI,
-  // ular keshlanishi va offline'da xizmat qilishi kerak (yuqorida sabab yozilgan).
-  if (url.startsWith('https://www.gstatic.com/firebasejs/')) return false;
-
-  // Qolgan hammasi: jonli backend chaqiruvlari, boshqa tashqi domenlar —
-  // bularni hech qachon keshlamaymiz / to'g'ridan-to'g'ri tarmoqqa yuboramiz.
   return (
-    url.includes('googleapis.com') ||   // Firestore/Auth/Storage REST so'rovlari
-    url.includes('gstatic.com') ||      // boshqa gstatic resurslar (SDK bundan mustasno, yuqorida)
-    url.includes('firebase') ||
+    url.includes('supabase.co') ||
     url.includes('/api/') ||
-    url.includes('cloudflare') ||
     !url.startsWith(self.location.origin)
   );
 }
@@ -271,8 +233,7 @@ self.addEventListener('fetch', (event) => {
       caches.match(event.request).then((cached) => {
         const networkFetch = fetch(event.request)
           .then((response) => {
-            const cacheable = response && response.status === 200 &&
-              (response.type === 'basic' || url.startsWith('https://www.gstatic.com/firebasejs/'));
+            const cacheable = response && response.status === 200 && response.type === 'basic';
             if (cacheable) {
               const cloned = response.clone();
               caches.open(STATIC_CACHE).then((cache) => cache.put(event.request, cloned));

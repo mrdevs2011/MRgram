@@ -160,41 +160,6 @@
   margin: 6px 0 10px;
 }
 
-.voice-toggle-group {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.voice-toggle-opt {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 12px 8px;
-  background: #121219;
-  border: 1px solid var(--line2);
-  border-radius: 12px;
-  color: var(--text2);
-  font-size: 12.5px;
-  font-weight: 500;
-  font-family: var(--font);
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.voice-toggle-opt:hover {
-  background: #1A1A20;
-  border-color: var(--line3);
-}
-
-.voice-toggle-opt.active {
-  background: var(--blue);
-  border-color: transparent;
-  color: #fff;
-}
-
 .settings-row {
   display: flex;
   align-items: center;

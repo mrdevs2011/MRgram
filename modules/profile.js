@@ -1,16 +1,26 @@
-import { db, state, getMediaUrl, uploadViaController } from './config.js';
+import { sb, state, getMediaUrl, uploadViaController, mapProfile } from './config.js';
 import { $, esc, fmt, fmtSz, defAvi,
          initVidWrap, openZoom }         from './utils.js';
 import { toast }                         from './toast.js';
 import { follow, unfollow }              from './auth.js';
-import {
-  collection, query, orderBy, doc, getDoc,
-  getDocs, deleteDoc, setDoc, updateDoc,
-  serverTimestamp, increment
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import {
-  updateProfile as fbUpdateProfile
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+/** Obunachilar / obunalar soni (follows jadvalidan) */
+async function _followCounts(uid) {
+  const [a, b] = await Promise.all([
+    sb.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', uid),
+    sb.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', uid),
+  ]);
+  return { followersCount: a.count || 0, followingCount: b.count || 0 };
+}
+
+/** profiles qatori + obuna sonlari (eski users/{uid} hujjatiga o'xshash) */
+async function _loadProfile(uid) {
+  const [{ data }, counts] = await Promise.all([
+    sb.from('profiles').select('*').eq('id', uid).maybeSingle(),
+    _followCounts(uid),
+  ]);
+  return { ...(mapProfile(data) || {}), ...counts };
+}
 import { cacheProfile, getCachedProfile } from './local-cache.js';
 
 /* ── My profile ──────────────────────────────────────────────────────── */
@@ -21,8 +31,7 @@ export async function renderProfile() {
   const cached = getCachedProfile(state.me.uid);
   if (cached) _paintProfile(cached);
 
-  const snap = await getDoc(doc(db,'users',state.me.uid));
-  const ud   = snap.data() || {};
+  const ud = await _loadProfile(state.me.uid);
   cacheProfile(state.me.uid, ud);
   await _paintProfile(ud);
 }
@@ -74,8 +83,8 @@ async function _paintProfile(ud) {
   const myP = state.allPosts.filter(p => p.userId === state.me.uid);
   $('statPosts').textContent     = myP.length;
   $('statLikes').textContent     = myP.reduce((s,p) => s+(p.likes||0), 0);
-  $('statFollowers').textContent = (ud.followers||[]).length;
-  $('statFollowing').textContent = (ud.following||[]).length;
+  $('statFollowers').textContent = ud.followersCount ?? 0;
+  $('statFollowing').textContent = ud.followingCount ?? 0;
 
   // Avatar click — zoom + quick edit shortcut
   $('profileAvi').onclick = () => {
@@ -167,14 +176,14 @@ export async function openDetail(id) {
     <div class="h-60px"></div>`;
   $('detailModal').classList.add('show');
 
-  const [lS, cS, uS] = await Promise.all([
-    getDoc(doc(db,'posts',id,'likes',state.me.uid)),
-    getDocs(query(collection(db,'posts',id,'comments'), orderBy('createdAt','asc'))),
-    getDoc(doc(db,'users',p.userId))
+  const [lR, cR, uR] = await Promise.all([
+    sb.from('post_likes').select('post_id', { count: 'exact', head: true }).eq('post_id', id).eq('user_id', state.me.uid),
+    sb.from('comments').select('id', { count: 'exact', head: true }).eq('post_id', id),
+    sb.from('profiles').select('*').eq('id', p.userId).maybeSingle(),
   ]);
-  const isLiked  = lS.exists();
-  const cmtCount = cS.docs.length;
-  const ud = uS.data() || {};
+  const isLiked  = (lR.count || 0) > 0;
+  const cmtCount = cR.count || 0;
+  const ud = mapProfile(uR.data) || {};
   const av = ud.avatar || defAvi(ud.fullName);
   const isOwn = p.userId === state.me?.uid;
   if (isLiked) state.myLikedPosts.add(id);
@@ -231,8 +240,8 @@ export async function openDetail(id) {
   $('detailModal').onclick = e => { if (e.target === $('detailModal')) closeDetail(); };
   $('dmLikeBtn').onclick = async () => {
     await doLikeGen(id, $('dmLikeBtn'));
-    const s = await getDoc(doc(db,'posts',id));
-    const n = s.data()?.likes || 0;
+    const { data: _pr } = await sb.from('posts').select('likes_count').eq('id', id).maybeSingle();
+    const n = _pr?.likes_count ?? 0;
     $('dmLikeCount').textContent  = n;
     $('dmLikeCount2').textContent = n;
   };
@@ -246,16 +255,16 @@ export async function openDetail(id) {
 export async function doLikeGen(id, btn) {
   if (!state.me) return;
   const wasLiked = state.myLikedPosts.has(id);
-  const lRef     = doc(db,'posts',id,'likes',state.me.uid);
-  const pRef     = doc(db,'posts',id);
   const svg      = btn.querySelector('svg');
   if (wasLiked) {
     state.myLikedPosts.delete(id);
-    await Promise.all([deleteDoc(lRef), updateDoc(pRef,{likes:increment(-1)})]);
+    const { error } = await sb.from('post_likes').delete().eq('post_id', id).eq('user_id', state.me.uid);
+    if (error) { state.myLikedPosts.add(id); return; }
     btn.classList.remove('liked'); svg.setAttribute('fill','none'); svg.setAttribute('stroke','currentColor');
   } else {
     state.myLikedPosts.add(id);
-    await Promise.all([setDoc(lRef,{userId:state.me.uid,createdAt:serverTimestamp()}), updateDoc(pRef,{likes:increment(1)})]);
+    const { error } = await sb.from('post_likes').insert({ post_id: id, user_id: state.me.uid });
+    if (error && error.code !== '23505') { state.myLikedPosts.delete(id); return; }
     btn.classList.add('liked'); svg.setAttribute('fill','#f04060'); svg.setAttribute('stroke','#f04060');
   }
 }
@@ -270,8 +279,7 @@ export async function openUserProfileModal(uid) {
 }
 
 export async function renderUserProfileModal(uid) {
-  const uSnap = await getDoc(doc(db,'users',uid));
-  const ud    = uSnap.data() || {};
+  const ud    = await _loadProfile(uid);
   let av      = ud.avatar;
   if (!av || av === '' || av === 'undefined') av = defAvi(ud.fullName || 'U');
 
@@ -286,8 +294,8 @@ export async function renderUserProfileModal(uid) {
   }));
 
   const totalLikes     = userPublicPosts.reduce((s,p) => s + (p.likes||0), 0);
-  const followersCount = (ud.followers||[]).length;
-  const followingCount = (ud.following||[]).length;
+  const followersCount = ud.followersCount ?? 0;
+  const followingCount = ud.followingCount ?? 0;
   const isF            = state.myFollowing.has(uid);
 
   const gridHTML = userPublicPosts.length === 0

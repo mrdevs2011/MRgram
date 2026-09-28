@@ -6,7 +6,6 @@
 
 import { state } from './config.js';
 import { $ } from './utils.js';
-import { ADMIN_UID } from './view-users.js';
 
 /* ═══════════════════════════════════════════════════════════════════════
    ROUTE CONFIGURATION
@@ -449,7 +448,7 @@ export function getRoutePath(routeName) {
 
 /** Admin navbat tugmalarini ko'rsatish/yashirish */
 export function applyAdminNav() {
-  const isAdmin = !!(state.me && state.me.uid === ADMIN_UID);
+  const isAdmin = !!state.me?.isAdmin;
   // Eski tugmalar (agar qolgan bo'lsa)
   const adminBtn = $('adminUsersNavBtn');
   if (adminBtn) adminBtn.classList.toggle('d-none', !isAdmin);
@@ -462,10 +461,5 @@ export function applyAdminNav() {
   // Real-vaqt bildirishnoma badge (faqat admin uchun)
   import('./admin-badge.js').then(m => {
     if (isAdmin) m.initAdminBadge(); else m.destroyAdminBadge();
-  }).catch(() => {});
-
-  // AI token sarfi bubble — faqat admin uchun ko'rinadi
-  import('./token-usage.js').then(m => {
-    m.setTokenUsageBubbleVisible(isAdmin);
   }).catch(() => {});
 }

@@ -1,21 +1,14 @@
 /**
  * MRgram — Dashboard Summary (tezkor umumiy ko'rinish)
  * actionsView boshida — barcha bo'limlardan oldin — kichik "stat card"lar:
- * jami foydalanuvchilar, bugungi yangilar, kutayotganlar, faol AI moderatsiya,
- * bloklanganlar. Scroll qilmasdan holatni darhol ko'rsatadi.
+ * jami foydalanuvchilar, bugungi yangilar, kutayotganlar, bloklanganlar. Scroll qilmasdan holatni darhol ko'rsatadi.
  */
 
-import { db, state } from './config.js';
-import { ADMIN_UID } from './view-users.js';
-import {
-  collection, onSnapshot, query, where
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { sb, state, mapProfile, fetchAllRows } from './config.js';
 
 let _usersUnsub = null;
-let _aiModUnsub = null;
 
 let _usersSnapCache = null; // oxirgi users snapshot natijasi
-let _aiModCount = 0;
 
 /* ── CSS ── */
 function _injectCSS() {
@@ -85,7 +78,6 @@ function _render(containerId) {
     { label: "Jami foydalanuvchilar", value: total, cls: '' },
     { label: "Bugungi yangilar", value: newToday, cls: 'info' },
     { label: "Kutayotganlar", value: pending, cls: pending > 0 ? 'warn' : 'ok' },
-    { label: "Faol AI moderatsiya", value: _aiModCount, cls: _aiModCount > 0 ? 'warn' : 'ok' },
     { label: "Bloklanganlar", value: blocked, cls: blocked > 0 ? 'warn' : '' },
   ];
 
@@ -107,25 +99,26 @@ export function initDashboardSummary(containerId) {
   _render(containerId);
 
   if (_usersUnsub) { _usersUnsub(); _usersUnsub = null; }
-  if (_aiModUnsub) { _aiModUnsub(); _aiModUnsub = null; }
 
-  _usersUnsub = onSnapshot(collection(db, 'users'), snap => {
-    _usersSnapCache = snap.docs
-      .map(d => ({ id: d.id, ...d.data() }))
-      .filter(u => (u.uid || u.id) !== ADMIN_UID);
-    _render(containerId);
-  }, () => {});
-
-  const aiModQ = query(collection(db, 'posts'), where('aiHidden', '==', true));
-  _aiModUnsub = onSnapshot(aiModQ, snap => {
-    _aiModCount = snap.size;
-    _render(containerId);
-  }, () => {});
+  let dead = false, timer = null;
+  const load = async () => {
+    try {
+      const rows = await fetchAllRows('profiles', 'id,approval,blocked,created_at');
+      if (dead) return;
+      _usersSnapCache = rows.map(mapProfile).filter(u => u.uid !== state.me?.uid);
+      _render(containerId);
+    } catch (_) {}
+  };
+  // presence (last_seen) yangilanishlari ko'p — UPDATE'larni siyraklashtiramiz
+  const schedule = ev => { clearTimeout(timer); timer = setTimeout(load, ev === 'UPDATE' ? 5000 : 400); };
+  load();
+  const ch = sb.channel('admin-dash')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, p => schedule(p.eventType))
+    .subscribe();
+  _usersUnsub = () => { dead = true; clearTimeout(timer); sb.removeChannel(ch); };
 }
 
 export function destroyDashboardSummary() {
   if (_usersUnsub) { _usersUnsub(); _usersUnsub = null; }
-  if (_aiModUnsub) { _aiModUnsub(); _aiModUnsub = null; }
   _usersSnapCache = null;
-  _aiModCount = 0;
 }

@@ -1,14 +1,11 @@
 /**
  * MRgram — Admin Audit Log
- * Har bir muhim admin amalini 'adminActions' collection'iga yozadi
+ * Har bir muhim admin amalini 'admin_actions' jadvaliga yozadi
  * va actions sahifasida "So'nggi amallar" ro'yxatini render qiladi.
  */
 
-import { db, state } from './config.js';
+import { sb, state, ts } from './config.js';
 import { esc } from './utils.js';
-import {
-  collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 const MAX_ITEMS = 30;
 
@@ -19,13 +16,8 @@ const ACTION_META = {
   userDelete:       { label: 'Foydalanuvchi o\'chirildi',       icon: '🗑️', color: 'var(--red,#ef4444)' },
   userApprove:      { label: 'Foydalanuvchi tasdiqlandi',       icon: '✅', color: 'var(--green,#22c55e)' },
   userReject:       { label: 'Foydalanuvchi rad etildi',        icon: '⛔', color: 'var(--red,#ef4444)' },
-  postRestore:      { label: 'Post qaytarildi (AI moderatsiya)', icon: '↩️', color: 'var(--blue,#3b82f6)' },
-  postBlockUser:    { label: 'Post asosida foydalanuvchi bloklandi', icon: '🚫', color: 'var(--red,#ef4444)' },
-  aiUnblock:        { label: 'AI bloklagan foydalanuvchi qayta yoqildi', icon: '🔓', color: 'var(--green,#22c55e)' },
-  aiClearViolations:{ label: 'Qoidabuzarliklar tarixi tozalandi', icon: '🧹', color: 'var(--text2)' },
   broadcastSend:    { label: 'E\'lon chop etildi',               icon: '📢', color: 'var(--blue,#3b82f6)' },
   broadcastDelete:  { label: 'E\'lon o\'chirildi',                icon: '🗑️', color: 'var(--text2)' },
-  aiAutoBlock:      { label: 'AI avtomatik bloklash bajardi',    icon: '🤖', color: 'var(--red,#ef4444)' },
 };
 
 /* ── Yozish ──
@@ -35,15 +27,15 @@ const ACTION_META = {
  */
 export async function logAdminAction({ action, targetUid = null, targetName = '', details = '' } = {}) {
   try {
-    await addDoc(collection(db, 'ADMIN', '_index', 'adminActions'), {
+    const { error } = await sb.from('admin_actions').insert({
       action,
-      targetUid,
-      targetName,
+      target_uid:  targetUid,
+      target_name: targetName,
       details,
-      adminUid:  state.me?.uid || null,
-      adminName: state.me?.fullName || state.me?.email || 'Admin',
-      createdAt: serverTimestamp(),
+      admin_id:    state.me?.uid || null,
+      admin_name:  state.me?.displayName || state.me?.email || 'Admin',
     });
+    if (error) throw error;
   } catch (err) {
     // Audit log yozilmasa ham asosiy amal to'xtamasin — faqat konsolga chiqaramiz
     console.warn('[AdminAudit] Yozib bo\'lmadi:', err.message);
@@ -100,20 +92,22 @@ export function initAuditLog(containerId) {
 
   if (_unsub) { _unsub(); _unsub = null; }
 
-  const q = query(
-    collection(db, 'ADMIN', '_index', 'adminActions'),
-    orderBy('createdAt', 'desc'),
-    limit(MAX_ITEMS)
-  );
-
-  _unsub = onSnapshot(q, (snap) => {
-    if (snap.empty) {
+  let dead = false;
+  const load = async () => {
+    const { data, error } = await sb.from('admin_actions').select('*')
+      .order('created_at', { ascending: false }).limit(MAX_ITEMS);
+    if (dead) return;
+    if (error) { wrap.innerHTML = `<div class="audit-empty">Xatolik: ${esc(error.message)}</div>`; return; }
+    _render(data || []);
+  };
+  const _render = (rows) => {
+    if (!rows.length) {
       wrap.innerHTML = `<div class="audit-empty">Hozircha hech qanday amal qayd etilmagan</div>`;
       return;
     }
 
-    wrap.innerHTML = snap.docs.map(d => {
-      const a = d.data();
+    wrap.innerHTML = rows.map(r => {
+      const a = { action: r.action, targetName: r.target_name, details: r.details, adminName: r.admin_name, createdAt: ts(r.created_at) };
       const meta = ACTION_META[a.action] || { label: a.action || 'Amal', icon: '•', color: 'var(--text2)' };
       const dt = a.createdAt?.toDate ? a.createdAt.toDate().toLocaleString('uz-UZ') : 'hozir';
       return `
@@ -126,9 +120,13 @@ export function initAuditLog(containerId) {
           </div>
         </div>`;
     }).join('');
-  }, (err) => {
-    wrap.innerHTML = `<div class="audit-empty">Xatolik: ${esc(err.message)}</div>`;
-  });
+  };
+
+  load();
+  const ch = sb.channel('admin-audit')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'admin_actions' }, () => load())
+    .subscribe();
+  _unsub = () => { dead = true; sb.removeChannel(ch); };
 }
 
 export function destroyAuditLog() {

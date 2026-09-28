@@ -3,13 +3,6 @@
 MRgram — Telegram va Instagram'ning eng yaxshi jihatlarini birlashtirgan
 zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 
-> **Eslatma:** Bu fayl ham foydalanuvchilar uchun qo'llanma, ham "MRgram AI"
-> botining bilim bazasi vazifasini bajaradi — bot javob berishda aynan shu
-> hujjatdagi ma'lumotdan foydalanadi (`modules/mrgram-ai.js` uni runtime'da
-> `/README.md` orqali o'qiydi). Shuning uchun bu yerga yozilgan har qanday
-> o'zgarish avtomatik ravishda botning bilimiga ham ta'sir qiladi — alohida
-> kodni tahrirlash shart emas.
-
 ## 1. Ro'yxatdan o'tish va kirish (Auth) — aniq qadamlar
 
 - Kirish (login) oynasida FAQAT 2 maydon bor: "Foydalanuvchi nomi" va
@@ -43,23 +36,14 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
   bosilganda yuklash oynasi (overlay) ochiladi.
 - Fayl tanlash (rasm, video yoki istalgan boshqa fayl turi: hujjat, zip
   va h.k.), ixtiyoriy tavsif (caption) matni yozish mumkin.
-- "✨ AI caption" tugmasi bilan — sun'iy intellekt fayl mazmuniga qarab
-  avtomatik tavsif/sarlavha taklif qiladi.
 - Ko'rinish darajasi — 2 ta variant (post yaratishda albatta tanlanadi):
   - **Shaxsiy** (standart) — faqat post egasining o'zi ko'radi.
   - **Ommaviy** — barcha foydalanuvchilar lentada ko'radi.
 - Fayl hajmi cheklovi: maksimum 50 MB.
-- Yuklangandan keyin har bir post fonda avtomatik AI moderatsiyadan
-  o'tadi — nomaqbul kontent aniqlansa, post yashiriladi (faqat egasiga
-  yoki adminga ko'rinadi).
 
 ## 3. Lenta / postlar bilan o'zaro ta'sir (Feed)
 
 - Har bir post ostida: like, izoh qoldirish, ulashish imkoniyatlari bor.
-- "✨ AI fikri" tugmasi — sun'iy intellekt post haqida qiziqarli sharh
-  bildiradi.
-- "AI izoh taklifi" — foydalanuvchi nomidan izoh matnini taklif qiladi
-  (tahrirlab yuborish mumkin).
 - Post tavsiflari va izohlarda Markdown belgilari ishlaydi: `**qalin**`,
   `*egik*`, `` `kod` ``, `# sarlavha`, `- ro'yxat`.
 
@@ -76,8 +60,6 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 - Har bir suhbatda push-bildirishnoma (FCM) orqali xabar beriladi.
 - Matnda Markdown belgilari har bir foydalanuvchi xabari uchun ham
   ishlaydi.
-- "MRgram AI" suhbati maxsus: har doim ro'yxat boshida mahkamlangan
-  (pinned) holda turadi va hamma foydalanuvchiga ko'rinadi.
 
 ## 5. Guruhlar va kanallar
 
@@ -89,7 +71,6 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 - Yaratuvchi avtomatik "Egasi" va "Admin" bo'ladi. Egasi/adminlar
   a'zolarni chiqarishi (kick) mumkin.
 - Havola/kod orqali qo'shilish mumkin.
-- Guruhlarda yengil AI-moderatsiya ishlaydi.
 
 ## 6. Qo'ng'iroqlar
 
@@ -112,7 +93,6 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 
 - Foydalanuvchilarni boshqarish: arizalarni tasdiqlash/rad etish,
   bloklash/blokdan chiqarish, o'chirish.
-- "AI Moderatsiya" paneli — AI yashirgan postlarni ko'rib chiqish uchun.
 - Ommaviy xabar (broadcast) yuborish.
 - Statistika: foydalanuvchilar soni, faollik va boshqa ko'rsatkichlar.
 
@@ -123,8 +103,6 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 - Backend: Firebase (Authentication + Firestore) va fayllar uchun
   Supabase Storage.
 - Push-bildirishnomalar: Firebase Cloud Messaging (FCM).
-- AI funksiyalari: Groq API, serverless `/api` endpoint orqali xavfsiz
-  proksilangan holda.
 - Domen: mrgram.vercel.app (Vercel'da joylashtirilgan).
 
 ## 10. Interfeys tuzilishi — UI xaritasi
@@ -155,10 +133,10 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
   pastda ism/username/bio/"Profilni sozlash" tugmasi, eng pastda postlar
   panjarasi (3 ustunli). "Profilni sozlash" bosilsa alohida oyna ochiladi.
 - **Suhbatlar** — yuqorida sarlavha + "+" (yangi guruh/kanal), pastida
-  ro'yxat (eng tepada doim "MRgram AI"). Suhbat bosilsa to'liq ekranli
+  ro'yxat. Suhbat bosilsa to'liq ekranli
   chat oynasi ochiladi.
-- **Boshqaruv/Admin panel** — "Foydalanuvchilar" → "AI Moderatsiya" →
-  "Broadcast" → "Statistika" tartibida.
+- **Boshqaruv/Admin panel** — "Foydalanuvchilar" → "Broadcast" →
+  "Statistika" tartibida.
 
 **Muhim overlay/oynalar:**
 
@@ -169,19 +147,3 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
   yuqori burchakda.
 - Qo'ng'iroq oynalari: markazda ism/avatar + qabul qilish/rad etish
   tugmalari; faol qo'ng'iroqda to'liq ekran video/audio ko'rinishi.
-
-## 11. MRgram AI haqida
-
-- "MRgram AI" — "Suhbatlar" bo'limidagi maxsus, doim mahkamlangan
-  (pinned) bot-chat. Har bir foydalanuvchi u bilan alohida, shaxsiy
-  suhbatga ega.
-- ChatGPT/Gemini/Claude kabi umumiy maqsadli AI yordamchi: har qanday
-  savolga javob beradi, matn/kod yozadi, tarjima qiladi, yuborilgan
-  rasmlarni ko'rib tahlil qiladi.
-- Boshqa foydalanuvchilarning shaxsiy xabarlarini, parollarini yoki
-  maxfiy/admin ma'lumotlarini bilmaydi va bunday narsalarni "bilaman"
-  deb da'vo qilmaydi.
-- Faqat suhbatlashadi — hech qanday amalni (xabar yuborish, guruh
-  yaratish, profil tahrirlash va h.k.) o'zi bajara olmaydi; bunday so'rov
-  kelsa, buni tushuntirib, foydalanuvchini ilovaning tegishli bo'limiga
-  yo'naltiradi.

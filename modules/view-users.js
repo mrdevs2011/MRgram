@@ -1,24 +1,17 @@
 /**
  * MRgram — Admin Foydalanuvchilar Panel
- * Faqat admin (ADMIN_UID — config.js) uchun
+ * Faqat admin (profiles.is_admin) uchun
  */
 
-import { db, auth, state, ADMIN_UID } from './config.js';
-// Orqaga moslik: dashboard-summary.js, router.js, view-actions.js,
-// view-ai-usage.js, view-stats.js — barchasi ADMIN_UID ni shu fayldan
-// import qiladi. Yagona manba endi config.js, bu yerda faqat qayta
-// eksport qilinadi — 5 ta faylni o'zgartirish shart emas.
-export { ADMIN_UID };
+import { sb, state, isAdmin, fetchAllRows, mapProfile, mapPost, ts, purgeUserMedia, verifyPassword } from './config.js';
 import { $ } from './utils.js';
 import { toast } from './toast.js';
 import { logAdminAction } from './admin-audit.js';
-import {
-  collection, onSnapshot, doc, updateDoc, getDocs,
-  serverTimestamp, query, orderBy, where
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import {
-  EmailAuthProvider, reauthenticateWithCredential
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+async function _updateProfile(uid, patch) {
+  const { error } = await sb.from('profiles').update(patch).eq('id', uid);
+  if (error) throw error;
+}
 
 // Cache invalidation + feed refresh helper
 async function _invalidateAndRefreshFeed(uid) {
@@ -59,7 +52,7 @@ let _adminBlockTimers = {}; // uid -> intervalId
 
 /* ── initView ───────────────────────────────────────────────────────── */
 export function initView() {
-  if (!state.me || state.me.uid !== ADMIN_UID) {
+  if (!isAdmin()) {
     const wrap = $('usersAdminList');
     if (wrap) wrap.innerHTML = '<p style="padding:24px;color:var(--text2)">Ruxsat yo\'q.</p>';
     return;
@@ -234,22 +227,9 @@ async function _confirmAction() {
 
   try {
     if (type === 'delete') {
-      const idToken = await auth.currentUser?.getIdToken();
-      const resp = await fetch('/api/delete-user', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${idToken}`,
-        },
-        body: JSON.stringify({ uid }),
-      });
-      const data = await resp.json().catch(() => ({}));
-      if (!resp.ok || !data.ok) {
-        throw new Error(data.error || `Server xatosi (${resp.status})`);
-      }
-      if (data.report?.errors?.length) {
-        console.warn('[delete-user] qisman xatoliklar:', data.report.errors);
-      }
+      await purgeUserMedia(uid);
+      const { error: delErr } = await sb.rpc('admin_delete_user', { p_uid: uid });
+      if (delErr) throw delErr;
       toast(`${name} butunlay o'chirildi`, 'success');
       logAdminAction({ action: 'userDelete', targetUid: uid, targetName: name });
       await _invalidateAndRefreshFeed(uid);
@@ -259,20 +239,12 @@ async function _confirmAction() {
       const untilWrap = document.getElementById('uaBlockUntilWrap');
       const picker = untilWrap?._picker;
       const selectedMs = picker ? picker.getMs() : 0;
-      const untilData = {};
       let untilDate = null;
-      if (selectedMs > 0) {
-        untilDate = picker.getUntilDate();
-        const { Timestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-        untilData.blockedUntil = Timestamp.fromDate(untilDate);
-      } else {
-        untilData.blockedUntil = null; // doimiy blok
-      }
-      await updateDoc(doc(db, 'users', uid), {
+      if (selectedMs > 0) untilDate = picker.getUntilDate();
+      await _updateProfile(uid, {
         blocked: true,
-        blockedAt: serverTimestamp(),
-        approved: false,
-        ...untilData
+        approval: 'pending',
+        blocked_until: untilDate ? untilDate.toISOString() : null,
       });
       const untilMsg = untilDate
         ? ` (${untilDate.toLocaleString('uz-UZ')} gacha)` : ' (doimiy)';
@@ -281,12 +253,7 @@ async function _confirmAction() {
       await _invalidateAndRefreshFeed(uid);
 
     } else if (type === 'unblock') {
-      await updateDoc(doc(db, 'users', uid), {
-        blocked: false,
-        blockedAt: null,
-        blockedUntil: null,
-        approved: true
-      });
+      await _updateProfile(uid, { blocked: false, blocked_until: null, approval: 'approved' });
       toast(`${name} blokdan chiqarildi `, 'success');
       logAdminAction({ action: 'userUnblock', targetUid: uid, targetName: name });
       await _invalidateAndRefreshFeed(uid);
@@ -300,7 +267,7 @@ async function _confirmAction() {
   }
 }
 
-/* ── Firestore listener ─────────────────────────────────────────────── */
+/* ── Foydalanuvchilar ro'yxati (Supabase + realtime) ─────────────────── */
 function _loadUsers() {
   const wrap = $('usersAdminList');
   if (!wrap) return;
@@ -308,24 +275,24 @@ function _loadUsers() {
   wrap.innerHTML = '<div class="spin-wrap"><div class="spinner"></div></div>';
   if (_unsubUsers) { _unsubUsers(); _unsubUsers = null; }
 
-  // orderBy('createdAt') ishlatmaymiz — serverTimestamp() pending paytida null bo'lib,
-  // yangi userlar query da ko'rinmay qoladi. Client side sortlaymiz.
-  const q = collection(db, 'users');
-  _unsubUsers = onSnapshot(q, snap => {
-    // Admin o'zini ro'yxatda ko'rmasligi uchun filtrlaymiz, keyin client da sortlaymiz
-    const users = snap.docs
-      .map(d => ({ id: d.id, ...d.data() }))
-      .filter(u => (u.uid || u.id) !== ADMIN_UID)
-      .sort((a, b) => {
-        const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-        const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
-        return bt - at; // yangi → eski
-      });
-    _lastUsers = users;
-    _renderList();
-  }, err => {
-    wrap.innerHTML = `<p style="padding:24px;color:var(--red)">Xatolik: ${err.message}</p>`;
-  });
+  let dead = false, timer = null;
+  const load = async () => {
+    try {
+      const rows = await fetchAllRows('profiles', '*', 'created_at'); // yangi → eski
+      if (dead) return;
+      _lastUsers = rows.map(mapProfile).filter(u => u.id !== state.me?.uid);
+      _renderList();
+    } catch (err) {
+      if (dead) return;
+      wrap.innerHTML = `<p style="padding:24px;color:var(--red)">Xatolik: ${err.message}</p>`;
+    }
+  };
+  const schedule = () => { clearTimeout(timer); timer = setTimeout(load, 300); };
+  const ch = sb.channel('admin-users-list')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, schedule)
+    .subscribe();
+  _unsubUsers = () => { dead = true; clearTimeout(timer); sb.removeChannel(ch); };
+  load();
 }
 
 /* ── Parol modal (admin o'zining joriy parolini qayta kiritadi) ──────── */
@@ -378,7 +345,8 @@ function _ensurePasswordModal() {
       errEl.style.display = 'block';
       return;
     }
-    if (!auth.currentUser || !auth.currentUser.email) {
+    const _email = state.me?.email;
+    if (!_email) {
       errEl.textContent = "Sessiya topilmadi, qayta kiring";
       errEl.style.display = 'block';
       return;
@@ -387,8 +355,7 @@ function _ensurePasswordModal() {
     btn.disabled = true;
     txt.textContent = '...';
     try {
-      const cred = EmailAuthProvider.credential(auth.currentUser.email, pwd);
-      await reauthenticateWithCredential(auth.currentUser, cred);
+      await verifyPassword(_email, pwd);
       _unlocked = true;
       close();
       if (_pendingOpenUid) {
@@ -406,7 +373,7 @@ function _ensurePasswordModal() {
         toast("Ma'lumotlar ochildi", 'success');
       }
     } catch (err) {
-      errEl.textContent = (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential')
+      errEl.textContent = (err.code === 'wrong-password')
         ? "Parol noto'g'ri"
         : "Xatolik: " + err.message;
       errEl.style.display = 'block';
@@ -435,9 +402,9 @@ async function _loadExtraStats() {
 
   const wrap = $('usersAdminList');
   try {
-    const [postsSnap, chatsSnap] = await Promise.all([
-      getDocs(collection(db, 'posts')),
-      getDocs(collection(db, 'chats', '_index', '1v1chat')),
+    const [postRows, chatRows] = await Promise.all([
+      fetchAllRows('posts', 'id,user_id,text,media_path,is_public,views,likes_count,created_at'),
+      fetchAllRows('chats', 'id,user_a,user_b,last_message,last_sender_id,last_message_at', 'last_message_at'),
     ]);
 
     const stats = {};
@@ -446,8 +413,9 @@ async function _loadExtraStats() {
       postList: [], chatList: []
     });
 
-    postsSnap.forEach(d => {
-      const p = d.data();
+    postRows.forEach(r => {
+      const d = { id: r.id };
+      const p = mapPost(r);
       const uid = p.userId;
       if (!uid) return;
       const s = ensure(uid);
@@ -463,8 +431,9 @@ async function _loadExtraStats() {
       });
     });
 
-    chatsSnap.forEach(d => {
-      const c = d.data();
+    chatRows.forEach(r => {
+      const d = { id: r.id };
+      const c = { lastMessageAt: ts(r.last_message_at), participants: [r.user_a, r.user_b], lastMessage: r.last_message, lastSenderId: r.last_sender_id };
       const t = c.lastMessageAt?.toMillis?.() || 0;
       const parts = c.participants || [];
       parts.forEach(uid => {
@@ -605,10 +574,10 @@ async function _renderDetailBody() {
     if (!entries || entries === 'loading') {
       _loginHistoryCache[_detailUid] = 'loading';
       try {
-        const snap = await getDocs(
-          query(collection(db, 'users', _detailUid, 'loginHistory'), orderBy('at', 'desc'))
-        );
-        entries = snap.docs.map(d => d.data());
+        const { data, error } = await sb.from('login_history').select('*')
+          .eq('user_id', _detailUid).order('at', { ascending: false });
+        if (error) throw error;
+        entries = (data || []).map(r => ({ type: r.type, at: ts(r.at), platform: r.platform, userAgent: r.user_agent }));
         _loginHistoryCache[_detailUid] = entries;
       } catch (err) {
         entries = [];
@@ -691,7 +660,7 @@ function _rejectBtn(user) {
 async function _doApprove(btn, uid, name) {
   btn.disabled = true; btn.textContent = '...';
   try {
-    await updateDoc(doc(db, 'users', uid), { approved: true, approvedAt: serverTimestamp() });
+    await _updateProfile(uid, { approval: 'approved' });
     toast('Ruxsat berildi ', 'success');
     logAdminAction({ action: 'userApprove', targetUid: uid, targetName: name });
     await _invalidateAndRefreshFeed(uid);
@@ -704,7 +673,7 @@ async function _doApprove(btn, uid, name) {
 async function _doReject(btn, uid, name) {
   btn.disabled = true; btn.textContent = '...';
   try {
-    await updateDoc(doc(db, 'users', uid), { approved: 'rejected' });
+    await _updateProfile(uid, { approval: 'rejected' });
     toast('Rad etildi', 'info');
     logAdminAction({ action: 'userReject', targetUid: uid, targetName: name });
     await _invalidateAndRefreshFeed(uid);
@@ -1031,12 +1000,7 @@ function _startAdminBlockCountdown(btn, uid, untilMs) {
       clearInterval(_adminBlockTimers[uid]);
       delete _adminBlockTimers[uid];
       // Firestore ni yangilaymiz
-      updateDoc(doc(db, 'users', uid), {
-        blocked: false,
-        blockedAt: null,
-        blockedUntil: null,
-        approved: true
-      }).catch(() => {});
+      _updateProfile(uid, { blocked: false, blocked_until: null, approval: 'approved' }).catch(() => {});
       // Tugmani darhol o'zgartiramiz
       btn.className = 'ua-block-btn';
       btn.textContent = 'Bloklash';

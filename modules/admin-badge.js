@@ -1,25 +1,20 @@
 /**
  * MRgram — Admin Badge (real-vaqt bildirishnoma)
  * Bottom-nav'dagi "Boshqaruv" (Actions) tugmasida — admin boshqa
- * bo'limda bo'lsa ham — yangi pending foydalanuvchi yoki AI moderatsiya
- * hodisasi paydo bo'lganda qizil badge ko'rsatadi.
+ * bo'limda bo'lsa ham — yangi pending foydalanuvchi paydo bo'lganda
+ * qizil badge ko'rsatadi.
  */
 
-import { db } from './config.js';
-import {
-  collection, onSnapshot, query, where
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { sb } from './config.js';
 
 let _pendingUnsub = null;
-let _aiModUnsub   = null;
 let _pendingCount = 0;
-let _aiModCount   = 0;
 let _running      = false;
 
 function _updateBadge() {
   const badge = document.getElementById('adminActionsBadge');
   if (!badge) return;
-  const total = _pendingCount + _aiModCount;
+  const total = _pendingCount;
   if (total > 0) {
     badge.textContent = total > 99 ? '99+' : String(total);
     badge.classList.remove('d-none');
@@ -34,25 +29,28 @@ export function initAdminBadge() {
   if (_running) return; // allaqachon ishlamoqda — qayta ulamaymiz
   _running = true;
 
-  const usersQ = query(collection(db, 'users'), where('approved', '==', false));
-  _pendingUnsub = onSnapshot(usersQ, snap => {
-    _pendingCount = snap.size;
-    _updateBadge();
-  }, () => {});
-
-  const aiModQ = query(collection(db, 'posts'), where('aiHidden', '==', true));
-  _aiModUnsub = onSnapshot(aiModQ, snap => {
-    _aiModCount = snap.size;
-    _updateBadge();
-  }, () => {});
+  let dead = false, timer = null;
+  const recount = async () => {
+    try {
+      const { count, error } = await sb.from('profiles')
+        .select('id', { count: 'exact', head: true }).eq('approval', 'pending');
+      if (error || dead) return;
+      _pendingCount = count || 0;
+      _updateBadge();
+    } catch (_) {}
+  };
+  const schedule = ev => { clearTimeout(timer); timer = setTimeout(recount, ev === 'UPDATE' ? 3000 : 300); };
+  recount();
+  const ch = sb.channel('admin-badge')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, p => schedule(p.eventType))
+    .subscribe();
+  _pendingUnsub = () => { dead = true; clearTimeout(timer); sb.removeChannel(ch); };
 }
 
 /** Admin bo'lmagan foydalanuvchi kirsa yoki chiqib ketsa to'xtatiladi */
 export function destroyAdminBadge() {
   if (_pendingUnsub) { _pendingUnsub(); _pendingUnsub = null; }
-  if (_aiModUnsub)   { _aiModUnsub();   _aiModUnsub   = null; }
   _pendingCount = 0;
-  _aiModCount   = 0;
   _running      = false;
   const badge = document.getElementById('adminActionsBadge');
   if (badge) { badge.textContent = ''; badge.classList.add('d-none'); }

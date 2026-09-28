@@ -570,31 +570,6 @@ textarea:focus,
   color: var(--text);
 }
 
-/* 2. AI reply bubble — light temada ham to'g'ri rang */
-.ai-reply-bubble {
-  background: var(--bg3);
-  border: none;
-}
-
-[data-theme="light"] .ai-reply-bubble {
-  background: var(--bg3);
-  border: none;
-}
-
-[data-theme="light"] .ai-reply-header {
-  color: var(--blue);
-  border-bottom: none;
-}
-
-[data-theme="light"] .ai-reply-body {
-  color: var(--text);
-}
-
-[data-theme="light"] .ai-reply-close:hover {
-  background: var(--bg4);
-  color: var(--text);
-}
-
 /* 3. Sidebar nav-btn aktiv holat — dark styled light temada */
 [data-theme="light"] .nav-btn.on {
   background: var(--bg3);
@@ -852,26 +827,6 @@ textarea:focus,
 }
 [data-theme="light"] .cmt-input {
   background: var(--bg3);
-  color: var(--text);
-}
-
-/* AI reply bubble — all moods */
-[data-theme="light"] .ai-reply-bubble,
-[data-theme="light"] .ai-reply-bubble.ai-mood-funny,
-[data-theme="light"] .ai-reply-bubble.ai-mood-serious,
-[data-theme="light"] .ai-reply-bubble.ai-mood-amazed,
-[data-theme="light"] .ai-reply-bubble.ai-mood-sad,
-[data-theme="light"] .ai-reply-bubble.ai-mood-angry {
-  background: var(--bg3);
-  border: none;
-}
-
-[data-theme="light"] .ai-reply-body {
-  color: var(--text);
-}
-
-[data-theme="light"] .ai-reply-close:hover {
-  background: var(--bg4);
   color: var(--text);
 }
 

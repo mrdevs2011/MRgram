@@ -18,18 +18,73 @@ export {
   destroyChatsView,
 } from './chat.js';
 
-import { db, state } from './config.js';
+import { sb, state } from './config.js';
 import { $ } from './utils.js';
-import {
-  collection, query, where,
-  doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, serverTimestamp, arrayUnion,
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { MRGRAM_AI_UID } from './mrgram-ai.js';
 
-function chatIdFor(uidA, uidB) { return [uidA, uidB].sort().join('_'); }
+/* calls qatori (snake_case) → eski Firestore ko'rinishi */
+function mapCall(r) {
+  if (!r) return null;
+  return {
+    id: r.id,
+    callerId: r.caller_id,
+    calleeId: r.callee_id,
+    type: r.type,
+    status: r.status,
+    offer: r.offer,
+    answer: r.answer,
+    callerCandidates: r.caller_candidates || [],
+    calleeCandidates: r.callee_candidates || [],
+    videoOffer: r.video_offer || null,
+    videoAnswer: r.video_answer || null,
+  };
+}
+
+async function _updateCall(id, patch) {
+  const { error } = await sb.from('calls').update(patch).eq('id', id);
+  if (error) throw error;
+}
+
+async function _userInfo(uid) {
+  const { data } = await sb.from('profiles').select('full_name, avatar').eq('id', uid).maybeSingle();
+  return data ? { fullName: data.full_name || '', avatar: data.avatar || '' } : {};
+}
+
+// ICE candidate'ni atomik qo'shadi (RPC o'zi caller/callee ustunini tanlaydi)
+async function _sendIce(callId, cand) {
+  try { await sb.rpc('append_call_candidate', { p_call: callId, p_candidate: cand }); } catch (_) {}
+}
+
+// Bitta qo'ng'iroq yozuvini kuzatish: realtime (UPDATE) + har 4 soniyada zaxira so'rov.
+// Yozuv o'chirilgan bo'lsa onRow(null) chaqiriladi. Chaqiruvlar ketma-ket bajariladi.
+// Realtime'da DELETE filtr bilan kelmaydi, shuning uchun o'chirilishni zaxira so'rov ushlaydi.
+let _watchSeq = 0;
+function _watchCall(id, onRow) {
+  let stopped = false, last = '', queue = Promise.resolve();
+  const push = row => {
+    const j = JSON.stringify(row);
+    if (stopped || j === last) return;
+    last = j;
+    queue = queue.then(async () => {
+      if (stopped) return;
+      try { await onRow(row); } catch (e) { console.error('[Call] watcher:', e); }
+    });
+  };
+  const load = async () => {
+    if (stopped) return;
+    const { data, error } = await sb.from('calls').select('*').eq('id', id).maybeSingle();
+    if (stopped || error) return;
+    push(mapCall(data));
+  };
+  const ch = sb.channel('call-' + id + '-' + (++_watchSeq))
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'calls', filter: 'id=eq.' + id },
+        p => push(mapCall(p.new)))
+    .subscribe(st => { if (st === 'SUBSCRIBED') load(); });
+  const poll = setInterval(load, 4000);
+  return () => { stopped = true; clearInterval(poll); sb.removeChannel(ch); };
+}
 
 /* ══════════════════════════════════════════════════════════════════════
-   WebRTC CALL ENGINE  (Firestore signaling)
+   WebRTC CALL ENGINE  (Supabase signaling)
    ══════════════════════════════════════════════════════════════════════ */
 
 // STUN — faqat "ochiq" tarmoqlarda ishlaydi. Ko'pchilik haqiqiy holatda
@@ -66,8 +121,8 @@ const ICE_SERVERS = {
 
 let _pc          = null;
 let _localStream = null;
-let _callDocRef  = null;
-let _staleCallDocRef = null; // avvalgi qo'ng'iroq hujjati o'chmay qolgan bo'lsa, shu yerda saqlanadi
+let _callId      = null; // hozirgi qo'ng'iroq yozuvining uuid si
+let _pendingIce  = [];   // call yozuvi yaratilguncha kelgan ICE candidate'lar
 let _callUnsub   = null;
 let _callTimer   = null;
 let _callSec     = 0;
@@ -194,14 +249,14 @@ function _playConnectBeep() {
    UMUMIY (SHARED) AudioContext — BUGFIX (2026-07-08)
    ══════════════════════════════════════════════════════════════════════
    ILGARI: har bir qo'ng'iroqda 3 TA ALOHIDA AudioContext yaratilardi —
-   mikrofon "pulse" animatsiyasi uchun, VAD (ovoz aniqlash) uchun, va AI
+   mikrofon "pulse" animatsiyasi uchun, VAD (ovoz aniqlash) uchun, va suhbatdosh
    ovozini tahlil qilish uchun. Bu:
      1) Mobil brauzerlarda (ayniqsa iOS Safari) resurs bo'lib ketardi —
         bir nechta parallel AudioContext ba'zan ovoz kesilishi/g'ijirlashiga
         sabab bo'lardi.
      2) Fon rejimiga o'tilganda (ekran qulflansa, boshqa ilova ochilsa)
         brauzer AudioContext'larni avtomatik "suspend" qiladi — kod esa
-        ularni qayta "resume" qilmasdi. Natijada TASODIFIY: AI ovozi
+        ularni qayta "resume" qilmasdi. Natijada TASODIFIY: suhbatdosh ovozi
         umuman eshitilmay qoladi (audio elementi "ijro etilyapti", lekin
         WebAudio grafigi to'xtatilgan bo'lgani uchun tovush chiqmaydi) YOKI
         mikrofon tahlili doim "jimlik" o'qib, foydalanuvchi gapirsa ham
@@ -431,33 +486,24 @@ async function _endCall(notify = true) {
   _hideActiveCallModal();
   document.getElementById('incomingCallModal')?.classList.remove('show');
 
-  // Firestore call hujjatini HAR DOIM o'chiramiz (notify'dan qat'i nazar) —
-  // aks holda hujjat qolib ketadi (ID ikkala user uid'idan tuzilgani uchun
-  // doim bir xil), va keyingi qo'ng'iroqda setDoc "update" deb hisoblanib,
-  // qoidalar ruxsat bermay permission-denied beradi. Delete'ga ikkala
-  // tomon ham (callerId yoki calleeId) ruxsatli, shu bilan xavfsiz.
-  //
-  // Bitta urinish internet uzilishi kabi vaqtinchalik sabablarga qarshi
-  // ojiz — shuning uchun bitta qayta urinish (retry) qilinadi. Ikkalasi
-  // ham muvaffaqiyatsiz bo'lsa, xato endi jimgina yutilmaydi: konsolga
-  // yoziladi va keyingi qo'ng'iroq boshlanishida buni hisobga olish
-  // uchun "_staleCallDocRef" saqlab qo'yiladi (pastda startCall'da qayta
-  // tozalashga urinish uchun ishlatiladi).
-  if (_callDocRef) {
-    const refToDelete = _callDocRef;
-    try {
-      await deleteDoc(refToDelete);
-    } catch (err1) {
+  // Call yozuvini HAR DOIM o'chiramiz (notify'dan qat'i nazar). Har qo'ng'iroq
+  // alohida uuid oladi, shuning uchun o'chmay qolgan eski yozuv keyingi
+  // qo'ng'iroqqa xalaqit bermaydi. Ikkala tomon ham o'chira oladi (RLS).
+  // Vaqtinchalik xatoga qarshi bitta qayta urinish bor.
+  if (_callId) {
+    const idToDelete = _callId;
+    for (let i = 0; i < 2; i++) {
       try {
-        await deleteDoc(refToDelete);
-      } catch (err2) {
-        console.error('[Call] Eski qo\'ng\'iroq hujjatini o\'chirib bo\'lmadi (2 urinishdan keyin ham). ' +
-          'Keyingi qo\'ng\'iroqda "boshlanmayapti" xatosi kelib chiqishi mumkin:', err2);
-        _staleCallDocRef = refToDelete;
+        const { error } = await sb.from('calls').delete().eq('id', idToDelete);
+        if (!error) break;
+        if (i === 1) console.error("[Call] Qo'ng'iroq yozuvini o'chirib bo'lmadi:", error.message);
+      } catch (e) {
+        if (i === 1) console.error("[Call] Qo'ng'iroq yozuvini o'chirib bo'lmadi:", e);
       }
     }
   }
-  _callDocRef = null;
+  _callId = null;
+  _pendingIce = [];
   _isCaller   = false;
   _facingMode = 'user';
 
@@ -512,15 +558,11 @@ function _createPC() {
     }
   };
 
-  _pc.onicecandidate = async e => {
-    if (e.candidate && _callDocRef) {
-      const field = _isCaller ? 'callerCandidates' : 'calleeCandidates';
-      try {
-        await updateDoc(_callDocRef, {
-          [field]: arrayUnion(e.candidate.toJSON())
-        });
-      } catch (_) {}
-    }
+  _pc.onicecandidate = e => {
+    if (!e.candidate) return;
+    const c = e.candidate.toJSON();
+    if (_callId) _sendIce(_callId, c);
+    else _pendingIce.push(c);   // yozuv hali yaratilmagan — keyin yuboriladi
   };
 
   _pc.onconnectionstatechange = () => {
@@ -538,11 +580,11 @@ function _createPC() {
    Boshlang'ich ulanish faqat ovoz bilan tuziladi. Foydalanuvchi kamera
    tugmasini bosganda YANGI video track qo'shiladi — buni qarshi tomonga
    yetkazish uchun signalingni "offer/answer" jarayonini YANA BIR MARTA
-   (Firestore call hujjatidagi alohida videoOffer/videoAnswer maydonlari
-   orqali) o'tkazamiz. Har ikki tomon ham o'zining onSnapshot listeneri
+   (calls jadvalidagi alohida video_offer/video_answer ustunlari
+   orqali) o'tkazamiz. Har ikki tomon ham o'zining kuzatuvchisi (_watchCall)
    ichida shuni tekshiradi. */
 async function _handleRenego(data) {
-  if (!_pc || !_callDocRef || !state.me) return;
+  if (!_pc || !_callId || !state.me) return;
 
   if (data.videoOffer &&
       data.videoOffer.from !== state.me.uid &&
@@ -552,8 +594,8 @@ async function _handleRenego(data) {
       await _pc.setRemoteDescription(new RTCSessionDescription(data.videoOffer));
       const answer = await _pc.createAnswer();
       await _pc.setLocalDescription(answer);
-      await updateDoc(_callDocRef, {
-        videoAnswer: { type: answer.type, sdp: answer.sdp, from: state.me.uid, ts: Date.now() }
+      await _updateCall(_callId, {
+        video_answer: { type: answer.type, sdp: answer.sdp, from: state.me.uid, ts: Date.now() }
       });
     } catch (err) {
       console.error('[Call] Video taklifini qayta ishlab bo\'lmadi:', err);
@@ -576,7 +618,7 @@ async function _handleRenego(data) {
 
 /* ── Qo'ng'iroq ichida videoni yoqish (kamera tugmasi) ── */
 async function _enableLocalVideo() {
-  if (_localVideoOn || !_pc || !_localStream || !_callDocRef) return;
+  if (_localVideoOn || !_pc || !_localStream || !_callId) return;
 
   let track = _localStream.getVideoTracks()[0];
   try {
@@ -606,8 +648,8 @@ async function _enableLocalVideo() {
   try {
     const offer = await _pc.createOffer();
     await _pc.setLocalDescription(offer);
-    await updateDoc(_callDocRef, {
-      videoOffer: { type: offer.type, sdp: offer.sdp, from: state.me.uid, ts: Date.now() }
+    await _updateCall(_callId, {
+      video_offer: { type: offer.type, sdp: offer.sdp, from: state.me.uid, ts: Date.now() }
     });
   } catch (err) {
     console.error('[Call] Video taklifini yuborib bo\'lmadi:', err);
@@ -629,13 +671,6 @@ function _disableLocalVideo() {
 async function initiateCall(isVideo) {
   const uid = state.currentChatUid;
   if (!uid || !state.me) return;
-
-  // "MRgram AI" bilan qo'ng'iroq funksiyasi olib tashlandi — endi AI bilan
-  // faqat ovozli xabar (voice message) orqali "tabiiy" muloqot qilinadi
-  // (chat.js: sendVoiceMessage / _triggerMrgramAiVoiceReply). Tugmalar ham
-  // AI suhbatida butunlay yashirilgan (chat.js: openChatThread), shuning
-  // uchun bu funksiyaga umuman kirmasligi kerak — lekin himoya sifatida:
-  if (uid === MRGRAM_AI_UID) return;
 
   _callIsVideo = isVideo;
   _isCaller    = true;
@@ -665,8 +700,7 @@ async function initiateCall(isVideo) {
   let otherName = document.getElementById('chatThreadName')?.textContent || 'Foydalanuvchi';
   let otherAvi  = '';
   try {
-    const snap = await getDoc(doc(db, 'users', uid));
-    const d = snap.data() || {};
+    const d = await _userInfo(uid);
     otherName = d.fullName || otherName;
     otherAvi  = d.avatar   || '';
   } catch (_) {}
@@ -682,49 +716,41 @@ async function initiateCall(isVideo) {
   const offer = await _pc.createOffer();
   await _pc.setLocalDescription(offer);
 
-  // Firestore da call hujjat yaratish
-  const chatId = chatIdFor(state.me.uid, uid);
-  _callDocRef = doc(db, 'chats', '_index', 'calls', chatId);
-
-  // Agar avvalgi qo'ng'iroqdan o'chmay qolgan hujjat bo'lsa (_endCall ikki
-  // marta urinib ham o'chira olmagan holat) — shu yerda yana bir bor
-  // tozalashga harakat qilamiz, aks holda quyidagi setDoc "update" deb
-  // hisoblanib, qoidalar permission-denied qaytaradi.
-  if (_staleCallDocRef && _staleCallDocRef.path === _callDocRef.path) {
-    try { await deleteDoc(_staleCallDocRef); _staleCallDocRef = null; } catch (_) { /* pastda ushlanadi */ }
-  }
-
-  try {
-    await setDoc(_callDocRef, {
-      callerId:         state.me.uid,
-      calleeId:         uid,
-      type:             isVideo ? 'video' : 'voice',
-      status:           'ringing',
-      offer:            { type: offer.type, sdp: offer.sdp },
-      callerCandidates: [],
-      calleeCandidates: [],
-      createdAt:        serverTimestamp()
-    });
-  } catch (err) {
-    console.error('[Call] Qo\'ng\'iroq hujjatini yozib bo\'lmadi:', err);
-    alert('Qo\'ng\'iroqni boshlab bo\'lmadi. Internetni tekshirib, qayta urinib ko\'ring.');
+  // Supabase'da call yozuvi. id ni client beradi (insert...select RLS'dan o'tmasligi mumkin).
+  const callId = crypto.randomUUID();
+  const { error: insErr } = await sb.from('calls').insert({
+    id: callId,
+    caller_id: state.me.uid,
+    callee_id: uid,
+    type: isVideo ? 'video' : 'voice',
+    status: 'ringing',
+    offer: { type: offer.type, sdp: offer.sdp },
+  });
+  if (insErr) {
+    console.error("[Call] Qo'ng'iroq yozuvini yaratib bo'lmadi:", insErr.message);
+    alert("Qo'ng'iroqni boshlab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring.");
     _hideActiveCallModal();
     _stopRingback();
     if (_localStream) { _localStream.getTracks().forEach(t => t.stop()); _localStream = null; }
     if (_pc) { _pc.close(); _pc = null; }
-    _callDocRef = null;
+    _pendingIce = [];
     return;
   }
+  _callId = callId;
+
+  // Yozuv yaratilguncha yig'ilgan ICE candidate'larni yuboramiz
+  const early = _pendingIce; _pendingIce = [];
+  early.forEach(c => _sendIce(callId, c));
 
   // Answer kutish
-  _callUnsub = onSnapshot(_callDocRef, async snap => {
-    const data = snap.data();
+  _callUnsub = _watchCall(callId, async data => {
     if (!data) { await _endCall(false); return; }
 
     if (data.status === 'declined' || data.status === 'ended') {
       await _endCall(false);
       return;
     }
+    if (!_pc) return;
 
     if (data.answer && _pc.signalingState === 'have-local-offer') {
       await _pc.setRemoteDescription(new RTCSessionDescription(data.answer));
@@ -734,10 +760,10 @@ async function initiateCall(isVideo) {
     if (data.calleeCandidates?.length) {
       const existing = _pc._addedCallee || 0;
       const newOnes  = data.calleeCandidates.slice(existing);
+      _pc._addedCallee = data.calleeCandidates.length;
       for (const c of newOnes) {
         try { await _pc.addIceCandidate(new RTCIceCandidate(c)); } catch (_) {}
       }
-      _pc._addedCallee = data.calleeCandidates.length;
     }
 
     // Qo'ng'iroq davomida video yoqilgan bo'lsa — qayta muzokara
@@ -746,10 +772,10 @@ async function initiateCall(isVideo) {
 }
 
 /* ── Kiruvchi qo'ng'iroqni qabul qilish (callee) ── */
-async function _acceptIncomingCall(callData, callRef) {
+async function _acceptIncomingCall(callData, callId) {
   _callIsVideo = callData.type === 'video';
   _isCaller    = false;
-  _callDocRef  = callRef;
+  _callId      = callId;
   _facingMode  = 'user';
 
   document.getElementById('incomingCallModal')?.classList.remove('show');
@@ -759,8 +785,9 @@ async function _acceptIncomingCall(callData, callRef) {
       _callIsVideo ? { audio: true, video: { facingMode: _facingMode } } : { audio: true }
     );
   } catch (err) {
-    alert('Mikrofon/kameraga ruxsat yo\'q: ' + err.message);
-    await updateDoc(callRef, { status: 'declined' });
+    alert("Mikrofon/kameraga ruxsat yo'q: " + err.message);
+    try { await _updateCall(callId, { status: 'declined' }); } catch (_) {}
+    _callId = null;
     return;
   }
 
@@ -772,8 +799,7 @@ async function _acceptIncomingCall(callData, callRef) {
   // Caller ma'lumotlari
   let callerName = 'Foydalanuvchi', callerAvi = '';
   try {
-    const snap = await getDoc(doc(db, 'users', callData.callerId));
-    const d = snap.data() || {};
+    const d = await _userInfo(callData.callerId);
     callerName = d.fullName || callerName;
     callerAvi  = d.avatar   || '';
   } catch (_) {}
@@ -787,32 +813,38 @@ async function _acceptIncomingCall(callData, callRef) {
 
   // Caller ICE candidates (mavjudlarini qo'shish)
   if (callData.callerCandidates?.length) {
+    _pc._addedCaller = callData.callerCandidates.length;
     for (const c of callData.callerCandidates) {
       try { await _pc.addIceCandidate(new RTCIceCandidate(c)); } catch (_) {}
     }
-    _pc._addedCaller = callData.callerCandidates.length;
   }
 
   const answer = await _pc.createAnswer();
   await _pc.setLocalDescription(answer);
-  await updateDoc(callRef, {
-    answer: { type: answer.type, sdp: answer.sdp },
-    status: 'accepted'
-  });
+
+  // Faqat hali 'ringing' bo'lsa qabul qilamiz (chaqiruvchi bekor qilgan bo'lsa 0 qator o'zgaradi)
+  const { data: upd, error: updErr } = await sb.from('calls')
+    .update({ answer: { type: answer.type, sdp: answer.sdp }, status: 'accepted' })
+    .eq('id', callId).eq('status', 'ringing').select('id');
+  if (updErr || !upd?.length) {
+    console.warn("[Call] Qo'ng'iroq allaqachon tugagan yoki qabul qilib bo'lmadi:", updErr?.message);
+    await _endCall(false);
+    return;
+  }
 
   // Caller ICE candidates stream
-  _callUnsub = onSnapshot(callRef, async snap => {
-    const data = snap.data();
+  _callUnsub = _watchCall(callId, async data => {
     if (!data) { await _endCall(false); return; }
     if (data.status === 'ended') { await _endCall(false); return; }
+    if (!_pc) return;
 
     if (data.callerCandidates?.length) {
       const existing = _pc._addedCaller || 0;
       const newOnes  = data.callerCandidates.slice(existing);
+      _pc._addedCaller = data.callerCandidates.length;
       for (const c of newOnes) {
         try { await _pc.addIceCandidate(new RTCIceCandidate(c)); } catch (_) {}
       }
-      _pc._addedCaller = data.callerCandidates.length;
     }
 
     // Qo'ng'iroq davomida video yoqilgan bo'lsa — qayta muzokara
@@ -840,92 +872,111 @@ function _cleanCallModal() {
   document.getElementById('incomingCallModal')?.classList.remove('show');
 }
 
+// 'ringing' holatida shuncha vaqtdan eski yozuvlar (chaqiruvchi ilovasi yopilib qolgan) e'tiborga olinmaydi
+const RING_WINDOW_MS = 90000;
+
+async function _handleIncomingRow(data) {
+  // Qo'ng'iroq tugagan — modal yopish
+  if (!data) {
+    if (_activeCallDocId) _cleanCallModal();
+    return;
+  }
+
+  // Allaqachon shu qo'ng'iroq ko'rsatilmoqda — qayta ochmaymiz
+  if (_activeCallDocId === data.id) return;
+
+  // Allaqachon qo'ng'iroqda bo'lsak — rad etamiz
+  if (_pc) {
+    try { await _updateCall(data.id, { status: 'declined' }); } catch (_) {}
+    return;
+  }
+
+  // Avvalgi modal tozalash (eski listenerlar olib tashlanadi)
+  _cleanCallModal();
+  _activeCallDocId = data.id;
+
+  // Caller ma'lumotlari
+  let callerName = 'Foydalanuvchi', callerAvi = '';
+  try {
+    const ud = await _userInfo(data.callerId);
+    callerName = ud.fullName || callerName;
+    callerAvi  = ud.avatar   || '';
+  } catch (_) {}
+
+  // Kiruvchi qo'ng'iroq modal
+  const modal     = document.getElementById('incomingCallModal');
+  const nameEl    = document.getElementById('incomingCallName');
+  const typeEl    = document.getElementById('incomingCallType');
+  const aviEl     = document.getElementById('incomingCallAvi');
+  const acceptBtn = document.getElementById('incomingCallAccept');
+  const rejectBtn = document.getElementById('incomingCallReject');
+
+  if (nameEl) nameEl.textContent = callerName;
+  if (typeEl) typeEl.textContent = data.type === 'video' ? "Video qo'ng'iroq" : "Ovozli qo'ng'iroq";
+  if (aviEl)  aviEl.innerHTML = _avatarHTML(callerName, callerAvi);
+
+  modal?.classList.add('show');
+  _startRingtone();
+
+  // Qabul qilish
+  _boundAccept = async () => {
+    _cleanCallModal();
+    await _acceptIncomingCall(data, data.id);
+  };
+
+  // Rad etish
+  _boundReject = async () => {
+    _cleanCallModal();
+    try { await _updateCall(data.id, { status: 'declined' }); } catch (_) {}
+  };
+
+  acceptBtn?.addEventListener('click', _boundAccept);
+  rejectBtn?.addEventListener('click', _boundReject);
+
+  // 30 soniyadan keyin avtomatik rad etish
+  _autoRejectTimer = setTimeout(async () => {
+    if (_activeCallDocId === data.id) {
+      _cleanCallModal();
+      try { await _updateCall(data.id, { status: 'declined' }); } catch (_) {}
+    }
+  }, 30000);
+}
+
 export function startCallWatcher() {
   if (!state.me?.uid) return;
-  if (_incomingUnsub) { _incomingUnsub(); _incomingUnsub = null; }
+  stopCallWatcher();
 
-  _incomingUnsub = onSnapshot(
-    query(collection(db, 'chats', '_index', 'calls'), where('calleeId', '==', state.me.uid), where('status', '==', 'ringing')),
-    async snap => {
-      // Qo'ng'iroq tugagan — modal yopish
-      if (snap.empty) {
-        if (_activeCallDocId) _cleanCallModal();
-        return;
-      }
+  const me = state.me.uid;
+  let stopped = false, busy = false, again = false;
 
-      const callDoc = snap.docs[0];
-      const data    = callDoc.data();
+  // Menga kelayotgan 'ringing' qo'ng'iroqni so'rab, modalni yangilaydi (parallel chaqiruvlar birlashtiriladi)
+  const refresh = async () => {
+    if (stopped) return;
+    if (busy) { again = true; return; }
+    busy = true;
+    try {
+      do {
+        again = false;
+        const since = new Date(Date.now() - RING_WINDOW_MS).toISOString();
+        const { data, error } = await sb.from('calls').select('*')
+          .eq('callee_id', me).eq('status', 'ringing').gte('created_at', since)
+          .order('created_at', { ascending: false }).limit(1);
+        if (stopped) return;
+        if (error) { console.error('[CallWatcher] xato:', error.message); continue; }
+        await _handleIncomingRow(data && data[0] ? mapCall(data[0]) : null);
+      } while (again && !stopped);
+    } finally { busy = false; }
+  };
 
-      // Allaqachon shu qo'ng'iroq ko'rsatilmoqda — qayta ochmaymiz
-      if (_activeCallDocId === callDoc.id) return;
+  const ch = sb.channel('incoming-calls-' + me)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'calls', filter: 'callee_id=eq.' + me }, refresh)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'calls', filter: 'callee_id=eq.' + me }, refresh)
+    .subscribe(st => { if (st === 'SUBSCRIBED') refresh(); });
 
-      // Allaqachon qo'ng'iroqda bo'lsak — rad etamiz
-      if (_pc) {
-        try { await updateDoc(callDoc.ref, { status: 'declined' }); } catch(_) {}
-        return;
-      }
+  // Zaxira: realtime uzilib qolsa ham qo'ng'iroq o'tkazib yuborilmasin
+  const poll = setInterval(refresh, 10000);
 
-      // Avvalgi modal tozalash (eski listenerlar olib tashlanadi)
-      _cleanCallModal();
-      _activeCallDocId = callDoc.id;
-
-      // Caller ma'lumotlari
-      let callerName = 'Foydalanuvchi', callerAvi = '';
-      try {
-        const us = await getDoc(doc(db, 'users', data.callerId));
-        const ud = us.data() || {};
-        callerName = ud.fullName || callerName;
-        callerAvi  = ud.avatar   || '';
-      } catch (_) {}
-
-      // Kiruvchi qo'ng'iroq modal
-      const modal    = document.getElementById('incomingCallModal');
-      const nameEl   = document.getElementById('incomingCallName');
-      const typeEl   = document.getElementById('incomingCallType');
-      const aviEl    = document.getElementById('incomingCallAvi');
-      const acceptBtn = document.getElementById('incomingCallAccept');
-      const rejectBtn = document.getElementById('incomingCallReject');
-
-      if (nameEl) nameEl.textContent = callerName;
-      if (typeEl) typeEl.textContent = data.type === 'video' ? 'Video qo\'ng\'iroq' : 'Ovozli qo\'ng\'iroq';
-      if (aviEl)  aviEl.innerHTML = _avatarHTML(callerName, callerAvi);
-
-      modal?.classList.add('show');
-      _startRingtone();
-
-      // Qabul qilish
-      _boundAccept = async () => {
-        _cleanCallModal();
-        await _acceptIncomingCall(data, callDoc.ref);
-      };
-
-      // Rad etish
-      _boundReject = async () => {
-        _cleanCallModal();
-        try { await updateDoc(callDoc.ref, { status: 'declined' }); } catch(_) {}
-      };
-
-      acceptBtn?.addEventListener('click', _boundAccept);
-      rejectBtn?.addEventListener('click', _boundReject);
-
-      // 30 soniyadan keyin avtomatik rad etish
-      _autoRejectTimer = setTimeout(async () => {
-        if (_activeCallDocId === callDoc.id) {
-          _cleanCallModal();
-          try { await updateDoc(callDoc.ref, { status: 'declined' }); } catch (_) {}
-        }
-      }, 30000);
-    },
-    err => {
-      // Index yo'q yoki ruxsat yo'q — konsolga yozamiz
-      console.error('[CallWatcher] onSnapshot xatosi:', err.code, err.message);
-      if (err.code === 'failed-precondition') {
-        console.warn('[CallWatcher] Firestore composite index kerak: calleeId + status\n' +
-          'Firebase Console → Firestore → Indexes → Add index:\n' +
-          'Collection: calls | Fields: calleeId ASC, status ASC');
-      }
-    }
-  );
+  _incomingUnsub = () => { stopped = true; clearInterval(poll); sb.removeChannel(ch); };
 }
 
 export function stopCallWatcher() {
@@ -940,8 +991,8 @@ document.getElementById('chatVoiceCallBtn')?.addEventListener('click', () => ini
 
 /* ── Active call controls ── */
 document.getElementById('callEndBtn')?.addEventListener('click', async () => {
-  if (_callDocRef) {
-    try { await updateDoc(_callDocRef, { status: 'ended' }); } catch (_) {}
+  if (_callId) {
+    try { await _updateCall(_callId, { status: 'ended' }); } catch (_) {}
   }
   await _endCall(false);
 });

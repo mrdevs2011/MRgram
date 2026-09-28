@@ -1,8 +1,5 @@
-import { state, db }                               from './config.js';
+import { state, sb }                               from './config.js';
 import { $ }                                       from './utils.js';
-import {
-  collection, query, where, orderBy, limit, getDocs, startAt, endAt
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 /* ── Global mute ─────────────────────────────────────────────────────── */
 const MUTE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -221,25 +218,22 @@ async function fetchSuggestions(rawQuery) {
   const results = [];
   const q = rawQuery.toLowerCase().replace(/^@/, '');
 
-  // 1. Firestore dan username bo'yicha qidirish
+  // 1. profiles jadvalidan username bo'yicha qidirish
   try {
-    const usersRef = collection(db, 'users');
-    const snap = await getDocs(
-      query(usersRef,
-        orderBy('username'),
-        startAt(q),
-        endAt(q + '\uf8ff'),
-        limit(5)
-      )
-    );
-    snap.forEach(d => {
-      const u = d.data();
+    const like = q.replace(/[\\%_]/g, m => '\\' + m) + '%';
+    const { data, error } = await sb.from('profiles')
+      .select('id,username,avatar')
+      .ilike('username', like)
+      .order('username')
+      .limit(5);
+    if (error) throw error;
+    (data || []).forEach(u => {
       if (u.username) {
-        results.push({ type: 'user', label: '@' + u.username, value: u.username, uid: d.id, avatar: u.photoURL || null });
+        results.push({ type: 'user', label: '@' + u.username, value: u.username, uid: u.id, avatar: u.avatar || null });
       }
     });
   } catch (e) {
-    // Firestore index bo'lmasa, local allUsers dan izlaymiz
+    // So'rov xato bersa, local allUsers dan izlaymiz
     state.allUsers?.forEach(user => {
       if (user.username?.toLowerCase().includes(q)) {
         results.push({ type: 'user', label: '@' + user.username, value: user.username, uid: user.uid, avatar: user.photoURL || null });

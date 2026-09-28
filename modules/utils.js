@@ -6,12 +6,12 @@ export const $    = id => document.getElementById(id);
 export const esc  = s  => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
 
 /**
- * Foydalanuvchi yozgan (yoki AI qaytargan) oddiy Markdown belgilarini xavfsiz
+ * Foydalanuvchi yozgan oddiy Markdown belgilarini xavfsiz
  * HTML'ga aylantiradi: **qalin**, *egik*, ~~chizilgan~~, `kod`, ```kod bloki```,
  * # ## ### sarlavhalar, - / * ro'yxat elementlari (ichma-ich/indent bilan ham),
  * 1. raqamlangan ro'yxat, > iqtibos, [matn](url) havolalar. Butun MRgram
  * bo'ylab ishlatiladi (shaxsiy/guruh chatlar, post tavsiflari, izohlar) —
- * faqat AI emas, HAR QANDAY foydalanuvchi shu belgilardan foydalansa
+ * HAR QANDAY foydalanuvchi shu belgilardan foydalansa
  * chiroyli ko'rinadi.
  *
  * XAVFSIZLIK: eng avval esc() orqali butun matn HTML-escape qilinadi (< > &
@@ -147,7 +147,7 @@ export function formatLastSeen(lastSeenAt) {
   return `${fmt(lastSeenAt)} da faol edi`;
 }
 export const initL  = n  => (n && n[0] ? n[0].toUpperCase() : 'U');
-export const uToEmail = u => `${u.toLowerCase().replace(/[^a-z0-9]/g,'')}@mrdatabase.uz`;
+export const uToEmail = u => `${u.toLowerCase().replace(/[^a-z0-9_]/g,'')}@mrgram.uz`;
 export const clr    = n  => {
   const c = ['#4f8ef7','#3ecf8e','#e84057','#f5a623','#9b59b6','#1abc9c'];
   return c[Math.abs((n||'').length) % c.length];

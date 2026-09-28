@@ -1,11 +1,6 @@
-import { db, state, isAdmin, aiSuggestComment, rephraseAiComment, getMediaUrl, createThinkingUI } from './config.js';
+import { sb, state, isAdmin, getMediaUrl, mapProfile } from './config.js';
 import { $, esc, renderMarkdown, defAvi }          from './utils.js';
 import { toast }                   from './toast.js';
-import {
-  collection, query, orderBy, doc, getDoc,
-  getDocs, addDoc, deleteDoc, serverTimestamp,
-  updateDoc, increment, setDoc, arrayUnion
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
 /* ── Duplicate load oldini olish ──────────────────────────────────────── */
 let _loading = false;
@@ -14,8 +9,6 @@ let _loading = false;
 export async function openCmtModal(postId) {
   state.cmtPostId = postId;
 
-  // Video post uchun ham AI izoh tugmasi ishlaydi
-  aiCmtBtn.style.display = '';
   $('cmtModalList').innerHTML = `
     <div class="cmt-skel-row"><div class="skel skel-avi w-32px h-32px flex-shrink-0"></div><div class="flex-1 d-flex flex-col gap-6px"><div class="skel skel-line w-45pct"></div><div class="skel skel-line w-75pct h-9px opacity-60"></div></div></div>
     <div class="cmt-skel-row delay-60ms"><div class="skel skel-avi w-32px h-32px flex-shrink-0"></div><div class="flex-1 d-flex flex-col gap-6px"><div class="skel skel-line w-35pct"></div><div class="skel skel-line w-60pct h-9px opacity-60"></div></div></div>`;
@@ -27,8 +20,8 @@ export async function openCmtModal(postId) {
   $('cmtModal').classList.add('show');
 
   if (state.me) {
-    getDoc(doc(db,'users',state.me.uid)).then(s => {
-      const av = s.data()?.avatar || defAvi(s.data()?.fullName || 'U');
+    Promise.resolve(sb.from('profiles').select('full_name,avatar').eq('id', state.me.uid).maybeSingle()).then(({ data }) => {
+      const av = data?.avatar || defAvi(data?.full_name || 'U');
       $('cmtMyAvi').innerHTML = `<img class="w-full h-full object-cover brr-50pct" src="${av}" onerror="this.classList.add('d-none')">`;
     }).catch(() => {});
   }
@@ -44,10 +37,12 @@ export async function loadCmtModal(postId) {
 
   const list = $('cmtModalList');
   try {
-    const snap = await getDocs(
-      query(collection(db, 'posts', postId, 'comments'), orderBy('createdAt','asc'))
-    );
-    const cmts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const { data: _cRows, error: _cErr } = await sb.from('comments').select('*')
+      .eq('post_id', postId).order('created_at', { ascending: true });
+    if (_cErr) throw _cErr;
+    const cmts = (_cRows || []).map(r => ({
+      id: r.id, userId: r.user_id, userName: r.user_name, text: r.text, createdAt: r.created_at,
+    }));
 
     // Feed va post-stats da comment sonini yangilash
     const ccSpanFeed = document.getElementById(`cc-${postId}`);
@@ -68,10 +63,11 @@ export async function loadCmtModal(postId) {
     }
 
     const uids = [...new Set(cmts.map(c => c.userId))];
-    const uDs  = await Promise.all(uids.map(u => getDoc(doc(db,'users',u))));
+    const { data: _uRows } = await sb.from('profiles').select('id,full_name,avatar').in('id', uids);
+    const _uById = new Map((_uRows || []).map(r => [r.id, mapProfile(r)]));
     const aMap = {};
-    uids.forEach((u,i) => {
-      const d = uDs[i].data() || {};
+    uids.forEach(u => {
+      const d = _uById.get(u) || {};
       aMap[u] = d.avatar || defAvi(d.fullName);
     });
 
@@ -95,11 +91,9 @@ export async function loadCmtModal(postId) {
       if (b.disabled) return;
       b.disabled = true;
       try {
-        await deleteDoc(doc(db, 'posts', b.dataset.post, 'comments', b.dataset.cmt));
-        // commentCount ni kamaytirish (atomic)
-        await updateDoc(doc(db, 'posts', b.dataset.post), {
-          commentCount: increment(-1)
-        }).catch(() => setDoc(doc(db, 'posts', b.dataset.post), { commentCount: 0 }, { merge: true }));
+        // commentCount ni DB trigger kamaytiradi
+        const { error: delErr } = await sb.from('comments').delete().eq('id', b.dataset.cmt);
+        if (delErr) throw delErr;
         toast('Izoh o\'chirildi', 'success');
         await loadCmtModal(b.dataset.post);
       } catch(e) {
@@ -137,20 +131,16 @@ export async function sendCmtModal() {
   if (sendBtn) sendBtn.disabled = true;
 
   try {
-    const uD = await getDoc(doc(db,'users',state.me.uid));
-    const ud = uD.data() || {};
+    const { data: ud } = await sb.from('profiles').select('full_name').eq('id', state.me.uid).maybeSingle();
 
-    await addDoc(collection(db, 'posts', state.cmtPostId, 'comments'), {
-      userId:    state.me.uid,
-      userName:  ud.fullName || state.me.displayName || 'Foydalanuvchi',
+    // commentCount ni DB trigger oshiradi
+    const { error: insErr } = await sb.from('comments').insert({
+      post_id:   state.cmtPostId,
+      user_id:   state.me.uid,
+      user_name: ud?.full_name || state.me.displayName || 'Foydalanuvchi',
       text,
-      createdAt: serverTimestamp()
     });
-
-    // commentCount ni oshirish (atomic)
-    await updateDoc(doc(db, 'posts', state.cmtPostId), {
-      commentCount: increment(1)
-    }).catch(() => setDoc(doc(db, 'posts', state.cmtPostId), { commentCount: 1 }, { merge: true }));
+    if (insErr) throw insErr;
 
     inp.value = '';
     $('cmtCharCount').textContent = '300';
@@ -194,138 +184,3 @@ $('cmtModal').addEventListener('click', e => {
   if (e.target === $('cmtModal')) $('cmtModal').classList.remove('show');
 });
 
-/* ── AI Izoh taklifi ──────────────────────────────────────────────────── */
-const aiCmtBtn = document.createElement('button');
-aiCmtBtn.type = 'button';
-aiCmtBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>';
-aiCmtBtn.title = 'AI izoh taklif qilsin';
-aiCmtBtn.style.cssText = 'padding:6px 10px;border-radius:50%;border:1.5px solid var(--accent,#a78bfa);background:transparent;color:var(--accent,#a78bfa);font-size:14px;cursor:pointer;flex-shrink:0;transition:all 0.2s;';
-aiCmtBtn.onmouseenter = () => { aiCmtBtn.style.background = 'var(--accent,#a78bfa)'; aiCmtBtn.style.color = '#fff'; };
-aiCmtBtn.onmouseleave = () => { aiCmtBtn.style.background = 'transparent'; aiCmtBtn.style.color = 'var(--accent,#a78bfa)'; };
-
-const cmtSend = $('cmtModalSend');
-if (cmtSend && cmtSend.parentNode) {
-  cmtSend.parentNode.insertBefore(aiCmtBtn, cmtSend);
-}
-
-aiCmtBtn.addEventListener('click', async () => {
-  $('cmtModal')?.querySelector('.ai-cmt-bubble')?.remove();
-
-  const bubble = document.createElement('div');
-  bubble.className = 'ai-cmt-bubble ai-reply-thinking';
-  const inputRow = $('cmtModal')?.querySelector('.cmt-input-row');
-  if (inputRow) inputRow.before(bubble);
-
-  aiCmtBtn.disabled = true;
-  const thinkUI = createThinkingUI(bubble);
-
-  try {
-    let imageUrl = null, postText = '', fileName = null, mediaType = null, pool = [];
-    if (state.cmtPostId) {
-      const snap = await getDoc(doc(db, 'posts', state.cmtPostId));
-      if (snap.exists()) {
-        const d = snap.data();
-        if (d.mediaUrl) imageUrl = d.mediaUrl;
-        else if (d.mediaPath || d.storageIndex) {
-          try { imageUrl = await getMediaUrl({ id: state.cmtPostId, ...d }); } catch {}
-        }
-        postText = d.text || '';
-        fileName = d.fileName || null;
-        mediaType = d.mediaType || null;
-        // Bu post uchun avval generatsiya qilingan takliflar pool'i bo'lsa —
-        // qayta AI so'rov yubormasdan o'shani ishlatamiz.
-        pool = Array.isArray(d.aiCommentSuggestion) ? d.aiCommentSuggestion : [];
-      }
-    }
-
-    const CACHE_POOL_SIZE = 2;
-    let suggestion;
-
-    // Admin "AI izoh taklifi" tugmasini bossa — eski pool/rephrase keshi
-    // chetlab o'tiladi, har doim yangi AI so'rov yuboriladi va natija
-    // pastda pool'ni TO'LIQ ALMASHTIRADI (arrayUnion emas) — shu bilan
-    // barcha foydalanuvchilar uchun yangi taklif ko'rinadi.
-    const forceRegenerate = isAdmin();
-
-    if (pool.length && !forceRegenerate) {
-      if (pool.length >= CACHE_POOL_SIZE) {
-        // Pool to'la — hech qanday AI so'rov yuborilmaydi.
-        suggestion = pool[Math.floor(Math.random() * pool.length)].text;
-      } else {
-        // Pool hali to'lmagan — arzon TEXT_MODEL orqali qayta so'zlab, pool'ga qo'shamiz.
-        const base = pool[Math.floor(Math.random() * pool.length)].text;
-        suggestion = base;
-        try {
-          const variant = await rephraseAiComment(base);
-          suggestion = variant;
-          if (state.cmtPostId) {
-            const entry = { text: variant, createdAt: Date.now() };
-            updateDoc(doc(db, 'posts', state.cmtPostId), { aiCommentSuggestion: arrayUnion(entry) }).catch(() => {});
-          }
-        } catch {}
-      }
-      thinkUI.finish();
-    } else {
-      let prevComments = [];
-      if (state.cmtPostId) {
-        try {
-          const cmtSnap = await getDocs(
-            query(collection(db, 'posts', state.cmtPostId, 'comments'), orderBy('createdAt', 'asc'))
-          );
-          prevComments = cmtSnap.docs.map(d => ({ userName: d.data().userName || '?', text: d.data().text || '' }));
-        } catch {}
-      }
-
-      suggestion = await aiSuggestComment(
-        imageUrl, postText, fileName, mediaType, null, prevComments, state.cmtPostId,
-        (name) => thinkUI.step(name)
-      );
-
-      thinkUI.finish();
-
-      // Natijani Firestore'ga saqlaymiz: admin qayta yaratgan bo'lsa — eski
-      // pool butunlay yangi natija bilan ALMASHTIRILADI (barcha uchun yangi
-      // bo'ladi); oddiy user bo'lsa — pool'ning birinchi a'zosi sifatida
-      // qo'shiladi va keyingi userlar arzon rephrase orqali pool'ni to'ldiradi.
-      if (suggestion && state.cmtPostId) {
-        const entry = { text: suggestion, createdAt: Date.now() };
-        if (forceRegenerate) {
-          setDoc(doc(db, 'posts', state.cmtPostId), { aiCommentSuggestion: [entry] }, { merge: true }).catch(() => {});
-        } else {
-          updateDoc(doc(db, 'posts', state.cmtPostId), { aiCommentSuggestion: arrayUnion(entry) })
-            .catch(() => setDoc(doc(db, 'posts', state.cmtPostId), { aiCommentSuggestion: [entry] }, { merge: true }))
-            .catch(() => {}); // boshqa user ulgurib yozgan bo'lsa — jim o'tkazamiz
-        }
-      }
-    }
-
-    if (!suggestion) {
-      bubble.remove();
-      toast('AI bu kontent uchun izoh taklif qila olmadi.', 'error', 4000);
-      return;
-    }
-
-    bubble.classList.remove('ai-reply-thinking');
-    bubble.innerHTML = `
-      <p class="ai-cmt-suggestion">${suggestion.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</p>
-      <div class="ai-cmt-actions">
-        <button class="ai-cmt-ok">Inputga qo'yish</button>
-        <button class="ai-cmt-cancel">Bekor</button>
-      </div>`;
-
-    bubble.querySelector('.ai-cmt-ok').addEventListener('click', () => {
-      $('cmtModalInput').value = suggestion;
-      $('cmtModalInput').dispatchEvent(new Event('input'));
-      $('cmtModalInput').focus();
-      bubble.remove();
-    });
-    bubble.querySelector('.ai-cmt-cancel').addEventListener('click', () => bubble.remove());
-
-  } catch (e) {
-    thinkUI.destroy();
-    bubble.remove();
-    toast('AI xatosi: ' + e.message, 'error');
-  } finally {
-    aiCmtBtn.disabled = false;
-  }
-});

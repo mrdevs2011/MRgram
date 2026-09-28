@@ -1,26 +1,24 @@
 /**
- * push.js — FCM Web Push Notifications
+ * push.js — Web Push (VAPID) bildirishnomalari
  *
- * Android: sayt yopiq bo'lsa ham (background) xabar keladi
- * Desktop: sayt ochiq bo'lganda xabar keladi
+ * Firebase/FCM yo'q: brauzerning o'z Push API'si ishlatiladi. Obuna (subscription)
+ * `push_tokens` jadvaliga register_push_token RPC orqali yoziladi, yuborishni
+ * Edge Function (supabase/functions/send-push) bajaradi.
  *
- * ⚠️  VAPID_KEY ni Firebase Console dan oling:
- *     Project Settings → Cloud Messaging → Web Push certificates → Generate key pair
- *     So'ng quyidagi VAPID_KEY ni o'zgartiring.
+ * Android: sayt yopiq bo'lsa ham xabar keladi.
+ * Desktop: brauzer ochiq bo'lsa keladi.
+ *
+ * VAPID_PUBLIC_KEY — ochiq kalit (maxfiy emas). Maxfiy kalit FAQAT Supabase
+ * Edge Function secret'ida turadi (README: supabase/functions/send-push/README.md).
  */
 
-import { db, auth, state } from './config.js';
-import { doc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-import { getMessaging, getToken, deleteToken } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js';
-import { getApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { sb, state } from './config.js';
 
-// ⚠️  Firebase Console → Project Settings → Cloud Messaging → Web Push certificates
-const VAPID_KEY = 'BNGEx0e9stxTPGNN-UbmNDUCmZOdFSQWt7JLVZwW4g-v0hfYHpFQMm2dtrwrwx6PF5e1jIwOPHF7tZUgttpe3DE';
+const VAPID_PUBLIC_KEY = 'BC7D7mT0RhLjM8kes8iFCvavCiTY5crwYaXzGeuEIRclNoRmIDAg0QTpgfbGvefGmprso8bqiArQ3a1kz33FOt0';
 
 // Foydalanuvchi "Sozlamalar" ekranidan bildirishnomalarni o'chirib qo'ysa,
 // keyingi kirishlarda initPush() avtomatik chaqirilmasligi uchun localStorage
-// bayrog'i. Standart holat: yoqilgan ('1' yozilmagan bo'lsa ham yoqilgan
-// hisoblanadi — faqat aniq '0' yozilgan bo'lsa o'chirilgan deb qaraladi).
+// bayrog'i. Standart holat: yoqilgan (faqat aniq '0' yozilgan bo'lsa o'chirilgan).
 const NOTIF_LS_KEY = 'mrgramNotifsEnabled';
 
 /** Foydalanuvchi bildirishnomalarni o'chirib qo'yganmi (Settings orqali)? */
@@ -28,26 +26,43 @@ export function notificationsUserDisabled() {
   try { return localStorage.getItem(NOTIF_LS_KEY) === '0'; } catch { return false; }
 }
 
-/** Settings ekranidagi toggle uchun: hozirgi holat yoqilganmi?
+/** Settings toggle uchun: hozirgi holat yoqilganmi?
  * Brauzer ruxsati 'denied' bo'lsa — har doim o'chirilgan hisoblanadi
- * (JS orqali qayta yoqib bo'lmaydi, foydalanuvchi brauzer sozlamalaridan
- * o'zi yoqishi kerak). */
+ * (JS orqali qayta yoqib bo'lmaydi, foydalanuvchi brauzer sozlamalaridan yoqadi). */
 export function areNotificationsEnabled() {
   if (!('Notification' in window)) return false;
   if (Notification.permission === 'denied') return false;
   return !notificationsUserDisabled();
 }
 
-let _messaging = null;
-let _swReg     = null;
-let _initDone  = false;
+let _swReg    = null;
+let _initDone = false;
+
+function _b64urlToBytes(b64) {
+  const pad = '='.repeat((4 - (b64.length % 4)) % 4);
+  const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from(raw, c => c.charCodeAt(0));
+}
+
+function _sameKey(sub, keyBytes) {
+  const cur = sub.options?.applicationServerKey;
+  if (!cur) return false;
+  const a = new Uint8Array(cur);
+  return a.length === keyBytes.length && a.every((v, i) => v === keyBytes[i]);
+}
+
+function _platform() {
+  const ua = navigator.userAgent || '';
+  if (/android/i.test(ua)) return 'android';
+  if (/iphone|ipad|ipod/i.test(ua)) return 'ios';
+  return 'web';
+}
 
 /** Service Worker'ni ro'yxatdan o'tkazish */
 async function _registerSW() {
   if (!('serviceWorker' in navigator)) return null;
   try {
-    // Allaqachon ro'yxatdan o'tganmi?
-    const existing = await navigator.serviceWorker.getRegistration('/firebase-messaging-sw.js');
+    const existing = await navigator.serviceWorker.getRegistration();
     if (existing) return existing;
     return await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
   } catch {
@@ -55,85 +70,61 @@ async function _registerSW() {
   }
 }
 
-/** FCM messaging instance olish */
-function _getMessaging() {
-  if (_messaging) return _messaging;
-  try {
-    _messaging = getMessaging(getApp());
-    return _messaging;
-  } catch {
-    return null;
-  }
-}
-
 /**
- * Push ruxsatini so'rash va FCM tokenni Firestore'ga saqlash.
+ * Push ruxsatini so'rash, obuna bo'lish va obunani DB ga saqlash.
  * auth.js → _enterApp() da chaqiriladi (foydalanuvchi kirganda).
  */
 export async function initPush() {
   if (_initDone) return;
-  if (!('Notification' in window)) return; // Browser qo'llab-quvvatlamaydi
+  if (!('Notification' in window) || !('PushManager' in window)) return;
+  if (Notification.permission === 'denied') return;
 
   _swReg = await _registerSW();
   if (!_swReg) return;
 
-  const messaging = _getMessaging();
-  if (!messaging) return;
-
-  // Foydalanuvchi allaqachon ruxsat berganmi?
-  if (Notification.permission === 'denied') return; // Rad etilgan — so'ramaymiz
-
   try {
-    // Ruxsat so'rash (agar 'default' bo'lsa — dialog chiqadi)
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') return;
 
-    // FCM token olish
-    const token = await getToken(messaging, {
-      vapidKey:           VAPID_KEY,
-      serviceWorkerRegistration: _swReg,
-    });
-
-    if (!token) return;
-
-    // Tokenni Firestore'ga saqlash (arrayUnion — takror saqlamaydi)
-    const uid = auth.currentUser?.uid || state.me?.uid;
+    const uid = state.me?.uid;
     if (!uid) return;
 
-    await updateDoc(doc(db, 'users', uid), {
-      fcmTokens: arrayUnion(token),
+    const reg = await navigator.serviceWorker.ready;
+    const key = _b64urlToBytes(VAPID_PUBLIC_KEY);
+
+    let sub = await reg.pushManager.getSubscription();
+    // Eski (FCM yoki boshqa VAPID kalit bilan) obuna bo'lsa — yangisiga almashtiramiz
+    if (sub && !_sameKey(sub, key)) { await sub.unsubscribe().catch(() => {}); sub = null; }
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+
+    // Bir qurilmada akkaunt almashsa ham token joriy userga o'tadi (RPC shuni qiladi)
+    const { error } = await sb.rpc('register_push_token', {
+      p_token: JSON.stringify(sub.toJSON()),
+      p_platform: _platform(),
     });
+    if (error) throw error;
 
     _initDone = true;
-  } catch {
-    // Token olishda xato (VAPID key noto'g'ri, ruxsat yo'q) — jimgina
+  } catch (e) {
+    // Obuna bo'lmadi (ruxsat yo'q, brauzer qo'llamaydi, RPC yo'q) — ilova ishlashda davom etadi
+    console.warn('[Push] obuna bo\'lmadi:', e?.message || e);
   }
 }
 
 /**
- * Chiqish paytida FCM tokenni Firestore'dan o'chirish.
- * auth.js → logOut() da chaqiriladi.
+ * Chiqish paytida obunani DB dan va brauzerdan o'chirish.
+ * auth.js → logOut() da (sessiya tugashidan OLDIN) chaqiriladi.
  */
 export async function removePushToken() {
   try {
-    const messaging = _getMessaging();
-    if (!messaging || !_swReg) return;
-
-    const token = await getToken(messaging, {
-      vapidKey:           VAPID_KEY,
-      serviceWorkerRegistration: _swReg,
-    }).catch(() => null);
-
-    if (!token) return;
-
-    const uid = auth.currentUser?.uid || state.me?.uid;
-    if (uid) {
-      await updateDoc(doc(db, 'users', uid), {
-        fcmTokens: arrayRemove(token),
-      });
+    const reg = _swReg || (await navigator.serviceWorker?.getRegistration());
+    const sub = reg ? await reg.pushManager.getSubscription() : null;
+    if (sub) {
+      if (state.me?.uid) {
+        await sb.from('push_tokens').delete().eq('token', JSON.stringify(sub.toJSON()));
+      }
+      await sub.unsubscribe().catch(() => {});
     }
-
-    await deleteToken(messaging).catch(() => {});
   } catch {
     // Jimgina
   }
@@ -141,14 +132,11 @@ export async function removePushToken() {
 }
 
 /**
- * Settings ekranidagi "Bildirishnomalar" toggle tugmasi shu funksiyani
- * chaqiradi. Yoqilsa — brauzer ruxsatini so'rab, FCM tokenni qayta
- * ro'yxatdan o'tkazadi; o'chirilsa — tokenni o'chiradi va localStorage
- * bayrog'ini yozadi (keyingi kirishda initPush() avtomatik ishlamasligi
- * uchun — auth.js shu bayroqni tekshiradi).
+ * Settings ekranidagi "Bildirishnomalar" toggle shu funksiyani chaqiradi.
+ * Yoqilsa — ruxsat so'rab qayta obuna bo'ladi; o'chirilsa — obunani o'chiradi va
+ * localStorage bayrog'ini yozadi (auth.js shu bayroqni tekshiradi).
  *
- * Qaytaradi: haqiqiy yakuniy holat (true = yoqilgan). Brauzer ruxsati
- * rad etilgan bo'lsa, `enabled=true` so'ralsa ham natija `false` bo'ladi.
+ * Qaytaradi: yakuniy holat (true = yoqilgan). Ruxsat rad etilgan bo'lsa false.
  */
 export async function setNotificationsEnabled(enabled) {
   if (!enabled) {
