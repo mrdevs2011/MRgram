@@ -449,7 +449,7 @@ export function startChatsWatcher() {
       const me = state.me?.uid;
       if (!me) return;
       const { data, error } = await sb.from('chats')
-        .select('*, chat_members(user_id, unread_count, typing_until)')
+        .select('*, chat_members(user_id, unread_count)')
         .or(`user_a.eq.${me},user_b.eq.${me}`);
       if (_chDead || !state.me) return;
       if (error) { console.warn('[Chat] chats watcher error:', error.message); return; }
@@ -698,10 +698,15 @@ function _setTyping(isTyping) {
   if (!state.currentChatId || !state.me) return;
   if (_iAmTyping === isTyping) return; // ortiqcha yozuvlarni oldini olish
   _iAmTyping = isTyping;
-  sb.from('chat_members')
-    .update({ typing_until: isTyping ? new Date(Date.now() + 5000).toISOString() : null })
-    .eq('chat_id', state.currentChatId).eq('user_id', state.me.uid)
-    .then(() => {}, () => {});
+  // typing_until ustuni diet patch da olib tashlangan — realtime broadcast
+  try {
+    const ch = sb.channel('typing-bc-' + state.currentChatId);
+    ch.subscribe(status => {
+      if (status === 'SUBSCRIBED') {
+        ch.send({ type: 'broadcast', event: 'typing', payload: { uid: state.me.uid, typing: isTyping } });
+      }
+    });
+  } catch (_) {}
 }
 
 function _onChatInputTyping() {
@@ -798,17 +803,16 @@ export async function openChatThread(uid) {
   if (_peerStatusTick) clearInterval(_peerStatusTick);
   _peerStatusTick = setInterval(() => _paintPeerStatus(_peerLastSeenAt), 20000);
 
-  // "Yozmoqda..." holatini kuzatish — chats/{chatId}.typing.{peerUid}
+  // "Yozmoqda..." — realtime broadcast (typing_until ustuni yo'q)
   _peerTyping = false;
   if (_chatDocUnsub) { _chatDocUnsub(); _chatDocUnsub = null; }
   {
     let tTimer = null;
-    const tch = sb.channel('typing-' + chatId)
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chat_members', filter: `chat_id=eq.${chatId}` }, p => {
-        if (p.new?.user_id !== uid) return;
+    const tch = sb.channel('typing-bc-' + chatId)
+      .on('broadcast', { event: 'typing' }, ({ payload }) => {
+        if (!payload || payload.uid !== uid) return;
         clearTimeout(tTimer);
-        _peerTyping = !!p.new.typing_until;
-        // Soat farqiga bog'liq bo'lmaslik uchun: yangi hodisa kelmasa 5s dan keyin o'chiramiz
+        _peerTyping = !!payload.typing;
         if (_peerTyping) tTimer = setTimeout(() => { _peerTyping = false; _paintPeerStatus(_peerLastSeenAt); }, 5000);
         _paintPeerStatus(_peerLastSeenAt);
       })
