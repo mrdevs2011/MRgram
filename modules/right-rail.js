@@ -139,6 +139,7 @@ export function startRightRail() {
   rail()?.addEventListener('click', onClick);
   window.addEventListener('resize', fit);
   document.addEventListener('groupsUpdated', () => loadGroups());
+  document.addEventListener('profilesPreloaded', () => { loadOnline(); loadRecent(); });
   fit();
   refresh();
   _tick = setInterval(refresh, 45000);

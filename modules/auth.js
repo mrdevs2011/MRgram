@@ -579,6 +579,8 @@ async function _fetchProfile(uid) {
 }
 
 function _showOnce(reason, until = null) {
+  try { window.__mrgramHideSplash?.('gate'); } catch (_) {}
+
   const key = reason + ':' + (until || '');
   if (_shownKey === key) return;
   _shownKey = key;
@@ -672,6 +674,7 @@ async function _handleSession(session) {
     const authWrap = $('authWrap');
     if (app) app.classList.remove('show');
     if (authWrap) authWrap.classList.add('show');
+    try { window.__mrgramHideSplash?.('no-session'); } catch (_) {}
     return;
   }
 
@@ -755,7 +758,7 @@ async function _enterApp(user) {
 
     listenPosts();
     if (!notificationsUserDisabled()) initPush();
-    startChatsWatcher();
+    startChatsWatcher(); // ichida startGroupsWatcher ham
     startCallWatcher();
 
     // "Oxirgi faollik" — admin panelida ko'rsatish uchun
@@ -769,9 +772,96 @@ async function _enterApp(user) {
     } catch (_) { /* jim o'tkazib yuboramiz */ }
 
     startPresenceHeartbeat();
+
+    // Splash davomida ko'proq ma'lumot yuklash
+    try {
+      await _preloadForSplash(user.uid);
+    } catch (e) {
+      console.warn('[Auth] preload:', e?.message || e);
+    }
+    try { window.__mrgramHideSplash?.('app-ready'); } catch (_) {}
   } finally {
     _entering = false;
   }
+}
+
+/** Splash yopilishidan oldin parallel yuklash */
+async function _preloadForSplash(uid) {
+  const tasks = [];
+
+  // 1) Postlar (listenPosts load() async — qayta so'rov, tezkor kesh + network)
+  tasks.push((async () => {
+    try {
+      const { data } = await sb.from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(80);
+      if (data?.length) {
+        const posts = data.map(r => {
+          try { return mapPost(r); } catch { return null; }
+        }).filter(Boolean);
+        if (posts.length) {
+          state.allPosts = posts;
+          try { cachePosts(uid, posts); } catch (_) {}
+          if (state.view === 'home') _cb.renderFeed?.();
+        }
+      }
+    } catch (e) { console.warn('[preload] posts', e?.message); }
+  })());
+
+  // 2) Onlayn profillar (right-rail)
+  tasks.push((async () => {
+    try {
+      const { data } = await sb.from('profiles')
+        .select('id, username, full_name, avatar, last_seen, approval, blocked')
+        .eq('approval', 'approved')
+        .eq('blocked', false)
+        .order('last_seen', { ascending: false })
+        .limit(40);
+      for (const row of data || []) {
+        const d = mapProfile(row);
+        if (!d?.uid) continue;
+        state._userCache[d.uid] = {
+          uid: d.uid, fullName: d.fullName, avatar: d.avatar,
+          username: d.username, blocked: d.blocked, approved: d.approved,
+          lastSeenAt: d.lastSeenAt,
+        };
+      }
+      // right-rail yangilansin
+      document.dispatchEvent(new CustomEvent('profilesPreloaded'));
+    } catch (e) { console.warn('[preload] profiles', e?.message); }
+  })());
+
+  // 3) Guruhlar ro'yxati allaqachon startGroupsWatcher da — biroz kutamiz
+  tasks.push(new Promise(r => setTimeout(r, 400)));
+
+  // 4) Post mualliflari
+  tasks.push((async () => {
+    try {
+      const uids = [...new Set((state.allPosts || []).map(p => p.userId).filter(Boolean))]
+        .filter(id => !state._userCache[id])
+        .slice(0, 30);
+      if (!uids.length) return;
+      const { data } = await sb.from('profiles')
+        .select('id,full_name,avatar,username,blocked,approval')
+        .in('id', uids);
+      for (const row of data || []) {
+        const d = mapProfile(row);
+        state._userCache[d.uid] = {
+          uid: d.uid, fullName: d.fullName, avatar: d.avatar,
+          username: d.username, blocked: d.blocked, approved: d.approved,
+        };
+      }
+    } catch (_) {}
+  })());
+
+  await Promise.allSettled(tasks);
+  // right-rail qayta chizsin
+  try {
+    const rr = await import('./right-rail.js');
+    rr.startRightRail?.();
+  } catch (_) {}
+  document.dispatchEvent(new CustomEvent('groupsUpdated'));
 }
 
 /* ── Onlayn holat (presence) heartbeat ─────────────────────────────────

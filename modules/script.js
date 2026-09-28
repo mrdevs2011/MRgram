@@ -13,16 +13,34 @@ import { initRouter, navigateTo } from './router.js';
 import { initNavigation } from './bar.js';
 import './explore.js';
 
-/* ── Splash ──────────────────────────────────────────────────────────── */
-setTimeout(() => {
-  $('splash')?.classList.add('out');
+/* ── Splash: min 0.8s, max 12s; ma'lumot tayyor bo'lguncha kutadi ── */
+const _splashT0 = Date.now();
+const SPLASH_MIN_MS = 800;
+const SPLASH_MAX_MS = 12000;
+let _splashDone = false;
+
+export function hideSplash(reason) {
+  if (_splashDone) return;
+  _splashDone = true;
+  const elapsed = Date.now() - _splashT0;
+  const wait = Math.max(0, SPLASH_MIN_MS - elapsed);
   setTimeout(() => {
-    const splash = $('splash');
-    if (splash) splash.style.display = 'none';
-    const aw = document.getElementById('authWrap');
-    if (aw) aw.style.display = '';
-  }, 400);
-}, 400);
+    $('splash')?.classList.add('out');
+    setTimeout(() => {
+      const splash = $('splash');
+      if (splash) splash.style.display = 'none';
+      const aw = document.getElementById('authWrap');
+      if (aw) aw.style.display = '';
+    }, 350);
+  }, wait);
+  if (reason) console.debug('[splash] hide:', reason);
+}
+
+// Hech narsa kelmasa ham yopiladi (login ekrani / offline)
+setTimeout(() => hideSplash('timeout'), SPLASH_MAX_MS);
+
+// Boshqa modullar chaqirishi uchun
+window.__mrgramHideSplash = hideSplash;
 
 /* ── Wire auth → render callbacks ────────────────────────────────────── */
 setRenderCallbacks({
