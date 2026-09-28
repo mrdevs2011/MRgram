@@ -477,3 +477,68 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 .act-btn:hover { background: none; color: var(--link); }
 .like-btn:hover { color: var(--red); }
 .act-btn.liked { color: var(--red); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SIDEBAR — X.com o'lchamlari: element 50px, yozuv 20px, ikonka 26px,
+   Post tugma 52px, chegara/soya yo'q, bitta ingichka ajratgich chiziq
+   ═══════════════════════════════════════════════════════════════════════ */
+nav.bot-nav, nav.bot-nav button { font-family: var(--font); letter-spacing: 0; }
+
+nav.bot-nav .nav-btn,
+nav.bot-nav .sb-search-toggle,
+nav.bot-nav .sb-logo-row,
+nav.bot-nav .sb-logo-glass,
+nav.bot-nav .sb-account,
+nav.bot-nav #createBtn.nav-center-btn { border: none; box-shadow: none; outline-offset: -2px; }
+
+nav.bot-nav .nav-btn svg,
+nav.bot-nav .sb-search-toggle svg {
+  fill: none; stroke: currentColor; color: var(--text);
+  stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
+}
+nav.bot-nav .nav-btn.on svg,
+nav.bot-nav #sbSearchToggle.search-active svg { stroke-width: 2.4; }
+
+/* Rail (mobil + planshet): 50px doira elementlar */
+@media (max-width: 1099px) {
+  nav.bot-nav { gap: 0; }
+  nav.bot-nav .nav-btn,
+  nav.bot-nav .sb-search-toggle { width: 50px; height: 50px; border-radius: 50%; }
+  nav.bot-nav .nav-btn:hover { background: var(--bg4); }
+  nav.bot-nav .sb-logo-row { width: 50px; height: 50px; }
+  nav.bot-nav #createBtn.nav-center-btn { width: 52px; height: 52px; margin: 12px 0 0; }
+  nav.bot-nav .sb-account { width: 50px; height: 50px; }
+}
+@media (max-width: 767px) {
+  :root { --rail: 64px; --sidebar: 64px; --content-left: 64px; }
+}
+
+/* Keng sidebar (>=1100px) */
+@media (min-width: 1100px) {
+  nav.bot-nav { gap: 0; }
+  nav.bot-nav .sb-logo-row { width: 50px; height: 50px; }
+  nav.bot-nav .sb-logo-img { width: 30px; height: 30px; }
+
+  nav.bot-nav .nav-btn,
+  nav.bot-nav .sb-search-toggle {
+    height: 50px; padding: 0 16px 0 12px; gap: 20px; border-radius: 999px;
+  }
+  nav.bot-nav .nav-btn svg,
+  nav.bot-nav .sb-search-toggle svg { width: 26px; height: 26px; }
+  nav.bot-nav .nav-btn .nav-label {
+    font-family: var(--font); font-size: 20px; line-height: 24px;
+    font-weight: 400; letter-spacing: 0;
+  }
+  nav.bot-nav .nav-btn.on .nav-label,
+  nav.bot-nav #sbSearchToggle.search-active .nav-label { font-weight: 700; }
+  nav.bot-nav .nav-btn:hover { background: var(--bg4); }
+
+  nav.bot-nav #createBtn.nav-center-btn { height: 52px; margin: 16px 0; }
+  nav.bot-nav #createBtn.nav-center-btn .sb-create-label {
+    font-family: var(--font); font-size: 17px; line-height: 20px; font-weight: 700;
+  }
+
+  nav.bot-nav .sb-account { padding: 12px; margin-bottom: 12px; }
+  nav.bot-nav .sb-account:hover { background: var(--bg4); }
+  nav.bot-nav .sb-acc-name, nav.bot-nav .sb-acc-user { font-size: 15px; line-height: 20px; }
+}
