@@ -1173,7 +1173,7 @@ if (saveProfileBtn) {
         if (!loginEmail) { toast('Email topilmadi', 'error'); return; }
         await verifyPassword(loginEmail, oldPwd);
       } catch (err) {
-        toast(err.code === 'wrong-password' ? 'Joriy parol noto'g'ri' : ('Parol tekshiruvi: ' + err.message), 'error');
+        toast(err.code === 'wrong-password' ? "Joriy parol noto'g'ri" : ('Parol tekshiruvi: ' + err.message), 'error');
         return;
       }
     }
