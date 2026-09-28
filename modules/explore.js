@@ -1,10 +1,9 @@
 /**
- * Qidiruv sahifasi — X "Explore" uslubida.
- * Sidebar'dagi "Qidiruv" bosilganda (overlay .open bo'lganda) markaz ustunda
- * ochiladi: pill qidiruv + tablar (Kashf / Trend / Postlar / Odamlar / Media)
- * + "Bugungi postlar" va "Trend" ro'yxatlari.
- * Yozganda — typeahead kartasi (ui.js). Enter yoki trend/taklif bosilsa —
- * natijalar shu sahifaning o'zida (Barchasi / Postlar / Odamlar / Media).
+ * Qidiruv sahifasi (diet F3.1: "Explore" → oddiy filtr).
+ * Sidebar'dagi "Qidiruv" bosilganda (overlay .open) markaz ustunda ochiladi.
+ * Tablar, trend/hashtag va media setkasi yo'q: bitta ro'yxat —
+ *   Odamlar + Postlar. Maydon bo'sh bo'lsa hammasi, yozib Enter bosilsa
+ *   (yoki typeahead'dan tanlansa — ui.js 'explore:commit') filtrlanadi.
  * Ma'lumot: state.allPosts (ochiq yoki o'zimniki) + profiles jadvali.
  */
 import { sb, state, mapProfile } from './config.js';
@@ -13,15 +12,7 @@ import { $, esc, defAvi } from './utils.js';
 const overlay = $('searchOverlay');
 const input   = $('searchInput');
 const body    = $('expBody');
-const tabsEl  = $('expTabs');
 
-const EXPLORE_TABS = [['explore', 'Kashf'], ['posts', 'Postlar'], ['people', 'Odamlar'], ['media', 'Media']];
-const RESULT_TABS  = [['all', 'Barchasi'], ['posts', 'Postlar'], ['people', 'Odamlar'], ['media', 'Media']];
-
-const DOTS = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
-
-let mode  = 'explore';   // 'explore' | 'results'
-let tab   = 'explore';
 let query = '';
 let users = [];
 let usersOk = false;
@@ -53,22 +44,6 @@ async function loadUsers() {
   } catch (e) {
     console.warn('[Explore]', e.message);
   }
-}
-
-function trends() {
-  const map = new Map();
-  visiblePosts().forEach(p => {
-    const seen = new Set();
-    (p.text || '').match(/#[\p{L}\p{N}_]+/gu)?.forEach(t => {
-      const k = t.toLowerCase();
-      if (seen.has(k)) return;
-      seen.add(k);
-      const e = map.get(k) || { tag: t, n: 0 };
-      e.n++;
-      map.set(k, e);
-    });
-  });
-  return [...map.values()].sort((a, b) => b.n - a.n);
 }
 
 /* ── Formatlash ──────────────────────────────────────────────────────── */
@@ -113,17 +88,6 @@ function postRow(p) {
   </button>`;
 }
 
-function trendRow(t, i, ranked) {
-  return `<div class="exp-item" role="button" tabindex="0" data-q="${esc(t.tag)}">
-    <span class="exp-item-main">
-      <span class="exp-kicker">${ranked ? (i + 1) + ' · ' : ''}Trend · MRspace</span>
-      <span class="exp-title">${esc(t.tag)}</span>
-      <span class="exp-sub">${fmtN(t.n)} ta post</span>
-    </span>
-    <button type="button" class="exp-more" aria-label="Ko'proq" data-noop>${DOTS}</button>
-  </div>`;
-}
-
 function personRow(u) {
   const name = u.fullName || u.username || 'Foydalanuvchi';
   return `<button type="button" class="exp-item exp-person" data-uid="${esc(u.uid)}">
@@ -135,74 +99,30 @@ function personRow(u) {
   </button>`;
 }
 
-function mediaGrid(posts) {
-  const list = posts.filter(p => p.mediaUrl && (p.mediaType?.startsWith('image') || p.mediaType?.startsWith('video'))).slice(0, 45);
-  if (!list.length) return empty('Hozircha media yo\'q');
-  return `<div class="exp-media">${list.map(p => {
-    const v = p.mediaType.startsWith('video');
-    const el = v
-      ? `<video src="${esc(p.mediaUrl)}#t=0.1" muted playsinline preload="metadata"></video>`
-      : `<img src="${esc(p.mediaUrl)}" alt="" loading="lazy">`;
-    return `<button type="button" data-post="${esc(p.id)}" aria-label="Post">${el}</button>`;
-  }).join('')}</div>`;
-}
-
 const empty = t => `<div class="exp-empty">${esc(t)}</div>`;
 const section = (title, inner, last) =>
-  `<section class="exp-sec${last ? ' exp-last' : ''}">${title ? `<h2 class="exp-h">${esc(title)}</h2>` : ''}${inner}</section>`;
-const more = (t, go) => `<button type="button" class="exp-show-more" data-go="${go}">${esc(t)}</button>`;
+  `<section class="exp-sec${last ? ' exp-last' : ''}"><h2 class="exp-h">${esc(title)}</h2>${inner}</section>`;
 
-/* ── Sahifalar ───────────────────────────────────────────────────────── */
-function exploreHtml() {
-  const posts = visiblePosts();
-  const tr = trends();
-  const pe = otherUsers();
-
-  if (tab === 'posts')  return posts.length ? posts.slice(0, 25).map(postRow).join('') : empty('Hozircha postlar yo\'q');
-  if (tab === 'people') return pe.length ? pe.slice(0, 40).map(personRow).join('') : empty(usersOk ? 'Hozircha odamlar yo\'q' : 'Yuklanmoqda…');
-  if (tab === 'media')  return mediaGrid(posts);
-
-  // Kashf
-  let html = '';
-  if (posts.length) html += section('Bugungi postlar', posts.slice(0, 3).map(postRow).join(''));
-  if (tr.length) {
-    html += section('Hashtaglar', tr.slice(0, 5).map((t, i) => trendRow(t, i, false)).join(''));
-  }
-  if (pe.length) {
-    html += section('Odamlar', pe.slice(0, 3).map(personRow).join('') + (pe.length > 3 ? more('Ko\'proq ko\'rsatish', 'people') : ''), true);
-  }
-  return html || empty('Hozircha ko\'rsatadigan narsa yo\'q');
-}
-
-function resultsHtml() {
+/* ── Ro'yxat (filtr) ─────────────────────────────────────────────────── */
+function listHtml() {
   const q = query.toLowerCase().replace(/^@/, '');
-  const posts = visiblePosts().filter(p =>
+  const posts = visiblePosts().filter(p => !q ||
     (p.text || '').toLowerCase().includes(q) || (p.userFullName || '').toLowerCase().includes(q));
-  const pe = otherUsers().filter(u =>
+  const pe = otherUsers().filter(u => !q ||
     (u.username || '').toLowerCase().includes(q) || (u.fullName || '').toLowerCase().includes(q));
-  const none = empty(`"${query}" bo'yicha natija topilmadi`);
 
-  if (tab === 'posts')  return posts.length ? posts.slice(0, 40).map(postRow).join('') : none;
-  if (tab === 'people') return pe.length ? pe.slice(0, 40).map(personRow).join('') : none;
-  if (tab === 'media')  return posts.some(p => p.mediaUrl) ? mediaGrid(posts) : none;
-
-  // Barchasi
   let html = '';
-  if (pe.length)    html += section('Odamlar', pe.slice(0, 3).map(personRow).join('') + (pe.length > 3 ? more('Hammasini ko\'rish', 'people') : ''));
-  if (posts.length) html += section('Postlar', posts.slice(0, 15).map(postRow).join(''), true);
-  return html || none;
+  if (pe.length)    html += section('Odamlar', pe.slice(0, 40).map(personRow).join(''), !posts.length);
+  else if (!q && !usersOk) html += section('Odamlar', empty('Yuklanmoqda…'));
+  if (posts.length) html += section('Postlar', posts.slice(0, q ? 40 : 15).map(postRow).join(''), true);
+  return html || empty(q ? `"${query}" bo'yicha natija topilmadi` : 'Hozircha ko\'rsatadigan narsa yo\'q');
 }
 
-function render() {
-  const defs = mode === 'results' ? RESULT_TABS : EXPLORE_TABS;
-  tabsEl.innerHTML = defs.map(([id, label]) =>
-    `<button type="button" class="exp-tab${id === tab ? ' on' : ''}" data-tab="${id}" role="tab" aria-selected="${id === tab}"><span>${label}</span></button>`).join('');
-  body.innerHTML = mode === 'results' ? resultsHtml() : exploreHtml();
-}
+function render() { body.innerHTML = listHtml(); }
 
 /* ── Holat ───────────────────────────────────────────────────────────── */
 function reset() {
-  mode = 'explore'; tab = 'explore'; query = '';
+  query = '';
   if (input) input.value = '';
   $('searchSuggestions')?.classList.remove('show');
   overlay.scrollTop = 0;
@@ -211,7 +131,7 @@ function reset() {
 function commit(val) {
   const q = String(val || '').trim();
   if (!q) { reset(); render(); return; }
-  query = q; mode = 'results'; tab = 'all';
+  query = q;
   if (input) input.value = q;
   $('searchSuggestions')?.classList.remove('show');
   overlay.scrollTop = 0;
@@ -221,7 +141,7 @@ function commit(val) {
 function closeOverlay() { $('searchOverlayClose')?.click(); }
 
 /* ── Init ────────────────────────────────────────────────────────────── */
-if (overlay && input && body && tabsEl) {
+if (overlay && input && body) {
   let wasOpen = false;
   new MutationObserver(() => {
     const open = overlay.classList.contains('open');
@@ -229,30 +149,15 @@ if (overlay && input && body && tabsEl) {
     wasOpen = open;
   }).observe(overlay, { attributes: true, attributeFilter: ['class'] });
 
-  // Maydon bo'shatilsa — yana Kashf sahifasi
+  // Maydon bo'shatilsa — to'liq ro'yxat qaytadi
   input.addEventListener('input', () => {
-    if (!input.value.trim() && mode === 'results') { reset(); render(); }
+    if (!input.value.trim() && query) { reset(); render(); }
   });
 
   window.addEventListener('explore:commit', e => commit(e.detail));
 
-  tabsEl.addEventListener('click', e => {
-    const b = e.target.closest('.exp-tab');
-    if (!b) return;
-    tab = b.dataset.tab;
-    overlay.scrollTop = 0;
-    render();
-  });
-
   body.addEventListener('click', async e => {
     $('searchSuggestions')?.classList.remove('show');
-    if (e.target.closest('[data-noop]')) { e.stopPropagation(); return; }
-
-    const go = e.target.closest('[data-go]');
-    if (go) { tab = go.dataset.go; overlay.scrollTop = 0; render(); return; }
-
-    const q = e.target.closest('[data-q]');
-    if (q) { commit(q.dataset.q); return; }
 
     const post = e.target.closest('[data-post]');
     if (post) {
@@ -269,13 +174,6 @@ if (overlay && input && body && tabsEl) {
       closeOverlay();
       const m = await import('./profile.js');
       m.openUserProfileModal?.(uid);
-    }
-  });
-
-  body.addEventListener('keydown', e => {
-    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('[data-q]')) {
-      e.preventDefault();
-      commit(e.target.dataset.q);
     }
   });
 }
