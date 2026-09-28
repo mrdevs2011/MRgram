@@ -1,6 +1,6 @@
-# MRgram — platforma haqida to'liq ma'lumot
+# MRspace — platforma haqida to'liq ma'lumot
 
-MRgram — Telegram va Instagram'ning eng yaxshi jihatlarini birlashtirgan
+MRspace — Telegram va Instagram'ning eng yaxshi jihatlarini birlashtirgan
 zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 
 ## 1. Ro'yxatdan o'tish va kirish (Auth) — aniq qadamlar
@@ -100,12 +100,12 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 
 - Frontend: vanilla JavaScript (modul asosida), PWA (manifest, service
   worker, offline keshlash).
-- Backend: Supabase — Auth (username@mrgram.uz ichki email), Postgres + RLS
+- Backend: Supabase — Auth (username@mrspace.uz ichki email), Postgres + RLS
   (`supabase/schema.sql`), Realtime, Storage (`media` bucket), Edge Function
   (`supabase/functions/send-push`). Firebase ENDI ISHLATILMAYDI.
 - Push-bildirishnomalar: standart Web Push (VAPID). Service worker fayli
   nomi eski (`firebase-messaging-sw.js`), lekin ichida Firebase yo'q.
-- Domen: mrgram.vercel.app (Vercel'da joylashtirilgan).
+- Domen: mrspace.vercel.app (Vercel'da joylashtirilgan).
 
 ## 9.1 Sozlash va xavfsizlik
 
@@ -127,7 +127,7 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 **Umumiy kataklar (barcha sahifada doim ko'rinadi):**
 
 - **Yuqori header** (ekran tepasida, doim qotib turadi):
-  - Chap burchakda: MRgram logotipi + nomi (Bosh sahifaga qaytaradi).
+  - Chap burchakda: MRspace logotipi + nomi (Bosh sahifaga qaytaradi).
   - O'ng tomonda: "+" Yangi post (faqat mobil) → Qidiruv (lupa) → ovozni
     yoqish/o'chirish (kerak bo'lganda).
 - **Pastki navigatsiya** (mobilda ekran tagida gorizontal, desktopda chap

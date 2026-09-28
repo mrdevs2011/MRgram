@@ -287,7 +287,7 @@ if (authBtn) {
       }
 
       // Onboarding flagi signUp'dan OLDIN — onAuthStateChange tezroq ishlab ketishi mumkin
-      sessionStorage.setItem('mrgram_new_signup', '1');
+      sessionStorage.setItem('mrspace_new_signup', '1');
       const { data, error } = await sb.auth.signUp({
         email: uToEmail(cleaned),
         password: p,
@@ -302,7 +302,7 @@ if (authBtn) {
       // Keyingi qadamni onAuthStateChange bajaradi (pending ekran)
     } catch (err) {
       console.error('❌ Auth error:', err?.code || '', err?.message);
-      if (!isLogin) sessionStorage.removeItem('mrgram_new_signup');
+      if (!isLogin) sessionStorage.removeItem('mrspace_new_signup');
       authBtn.disabled = false;
       authBtn.textContent = isLogin ? 'Kirish' : "Ro'yxatdan o'tish";
       const known = sbErrUz(err);
@@ -579,7 +579,7 @@ async function _fetchProfile(uid) {
 }
 
 function _showOnce(reason, until = null) {
-  try { window.__mrgramHideSplash?.('gate'); } catch (_) {}
+  try { window.__mrspaceHideSplash?.('gate'); } catch (_) {}
 
   const key = reason + ':' + (until || '');
   if (_shownKey === key) return;
@@ -674,7 +674,7 @@ async function _handleSession(session) {
     const authWrap = $('authWrap');
     if (app) app.classList.remove('show');
     if (authWrap) authWrap.classList.add('show');
-    try { window.__mrgramHideSplash?.('no-session'); } catch (_) {}
+    try { window.__mrspaceHideSplash?.('no-session'); } catch (_) {}
     return;
   }
 
@@ -749,8 +749,8 @@ async function _enterApp(user) {
     _shownKey = null;
 
     /* Faqat yangi ro'yxatdan o'tgan foydalanuvchilarga onboarding */
-    if (sessionStorage.getItem('mrgram_new_signup')) {
-      sessionStorage.removeItem('mrgram_new_signup');
+    if (sessionStorage.getItem('mrspace_new_signup')) {
+      sessionStorage.removeItem('mrspace_new_signup');
       setTimeout(() => {
         if (typeof window._startOnboarding === 'function') window._startOnboarding(true);
       }, 1100);
@@ -779,7 +779,7 @@ async function _enterApp(user) {
     } catch (e) {
       console.warn('[Auth] preload:', e?.message || e);
     }
-    try { window.__mrgramHideSplash?.('app-ready'); } catch (_) {}
+    try { window.__mrspaceHideSplash?.('app-ready'); } catch (_) {}
 
     // Stories bar birinchi yuklanishda ham chiqsin (router auth dan oldin ishlagan bo'lishi mumkin)
     try {
@@ -1326,7 +1326,7 @@ if (deleteAccountBtn) {
           await removePushToken().catch(() => {});
           clearAllCache();
           try { await sb.auth.signOut(); } catch (_) {}
-          try { localStorage.removeItem('mrgram-auth'); } catch (_) {}
+          try { localStorage.removeItem('mrspace-auth'); } catch (_) {}
           location.replace('/');
         } catch (e) {
           deleteAccountBtn.disabled = false;

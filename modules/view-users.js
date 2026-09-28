@@ -1,5 +1,5 @@
 /**
- * MRgram — Admin Foydalanuvchilar Panel
+ * MRspace — Admin Foydalanuvchilar Panel
  * Faqat admin (profiles.is_admin) uchun
  */
 

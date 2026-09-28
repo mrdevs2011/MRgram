@@ -20,11 +20,11 @@ self.addEventListener('push', (event) => {
       if (wins.some((c) => c.visibilityState === 'visible')) return;
     }
 
-    await self.registration.showNotification(data.title || 'MRgram', {
+    await self.registration.showNotification(data.title || 'MRspace', {
       body:  data.body || '',
       icon:  '/icons/icon-192.png',
       badge: '/icons/icon-192.png',
-      tag:   isCall ? 'mrgram-call' : (data.chatId || data.groupId || data.fromUid || 'mrgram'),
+      tag:   isCall ? 'mrspace-call' : (data.chatId || data.groupId || data.fromUid || 'mrspace'),
       renotify: !isCall,
       data:  { url: '/', ...data },
       // Qo'ng'iroqda kuchli tebranish pattern
@@ -73,9 +73,9 @@ self.addEventListener('notificationclick', (event) => {
 /* ── Cache versiyasi ── */
 // Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
 // bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 't-1790620241119'; /* BUILD_VERSION_LINE */
-const STATIC_CACHE   = `mrgram-static-${CACHE_VERSION}`;
-const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
+const CACHE_VERSION  = 't-1790621031388'; /* BUILD_VERSION_LINE */
+const STATIC_CACHE   = `mrspace-static-${CACHE_VERSION}`;
+const RUNTIME_CACHE  = `mrspace-runtime-${CACHE_VERSION}`;
 
 // PWA birinchi o'rnatilganda oldindan yuklab, cache'ga solib qo'yiladigan
 // "ilova qobig'i" fayllari — tez ochilishi va OFFLINE'da ishlashi uchun.
@@ -123,7 +123,7 @@ const PRECACHE_URLS = [
   '/modules/view-users.js',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
-  '/svg/MRgram.png',
+  '/svg/MRspace.png',
   '/svg/favicon.png',
   '/svg/splash.png',
 ];

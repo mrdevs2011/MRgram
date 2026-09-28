@@ -10,7 +10,7 @@ export const esc  = s  => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;
  * Foydalanuvchi yozgan oddiy Markdown belgilarini xavfsiz
  * HTML'ga aylantiradi: **qalin**, *egik*, ~~chizilgan~~, `kod`, ```kod bloki```,
  * # ## ### sarlavhalar, - / * ro'yxat elementlari (ichma-ich/indent bilan ham),
- * 1. raqamlangan ro'yxat, > iqtibos, [matn](url) havolalar. Butun MRgram
+ * 1. raqamlangan ro'yxat, > iqtibos, [matn](url) havolalar. Butun MRspace
  * bo'ylab ishlatiladi (shaxsiy/guruh chatlar, post tavsiflari, izohlar) —
  * HAR QANDAY foydalanuvchi shu belgilardan foydalansa
  * chiroyli ko'rinadi.

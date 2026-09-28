@@ -1,5 +1,5 @@
 /**
- * MRgram — Advanced Duration Picker
+ * MRspace — Advanced Duration Picker
  * Mustaqil komponent: kun / soat / daqiqa / soniya / millisoniya darajasida
  * aniq muddat tanlash uchun. Hech qanday tashqi kutubxonaga bog'liq emas.
  *

@@ -1,7 +1,7 @@
 {
-  "name": "MRgram",
-  "short_name": "MRgram",
-  "description": "MRgram — yopiq ijtimoiy tarmoq",
+  "name": "MRspace",
+  "short_name": "MRspace",
+  "description": "MRspace — yopiq ijtimoiy tarmoq",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

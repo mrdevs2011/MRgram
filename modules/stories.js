@@ -55,6 +55,7 @@ function ensureStoriesCss() {
   gap: 6px;
   color: var(--text);
   font-family: var(--font);
+  position: relative;
 }
 .story-item--skel {
   width: 64px; height: 64px; border-radius: 50%;
@@ -77,11 +78,16 @@ function ensureStoriesCss() {
   background: var(--bg2);
 }
 .story-plus {
-  position: absolute; right: 0; bottom: 0;
-  width: 20px; height: 20px; border-radius: 50%;
+  position: absolute; right: -2px; bottom: -2px;
+  width: 22px; height: 22px; border-radius: 50%;
   background: var(--blue, #1d9bf0); color: #fff;
-  font-size: 14px; line-height: 20px; text-align: center;
+  font-size: 16px; line-height: 18px; text-align: center;
   border: 2px solid var(--bg);
+  z-index: 2;
+  pointer-events: auto;
+  box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600;
 }
 .story-label {
   font-size: 11px; max-width: 72px; overflow: hidden;
@@ -295,8 +301,8 @@ function renderBar() {
     return `<button type="button" class="story-item" data-idx="${i}" title="${esc(g.name)}">
       <div class="${ring}">
         <img src="${esc(g.avatar)}" alt="" onerror="this.style.display='none'">
+        ${plus}
       </div>
-      ${plus}
       <span class="story-label">${esc(g.isMe ? (g.items.length ? 'Sizning story' : 'Story qo\'shish') : g.name.split(' ')[0])}</span>
     </button>`;
   }).join('');

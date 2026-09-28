@@ -1,5 +1,5 @@
 /**
- * MRgram — Cover Image Crop Modal
+ * MRspace — Cover Image Crop Modal
  * Rasm tanlangach crop/resize qilish imkonini beradi.
  * Aspect ratio: 16:9 (cover uchun optimal)
  * Mobile va desktop da bir xil ishlaydi.

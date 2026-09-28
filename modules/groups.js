@@ -1,6 +1,6 @@
 /**
- * MRgram — Guruhlar va Kanallar moduli
- * Groups & Channels for MRgram chat
+ * MRspace — Guruhlar va Kanallar moduli
+ * Groups & Channels for MRspace chat
  *
  * Ma'lumot shakli (Supabase qatorlaridan config.js dagi mapGroup()/mapMessage()
  * eski Firestore ko'rinishida yasaydi):

@@ -1,4 +1,4 @@
-/* MRgram app.css — build-css.mjs orqali avtomatik yig'ilgan. Qo'lda tahrirlamang! */
+/* MRspace app.css — build-css.mjs orqali avtomatik yig'ilgan. Qo'lda tahrirlamang! */
 
 /* ─── CSS/splash.css ─── */
 /* ═══════════════════════
@@ -3095,8 +3095,8 @@ a.profile-meta-link:hover { text-decoration: underline; }
 
 /* ─── CSS/nav.css ─── */
 /* ═══════════════════════════════════════════
-   MRgram — Nav, Modals, Sheets
-   MRgram — Komponent Stillari
+   MRspace — Nav, Modals, Sheets
+   MRspace — Komponent Stillari
    ═══════════════════════════════════════════ */
 
 /* ── Fields — Input ──
@@ -6626,7 +6626,7 @@ a.cfm-name--link:hover {
 
 /* ─── CSS/groups.css ─── */
 /* ═══════════════════════════════════════════════════════════════
-   MRgram — Groups & Channels CSS
+   MRspace — Groups & Channels CSS
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── "+" button in chats header ── */
@@ -7209,8 +7209,8 @@ a.cfm-name--link:hover {
 
 /* ─── CSS/theme.css ─── */
 /* ═══════════════════════════════════════════
-   MRgram — Theme System
-   MRgram — Theme System
+   MRspace — Theme System
+   MRspace — Theme System
    ═══════════════════════════════════════════ */
 
 /* ── DARK theme — Telegram Dark Palette ── */
@@ -9367,7 +9367,7 @@ svg { color: inherit; }
 
 /* ─── CSS/dark-theme-fix.css ─── */
 /* ═══════════════════════════════════════════════════════════
-   MRgram — Solid UI Override
+   MRspace — Solid UI Override
    dark-theme-fix.css — solid rang tizimi
    Solid panel ranglar (glassmorphism o'chirilgan)
    ═══════════════════════════════════════════════════════════ */
@@ -10017,7 +10017,7 @@ svg { color: inherit; }
 
 /* ─── CSS/borderless.css ─── */
 /* ═══════════════════════════════════════════
-   MRgram — Borderless / Minimal Override
+   MRspace — Borderless / Minimal Override
    Zamonaviy flat dizayn: border yo'q, shadow minimal
    ═══════════════════════════════════════════ */
 
@@ -10976,7 +10976,7 @@ textarea:focus,
 
 /* ─── CSS/00-components.core.css ─── */
 /* ═══════════════════════════════════════════════════════════════
-   MRgram — CORE COMPONENTS (single source of truth)
+   MRspace — CORE COMPONENTS (single source of truth)
    ═══════════════════════════════════════════════════════════════
    Bu fayl quyidagi komponentlar uchun YAGONA manba:
    .btn-primary, .btn-ghost, .btn-danger, .bot-nav, .app-hdr,
@@ -11658,7 +11658,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
 
 /* ─── style.css (master, @imports ochilgan) ─── */
 /* ═══════════════════════════════════════════
-   MRgram — Master Stylesheet
+   MRspace — Master Stylesheet
    iOS 27 Liquid Glass Edition — Step 3
    ═══════════════════════════════════════════ */
 
@@ -15412,7 +15412,7 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 
 /* ─── CSS/admin-plain.css ─── */
 /* ═══════════════════════════════════════════════════════════════════════
-   ADMIN PANEL — MRgram uslubida (oddiy, xuddi boshqa sahifalar kabi)
+   ADMIN PANEL — MRspace uslubida (oddiy, xuddi boshqa sahifalar kabi)
    ═══════════════════════════════════════════════════════════════════════ */
 
 #actionsView { font-size: 13px; font-family: var(--font); }
@@ -15583,7 +15583,7 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 
 /* ─── CSS/mono.css ─── */
 /* ═══════════════════════════════════════════
-   MRgram — Monochrome (qora + oq) override
+   MRspace — Monochrome (qora + oq) override
    Eng OXIRIDA yuklanadi. Fon har doim #000000, accent = oq
    (oq fonli elementlarda matn qora). Qizil/yashil faqat
    semantik holatlar uchun (xato, onlayn) qoldirilgan.
@@ -15743,7 +15743,7 @@ meta[name="theme-color"] { color: #000000; }
 
 /* ─── CSS/x-design.css ─── */
 /* ═══════════════════════════════════════════════════════════════════════
-   MRgram — X uslubidagi minimalist dizayn (yumshoq versiya)
+   MRspace — X uslubidagi minimalist dizayn (yumshoq versiya)
    Eng OXIRIDA yuklanadi (mono.css'dan keyin). Vazifasi:
    1) yagona palitra: qora/oq o'rniga yumshoq to'q kulrang va tiniq oq
    2) yagona shakl tili: pill tugmalar, 16px kartalar, ingichka chiziqlar

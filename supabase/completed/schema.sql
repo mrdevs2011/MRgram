@@ -1,10 +1,10 @@
 -- ═══════════════════════════════════════════════════════════════════════
--- MRgram — Supabase sxemasi (0 dan, migratsiyasiz)
+-- MRspace — Supabase sxemasi (0 dan, migratsiyasiz)
 -- Supabase Dashboard → SQL Editor'da BIR MARTA ishga tushiring.
 --
 -- Oldindan Dashboard'da:
 --   Authentication → Providers → Email → "Confirm email" ni O'CHIRING
---   (ilova username'dan soxta email yasaydi: username@mrgram.uz)
+--   (ilova username'dan soxta email yasaydi: username@mrspace.uz)
 --
 -- Ishga tushgandan keyin admin qilish (o'zingiz ro'yxatdan o'tgach):
 --   update public.profiles set is_admin = true, approval = 'approved'

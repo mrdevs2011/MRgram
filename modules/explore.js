@@ -116,7 +116,7 @@ function postRow(p) {
 function trendRow(t, i, ranked) {
   return `<div class="exp-item" role="button" tabindex="0" data-q="${esc(t.tag)}">
     <span class="exp-item-main">
-      <span class="exp-kicker">${ranked ? (i + 1) + ' · ' : ''}Trend · MRgram</span>
+      <span class="exp-kicker">${ranked ? (i + 1) + ' · ' : ''}Trend · MRspace</span>
       <span class="exp-title">${esc(t.tag)}</span>
       <span class="exp-sub">${fmtN(t.n)} ta post</span>
     </span>

@@ -1,5 +1,5 @@
 /**
- * MRgram — Admin Audit Log
+ * MRspace — Admin Audit Log
  * Har bir muhim admin amalini 'admin_actions' jadvaliga yozadi
  * va actions sahifasida "So'nggi amallar" ro'yxatini render qiladi.
  */

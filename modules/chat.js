@@ -529,7 +529,7 @@ export async function renderChatsList() {
     if (!_usersCache || !_usersCache.length) {
       root.innerHTML = `<div class="empty pt-30vh tac">
         <div class="fs-14px fw-600 c-text mb-6px">Hozircha boshqa foydalanuvchilar yo'q</div>
-        <div class="fs-13px c-text2">Odamlar MRgram ga qo'shilgach, shu yerda ko'rinadi</div>
+        <div class="fs-13px c-text2">Odamlar MRspace ga qo'shilgach, shu yerda ko'rinadi</div>
       </div>`;
       return;
     }

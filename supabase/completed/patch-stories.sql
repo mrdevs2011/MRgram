@@ -1,4 +1,4 @@
--- MRgram Stories (24 soatlik)
+-- MRspace Stories (24 soatlik)
 create table if not exists public.stories (
   id          uuid primary key default gen_random_uuid(),
   user_id     uuid not null references public.profiles(id) on delete cascade,

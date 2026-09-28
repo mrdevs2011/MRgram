@@ -26,7 +26,7 @@ while ((m = src.match(IMPORT_RE))) {
 }
 
 const parts = [];
-parts.push('/* MRgram app.css — build-css.mjs orqali avtomatik yig\'ilgan. Qo\'lda tahrirlamang! */');
+parts.push('/* MRspace app.css — build-css.mjs orqali avtomatik yig\'ilgan. Qo\'lda tahrirlamang! */');
 
 // 2) @import qilingan fayllar (ulardagi ichki @import larni ham ochamiz)
 //    no-animations.css BUTUNLAYIN tashlab yuboriladi (DIET F4.4):

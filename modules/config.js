@@ -1,5 +1,5 @@
 /**
- * MRgram — config.js (Supabase)
+ * MRspace — config.js (Supabase)
  * Bitta Supabase client + state + Firestore-uslubidagi ma'lumotni
  * (camelCase, createdAt.toMillis()) Supabase qatorlaridan yasovchi mapperlar.
  * Mapperlar qolgan modullarni bosqichma-bosqich ko'chirish imkonini beradi.
@@ -23,7 +23,7 @@ export const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: false,
-    storageKey: 'mrgram-auth',
+    storageKey: 'mrspace-auth',
   },
   realtime: { params: { eventsPerSecond: 10 } },
 });
@@ -188,7 +188,7 @@ export const state = {
 /** Parolni tekshirish — asosiy sessiyaga tegmaydi (alohida vaqtinchalik client) */
 export async function verifyPassword(email, password) {
   const tmp = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'mrgram-verify' },
+    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'mrspace-verify' },
   });
   const { error } = await tmp.auth.signInWithPassword({ email, password });
   if (error) {

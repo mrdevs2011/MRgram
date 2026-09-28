@@ -1,6 +1,6 @@
-# MRgram — "DIET" ROADMAP
+# MRspace — "DIET" ROADMAP
 
-> **Maqsad:** MRgram'ni 50 ta yaqin odam (oila, qarindosh, do'stlar) uchun mos, kichik, tushunarli va uzoq yashaydigan holatga keltirish.
+> **Maqsad:** MRspace'ni 50 ta yaqin odam (oila, qarindosh, do'stlar) uchun mos, kichik, tushunarli va uzoq yashaydigan holatga keltirish.
 > **Tamoyil:** 50 kishilik to'yga stadion emas, yaxshi choyxona kerak. Har bir qator kod "bu 50 odamga kerakmi?" degan savoldan o'tishi shart.
 > **Holat:** 2026-09-28 dagi kod audit natijasi asosida. Kod to'liq qatorma-qator o'qilmagan: struktura, schema, README, AUDIT.md va grep asosida. `[TEKSHIR]` belgisi — bajarishdan oldin tasdiqlash kerak bo'lgan taxmin.
 > **Yangilanish (2026-09-28):** bu fayl repoda ilk marta saqlandi va joriy holatga ko'ra belgilandi (`[x]`/`[ ]`, "Holat" ustunlari). Tarix: commitlar `09bce2c` (F1), `db6028d` (link tartibi), `fbbcd8b` (x-design klasteri).
@@ -19,7 +19,7 @@
 | Presence | `profiles.last_seen` ga har 25 s da `UPDATE` (bazaga yozish) |
 | Typing | `chat_members.typing_until` ga `UPDATE` (bazaga yozish) |
 | Service worker | `firebase-messaging-sw.js`, `CACHE_VERSION = 'v109'` qo'lda oshiriladi |
-| Repo | 94 commit, lokal `origin` → `mrtube` (MRgram emas) |
+| Repo | 94 commit, lokal `origin` → `mrtube` (MRspace emas) |
 | Admin | 1 kishi (MR), lekin audit log / history / countdown / duration picker bor |
 
 ### Maqsadli ko'rsatkichlar (yakunda)
@@ -72,7 +72,7 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 
 - [x] Ishchi papkadagi tugallanmagan o'zgarishlar hal qilindi: `CSS/x-design.css` (F4 bo'yicha commit `fbbcd8b`), `index.html` (link tartibi, `db6028d`), `.gitignore` (tasodifan bo'shatilgan edi — HEAD'dan tiklandi), `profile.css`/`ui-improvements.css`/`svg/favicon.png`/`CSS/call-modern.css` holati tarixda; working tree toza.
 - [ ] `git tag pre-diet` va `git push origin pre-diet` (qaytish nuqtasi). *Bajarilmadi: bu muhitda remote sozlanmagan — MR terminalida.*
-- [ ] Lokal `origin` ni to'g'rila: `git remote set-url origin https://github.com/mrdevs2011/MRgram.git`. *Bajarilmadi: `git remote -v` bo'sh — MR terminalida.*
+- [ ] Lokal `origin` ni to'g'rila: `git remote set-url origin https://github.com/mrdevs2011/MRspace.git`. *Bajarilmadi: `git remote -v` bo'sh — MR terminalida.*
 - [ ] **Supabase zaxira:** Dashboard → Database → Backups yoki `pg_dump` (schema + data). Storage `media` bucket ro'yxati (fayl soni, hajm). *MR dashboard ishi.*
 - [ ] Vercel Preview deploy + preview env (`SUPABASE_URL/ANON_KEY`). *MR Vercel panelida.*
 - [x] **Baseline o'lchov** 6-bo'lim jadvaliga kiritildi (2026-09-28 qayta o'lchangan raqamlar bilan).
@@ -241,7 +241,7 @@ drop table if exists public.follows;
 
 ## FAZA 8 — Hujjat va smoke test 🔶 (qisman)
 
-- [x] Roadmap (`MRGRAM-ROADMAP.md`) repoga saqlandi va holatga ko'ra yangilandi (2026-09-28).
+- [x] Roadmap (`MRSPACE-ROADMAP.md`) repoga saqlandi va holatga ko'ra yangilandi (2026-09-28).
 - [x] `AUDIT.md` C10–C12 bo'limlari: holat qayta tekshiruvi, regressiya tahlili, link-tartibi tuzatilishi yozildi.
 - [ ] `README.md` ni qayta yozish: ~300 qator o'rniga ~80 qator (nima, deploy, env, patch tartibi, admin qo'llanmasi).
 - [ ] UI xaritasi/spetsifikatsiya bo'limlari → `docs/SPEC.md` yoki o'chirish; `AUDIT.md` → `docs/archive/`.
@@ -352,7 +352,7 @@ main
  ├─ diet/05-realtime                           ❌
  ├─ diet/06-data-sw                            ❌
  ├─ diet/07-family                             ❌
- └─ diet/08-docs        ← MRGRAM-ROADMAP.md    🔶 qisman
+ └─ diet/08-docs        ← MRSPACE-ROADMAP.md    🔶 qisman
 ```
 
 1. Branch → push → Vercel Preview → smoke test (7-bo'lim) → `main` ga merge.

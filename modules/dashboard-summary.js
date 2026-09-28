@@ -1,5 +1,5 @@
 /**
- * MRgram — Dashboard Summary (tezkor umumiy ko'rinish)
+ * MRspace — Dashboard Summary (tezkor umumiy ko'rinish)
  * actionsView boshida — bitta qatorli statistika:
  * jami foydalanuvchilar, bugungi yangilar, kutayotganlar, bloklanganlar. Scroll qilmasdan holatni darhol ko'rsatadi.
  */
