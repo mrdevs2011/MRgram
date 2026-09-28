@@ -1705,6 +1705,18 @@
   opacity: 0.85;
 }
 
+/* Create (+) tugma — oddiy plus, fon/soya/highlight yo'q (id → boshqa temalardan ustun) */
+#createBtn.nav-center-btn {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 12px;
+  overflow: visible;
+}
+#createBtn.nav-center-btn::before,
+#createBtn.nav-center-btn::after { display: none; }
+#createBtn.nav-center-btn:hover { background: transparent; box-shadow: none; opacity: .7; }
+#createBtn.nav-center-btn svg { stroke: var(--text); stroke-width: 2; width: 26px; height: 26px; }
+
 /* ── 19. @prefers-reduced-motion — ikkinchi blok o'chirildi, chunki
    transition-duration'ni 0.18s'ga qaytarib, birinchi blokning
    (yuqorida, "reduce" bo'limi) reduced-motion sozlamasini bekor
