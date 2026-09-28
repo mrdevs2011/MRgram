@@ -18,11 +18,21 @@ export function initView() {
     _homeReady = true;
   }
 
-  // Feed har safar yangilanadi (yangi postlar bo'lishi mumkin)
-  if (state.me) {
+  // Feed + stories — me hali kelmagan bo'lsa ham keyinroq uriniladi
+  const boot = () => {
+    if (!state.me) return false;
     state.visibleN = 10;
     initStories();
     renderFeed();
+    return true;
+  };
+  if (!boot()) {
+    // Auth kechikishi: 200ms oralatib 15 marta (3s) urinib ko'ramiz
+    let n = 0;
+    const t = setInterval(() => {
+      n++;
+      if (boot() || n >= 15) clearInterval(t);
+    }, 200);
   }
 }
 

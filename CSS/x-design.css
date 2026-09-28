@@ -82,6 +82,7 @@ textarea {
   background: var(--bg);
   border-color: var(--link);
   box-shadow: none;
+  border-radius: 12px;
 }
 
 /* ── 4. Post: kartasiz qator + ingichka ajratgich (X uslubi) ───────────── */
@@ -127,10 +128,9 @@ nav.bot-nav .sb-account:hover { background: var(--bg4); }
 
 /* ── 8. Fokus halqasi: klaviatura uchun tinch ko'k ────────────────────── */
 :focus-visible { outline: none; }
-/* faqat matn maydonlari uchun nozik fokus */
+/* matn maydonlari: radius saqlanadi, outline emas */
 input:focus-visible, textarea:focus-visible, select:focus-visible {
-  outline: 1px solid var(--line);
-  outline-offset: 0;
+  outline: none;
 }
 a { color: var(--link); }
 
@@ -950,9 +950,10 @@ html, body, #app, .app {
     --center-w: 600px;
   }
 
-  /* Lenta: chap sidebar dan keyin, markazga emas */
+  /* Markaz ustun: home + profile (3 ustun layout) */
   #homeView.on,
-  #followingView.on {
+  #followingView.on,
+  #profileView.on {
     margin-left: var(--content-left, var(--sidebar, 260px));
     margin-right: 0;
     width: var(--center-w);
@@ -961,10 +962,22 @@ html, body, #app, .app {
   }
 
   .feed,
-  #followingView .feed {
+  #followingView .feed,
+  #profileView.on {
     max-width: var(--center-w);
     width: 100%;
     margin: 0;
+    border-right: 1px solid #2f3336;
+  }
+
+  /* Qidiruv (explore) — markaz ustunda, o'ng rail ochiq qoladi */
+  [data-theme] .search-overlay,
+  [data-theme="dark"] .search-overlay,
+  .search-overlay {
+    left: var(--content-left, var(--sidebar, 260px)) !important;
+    right: auto !important;
+    width: var(--center-w) !important;
+    max-width: var(--center-w) !important;
     border-right: 1px solid #2f3336;
   }
 
@@ -992,8 +1005,8 @@ html, body, #app, .app {
   }
   .right-rail[hidden] { display: none !important; }
 
-  /* Boshqa viewlar: o'ng panel joyini bo'shatmasin */
-  #profileView, #chatsView, #reelsView, #actionsView {
+  /* Boshqa viewlar (chats/actions): o'ng panel yopiq */
+  #chatsView, #reelsView, #actionsView {
     margin-right: 0;
   }
 }

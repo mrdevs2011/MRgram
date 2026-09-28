@@ -15,7 +15,7 @@ const input   = $('searchInput');
 const body    = $('expBody');
 const tabsEl  = $('expTabs');
 
-const EXPLORE_TABS = [['explore', 'Kashf'], ['trend', 'Trend'], ['posts', 'Postlar'], ['people', 'Odamlar'], ['media', 'Media']];
+const EXPLORE_TABS = [['explore', 'Kashf'], ['posts', 'Postlar'], ['people', 'Odamlar'], ['media', 'Media']];
 const RESULT_TABS  = [['all', 'Barchasi'], ['posts', 'Postlar'], ['people', 'Odamlar'], ['media', 'Media']];
 
 const DOTS = '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>';
@@ -158,11 +158,6 @@ function exploreHtml() {
   const tr = trends();
   const pe = otherUsers();
 
-  if (tab === 'trend') {
-    return tr.length
-      ? tr.slice(0, 25).map((t, i) => trendRow(t, i, true)).join('')
-      : empty('Hozircha trend hashtaglar yo\'q. Postlarga #hashtag qo\'shing.');
-  }
   if (tab === 'posts')  return posts.length ? posts.slice(0, 25).map(postRow).join('') : empty('Hozircha postlar yo\'q');
   if (tab === 'people') return pe.length ? pe.slice(0, 40).map(personRow).join('') : empty(usersOk ? 'Hozircha odamlar yo\'q' : 'Yuklanmoqda…');
   if (tab === 'media')  return mediaGrid(posts);
@@ -171,7 +166,7 @@ function exploreHtml() {
   let html = '';
   if (posts.length) html += section('Bugungi postlar', posts.slice(0, 3).map(postRow).join(''));
   if (tr.length) {
-    html += section('', tr.slice(0, 5).map((t, i) => trendRow(t, i, false)).join('') + (tr.length > 5 ? more('Ko\'proq ko\'rsatish', 'trend') : ''));
+    html += section('Hashtaglar', tr.slice(0, 5).map((t, i) => trendRow(t, i, false)).join(''));
   }
   if (pe.length) {
     html += section('Odamlar', pe.slice(0, 3).map(personRow).join('') + (pe.length > 3 ? more('Ko\'proq ko\'rsatish', 'people') : ''), true);

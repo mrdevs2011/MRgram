@@ -433,6 +433,7 @@
   border-color: #464646;
   background: var(--glass-mid);
   box-shadow: var(--specular-top), 0 0 0 3px #16181c;
+  border-radius: 14px;
 }
 .ta::placeholder { color: var(--text3); }
 

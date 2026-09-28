@@ -780,6 +780,12 @@ async function _enterApp(user) {
       console.warn('[Auth] preload:', e?.message || e);
     }
     try { window.__mrgramHideSplash?.('app-ready'); } catch (_) {}
+
+    // Stories bar birinchi yuklanishda ham chiqsin (router auth dan oldin ishlagan bo'lishi mumkin)
+    try {
+      const { initStories } = await import('./stories.js');
+      initStories();
+    } catch (e) { console.warn('[Auth] stories', e?.message || e); }
   } finally {
     _entering = false;
   }

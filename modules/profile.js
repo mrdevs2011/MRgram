@@ -11,6 +11,55 @@ async function _loadProfile(uid) {
 import { cacheProfile, getCachedProfile } from './local-cache.js';
 
 /* ── My profile ──────────────────────────────────────────────────────── */
+
+/* Profil postlari filter (Barchasi / Photos / Videos / Text / Music) */
+let _pgAllPosts = [];
+let _pgTab = 'all';
+let _pgTabsBound = false;
+
+function _postKind(p) {
+  const mt = (p.mediaType || '').toLowerCase();
+  if (mt.startsWith('image')) return 'photos';
+  if (mt.startsWith('video')) return 'videos';
+  if (mt.startsWith('audio') || mt.includes('mpeg') || mt.includes('mp3') || mt.includes('wav') || mt.includes('ogg')) return 'music';
+  // ba'zi audio fayllar media_type bo'sh, fileName dan
+  const fn = (p.fileName || p.mediaPath || '').toLowerCase();
+  if (/\.(mp3|wav|ogg|m4a|aac|flac)(\?|$)/.test(fn)) return 'music';
+  if (/\.(mp4|webm|mov|mkv)(\?|$)/.test(fn)) return 'videos';
+  if (/\.(jpe?g|png|gif|webp|avif)(\?|$)/.test(fn)) return 'photos';
+  if (p.mediaUrl && mt.startsWith('image')) return 'photos';
+  if (p.mediaUrl && mt.startsWith('video')) return 'videos';
+  if (!p.mediaUrl && !p.mediaPath) return 'text';
+  // media bor lekin type noma'lum
+  if (p.mediaUrl || p.mediaPath) return 'photos';
+  return 'text';
+}
+
+function _filterPgPosts(posts, tab) {
+  if (!tab || tab === 'all') return posts;
+  return posts.filter(p => _postKind(p) === tab);
+}
+
+function _bindProfileTabs() {
+  if (_pgTabsBound) return;
+  const hdr = document.getElementById('profileGridTabs');
+  if (!hdr) return;
+  _pgTabsBound = true;
+  hdr.addEventListener('click', e => {
+    const btn = e.target.closest('[data-pg-tab]');
+    if (!btn) return;
+    const tab = btn.dataset.pgTab;
+    if (!tab || tab === _pgTab) return;
+    _pgTab = tab;
+    hdr.querySelectorAll('[data-pg-tab]').forEach(b => {
+      const on = b.dataset.pgTab === tab;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    renderProfileGrid(_pgAllPosts);
+  });
+}
+
 export async function renderProfile() {
   if (!state.me) return;
 
@@ -102,7 +151,15 @@ async function _paintProfile(ud) {
 }
 
 export async function renderProfileGrid(posts) {
-  if (!posts.length) {
+  _bindProfileTabs();
+  if (Array.isArray(posts)) _pgAllPosts = posts;
+  const list = _filterPgPosts(_pgAllPosts, _pgTab);
+
+  // mosaic faqat Barchasi da; boshqa tablarda bir xil katak
+  const grid = $('profileGrid');
+  if (grid) grid.classList.toggle('profile-grid--uniform', _pgTab !== 'all');
+
+  if (!list.length) {
     $('profileGrid').innerHTML = `<div class="empty">
       <svg class="opacity-30 mx-auto mb-10px d-block" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/>
@@ -113,19 +170,22 @@ export async function renderProfileGrid(posts) {
   }
 
   // Multi-Supabase: mediaUrl yaratish (backward compatibility)
-  await Promise.all(posts.map(async p => {
+  await Promise.all(list.map(async p => {
     if (!p.mediaUrl && (p.mediaPath || p.storageIndex)) {
       p.mediaUrl = await getMediaUrl(p);
     }
   }));
 
-  $('profileGrid').innerHTML = posts.map(p => {
+  $('profileGrid').innerHTML = list.map(p => {
+    const isImg = !!(p.mediaUrl && p.mediaType?.startsWith('image'));
+    const isVid = !!(p.mediaUrl && p.mediaType?.startsWith('video'));
+    const isMedia = isImg || isVid;
     let c = '';
-    if (p.mediaUrl && p.mediaType?.startsWith('image')) c = `<img src="${esc(p.mediaUrl)}" loading="lazy">`;
-    else if (p.mediaUrl && p.mediaType?.startsWith('video')) c = `<video src="${esc(p.mediaUrl)}" preload="metadata" muted></video>`;
-    else c = `<div class="grid-cell-txt">${esc((p.text||p.fileName||'').substring(0,60))}</div>`;
-    const isVid = p.mediaType?.startsWith('video');
-    return `<div class="grid-cell" data-id="${p.id}">${c}
+    if (isImg) c = `<img src="${esc(p.mediaUrl)}" loading="lazy" alt="">`;
+    else if (isVid) c = `<video src="${esc(p.mediaUrl)}" preload="metadata" muted></video>`;
+    else c = `<div class="grid-cell-txt">${esc((p.text||p.fileName||'').substring(0,80))}</div>`;
+    const kind = isMedia ? 'grid-cell--media' : 'grid-cell--text';
+    return `<div class="grid-cell ${kind}" data-id="${p.id}">${c}
       ${isVid ? `<div class="grid-play-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="m5 3 14 9-14 9V3z"/></svg></div>` : ''}
       <div class="grid-cell-overlay">
         <div class="grid-stat">
@@ -306,7 +366,8 @@ export async function renderUserProfileModal(uid) {
         else
           c = `<div class="up-grid-cell-txt">${esc((p.text||p.fileName||'').substring(0,40))}</div>`;
         const isVid = p.mediaType?.startsWith('video');
-        return `<div class="up-grid-cell" data-id="${p.id}" data-uid="${uid}">${c}
+        const _um = !!(p.mediaUrl && (p.mediaType?.startsWith('image') || p.mediaType?.startsWith('video')));
+        return `<div class="up-grid-cell ${_um ? 'up-grid-cell--media' : 'up-grid-cell--text'}" data-id="${p.id}" data-uid="${uid}">${c}
           ${isVid ? `<div class="grid-play-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="m5 3 14 9-14 9V3z"/></svg></div>` : ''}
           <div class="up-grid-cell-overlay">
             <div class="grid-stat">

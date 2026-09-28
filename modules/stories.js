@@ -18,7 +18,86 @@ let _startedAt = 0;
 let _paused = false;
 let _bound = false;
 
+
+function ensureStoriesCss() {
+  if (document.getElementById('stories-bar-css')) return;
+  const s = document.createElement('style');
+  s.id = 'stories-bar-css';
+  s.textContent = `
+.stories-bar {
+  display: block;
+  width: 100%;
+  padding: 10px 0 6px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  position: relative;
+  z-index: 2;
+}
+.stories-track {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 12px 8px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.stories-track::-webkit-scrollbar { display: none; }
+.story-item {
+  flex: 0 0 auto;
+  width: 72px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-family: var(--font);
+}
+.story-item--skel {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--bg3); opacity: 0.6;
+}
+.story-ring {
+  width: 64px; height: 64px; border-radius: 50%;
+  padding: 2px;
+  display: grid; place-items: center;
+  position: relative;
+  background: var(--bg3);
+}
+.story-ring--new {
+  background: linear-gradient(135deg, #f59e0b, #ec4899 55%, #8b5cf6);
+}
+.story-ring--seen { background: var(--line2, #333); }
+.story-ring--add { background: var(--bg3); border: 1px dashed var(--line2); }
+.story-ring img, .story-ring > img {
+  width: 56px; height: 56px; border-radius: 50%; object-fit: cover;
+  background: var(--bg2);
+}
+.story-plus {
+  position: absolute; right: 0; bottom: 0;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--blue, #1d9bf0); color: #fff;
+  font-size: 14px; line-height: 20px; text-align: center;
+  border: 2px solid var(--bg);
+}
+.story-label {
+  font-size: 11px; max-width: 72px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; color: var(--text2);
+}
+.story-viewer {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #000; display: flex; flex-direction: column;
+}
+.story-viewer[hidden] { display: none !important; }
+`;
+  document.head.appendChild(s);
+}
+
 function ensureDom() {
+  ensureStoriesCss();
   if ($('storiesBar')) return;
   const home = $('homeView');
   if (!home) return;

@@ -73,7 +73,7 @@ self.addEventListener('notificationclick', (event) => {
 /* ── Cache versiyasi ── */
 // Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
 // bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 't-1790619428954'; /* BUILD_VERSION_LINE */
+const CACHE_VERSION  = 't-1790620241119'; /* BUILD_VERSION_LINE */
 const STATIC_CACHE   = `mrgram-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
 

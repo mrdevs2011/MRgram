@@ -26,9 +26,10 @@ function showRail(on) {
 }
 
 function fit() {
-  // Faqat home va profile da ko'rsatiladi (chats / actions / login da yopiq)
+  // home, profile, va qidiruv (explore overlay) da — 3 ustun
   const view = state.view || 'home';
-  const allowed = view === 'home' || view === 'profile';
+  const exploreOpen = !!document.getElementById('searchOverlay')?.classList.contains('open');
+  const allowed = view === 'home' || view === 'profile' || exploreOpen;
   showRail(
     allowed &&
     window.matchMedia('(min-width: 1200px)').matches &&
@@ -40,7 +41,8 @@ function fit() {
 export function onRouteChange() {
   fit();
   // Comments panel ochiq qolgan bo'lsa, view o'zgarganda yopamiz
-  if ((state.view || '') !== 'home' && (state.view || '') !== 'profile') {
+  const exploreOpen = !!document.getElementById('searchOverlay')?.classList.contains('open');
+  if ((state.view || '') !== 'home' && (state.view || '') !== 'profile' && !exploreOpen) {
     const cmt = document.getElementById('rrCmtPanel');
     if (cmt && !cmt.hidden) {
       cmt.hidden = true;

@@ -278,6 +278,7 @@ function _initSearchHandlers() {
       hdrSearchBtn?.classList.add('search-active');
       setTimeout(() => document.getElementById('searchInput')?.focus(), 60);
     }
+    import('./right-rail.js').then(m => m.onRouteChange?.()).catch(() => {});
   }
 
   if (hdrSearchBtn)   hdrSearchBtn.addEventListener('click', handleSearchClick);

@@ -160,11 +160,12 @@
         </div>
       </div>
     </div>
-    <div class="profile-grid-hdr">
-      <span class="profile-grid-tab active">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-        Postlar
-      </span>
+    <div class="profile-grid-hdr" id="profileGridTabs" role="tablist">
+      <button type="button" class="profile-grid-tab active" data-pg-tab="all" role="tab" aria-selected="true">Barchasi</button>
+      <button type="button" class="profile-grid-tab" data-pg-tab="photos" role="tab" aria-selected="false">Photos</button>
+      <button type="button" class="profile-grid-tab" data-pg-tab="videos" role="tab" aria-selected="false">Videos</button>
+      <button type="button" class="profile-grid-tab" data-pg-tab="text" role="tab" aria-selected="false">Text posts</button>
+      <button type="button" class="profile-grid-tab" data-pg-tab="music" role="tab" aria-selected="false">Musics</button>
     </div>
     <div class="profile-grid" id="profileGrid"></div>
   </div>

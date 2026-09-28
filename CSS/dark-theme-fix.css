@@ -196,6 +196,7 @@
     inset 0 1px 0 #16181c,
     0 0 0 3px #16181c;
   outline: none;
+  border-radius: 12px;
 }
 
 [data-theme="dark"] .field::placeholder,

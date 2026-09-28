@@ -607,14 +607,10 @@
   background: #000000;
 }
 
-/* Grid cell overlay */
-[data-theme="dark"] .grid-cell-overlay {
-  background: #000000;
-}
-
-/* User profile grid */
+/* Grid cell overlay — engil qorayish, to'liq qora emas */
+[data-theme="dark"] .grid-cell-overlay,
 [data-theme="dark"] .up-grid-cell-overlay {
-  background: #000000;
+  background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,.12) 100%);
 }
 
 /* ── Profile avatar overflow fix ── */
@@ -1154,4 +1150,38 @@ a.profile-meta-link:hover { text-decoration: underline; }
 .settings-profile-chevron {
   flex-shrink: 0;
   color: var(--text3);
+}
+
+
+/* Profil post tablar */
+.profile-grid-hdr {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.profile-grid-hdr::-webkit-scrollbar { display: none; }
+.profile-grid-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font);
+  white-space: nowrap;
+}
+.profile-grid-tab.active {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+
+/* Filterlangan tablar — bir xil kvadrat katak */
+.profile-grid--uniform {
+  grid-auto-flow: row;
+  grid-auto-rows: auto;
+}
+.profile-grid--uniform .grid-cell--media,
+.profile-grid--uniform .grid-cell--text {
+  grid-row: span 1;
+  aspect-ratio: 1;
+  min-height: 0;
 }

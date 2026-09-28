@@ -2514,14 +2514,10 @@ body:has(.search-overlay.open) .app-hdr {
   background: #000000;
 }
 
-/* Grid cell overlay */
-[data-theme="dark"] .grid-cell-overlay {
-  background: #000000;
-}
-
-/* User profile grid */
+/* Grid cell overlay — engil qorayish, to'liq qora emas */
+[data-theme="dark"] .grid-cell-overlay,
 [data-theme="dark"] .up-grid-cell-overlay {
-  background: #000000;
+  background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,.12) 100%);
 }
 
 /* ── Profile avatar overflow fix ── */
@@ -3063,6 +3059,40 @@ a.profile-meta-link:hover { text-decoration: underline; }
   color: var(--text3);
 }
 
+
+/* Profil post tablar */
+.profile-grid-hdr {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.profile-grid-hdr::-webkit-scrollbar { display: none; }
+.profile-grid-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font);
+  white-space: nowrap;
+}
+.profile-grid-tab.active {
+  color: var(--blue);
+  border-bottom-color: var(--blue);
+}
+
+/* Filterlangan tablar — bir xil kvadrat katak */
+.profile-grid--uniform {
+  grid-auto-flow: row;
+  grid-auto-rows: auto;
+}
+.profile-grid--uniform .grid-cell--media,
+.profile-grid--uniform .grid-cell--text {
+  grid-row: span 1;
+  aspect-ratio: 1;
+  min-height: 0;
+}
+
 /* ─── CSS/nav.css ─── */
 /* ═══════════════════════════════════════════
    MRgram — Nav, Modals, Sheets
@@ -3499,6 +3529,7 @@ a.profile-meta-link:hover { text-decoration: underline; }
   border-color: #464646;
   background: var(--glass-mid);
   box-shadow: var(--specular-top), 0 0 0 3px #16181c;
+  border-radius: 14px;
 }
 .ta::placeholder { color: var(--text3); }
 
@@ -7915,17 +7946,35 @@ svg { color: inherit; }
 .up-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: minmax(72px, auto);
+  grid-auto-flow: dense;
   gap: 2px;
 }
 
 .grid-cell,
 .up-grid-cell {
   position: relative;
-  aspect-ratio: 1;
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 0;
   cursor: pointer;
   background: var(--bg3);
+  min-height: 72px;
+}
+
+/* Rasm / video — katta (2 qator) */
+.grid-cell--media,
+.up-grid-cell--media {
+  grid-row: span 2;
+  min-height: 148px;
+  aspect-ratio: 1 / 1.05;
+}
+
+/* Matn post — pastroq */
+.grid-cell--text,
+.up-grid-cell--text {
+  grid-row: span 1;
+  min-height: 72px;
+  aspect-ratio: auto;
 }
 
 .grid-cell img,
@@ -7946,14 +7995,16 @@ svg { color: inherit; }
 .up-grid-cell-overlay {
   position: absolute;
   inset: 0;
-  background: #000000;
+  background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,.12) 100%);
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 8px;
-  gap: 4px;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px 8px;
+  gap: 14px;
   opacity: 0;
-  transition: none;
+  transition: opacity .15s ease;
+  pointer-events: none;
 }
 
 .grid-cell:hover .grid-cell-overlay,
@@ -7997,11 +8048,15 @@ svg { color: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px;
+  padding: 10px 12px;
   text-align: center;
   font-size: 12px;
   color: var(--text2);
-  line-height: 1.4;
+  line-height: 1.35;
+  height: 100%;
+  width: 100%;
+  background: var(--bg2);
+  word-break: break-word;
 }
 
 /* ═══════════════════════════════════════════
@@ -9509,6 +9564,7 @@ svg { color: inherit; }
     inset 0 1px 0 #16181c,
     0 0 0 3px #16181c;
   outline: none;
+  border-radius: 12px;
 }
 
 [data-theme="dark"] .field::placeholder,
@@ -11065,6 +11121,7 @@ textarea:focus {
   background: var(--glass-mid);
   box-shadow: 0 0 0 2px var(--blue-glow2, transparent);
   outline: none;
+  border-radius: 10px;
 }
 
 input::placeholder,
@@ -15769,6 +15826,7 @@ textarea {
   background: var(--bg);
   border-color: var(--link);
   box-shadow: none;
+  border-radius: 12px;
 }
 
 /* ── 4. Post: kartasiz qator + ingichka ajratgich (X uslubi) ───────────── */
@@ -15814,10 +15872,9 @@ nav.bot-nav .sb-account:hover { background: var(--bg4); }
 
 /* ── 8. Fokus halqasi: klaviatura uchun tinch ko'k ────────────────────── */
 :focus-visible { outline: none; }
-/* faqat matn maydonlari uchun nozik fokus */
+/* matn maydonlari: radius saqlanadi, outline emas */
 input:focus-visible, textarea:focus-visible, select:focus-visible {
-  outline: 1px solid var(--line);
-  outline-offset: 0;
+  outline: none;
 }
 a { color: var(--link); }
 
@@ -16637,9 +16694,10 @@ html, body, #app, .app {
     --center-w: 600px;
   }
 
-  /* Lenta: chap sidebar dan keyin, markazga emas */
+  /* Markaz ustun: home + profile (3 ustun layout) */
   #homeView.on,
-  #followingView.on {
+  #followingView.on,
+  #profileView.on {
     margin-left: var(--content-left, var(--sidebar, 260px));
     margin-right: 0;
     width: var(--center-w);
@@ -16648,10 +16706,22 @@ html, body, #app, .app {
   }
 
   .feed,
-  #followingView .feed {
+  #followingView .feed,
+  #profileView.on {
     max-width: var(--center-w);
     width: 100%;
     margin: 0;
+    border-right: 1px solid #2f3336;
+  }
+
+  /* Qidiruv (explore) — markaz ustunda, o'ng rail ochiq qoladi */
+  [data-theme] .search-overlay,
+  [data-theme="dark"] .search-overlay,
+  .search-overlay {
+    left: var(--content-left, var(--sidebar, 260px)) !important;
+    right: auto !important;
+    width: var(--center-w) !important;
+    max-width: var(--center-w) !important;
     border-right: 1px solid #2f3336;
   }
 
@@ -16679,8 +16749,8 @@ html, body, #app, .app {
   }
   .right-rail[hidden] { display: none !important; }
 
-  /* Boshqa viewlar: o'ng panel joyini bo'shatmasin */
-  #profileView, #chatsView, #reelsView, #actionsView {
+  /* Boshqa viewlar (chats/actions): o'ng panel yopiq */
+  #chatsView, #reelsView, #actionsView {
     margin-right: 0;
   }
 }

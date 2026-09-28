@@ -144,6 +144,7 @@ textarea:focus {
   background: var(--glass-mid);
   box-shadow: 0 0 0 2px var(--blue-glow2, transparent);
   outline: none;
+  border-radius: 10px;
 }
 
 input::placeholder,
