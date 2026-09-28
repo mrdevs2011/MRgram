@@ -1,3 +1,4 @@
+// test 6: diff uchun izoh
 /**
  * local-cache.js — Chat va profil ma'lumotlari uchun yengil localStorage kesh.
  *
