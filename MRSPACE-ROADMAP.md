@@ -198,7 +198,7 @@ drop table if exists public.follows;
 
 - 5.1 Presence DB→Realtime: ✅ tag `diet-progress-05` (Realtime Presence kanali, `last_seen` faqat chiqishda `sendBeacon` bilan).
 - 5.2 Typing DB→Broadcast: ✅ broadcast'ga o'tgan. `typing_until` izlari `chat.js`/`config.js`/`auth.js` da hali bor; ustunni drop qilish (`patch-diet-05-contract.sql`) — 1 hafta kuzatuvdan keyin.
-- 5.3 Kanallarni birlashtirish: ❌ `sb.channel(` hali ~18 ta joyda (auth, chat, groups, call, admin fayllari). Maqsad: bitta `me:<uid>` kanali + `incoming-calls-<uid>` + thread kanallari + admin → ~3–4. Xavf: filter chalkashishi — bitta-bitta ko'chir, 2 qurilmada sinab ko'r.
+- 5.3 Kanallarni birlashtirish: 🔶 (2026-09-29, `diet/05-realtime`) `right-rail-rt` olib tashlandi (`postsUpdated` + 15 s tick), `chat-notice` → `chats-watcher`ga qo'shildi: doimiy kanallar ~8 → 6. Qoldi: `groups-watcher` ↔ `chats-watcher` (turli modul/lifecycle), `profile-<uid>`. ⚠️ 2 qurilmada sinalmagan. Eski holat: ❌ `sb.channel(` hali ~18 ta joyda (auth, chat, groups, call, admin fayllari). Maqsad: bitta `me:<uid>` kanali + `incoming-calls-<uid>` + thread kanallari + admin → ~3–4. Xavf: filter chalkashishi — bitta-bitta ko'chir, 2 qurilmada sinab ko'r.
 - 5.4 `bump_post_counters` triggerlari [QAROR Q8]: ❌ tegilmagan (hozircha qolsin).
 
 **Tekshiruv:** 2 ta qurilma: onlayn nuqta, "yozmoqda", xabar darhol keladi, qo'ng'iroq keladi.
