@@ -753,7 +753,6 @@ async function _enterApp(user) {
       }, 1100);
     }
 
-    await refreshMyFollowing();
     listenPosts();
     if (!notificationsUserDisabled()) initPush();
     startChatsWatcher();
@@ -805,18 +804,6 @@ function stopPresenceHeartbeat() {
 
 function _onVisibilityChangeForPresence() {
   if (document.visibilityState === 'visible') _pingPresence();
-}
-
-/* ── Following helpers ───────────────────────────────────────────────── */
-export async function refreshMyFollowing() {
-  if (!state.me) return;
-  try {
-    const { data, error } = await sb.from('follows').select('following_id').eq('follower_id', state.me.uid);
-    if (error) throw error;
-    state.myFollowing = new Set((data || []).map(r => r.following_id));
-  } catch (err) {
-    console.warn('[Auth] Failed to refresh following:', err?.message);
-  }
 }
 
 /* ── Live posts listener ─────────────────────────────────────────────────
@@ -939,22 +926,6 @@ export function listenPosts() {
     });
 
   _postsUnsub = () => { clearTimeout(_renderDebounceTimer); sb.removeChannel(ch); };
-}
-
-/* ── Follow / Unfollow ───────────────────────────────────────────────── */
-export async function follow(uid, silent = false) {
-  const { error } = await sb.from('follows').insert({ follower_id: state.me.uid, following_id: uid });
-  if (error && error.code !== '23505') throw error; // 23505 = allaqachon obuna
-  state.myFollowing.add(uid);
-  if (!silent) toast('Obuna bo\'lindi', 'success');
-}
-
-export async function unfollow(uid, silent = false) {
-  const { error } = await sb.from('follows').delete()
-    .eq('follower_id', state.me.uid).eq('following_id', uid);
-  if (error) throw error;
-  state.myFollowing.delete(uid);
-  if (!silent) toast('Obunadan chiqildi', 'info');
 }
 
 /* ── Profil edit / logout — to'liq implementatsiya ─────────────────── */

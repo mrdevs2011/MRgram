@@ -3,7 +3,6 @@ import { $, esc, renderMarkdown, fmt, fmtSz, defAvi,
          initVidWrap, showConfirm,
          buildSkeletons, dlFile, openZoom, showHeartBurst, fmtCount } from './utils.js';
 import { toast }                            from './toast.js';
-import { follow, unfollow }                 from './auth.js';
 
 // ── Ko'rishlar (views) hisoblagichi ────────────────────────────────────
 // Ilgari bu funksiya bo'sh edi ("placeholder") — postlar millionlab marta
@@ -292,7 +291,6 @@ export async function renderFeedTo(feedEl, posts) {
     const liked    = likedSet.has(p.id);
     const canDel   = state.me.uid === p.userId || isAdmin();
     const isMine   = state.me.uid === p.userId;
-    const isSub    = state.myFollowing.has(p.userId);
 
     html += `<div class="post" data-id="${p.id}">
       <div class="avi user-avi-btn" data-uid="${p.userId}"><img src="${u.avatar}" onerror="this.style.display='none'"></div>
@@ -304,7 +302,6 @@ export async function renderFeedTo(feedEl, posts) {
             <span class="post-dot">·</span>
             <span class="post-time">${fmt(p.createdAt)}</span>
           </div>
-        ${!isMine && !isSub ? `<button class="feed-sub-btn" data-uid="${p.userId}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>` : ''}
         ${canDel ? `<button class="del-btn" data-id="${p.id}">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/>
@@ -532,19 +529,6 @@ function bindFeedEvents(feedEl) {
   feedEl.querySelectorAll('.like-btn').forEach(b => b.addEventListener('click', () => doLike(b.dataset.id, b)));
   feedEl.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', () => doDelete(b.dataset.id)));
 
-  feedEl.querySelectorAll('.feed-sub-btn').forEach(b => b.addEventListener('click', async e => {
-    e.stopPropagation();
-    const uid = b.dataset.uid;
-    const currently = state.myFollowing.has(uid);
-    if (currently) {
-      // unfollow — bu feedda bo'lmaydi, profilda amalga oshiriladi
-    } else {
-      state.myFollowing.add(uid);
-      follow(uid, true).catch(() => {});
-      // Follow qilingan barcha tugmalarni o'chirish
-      feedEl.querySelectorAll(`.feed-sub-btn[data-uid="${uid}"]`).forEach(btn => btn.remove());
-    }
-  }));
   feedEl.querySelectorAll('.cmt-open-btn').forEach(b => b.addEventListener('click', async () => {
     const { openCmtModal } = await import('./comments.js');
     openCmtModal(b.dataset.id);

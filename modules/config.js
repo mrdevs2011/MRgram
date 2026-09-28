@@ -175,7 +175,7 @@ export function isAdmin() {
 export const state = {
   me: null, allPosts: [], tab: 'all', search: '', view: 'home',
   selFile: null, _objUrl: null, visibleN: 10, loadingMore: false,
-  reelObs: null, viewedSet: new Set(), myFollowing: new Set(),
+  reelObs: null, viewedSet: new Set(),
   myLikedPosts: new Set(), _knownUnliked: new Set(), cmtPostId: null,
   pendingReelId: null, pendingReelTime: 0, _lastPostIds: '',
   currentChatUid: null, currentChatId: null,
