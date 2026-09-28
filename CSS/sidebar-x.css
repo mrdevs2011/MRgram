@@ -1,0 +1,172 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   SIDEBAR — X.com uslubi
+   • ≥1100px  : keng sidebar (ikonka + yozuv, Post tugmasi, pastda akkaunt)
+   • 768–1099 : ingichka rail (faqat ikonkalar)
+   • <768px   : mobil — ingichka chap rail (pastki nav o'rniga)
+   Eski qoidalar nav.css / 00-components.core.css da; bu fayl ularni
+   nav.bot-nav specificity bilan ustidan yozadi.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Umumiy: akkaunt bloki ─────────────────────────────────────────── */
+.sb-account[hidden] { display: none !important; }
+.sb-account {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 12px;
+  background: none; border: none; border-radius: 999px;
+  color: var(--text); font-family: var(--font); text-align: left;
+  cursor: pointer;
+}
+.sb-acc-avi {
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 50%; overflow: hidden; background: var(--bg3, #222);
+}
+.sb-acc-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sb-acc-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.25; }
+.sb-acc-name { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-acc-user { font-size: 15px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-acc-dots { flex-shrink: 0; color: var(--text); }
+
+/* Yozuvlar faqat keng rejimda */
+nav.bot-nav .nav-btn .nav-label { display: none; }
+
+/* ── Rail (mobil + planshet) umumiy ────────────────────────────────── */
+@media (max-width: 1099px) {
+  nav.bot-nav .sb-acc-meta,
+  nav.bot-nav .sb-acc-dots { display: none; }
+  nav.bot-nav .sb-account {
+    width: 44px; height: 44px; padding: 0;
+    justify-content: center; border-radius: 50%;
+  }
+  nav.bot-nav .sb-acc-avi { width: 36px; height: 36px; }
+
+  /* Post → dumaloq compose tugma */
+  nav.bot-nav .nav-center-btn {
+    display: flex !important;
+    align-items: center; justify-content: center;
+    width: 48px; height: 48px; margin: 10px 0;
+    border-radius: 50%; padding: 0; flex-shrink: 0;
+    background: var(--text); color: var(--bg);
+    border: none; box-shadow: none;
+  }
+  nav.bot-nav .nav-center-btn::before,
+  nav.bot-nav .nav-center-btn::after { display: none !important; }
+  nav.bot-nav .nav-center-btn svg { display: block; width: 22px; height: 22px; stroke: currentColor; }
+  nav.bot-nav .nav-center-btn .sb-create-label { display: none; }
+}
+
+/* ── Mobil: chap rail ──────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  :root { --rail: 56px; --sidebar: 56px; --content-left: 56px; --nav: 0px; }
+
+  nav.bot-nav {
+    top: 0; bottom: 0; left: 0; right: auto;
+    width: var(--rail); height: 100dvh;
+    flex-direction: column; justify-content: flex-start; align-items: center;
+    gap: 2px;
+    padding: max(env(safe-area-inset-top), 10px) 0 max(env(safe-area-inset-bottom), 10px);
+    border: none;
+    overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
+  }
+  nav.bot-nav::-webkit-scrollbar { display: none; }
+
+  nav.bot-nav .sb-top {
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%; padding: 0 0 6px; margin: 0; border: none;
+  }
+  nav.bot-nav .sb-logo-row { width: 44px; height: 44px; padding: 0; background: none; border: none; }
+  nav.bot-nav .sb-logo-glass { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: none; border: none; box-shadow: none; }
+  nav.bot-nav .sb-logo-img { width: 28px; height: 28px; }
+
+  nav.bot-nav .nav-btn,
+  nav.bot-nav .sb-search-toggle {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 44px; height: 44px; padding: 0; flex: 0 0 auto;
+    border-radius: 14px; position: relative;
+  }
+  nav.bot-nav .nav-btn.nav-hidden { display: none !important; }
+  nav.bot-nav .nav-btn.admin-only-btn.d-none { display: none !important; }
+  nav.bot-nav .nav-btn svg { width: 24px; height: 24px; }
+  nav.bot-nav .nav-btn.on { background: none; }
+
+  nav.bot-nav .sb-bottom {
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%; margin-top: auto; padding-top: 8px; border: none;
+  }
+
+  /* kontent rail'dan o'ngda */
+  #homeView, #followingView, #reelsView, #profileView, #chatsView,
+  #statsView, #usersView, #actionsView { margin-left: var(--rail); }
+  #reelsView { width: calc(100vw - var(--rail)); }
+  .app-hdr { left: var(--rail); }
+}
+
+/* ── Keng sidebar (≥1100px) ────────────────────────────────────────── */
+@media (min-width: 1100px) {
+  :root { --sidebar: 260px; --content-left: 260px; }
+
+  nav.bot-nav {
+    width: var(--sidebar);
+    align-items: stretch; gap: 2px;
+    padding: 8px 12px 12px;
+    overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
+  }
+  nav.bot-nav::-webkit-scrollbar { display: none; }
+
+  nav.bot-nav .sb-top {
+    align-items: flex-start; padding: 0 0 4px 4px; margin: 0; border: none;
+  }
+  nav.bot-nav .sb-logo-row { width: 52px; height: 52px; }
+  nav.bot-nav .sb-logo-img { width: 30px; height: 30px; }
+  nav.bot-nav .sb-logo-tip { display: none; }
+
+  nav.bot-nav .nav-btn,
+  nav.bot-nav .sb-search-toggle {
+    flex-direction: row; justify-content: flex-start; align-items: center;
+    align-self: flex-start;
+    width: auto; max-width: 100%; height: 52px;
+    padding: 0 22px 0 14px; gap: 18px;
+    border-radius: 999px;
+    background: none; border: none; box-shadow: none;
+  }
+  nav.bot-nav .nav-btn:hover { background: rgba(128, 128, 128, .16); border: none; box-shadow: none; }
+  nav.bot-nav .nav-btn.on,
+  nav.bot-nav #sbSearchToggle.search-active { background: none; border: none; box-shadow: none; }
+  nav.bot-nav .nav-btn svg { width: 26px; height: 26px; stroke: var(--text); flex-shrink: 0; }
+  nav.bot-nav .nav-btn.on svg,
+  nav.bot-nav #sbSearchToggle.search-active svg { stroke: var(--text); stroke-width: 2.4; }
+
+  nav.bot-nav .nav-btn .nav-label {
+    display: block; font-size: 19px; line-height: 1; font-weight: 400;
+    color: var(--text); white-space: nowrap;
+  }
+  nav.bot-nav .nav-btn.on .nav-label,
+  nav.bot-nav #sbSearchToggle.search-active .nav-label { font-weight: 700; }
+
+  /* yozuv bor — tooltip kerak emas */
+  nav.bot-nav .nav-btn::after,
+  #sbSearchToggle::after { display: none !important; }
+
+  nav.bot-nav .nav-badge { left: 30px; right: auto; top: 6px; }
+
+  /* Post — keng oq tugma */
+  nav.bot-nav .nav-center-btn {
+    display: flex !important; align-items: center; justify-content: center;
+    align-self: stretch; width: auto; height: 52px;
+    margin: 16px 8px; padding: 0; border-radius: 999px;
+    background: var(--text); color: var(--bg);
+    border: none; box-shadow: none;
+  }
+  nav.bot-nav .nav-center-btn::before,
+  nav.bot-nav .nav-center-btn::after { display: none !important; }
+  nav.bot-nav .nav-center-btn svg { display: none; }
+  nav.bot-nav .nav-center-btn .sb-create-label {
+    display: block; font-size: 17px; font-weight: 700; color: var(--bg);
+  }
+
+  /* pastda akkaunt */
+  nav.bot-nav .sb-bottom {
+    display: flex; flex-direction: column; align-items: stretch;
+    margin-top: auto; padding: 12px 0 0; border: none;
+  }
+  nav.bot-nav .sb-account:hover { background: rgba(128, 128, 128, .16); }
+}

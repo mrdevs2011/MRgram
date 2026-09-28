@@ -39,6 +39,8 @@ initNavigation();
 
 /* ── Lazy-import modules ─────────────────────────────────────────────── */
 import('./upload.js');
+import('./shortcuts.js');
+import('./sidebar.js');
 
 /* ── Global mute buttons ─────────────────────────────────────────────── */
 ['globalMuteBtn', 'sbMuteBtn'].forEach(id =>
