@@ -1,7 +1,6 @@
 import { sb, state, MAX_FILE, uploadViaController } from './config.js';
 import { $, esc, fmtSz, lockScroll, unlockScroll, defAvi } from './utils.js';
 import { toast }                                   from './toast.js';
-import { compressImage }                           from './compress.js';
 
 /* ═══════════════════════════════════════════════════════════════════════
    FILE TYPE → SVG icon + label + accent color
@@ -398,8 +397,7 @@ $('uploadBtn').onclick = async () => {
 
     /* ── Private / Public uchun Firestore ── */
     if (hasFile) {
-      const file = await compressImage(state.selFile); // F7.2: rasmni siqish
-      state.selFile = file;
+      const file = state.selFile;
 
       let simPct = 0;
       let lastTick = Date.now();

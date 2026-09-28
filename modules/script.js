@@ -11,6 +11,7 @@ import { renderFeed, patchCounts } from './feed.js';
 import { renderProfile, renderUserProfileModal } from './profile.js';
 import { initRouter, navigateTo } from './router.js';
 import { initNavigation } from './bar.js';
+import './explore.js';
 
 /* ── Splash ──────────────────────────────────────────────────────────── */
 setTimeout(() => {

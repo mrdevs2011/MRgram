@@ -718,7 +718,7 @@ export async function openGroupInfo(groupId) {
             const av   = u.avatar || defAvi(u.fullName || 'U');
             const role = uid === g.ownerId ? 'Egasi' : (g.adminIds||[]).includes(uid) ? 'Admin' : '';
             const isSelf = uid === state.me?.uid;
-            const online = isOnline(u.uid, u.lastSeenAt);
+            const online = isOnline(u.lastSeenAt);
             return `<div class="grp-member-row" data-uid="${uid}">
               <div class="grp-member-avi-wrap">
                 <div class="grp-member-avi"><img src="${av}" onerror="this.style.display='none'"></div>

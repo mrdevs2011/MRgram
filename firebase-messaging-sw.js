@@ -71,10 +71,9 @@ self.addEventListener('notificationclick', (event) => {
 
 
 /* ── Cache versiyasi ── */
-// DIET F6.2: qo'lda vNNN oshirish shart emas — build-css.mjs har deployda
-// bu qatorni git SHA / vaqt tamg'asi bilan almashtiradi. Lokal ishlatishda
-// quyidagi qiymat ishlaydi.
-const CACHE_VERSION  = 't-1790599308899'; /* BUILD_VERSION_LINE */
+// Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
+// bu raqamni oshiring (v1 -> v2 -> v3 ...).
+const CACHE_VERSION  = 'v102';
 const STATIC_CACHE   = `mrgram-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
 
@@ -89,11 +88,25 @@ const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
 const PRECACHE_URLS = [
   '/',
   '/index.html',
-  '/app.css',
+  '/style.css',
   '/manifest.json',
-  // DIET F4.5: eski 24 ta alohida CSS fayllar o'rniga bitta /app.css
-  // (build-css.mjs yig'adi). Eski fayl nomlari ro'yxatdan olib tashlandi —
-  // ular hali repoda (manba sifatida), lekin brauzer endi faqat app.css oladi.
+  '/CSS/theme.css',
+  '/CSS/nav.css',
+  '/CSS/chat.css',
+  '/CSS/feed.css',
+  '/CSS/groups.css',
+  '/CSS/profile.css',
+  '/CSS/admin.css',
+  '/CSS/borderless.css',
+  '/CSS/dark-theme-fix.css',
+  '/CSS/loading.css',
+  '/CSS/local-utility.css',
+  '/CSS/splash.css',
+  '/CSS/devs-utility.css',
+  '/CSS/ui-improvements.css',
+  '/CSS/chat-dark-redesign.css',
+  '/CSS/mono.css',
+  '/CSS/x-design.css',
   // Barcha JS modullari (modules/ papkasi to'liq)
   '/modules/script.js',
   '/modules/router.js',
@@ -109,13 +122,17 @@ const PRECACHE_URLS = [
   '/modules/call.js',
   '/modules/comments.js',
   '/modules/cover-crop.js',
+  '/modules/duration-picker.js',
   '/modules/groups.js',
   '/modules/local-cache.js',
-
+  '/modules/explore.js',
   '/modules/profile.js',
   '/modules/push.js',
   '/modules/upload.js',
+  '/modules/admin-audit.js',
   '/modules/admin-badge.js',
+  '/modules/dashboard-summary.js',
+  '/modules/view-actions.js',
   '/modules/view-chats.js',
   '/modules/view-home.js',
   '/modules/view-login.js',
@@ -183,32 +200,31 @@ self.addEventListener('fetch', (event) => {
   const isNavigation = event.request.mode === 'navigate' ||
     event.request.destination === 'document';
 
-  // ── HTML sahifa (navigatsiya): DIET F6.2 — NETWORK-FIRST (3s timeout) → kesh fallback ──
-  // Eski xatti-harakat (cache-first + fonda yangilash) tufayli foydalanuvchi
-  // keyingi ochilishgacha eski versiyani ko'rardi. Endi avval tarmoq: deploy
-  // darhol ko'rinadi; internet bo'lmasa yoki 3s da javob bo'lmasa keshdan beriladi.
+  // ── HTML sahifa (navigatsiya): CACHE-FIRST + fonda yangilash ──
   if (isNavigation) {
     event.respondWith(
       (async () => {
-        try {
-          const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 3000);
-          const net = await fetch(event.request, { signal: ctrl.signal });
-          clearTimeout(timer);
-          if (net && net.status === 200 && net.type === 'basic') {
-            const cloned = net.clone();
-            caches.open(RUNTIME_CACHE).then((cache) => cache.put('/index.html', cloned));
-          }
-          return net;
-        } catch (_) {
-          const cached = await caches.match('/index.html') || await caches.match(event.request) || await caches.match('/');
-          if (cached) return cached;
-          return new Response('Offline — internet aloqasi yo\'q', {
-            status: 503,
-            statusText: 'Service Unavailable',
-            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-          });
+        const cached = await caches.match(event.request) || await caches.match('/index.html') || await caches.match('/');
+        const networkFetch = fetch(event.request)
+          .then((response) => {
+            if (response && response.status === 200 && response.type === 'basic') {
+              const cloned = response.clone();
+              caches.open(RUNTIME_CACHE).then((cache) => cache.put(event.request, cloned));
+            }
+            return response;
+          })
+          .catch(() => null);
+
+        if (cached) {
+          return cached;
         }
+        const net = await networkFetch;
+        if (net) return net;
+        return new Response('Offline — internet aloqasi yo\'q', {
+          status: 503,
+          statusText: 'Service Unavailable',
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+        });
       })()
     );
     return;

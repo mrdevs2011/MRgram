@@ -21,10 +21,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
-<!-- DIET F4.5: 24 alohida CSS fayl + 18 @import zanjiri o'rniga bitta app.css.
-     Manbalar: style.css (@import ro'yxati) + index.html'dagi qo'shimcha linklar.
-     Qayta yig'ish: node scripts/build-css.mjs -->
-<link rel="stylesheet" href="./app.css">
+<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="./CSS/devs-utility.css">
+<link rel="stylesheet" href="./CSS/admin.css">
+<link rel="stylesheet" href="./CSS/x-design.css">
+<link rel="stylesheet" href="./CSS/mono.css">
 </head>
 <body>
 
@@ -191,6 +192,11 @@
   <!-- LOGIN VIEW — auth UI authWrap orqali ko'rsatiladi -->
   <div class="view" id="loginView"></div>
 
+  <!-- STATISTICS VIEW — saqlanib qoldi (actions ichida ishlatiladi) -->
+
+  <!-- USERS VIEW — saqlanib qoldi (actions ichida ishlatiladi) -->
+  <div class="view" id="usersView" style="display:none!important"></div>
+
   <!-- ACTIONS VIEW — admin uchun: statistika + users birlashtirilgan -->
   <div class="view" id="actionsView">
     <!-- Tezkor umumiy ko'rinish (Dashboard summary) -->
@@ -208,7 +214,8 @@
     <!-- Users qismi (avval) -->
     <div class="users-admin-hdr">
       <h2>Foydalanuvchilar</h2>
-            <div class="ua-search-row">
+      <p class="users-admin-sub">Barcha ro'yxatdan o'tgan foydalanuvchilar</p>
+      <div class="ua-search-row">
         <input type="text" id="uaSearchInput" class="ua-search-input" placeholder="Ism, username yoki email bo'yicha qidirish…" autocomplete="off">
         <select id="uaStatusFilter" class="ua-status-filter">
           <option value="all">Barchasi</option>
@@ -761,18 +768,25 @@
 <!-- ── Float upload progress bar (yuklanayotganda pastda ko'rinadi) ── -->
 
 
-  <!-- ── Qidiruv Overlay — oddiy filtr (DIET F3: Explore sahifasi olib tashlandi) ── -->
+  <!-- ── Qidiruv Overlay: X "Explore" sahifasi ── -->
   <div class="search-overlay" id="searchOverlay">
     <div class="search-overlay-inner">
-      <div class="search-overlay-box">
-        <svg class="search-overlay-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" id="searchInput" placeholder="Lentadan qidirish" autocomplete="off" spellcheck="false">
-        <!-- Qidiruv Suggestions -->
-        <div class="search-suggestions" id="searchSuggestions"></div>
-        <button class="search-overlay-close" id="searchOverlayClose" aria-label="Yopish">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
+      <div class="exp-head">
+        <div class="search-overlay-box">
+          <div class="exp-pill">
+            <svg class="search-overlay-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="searchInput" placeholder="Qidiruv" autocomplete="off" spellcheck="false">
+            <!-- Qidiruv Suggestions -->
+            <div class="search-suggestions" id="searchSuggestions"></div>
+          </div>
+          <button class="search-overlay-close" id="searchOverlayClose" aria-label="Yopish">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="exp-tabs" id="expTabs" role="tablist"></div>
       </div>
+      <div class="search-results-hint" id="searchResultsHint"></div>
+      <div class="exp-body" id="expBody"></div>
     </div>
   </div>
 

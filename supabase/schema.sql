@@ -126,9 +126,10 @@ create policy profiles_delete on public.profiles for delete to authenticated usi
 
 -- ═══════════════════════════════════════════════════════════════════════
 -- 2. CONTACTS, LOGIN HISTORY, PUSH
--- (follows jadvali DIET F1: kodda hech qayerda ishlatilmaydi; jadval DB'da
---  vaqtincha qoladi — contract bosqichi supabase/patch-diet-01-junk.sql)
+--    (follows jadvali olib tashlandi — diet/01: koddagi follow tizimi
+--     allaqachon buzilgan edi; bazada drop qilish: patch-diet-01.sql)
 -- ═══════════════════════════════════════════════════════════════════════
+
 create table public.contacts (
   owner_id   uuid not null references public.profiles(id) on delete cascade,
   contact_id uuid not null references public.profiles(id) on delete cascade,

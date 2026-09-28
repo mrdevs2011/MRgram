@@ -30,6 +30,10 @@ const routes = {
     view: 'loginView',
     title: 'Kirish'
   },
+  'users': {
+    view: 'usersView',
+    title: 'Foydalanuvchilar'
+  },
   'actions': {
     view: 'actionsView',
     title: 'Boshqaruv'
@@ -37,7 +41,7 @@ const routes = {
 };
 
 // Allowed route names for security
-const ALLOWED_ROUTES = ['home', 'profile', 'chats', 'login', 'actions'];
+const ALLOWED_ROUTES = ['home', 'profile', 'chats', 'login', 'users', 'actions'];
 
 /* ═══════════════════════════════════════════════════════════════════════
    CURRENT STATE
@@ -244,7 +248,8 @@ function updateLayoutForRoute(routeName) {
 
   // Mobile: hdr search wrap ko'rinishi (actions va login da yashiriladi)
   if (hdrSearchWrap) {
-    const hideSearch = routeName === 'actions' || routeName === 'login';
+    const hideSearch = routeName === 'actions' || routeName === 'login'
+                    || routeName === 'users';
     hdrSearchWrap.classList.toggle('search-hidden', hideSearch);
   }
 

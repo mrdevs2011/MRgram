@@ -95,7 +95,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
 
   /* kontent rail'dan o'ngda */
   #homeView, #followingView, #reelsView, #profileView, #chatsView,
-  #actionsView { margin-left: var(--rail); }
+  #statsView, #usersView, #actionsView { margin-left: var(--rail); }
   #reelsView { width: calc(100vw - var(--rail)); }
   .app-hdr { left: var(--rail); }
 }

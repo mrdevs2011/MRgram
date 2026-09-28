@@ -227,7 +227,7 @@ function _paintUserRows(users, animate = false) {
   const html = rows.map(({ u, c }, idx) => {
     const av = u.avatar || defAvi(u.fullName || 'U');
     const isContact = _myContacts.has(u.uid);
-    const online = isOnline(u.uid, u.lastSeenAt);
+    const online = isOnline(u.lastSeenAt);
     const preview = c
       ? `${c.lastSenderId === state.me.uid ? 'You: ' : ''}${esc((c.lastMessage || '').slice(0, 46))}`
       : isContact ? 'Kontakt' : 'Yangi suhbat boshlash';
@@ -287,7 +287,6 @@ import {
 } from './config.js';
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLastSeen } from './utils.js';
 import { toast }            from './toast.js';
-import { compressImage }    from './compress.js';
 import {
   startGroupsWatcher, stopGroupsWatcher,
   openGroupThread, closeGroupThread,
@@ -450,7 +449,7 @@ export function startChatsWatcher() {
       const me = state.me?.uid;
       if (!me) return;
       const { data, error } = await sb.from('chats')
-        .select('*, chat_members(user_id, unread_count)')
+        .select('*, chat_members(user_id, unread_count, typing_until)')
         .or(`user_a.eq.${me},user_b.eq.${me}`);
       if (_chDead || !state.me) return;
       if (error) { console.warn('[Chat] chats watcher error:', error.message); return; }
@@ -685,70 +684,24 @@ function _paintPeerStatus(lastSeenAt) {
     el.classList.add('online');
     return;
   }
-  const online = isOnline(_otherUserUid, lastSeenAt);
-  el.textContent = formatLastSeen(lastSeenAt, _otherUserUid);
+  const online = isOnline(lastSeenAt);
+  el.textContent = formatLastSeen(lastSeenAt);
   el.classList.toggle('online', online);
 }
 
-// DIET F5.1: presence endi DB heartbeat emas — window._mrOnlineSet realtime
-// Presence kanali orqali yangilanadi. To'plam o'zgarganda ochiq chatning
-// sarlavhasini qayta chizamiz (eski peer-<uid> postgres UPDATE kuzatuvi
-// keraksiz edi — last_seen endi faqat chiqishda yoziladi).
-let _presenceDomTick = null;
-let _lastOnlineSetRef = null;
-function _startPresenceRepaint() {
-  if (_presenceDomTick) return;
-  _presenceDomTick = setInterval(() => {
-    const set = window._mrOnlineSet;
-    if (set === _lastOnlineSetRef) return; // o'zgarmagan — bo'sha tik
-    _lastOnlineSetRef = set;
-    if (_peerStatusTick && $('chatTypingStatus')) _paintPeerStatus(_peerLastSeenAt);
-  }, 2000);
-}
-_startPresenceRepaint();
-
-/* ── "Yozmoqda..." — DIET F5.2: DB yozuvi o'rniga Realtime Broadcast ────
- * Eski: har typing holati chat_members.typing_until ga UPDATE edi (DBga
- * yozuv). Yangi: thread-<chatId> kanali orqali broadcast; qabul qiluvchi
- * 4s taymer bilan "yozmoqda..." ko'rsatadi. Bazaga umuman yozilmaydi.
- * Broadcast faqat ochiq (subscribe bo'lgan) a'zolarga yetib boradi —
- * oilaviy messenjer uchun yetarli.
+/* ── "Yozmoqda..." holatini Firestore'ga yozish (debounce bilan) ─────────
+ * chats/{chatId}.typing.{myUid} = true/false. Rules'da bu maydon
+ * onlyFields ro'yxatida allaqachon ruxsat berilgan — qo'shimcha
+ * o'zgarish kerak emas.
  ─────────────────────────────────────────────────────────────────────── */
-let _typingCh = null;        // hozirgi DM chat uchun broadcast kanali
-let _typingSentAt = 0;       // 3s throttle
-let _typingChatId = null;
-
-// DIET F5: yuboruvchi va qabul qiluvchi bir xil kanal nomidan foydalanishi
-// shart. Yagona manba — TYPING_CHANNEL_NAME (openChatThread ham shu funksiyani
-// chaqiradi, shuning uchun nomlar hech qachon chalkashmaydi).
-function typingChannelName(chatId) {
-  return 'typing-' + chatId;
-}
-
-function _ensureTypingChannel(chatId) {
-  const name = typingChannelName(chatId);
-  if (_typingCh && _typingChatId === chatId) return _typingCh;
-  if (_typingCh) { sb.removeChannel(_typingCh); _typingCh = null; }
-  _typingChatId = chatId;
-  _typingCh = sb.channel(name).subscribe();
-  return _typingCh;
-}
-
 function _setTyping(isTyping) {
-  const chatId = state.currentChatId;
-  if (!chatId || !state.me) return;
-  if (_iAmTyping === isTyping) return; // ortiqcha xabarlar oldini olish
+  if (!state.currentChatId || !state.me) return;
+  if (_iAmTyping === isTyping) return; // ortiqcha yozuvlarni oldini olish
   _iAmTyping = isTyping;
-  if (!isTyping) return; // "to'xtadi" signalini yubormaymiz — taymer o'zi so'nadi
-  const now = Date.now();
-  if (now - _typingSentAt < 3000) return; // 3s throttle
-  _typingSentAt = now;
-  try {
-    _ensureTypingChannel(chatId).send({
-      type: 'broadcast', event: 'typing',
-      payload: { uid: state.me.uid, at: now },
-    });
-  } catch (_) { /* channel hali SUBSCRIBE bo'lmagan — keyingi tikda urinadi */ }
+  sb.from('chat_members')
+    .update({ typing_until: isTyping ? new Date(Date.now() + 5000).toISOString() : null })
+    .eq('chat_id', state.currentChatId).eq('user_id', state.me.uid)
+    .then(() => {}, () => {});
 }
 
 function _onChatInputTyping() {
@@ -830,30 +783,33 @@ export async function openChatThread(uid) {
     _otherUserUid = uid;
   }
 
-  // Onlayn holat — DIET F5.1: presence endi DB UPDATE emas (last_seen faqat
-  // chiqishda yoziladi), shuning uchun peer-<uid> postgres kuzatuvi olib
-  // tashlandi. Realtime Presence to'plami (_mrOnlineSet) o'zgarganda
-  // _startPresenceRepaint() sarlavhani yangilaydi; 20s tik esa "onlayn"dan
-  // "N daqiqa oldin"ga o'tish matnini saqlab turadi.
+  // Onlayn holatni real vaqtda kuzatib turish — peer user hujjatidagi
+  // `lastSeenAt` heartbeat orqali yangilanganda darhol sarlavhada ko'rinsin.
   if (_peerUserUnsub) { _peerUserUnsub(); _peerUserUnsub = null; }
+  {
+    const pch = sb.channel('peer-' + uid)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` },
+          p => _paintPeerStatus(ts(p.new?.last_seen)))
+      .subscribe();
+    _peerUserUnsub = () => sb.removeChannel(pch);
+  }
   // "Onlayn"dan "N daqiqa oldin"ga o'tishini ko'rsatish uchun har 20s da
   // matnni qayta hisoblaymiz (server yozuvi o'zgarmasa ham vaqt o'tadi).
   if (_peerStatusTick) clearInterval(_peerStatusTick);
   _peerStatusTick = setInterval(() => _paintPeerStatus(_peerLastSeenAt), 20000);
 
-  // "Yozmoqda..." — DIET F5.2: DB UPDATE o'rniga broadcast (thread-kanalida).
-  _iAmTyping = false;
+  // "Yozmoqda..." holatini kuzatish — chats/{chatId}.typing.{peerUid}
   _peerTyping = false;
   if (_chatDocUnsub) { _chatDocUnsub(); _chatDocUnsub = null; }
   {
     let tTimer = null;
-    const tch = sb.channel(typingChannelName(chatId))
-      .on('broadcast', { event: 'typing' }, ({ payload }) => {
-        if (!payload || payload.uid !== uid) return;
+    const tch = sb.channel('typing-' + chatId)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chat_members', filter: `chat_id=eq.${chatId}` }, p => {
+        if (p.new?.user_id !== uid) return;
         clearTimeout(tTimer);
-        _peerTyping = true;
-        // Soat farqiga bog'liq bo'lmaslik uchun: yangi hodisa kelmasa 4s dan keyin o'chiramiz
-        tTimer = setTimeout(() => { _peerTyping = false; _paintPeerStatus(_peerLastSeenAt); }, 4000);
+        _peerTyping = !!p.new.typing_until;
+        // Soat farqiga bog'liq bo'lmaslik uchun: yangi hodisa kelmasa 5s dan keyin o'chiramiz
+        if (_peerTyping) tTimer = setTimeout(() => { _peerTyping = false; _paintPeerStatus(_peerLastSeenAt); }, 5000);
         _paintPeerStatus(_peerLastSeenAt);
       })
       .subscribe();
@@ -2063,9 +2019,9 @@ $('chatVoiceBtn').addEventListener('click', () => {
 
 // File attach
 $('chatAttachBtn')?.addEventListener('click', () => $('chatFileInput')?.click());
-$('chatFileInput')?.addEventListener('change', async e => {
+$('chatFileInput')?.addEventListener('change', e => {
   const f = e.target.files?.[0];
-  if (f) setChatFile(await compressImage(f)); // F7.2: rasmni siqish
+  if (f) setChatFile(f);
 });
 $('cfpRemove')?.addEventListener('click', clearChatFile);
 
