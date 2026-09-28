@@ -26,7 +26,7 @@ Vercel Environment Variables:
 - `SUPABASE_URL`, `SUPABASE_ANON_KEY` — majburiy (service_role hech qachon brauzerga tushmasin).
 - `TURN_URLS` (vergul bilan), `TURN_USERNAME`, `TURN_CREDENTIAL` — qo'ng'iroq uchun; bo'lmasa umumiy OpenRelay (beqaror).
 
-Bazani o'rnatish: `supabase/completed/schema.sql`, keyin `supabase/completed/patch-*.sql` tartib bilan.
+Bazani o'rnatish: `supabase/migrations/` — `000_schema.sql`, keyin qolganlari raqam tartibida (`supabase/migrations/README.md`).
 Hali ishga tushirilmagan patchlar `supabase/unfulfilled/` da — faqat 1 hafta kuzatuvdan keyin (roadmap 1-bo'lim, 3-qoida).
 
 ## Ish tartibi

@@ -245,7 +245,7 @@ drop table if exists public.follows;
 - [x] `AUDIT.md` C10–C12 bo'limlari: holat qayta tekshiruvi, regressiya tahlili, link-tartibi tuzatilishi yozildi.
 - [x] `README.md` qayta yozildi: 43 qator (2026-09-29, `diet/08-docs`); eskisi `docs/archive/README-old.md`.
 - [x] UI xaritasi eski README bilan `docs/archive/` ga; `AUDIT.md` → `docs/archive/AUDIT.md`.
-- [ ] `supabase/patch-*.sql` → `supabase/migrations/NNN_*.sql`; `schema.sql` ni yangi holat bilan qayta yig'ish.
+- [x] Patchlar `supabase/migrations/NNN_*.sql` ga raqamlandi (2026-09-29, `diet/08-migrations`). ⚠️ `schema.sql` (`000_schema.sql`) jonli bazadan qayta yig'ilmagan — `supabase db dump --schema-only` MR ishi.
 - [x] Smoke test ro'yxati `docs/SMOKE.md` ga ko'chirildi.
 - [ ] Ixtiyoriy: Playwright bilan 3 test (login, post, chat).
 
