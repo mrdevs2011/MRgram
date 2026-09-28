@@ -304,3 +304,9 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
     display: block; font-size: 14px; font-weight: 700; color: var(--bg);
   }
 }
+
+/* ── Mobil (<768px): Post ikonka tugma ro'yxat OSTIDA, akkaunt (avatar) undan pastda ── */
+@media (max-width: 767px) {
+  nav.bot-nav #createBtn.nav-center-btn { order: 1; margin: 12px 0 0; }
+  nav.bot-nav .sb-bottom { order: 2; }
+}

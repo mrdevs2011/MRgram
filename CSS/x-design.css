@@ -1,0 +1,276 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   MRgram — X uslubidagi minimalist dizayn (yumshoq versiya)
+   Eng OXIRIDA yuklanadi (mono.css'dan keyin). Vazifasi:
+   1) yagona palitra: qora/oq o'rniga yumshoq to'q kulrang va tiniq oq
+   2) yagona shakl tili: pill tugmalar, 16px kartalar, ingichka chiziqlar
+   3) ko'zga urilmaydigan aksent: faqat havola/fokus uchun yumshoq ko'k
+   Eski fayllarga tegilmagan — bu fayl ularni token orqali yengadi.
+   Qaytarish: index.html dan shu <link> ni olib tashlash yetarli.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Palitra ───────────────────────────────────────────────────────── */
+:root,
+[data-theme="dark"] {
+  --bg:   #0e1012;  /* sahifa */
+  --bg2:  #0e1012;
+  --bg3:  #14171a;  /* panel, sheet */
+  --bg4:  #1a1e22;  /* input, hover */
+  --bg5:  #23282d;  /* ko'tarilgan hover */
+
+  --text:  #e7e9ea; /* oppoq emas — ko'zni charchatmaydi */
+  --text2: #8b949b;
+  --text3: #6f7880;
+  --text4: #4d555c;
+
+  --blue:  #eff3f4; /* to'ldirilgan tugma (matn qora) */
+  --blue2: #d7dbdc;
+  --blue3: #c2c7c9;
+  --link:  #58a6e8; /* havola, fokus */
+  --blue-glow:  #1a1e22;
+  --blue-glow2: #161a1d;
+  --blue-glow3: #0e1012;
+
+  --line:  #262b30;
+  --line2: #262b30;
+  --line3: #1c2024;
+  --glass-border:     #262b30;
+  --glass-border-top: #2f353a;
+
+  --red:   #f0697b;
+  --green: #5ec99a;
+
+  --tg-bg: #0e1012; --tg-surface: #14171a; --tg-input: #1a1e22;
+  --tg-blue: #eff3f4; --tg-out: #2a3036; --tg-in: #1a1e22;
+  --tg-text: #e7e9ea; --tg-muted: #8b949b;
+  --tg-text-muted: #8b949b; --tg-primary-blue: #eff3f4; --tg-text-main: #e7e9ea;
+
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --r: 16px; --r2: 12px; --r3: 10px;
+}
+
+[data-theme="light"] {
+  --bg:   #ffffff;
+  --bg2:  #ffffff;
+  --bg3:  #f7f9f9;
+  --bg4:  #eff3f4;
+  --bg5:  #e5eaec;
+
+  --text:  #0f1419;
+  --text2: #536471;
+  --text3: #6b7883;
+  --text4: #9aa6b0;
+
+  --blue:  #0f1419; /* to'ldirilgan tugma (matn oq) */
+  --blue2: #272c30;
+  --blue3: #3d4348;
+  --link:  #1a7fd0;
+  --blue-glow:  #eff3f4;
+  --blue-glow2: #f7f9f9;
+  --blue-glow3: #ffffff;
+
+  --line:  #e6ebee;
+  --line2: #e6ebee;
+  --line3: #eff3f4;
+  --glass-border:     #e6ebee;
+  --glass-border-top: #dfe5e8;
+
+  --red:   #e0364c;
+  --green: #12a36b;
+
+  --tg-bg: #ffffff; --tg-surface: #f7f9f9; --tg-input: #eff3f4;
+  --tg-blue: #0f1419; --tg-out: #dfe9ef; --tg-in: #eff3f4;
+  --tg-text: #0f1419; --tg-muted: #536471;
+  --tg-text-muted: #536471; --tg-primary-blue: #0f1419; --tg-text-main: #0f1419;
+}
+
+html, body, #app { background: var(--bg); color: var(--text); }
+body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
+::selection { background: rgba(88, 166, 232, .28); }
+
+/* ── 2. Tugmalar: pill, tinch ─────────────────────────────────────────── */
+.btn-primary {
+  border-radius: 999px; font-weight: 700; font-size: 15px;
+  padding: 13px 20px; letter-spacing: 0;
+}
+.btn-ghost, .btn-danger {
+  border-radius: 999px; font-weight: 600; font-size: 14px;
+  border: 1px solid var(--line);
+}
+.btn-ghost:hover { background: var(--bg4); }
+.btn-danger:hover { background: var(--bg4); }
+
+/* ── 3. Maydonlar ─────────────────────────────────────────────────────── */
+.field,
+input:not([type="checkbox"]):not([type="radio"]),
+textarea {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.field:focus, input:focus, textarea:focus {
+  background: var(--bg);
+  border-color: var(--link);
+  box-shadow: none;
+}
+
+/* ── 4. Post: kartasiz qator + ingichka ajratgich (X uslubi) ───────────── */
+.post,
+[data-theme="dark"] .post,
+[data-theme="light"] .post {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+}
+.post:hover { background: var(--bg3); border-color: var(--line); }
+
+/* ── 5. Header va navigatsiya: ingichka chiziq ────────────────────────── */
+.app-hdr,
+[data-theme="dark"] .app-hdr,
+[data-theme="light"] .app-hdr {
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 767px) {
+  .bot-nav { border-top: 1px solid var(--line); }
+}
+@media (min-width: 768px) {
+  nav.bot-nav { border-right: 1px solid var(--line); }
+}
+
+/* Sidebar Post tugmasi va hover: yangi palitraga moslash */
+nav.bot-nav #createBtn.nav-center-btn { background: var(--blue); color: var(--bg); }
+nav.bot-nav .nav-btn:hover,
+nav.bot-nav .sb-account:hover { background: var(--bg4); }
+
+/* ── 6. Sheet / oynalar: yumshoq burchak, kuchli soya yo'q ─────────────── */
+.composer-sheet, .sheet, .modal-content {
+  border-radius: 16px;
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+/* ── 7. Scrollbar: deyarli ko'rinmas ──────────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: var(--bg5) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--bg5); border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ── 8. Fokus halqasi: klaviatura uchun tinch ko'k ────────────────────── */
+:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+a { color: var(--link); }
+
+/* ── Yorug' temada to'ldirilgan (qora) elementlarda matn oq (mono.css ning aksi) ── */
+[data-theme="light"] .btn-primary * { color: #fff !important; }
+[data-theme="light"] .btn-primary:hover,
+[data-theme="light"] .btn-primary:hover * { color: #fff !important; }
+[data-theme="light"] .ua-avi-placeholder,
+[data-theme="light"] .ua-avi-placeholder * { color: #fff !important; }
+[data-theme="light"] .ua-approve-btn,
+[data-theme="light"] .ua-approve-btn * { color: #fff !important; }
+[data-theme="light"] .ua-unlock-banner-btn,
+[data-theme="light"] .ua-unlock-banner-btn * { color: #fff !important; }
+[data-theme="light"] .ua-detail-tab.active,
+[data-theme="light"] .ua-detail-tab.active * { color: #fff !important; }
+[data-theme="light"] #chatThreadModal .chat-msg.theirs .cvm-bar.played,
+[data-theme="light"] #chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: #fff !important; }
+[data-theme="light"] .chat-row-badge,
+[data-theme="light"] .chat-row-badge * { color: #fff !important; }
+[data-theme="light"] .chat-thread-send,
+[data-theme="light"] .chat-thread-send * { color: #fff !important; }
+[data-theme="light"] .chat-thread-send:hover,
+[data-theme="light"] .chat-thread-send:hover * { color: #fff !important; }
+[data-theme="light"] .cv-pulse,
+[data-theme="light"] .cv-pulse * { color: #fff !important; }
+[data-theme="light"] .chat-voice-btn,
+[data-theme="light"] .chat-voice-btn * { color: #fff !important; }
+[data-theme="light"] .crb-line,
+[data-theme="light"] .crb-line * { color: #fff !important; }
+[data-theme="light"] .typing-dots span,
+[data-theme="light"] .typing-dots span * { color: #fff !important; }
+[data-theme="light"] .chat-voice-btn.recording,
+[data-theme="light"] .chat-voice-btn.recording * { color: #fff !important; }
+[data-theme="light"] .typing-dot,
+[data-theme="light"] .typing-dot * { color: #fff !important; }
+[data-theme="light"] #chatScrollDownBtn,
+[data-theme="light"] #chatScrollDownBtn * { color: #fff !important; }
+[data-theme="light"] .chat-msg.theirs .cvm-play,
+[data-theme="light"] .chat-msg.theirs .cvm-play * { color: #fff !important; }
+[data-theme="light"] .chat-msg.theirs .cvm-play:hover,
+[data-theme="light"] .chat-msg.theirs .cvm-play:hover * { color: #fff !important; }
+[data-theme="light"] .chat-msg.theirs .cvm-bar.played,
+[data-theme="light"] .chat-msg.theirs .cvm-bar.played * { color: #fff !important; }
+[data-theme="light"] .vmp-play,
+[data-theme="light"] .vmp-play * { color: #fff !important; }
+[data-theme="light"] .vmp-progress-fill,
+[data-theme="light"] .vmp-progress-fill * { color: #fff !important; }
+[data-theme="light"] [data-theme="dark"] .msg-out .msg-bubble,
+[data-theme="light"] [data-theme="dark"] .msg-out .msg-bubble * { color: #fff !important; }
+[data-theme="light"] [data-theme="dark"] .splash-fill,
+[data-theme="light"] [data-theme="dark"] .splash-fill * { color: #fff !important; }
+[data-theme="light"] [data-theme="dark"] .reel-progress-fill,
+[data-theme="light"] [data-theme="dark"] .reel-progress-fill * { color: #fff !important; }
+[data-theme="light"] .reel-progress-fill,
+[data-theme="light"] .reel-progress-fill * { color: #fff !important; }
+[data-theme="light"] .rcap-follow,
+[data-theme="light"] .rcap-follow * { color: #fff !important; }
+[data-theme="light"] .ufb-icon,
+[data-theme="light"] .ufb-icon * { color: #fff !important; }
+[data-theme="light"] .ufb-fill,
+[data-theme="light"] .ufb-fill * { color: #fff !important; }
+[data-theme="light"] .feed-empty-cta,
+[data-theme="light"] .feed-empty-cta * { color: #fff !important; }
+[data-theme="light"] .grp-avi-badge--group,
+[data-theme="light"] .grp-avi-badge--group * { color: #fff !important; }
+[data-theme="light"] .grp-avi-badge--channel,
+[data-theme="light"] .grp-avi-badge--channel * { color: #fff !important; }
+[data-theme="light"] .chat-row-grp-badge--group,
+[data-theme="light"] .chat-row-grp-badge--group * { color: #fff !important; }
+[data-theme="light"] .chat-row-grp-badge--channel,
+[data-theme="light"] .chat-row-grp-badge--channel * { color: #fff !important; }
+[data-theme="light"] .grp-picker-check.on,
+[data-theme="light"] .grp-picker-check.on * { color: #fff !important; }
+[data-theme="light"] .grp-privacy-opt.active,
+[data-theme="light"] .grp-privacy-opt.active * { color: #fff !important; }
+[data-theme="light"] .nav-center-btn,
+[data-theme="light"] .nav-center-btn * { color: #fff !important; }
+[data-theme="light"] .upload-progress-fill,
+[data-theme="light"] .upload-progress-fill * { color: #fff !important; }
+[data-theme="light"] .toggle input:checked + .toggle-track,
+[data-theme="light"] .toggle input:checked + .toggle-track * { color: #fff !important; }
+[data-theme="light"] .cmt-send,
+[data-theme="light"] .cmt-send * { color: #fff !important; }
+[data-theme="light"] .switch-toggle.on,
+[data-theme="light"] .switch-toggle.on * { color: #fff !important; }
+[data-theme="light"] .avi-edit-badge,
+[data-theme="light"] .avi-edit-badge * { color: #fff !important; }
+[data-theme="light"] ::selection { color: #fff !important; }
+[data-theme="light"] .nav-btn.on::before { color: #fff !important; }
+[data-theme="light"] .empty-cta,
+[data-theme="light"] .empty-cta * { color: #fff !important; }
+[data-theme="light"] .avatar-crop-save,
+[data-theme="light"] .avatar-crop-save * { color: #fff !important; }
+[data-theme="light"] .upload-file-icon.image,
+[data-theme="light"] .upload-file-icon.image * { color: #fff !important; }
+[data-theme="light"] .toast-progress,
+[data-theme="light"] .toast-progress * { color: #fff !important; }
+[data-theme="light"] .scroll-progress-bar,
+[data-theme="light"] .scroll-progress-bar * { color: #fff !important; }
+[data-theme="light"] .nav-badge,
+[data-theme="light"] .nav-badge * { color: #fff !important; }
+[data-theme="light"] .upload-float-bar,
+[data-theme="light"] .upload-float-bar * { color: #fff !important; }
+[data-theme="light"] .ufb-fill.indeterminate,
+[data-theme="light"] .ufb-fill.indeterminate * { color: #fff !important; }
+[data-theme="light"] .scroll-progress,
+[data-theme="light"] .scroll-progress * { color: #fff !important; }
+[data-theme="light"] .cc-btn--apply,
+[data-theme="light"] .cc-btn--apply * { color: #fff !important; }
+[data-theme="light"] .bc-send-btn,
+[data-theme="light"] .bc-send-btn * { color: #fff !important; }
+[data-theme="light"] .stats-ptab.active,
+[data-theme="light"] .stats-ptab.active * { color: #fff !important; }
+[data-theme="light"] .stats-top-avi,
+[data-theme="light"] .stats-top-avi * { color: #fff !important; }
+[data-theme="light"] .stats-top-bar-fill,
+[data-theme="light"] .stats-top-bar-fill * { color: #fff !important; }
