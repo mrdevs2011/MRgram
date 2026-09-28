@@ -700,7 +700,7 @@ export async function renderFeed() {
 
   // Show skeleton on first render while loading
   if (_feedFirstRender && !feedEl.querySelector('.post')) {
-    feedEl.innerHTML = buildSkeletons(5);
+    feedEl.innerHTML = '<div class="spin-wrap"><div class="spinner"></div></div>';
   }
   _feedFirstRender = false;
 

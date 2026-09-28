@@ -793,3 +793,8 @@ nav.bot-nav #createBtn.nav-center-btn *,
 
 /* Qidiruv ochiqda o'ng ustundagi qidiruv pill ortiqcha (X'da ham markazga ko'chadi) */
 body:has(.search-overlay.open) .rc-search { display: none; }
+
+/* Yuklanish: skeleton yo'q — X'dagidek oddiy ko'k spinner */
+.skeleton-post { display: none !important; }
+.spin-wrap { padding: 32px; }
+.spinner { border-color: var(--line); border-top-color: var(--x-blue); }
