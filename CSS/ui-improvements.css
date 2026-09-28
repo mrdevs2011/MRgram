@@ -1,0 +1,1659 @@
+/* ═══════════════════════════════════════════
+   MRdatabase — UI Improvements & Polish
+   Accessibility, Microinteractions, Animations
+   ═══════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════
+   1. THEME TOGGLE — Enhanced Visual Feedback
+   ═══════════════════════════════════════════ */
+
+/* Smooth theme transition */
+[data-theme] body,
+[data-theme] .app,
+[data-theme] .post,
+[data-theme] .bot-nav,
+[data-theme] .app-hdr,
+[data-theme] .sheet,
+[data-theme] .overlay {
+  transition: none;
+}
+
+/* Theme toggle glow effect */
+
+/* Theme change toast notification */
+.theme-toast {
+  position: fixed;
+  bottom: calc(var(--nav) + 80px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg2);
+  border: 1px solid var(--line2);
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+  box-shadow: 0 8px 32px #000000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.theme-toast-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   2. FEED IMPROVEMENTS — Gradient Border & Skeleton
+   ═══════════════════════════════════════════ */
+
+/* Gradient border on post hover */
+.post {
+  position: relative;
+}
+
+.post::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: var(--green);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
+}
+
+.post:hover::before {
+  opacity: 1;
+}
+
+/* Skeleton variants for different media types */
+.skeleton-post-video .skel-media {
+  background: var(--bg3);
+  background-size: 200% 100%;
+  position: relative;
+}
+
+.skeleton-post-video .skel-media::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  background: var(--bg4);
+  border-radius: 50%;
+}
+
+.skeleton-post-image .skel-media {
+  background: var(--bg3);
+  background-size: 200% 100%;
+}
+
+/* Avatar shimmer */
+.skel-avi {
+  position: relative;
+  overflow: hidden;
+}
+
+.skel-avi::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #202327;
+  animation: none;
+}
+
+/* ═══════════════════════════════════════════
+   3. NAVIGATION BAR — Active State Enhancement
+   ═══════════════════════════════════════════ */
+
+/* Nav button icon bounce on tap */
+.nav-btn:active,
+
+/* Glow effect under active button */
+.nav-btn.on {
+  position: relative;
+}
+
+.nav-btn.on::before {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: var(--blue);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--blue);
+}
+
+/* Ripple effect on nav buttons */
+.nav-btn,
+.act-btn,
+.cmt-send {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Haptic visual cue */
+
+/* ═══════════════════════════════════════════
+   4. SEARCH EXPERIENCE — Recent & Trending
+   ═══════════════════════════════════════════ */
+
+/* Recent searches section */
+.search-recent-section {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.search-recent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 12px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.search-clear-all {
+  background: none;
+  border: none;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: none;
+}
+
+.search-clear-all:hover {
+  background: var(--blue-glow2);
+}
+
+/* Trending hashtags carousel */
+.search-trending-section {
+  padding: 12px 0;
+}
+
+.search-trending-header {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 12px 8px;
+}
+
+.search-trending-carousel {
+  display: flex;
+  gap: 8px;
+  padding: 0 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.search-trending-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.search-trending-tag {
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 500;
+  cursor: pointer;
+  transition: none;
+  white-space: nowrap;
+}
+
+.search-trending-tag:hover {
+  background: var(--blue-glow2);
+  border-color: var(--blue);
+}
+
+/* Search history item */
+.search-history-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: none;
+}
+
+.search-history-item:hover {
+  background: var(--bg3);
+}
+
+.search-history-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.search-history-text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.search-history-remove {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: none;
+}
+
+.search-history-item:hover .search-history-remove {
+  opacity: 1;
+}
+
+.search-history-remove:hover {
+  background: var(--red-glow);
+  color: var(--red);
+}
+
+/* ═══════════════════════════════════════════
+   ACCESSIBILITY — Focus States
+   ═══════════════════════════════════════════ */
+
+/* Keyboard focus for interactive elements */
+.act-btn:focus-visible,
+.like-btn:focus-visible,
+.del-btn:focus-visible,
+.nav-btn:focus-visible,
+.hdr-icon-btn:focus-visible,
+.hdr-mute-btn:focus-visible,
+.theme-btn:focus-visible,
+.btn-primary:focus-visible,
+.btn-ghost:focus-visible,
+.btn-danger:focus-visible,
+.cmt-send:focus-visible,
+.cmt-modal-close:focus-visible,
+.dm-close:focus-visible,
+.dm-act:focus-visible,
+.reel-act:focus-visible,
+.reel-follow:focus-visible,
+.file-dl:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ═══════════════════════════════════════════
+   SHIMMER LOADING ANIMATION
+   ═══════════════════════════════════════════ */
+
+.skel,
+.skel-avi,
+.skel-line,
+.skel-media {
+  background: var(--bg3);
+  background-size: 200px 100%;
+  animation: none;
+}
+
+/* Skeleton post cards */
+.skeleton-post {
+  background: var(--bg2);
+  /* border → CSS/borderless.css'da 'none' bilan yengiladi */
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.skeleton-post .skel-avi {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeleton-post .skel-line {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--bg3);
+  background-size: 200px 100%;
+  animation: none;
+}
+
+.skeleton-post .skel-media {
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  margin: 12px 0;
+  background: var(--bg3);
+  background-size: 200px 100%;
+  animation: none;
+}
+
+.skeleton-post .skel-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.skeleton-post .skel-actions::before,
+.skeleton-post .skel-actions::after {
+  content: '';
+  flex: 1;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg3);
+  background-size: 200px 100%;
+  animation: none;
+}
+
+/* ═══════════════════════════════════════════
+   POST CARD — Microinteractions
+   ═══════════════════════════════════════════ */
+
+/* POST CARD — Microinteractions o'chirildi:
+   .post transition / .post:hover lift / box-shadow — barchasi
+   CSS/00-components.core.css va borderless.css tomonidan 'none'
+   bilan yengilar edi, ya'ni hech qachon render bo'lmagan (o'lik) */
+
+/* Like button hover animation */
+
+/* Delete button hover */
+.del-btn:hover {
+  background: var(--red-glow);
+}
+
+/* Subscribe button pulse */
+
+/* ═══════════════════════════════════════════
+   BUTTONS — Ripple Effect & Tactile Feedback
+   ═══════════════════════════════════════════ */
+
+.btn-primary,
+.cmt-send {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ghost button hover */
+
+/* Danger button glow on hover */
+.btn-danger:hover {
+  /* box-shadow → CSS/borderless.css'da 'none' bilan yengiladi */
+}
+
+/* ═══════════════════════════════════════════
+   EMPTY STATES — Enhanced with CTA
+   ═══════════════════════════════════════════ */
+
+.empty,
+.empty-search {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.empty-icon,
+.empty-search-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--blue-glow2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-search-hint {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 4px;
+}
+
+/* Empty state CTA button */
+.empty-cta {
+  margin-top: 8px;
+  padding: 10px 20px;
+  background: var(--blue);
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  border: none;
+  transition: none;
+}
+
+.empty-cta:hover {
+  box-shadow: 0 6px 20px #2f3336;
+}
+
+/* ═══════════════════════════════════════════
+   PROFILE GRID — Hover Effects
+   ═══════════════════════════════════════════ */
+
+.profile-grid,
+.up-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.grid-cell,
+.up-grid-cell {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 4px;
+  cursor: pointer;
+  background: var(--bg3);
+}
+
+.grid-cell img,
+.grid-cell video,
+.up-grid-cell img,
+.up-grid-cell video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: none;
+}
+
+.grid-cell:hover img,
+.grid-cell:hover video,
+.up-grid-cell:hover img,
+
+.grid-cell-overlay,
+.up-grid-cell-overlay {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 8px;
+  gap: 4px;
+  opacity: 0;
+  transition: none;
+}
+
+.grid-cell:hover .grid-cell-overlay,
+.up-grid-cell:hover .up-grid-cell-overlay {
+  opacity: 1;
+}
+
+.grid-stat,
+.up-grid-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-shadow: 0 1px 3px #000000;
+}
+
+.grid-play-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #000000;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: none;
+}
+
+.grid-cell:hover .grid-play-badge {
+  opacity: 1;
+}
+
+/* Text-only post */
+.grid-cell-txt,
+.up-grid-cell-txt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════
+   REELS — Enhanced Progress & Controls
+   ═══════════════════════════════════════════ */
+
+@media (min-width: 768px) {
+  .reel-progress-track {
+    height: 4px;
+    border-radius: 4px;
+  }
+
+  .reel-progress-fill {
+    background: var(--blue2);
+    box-shadow: 0 0 8px #3f3f3f;
+  }
+
+  /* Reel hover overlay */
+  .reel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: #000000;
+    opacity: 0;
+    transition: none;
+    pointer-events: none;
+  }
+
+  .reel:hover::after {
+    opacity: 1;
+  }
+
+  .reel:hover .reel-side {
+    opacity: 1;
+    transform: translateX(-4px);
+  }
+}
+
+/* Reel action buttons hover */
+.reel-act:hover svg {
+  filter: drop-shadow(0 2px 6px #000000);
+}
+
+/* Volume button floating */
+
+/* ═══════════════════════════════════════════
+   5. VIDEO PLAYER — Enhanced Controls
+   ═══════════════════════════════════════════ */
+
+/* Playback speed button */
+.vc-speed {
+  background: #202327;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: none;
+}
+
+.vc-speed:hover {
+  background: #3A3A3F;
+}
+
+/* Picture-in-Picture button */
+.vc-pip {
+  background: #202327;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: none;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+}
+
+.vc-pip svg {
+  width: 16px;
+  height: 16px;
+}
+
+.vc-pip:hover {
+  background: #3A3A3F;
+}
+
+/* Thumbnail preview on scrubber hover (desktop) */
+.vc-thumbnail-preview {
+  position: absolute;
+  bottom: 36px;
+  background: var(--bg2);
+  border: 1px solid var(--line2);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px #000000;
+  pointer-events: none;
+  opacity: 0;
+  transition: none;
+  transform: translateX(-50%);
+}
+
+.vc-thumbnail-preview.show {
+  opacity: 1;
+}
+
+.vc-thumbnail-preview img {
+  width: 120px;
+  height: 68px;
+  object-fit: cover;
+  display: block;
+}
+
+.vc-thumbnail-preview-time {
+  font-size: 10px;
+  color: var(--text);
+  text-align: center;
+  padding: 4px;
+  background: var(--bg3);
+  font-family: var(--mono);
+}
+
+/* ═══════════════════════════════════════════
+   6. COMMENTS — Enhanced Interactions
+   ═══════════════════════════════════════════ */
+
+/* Swipe to reply indicator (mobile) */
+.cmt-swipe-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  background: var(--blue-glow2);
+  border-radius: 14px 0 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: none;
+}
+
+.cmt-row.swiping .cmt-swipe-indicator {
+  opacity: 1;
+}
+
+.cmt-swipe-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--blue);
+}
+
+/* Long-press copy indicator */
+.cmt-copy-hint {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg4);
+  color: var(--text);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+
+.cmt-body.long-press .cmt-copy-hint {
+  opacity: 1;
+}
+
+/* Typing indicator */
+.cmt-typing {
+  display: flex;
+  gap: 4px;
+  padding: 12px 16px;
+  align-items: center;
+}
+
+.cmt-typing-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--text3);
+  border-radius: 50%;
+  animation: none;
+}
+
+.cmt-typing-dot:nth-child(1) { animation-delay: 0s; }
+.cmt-typing-dot:nth-child(2) { animation-delay: 0s; }
+.cmt-typing-dot:nth-child(3) { animation-delay: 0s; }
+
+/* ═══════════════════════════════════════════
+   7. PROFILE PAGE — Enhanced
+   ═══════════════════════════════════════════ */
+
+/* Avatar crop tool modal */
+.avatar-crop-modal {
+  position: fixed;
+  inset: 0;
+  background: #000000;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.avatar-crop-modal.show {
+  display: flex;
+}
+
+.avatar-crop-container {
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--blue);
+  box-shadow: 0 0 30px #2f3336;
+}
+
+.avatar-crop-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: move;
+}
+
+.avatar-crop-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.avatar-crop-slider {
+  width: 200px;
+  accent-color: var(--blue);
+}
+
+.avatar-crop-btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: none;
+}
+
+.avatar-crop-cancel {
+  background: var(--bg3);
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+
+.avatar-crop-save {
+  background: var(--blue);
+  border: none;
+  color: #fff;
+}
+
+/* Stats sparkline container */
+.stat-sparkline {
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  right: 0;
+  height: 30px;
+  opacity: 0;
+  transition: none;
+}
+
+.stat:hover .stat-sparkline {
+  opacity: 1;
+}
+
+.stat-sparkline svg {
+  width: 100%;
+  height: 100%;
+}
+
+.stat-sparkline path {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 2;
+}
+
+/* Animated stat numbers */
+
+/* ═══════════════════════════════════════════
+   8. UPLOAD FLOW — Enhanced
+   ═══════════════════════════════════════════ */
+
+/* Drag and drop zone — flat, no spinning border / blue flash (owned by nav.css base) */
+.upload-drop {
+  position: relative;
+}
+
+/* File type icons */
+.upload-file-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.upload-file-icon.video { background: #ee5a5a; }
+.upload-file-icon.image { background: #ffffff; }
+.upload-file-icon.audio { background: #5ab869; }
+.upload-file-icon.pdf { background: #e8831f; }
+.upload-file-icon.zip { background: #b84dd4; }
+.upload-file-icon.default { background: #777; }
+
+/* Estimated upload time */
+.upload-estimate {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 4px;
+  font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.upload-estimate-icon {
+  width: 12px;
+  height: 12px;
+}
+
+/* ═══════════════════════════════════════════
+   9. TOAST NOTIFICATIONS — More Variants
+   ═══════════════════════════════════════════ */
+
+/* Warning toast */
+#toast.toast-warning {
+  border-color: var(--amber);
+  box-shadow: 0 8px 32px #2f3336;
+  background: #131313;
+}
+
+/* Toast with icon */
+.toast-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.toast-icon.success { color: var(--green); }
+.toast-icon.error { color: var(--red); }
+.toast-icon.warning { color: var(--amber); }
+.toast-icon.info { color: var(--blue); }
+
+/* Toast progress (for uploads) */
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--blue);
+  border-radius: 0 0 50px 50px;
+  transform-origin: left;
+  animation: none;
+}
+
+/* ═══════════════════════════════════════════
+   11. ACCESSIBILITY — Additional Features
+   ═══════════════════════════════════════════ */
+
+/* High contrast mode */
+[data-contrast="high"] {
+  --line: #525257;
+  --line2: #848487;
+  --line3: #B5B5B7;
+  --text: #ffffff;
+  --text2: #e0e0e0;
+  --text3: #b0b0b0;
+}
+
+[data-contrast="high"] .post,
+[data-contrast="high"] .sheet,
+[data-contrast="high"] .modal-content {
+  border-width: 2px;
+}
+
+/* Font size adjustments */
+[data-font-size="large"] {
+  font-size: 18px;
+}
+
+[data-font-size="large"] .post-name,
+[data-font-size="large"] .post-caption {
+  font-size: 16px;
+}
+
+[data-font-size="large"] .stat-val {
+  font-size: 22px;
+}
+
+/* Screen reader announcements */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.live-region {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus visible enhancement for accessibility */
+.focus-enhanced:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px var(--blue-glow2);
+}
+
+/* ═══════════════════════════════════════════
+   12. PERFORMANCE — Visual Cues
+   ═══════════════════════════════════════════ */
+
+/* Lazy load blur-up placeholder */
+.lazy-image {
+  background-size: cover;
+  background-position: center;
+  transition: none;
+}
+
+/* Progressive video thumbnail */
+.video-thumbnail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: none;
+}
+
+.video-thumbnail.hidden {
+  opacity: 0;
+}
+
+/* Cache indicator for offline content */
+.cached-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #2EB85D;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 10;
+}
+
+.cached-indicator::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* Loading skeleton for cached content */
+.cached-loading {
+  background: var(--bg2);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cached-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #16181c;
+  animation: none;
+}
+
+/* ═══════════════════════════════════════════
+   BONUS: Scroll Progress Indicator
+   ═══════════════════════════════════════════ */
+
+.scroll-progress-bar {
+  position: fixed;
+  top: var(--hdr); /* header pastidan */
+  left: 0;
+  height: 3px;
+  background: var(--blue2);
+  z-index: 10000;
+  width: 0%;
+  transition: none;
+  box-shadow: 0 0 10px #ffffff;
+}
+
+/* ═══════════════════════════════════════════
+   BONUS: Share Toast
+   ═══════════════════════════════════════════ */
+
+.share-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.share-toast-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--blue);
+}
+
+.vid-controls {
+  background: #000000;
+}
+
+.vc-play,
+.vc-mute,
+.vc-fs {
+  background: #202327;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: none;
+}
+
+.vc-play:hover,
+.vc-mute:hover,
+.vc-fs:hover {
+  background: #3A3A3F;
+}
+
+.vc-play:active,
+.vc-mute:active,
+
+/* Progress bar hover interaction */
+.vc-bar {
+  height: 4px;
+  transition: none;
+}
+
+.vc-progress:hover .vc-bar {
+  height: 6px;
+}
+
+.vc-fill {
+  position: relative;
+}
+
+.vc-fill::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+  opacity: 0;
+  transition: none;
+}
+
+.vc-progress:hover .vc-fill::after {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════
+   SEARCH OVERLAY — Suggestions
+   ═══════════════════════════════════════════ */
+
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px #000000;
+  z-index: 501;
+  display: none;
+}
+
+.search-suggestions.show {
+  display: block;
+}
+
+.search-suggestion-item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: none;
+}
+
+.search-suggestion-item:hover {
+  background: var(--bg3);
+}
+
+.search-suggestion-item.active {
+  background: var(--blue-glow2);
+}
+
+.search-suggestion-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text3);
+  flex-shrink: 0;
+}
+
+.search-suggestion-text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* ═══════════════════════════════════════════
+   TOAST NOTIFICATIONS — Enhanced Animation
+   ═══════════════════════════════════════════ */
+
+#toast {
+  position: fixed;
+  bottom: calc(var(--nav) + 20px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg2);
+  /* border/box-shadow → CSS/borderless.css'da 'none' bilan yengiladi */
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+#toast.toast-success {
+  border-color: var(--green);
+  box-shadow: 0 8px 32px #202327;
+}
+
+#toast.toast-error {
+  border-color: var(--red);
+  box-shadow: 0 8px 32px #202327;
+}
+
+#toast.toast-info {
+  border-color: var(--blue);
+  box-shadow: 0 8px 32px #202327;
+}
+
+/* ═══════════════════════════════════════════
+   NAV BADGE — Notification Pulsing
+   ═══════════════════════════════════════════ */
+
+.nav-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: var(--tg-blue, #ffffff);
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px var(--blue-glow, #2f3336);
+}
+
+/* Nav icon no longer shakes continuously while unread — a badge with a
+ * gentle pulse is enough of a cue without reading as an alarm. */
+
+/* ═══════════════════════════════════════════
+   MODAL ANIMATIONS — Enhanced
+   ═══════════════════════════════════════════ */
+
+/* Sheet modal bounce */
+
+/* Detail modal fade */
+
+/* Zoom modal */
+
+/* ═══════════════════════════════════════════
+   COMMENTS — Enhanced
+   ═══════════════════════════════════════════ */
+
+.cmt-row:nth-child(1) { animation-delay: 0s; }
+.cmt-row:nth-child(2) { animation-delay: 0s; }
+.cmt-row:nth-child(3) { animation-delay: 0s; }
+.cmt-row:nth-child(4) { animation-delay: 0s; }
+.cmt-row:nth-child(5) { animation-delay: 0s; }
+
+/* Comment hover */
+.cmt-body:hover {
+  border-color: var(--line2);
+  /* transform → pastda !important bilan qaytadan belgilanadi */
+}
+
+/* Send button pulse */
+
+/* ═══════════════════════════════════════════
+   USER PROFILE MODAL — Enhanced
+   ═══════════════════════════════════════════ */
+
+.up-avi {
+  transition: none;
+}
+
+/* .up-follow-btn { position/overflow } → yuqorida (510-qator) aynan nusxa, o'chirildi */
+
+/* ═══════════════════════════════════════════
+   FLOAT UPLOAD BAR — Enhanced
+   ═══════════════════════════════════════════ */
+
+.upload-float-bar,
+
+.ufb-fill.indeterminate {
+  background: var(--blue3);
+  background-size: 200% 100%;
+  animation: none;
+}
+
+/* .heart-burst and .like-pop are now defined once, in feed.css, with a
+ * calmer animation (no extra rotation/oversized burst layered on top). */
+
+/* ═══════════════════════════════════════════
+   SCROLL PROGRESS INDICATOR
+   ═══════════════════════════════════════════ */
+
+.scroll-progress {
+  position: fixed;
+  top: var(--hdr); /* header pastidan */
+  left: 0;
+  height: 3px;
+  background: var(--blue);
+  z-index: 9999;
+  width: 0%;
+  transition: none;
+  box-shadow: 0 0 8px #ffffff;
+}
+
+/* ═══════════════════════════════════════════
+   REDUCED MOTION SUPPORT
+   ═══════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+  }
+
+  .heart-burst,
+  .upload-float-bar {
+    animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   MOBILE OPTIMIZATIONS
+   ═══════════════════════════════════════════ */
+
+@media (max-width: 767px) {
+  /* Larger touch targets */
+  .act-btn,
+.nav-btn,
+.hdr-icon-btn,
+.theme-btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Readable text sizes */
+  .post-caption,
+  .reel-cap,
+  .cmt-text {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Bottom nav safe area */
+  .bot-nav {
+    padding-bottom: max(env(safe-area-inset-bottom), 8px);
+  }
+
+  /* Sheet modal safe area */
+  .sheet {
+    padding-bottom: max(env(safe-area-inset-bottom), 28px);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   DESKTOP ENHANCEMENTS
+   ═══════════════════════════════════════════ */
+
+@media (min-width: 768px) {
+  /* Smoother sidebar transitions */
+  .bot-nav {
+    transition: none;
+  }
+
+  /* Enhanced feed on desktop */
+  .feed {
+    max-width: 580px;
+  }
+
+  /* Larger post cards */
+  .post {
+    border-radius: 20px;
+  }
+
+  /* Desktop hover effects */
+
+  /* Detail modal centered */
+  #detailModal {
+    align-items: center;
+    justify-content: center;
+  }
+
+  #detailContent {
+    max-width: 600px;
+    max-height: 90dvh;
+    border-radius: 20px;
+    margin: 20px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   PRINT STYLES
+   ═══════════════════════════════════════════ */
+
+@media print {
+  .bot-nav,
+  .app-hdr,
+  .nav-btn,
+  .upload-float-bar,
+  #toast,
+  .overlay,
+  .reel-vol-top {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000000 !important;
+  }
+
+  .post {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+/* Desktop: upload float bar sidebar hisobga olinadi */
+@media (min-width: 768px) {
+  .upload-float-bar {
+    left: calc(50% + var(--sidebar, 0px) / 2);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   YAKUNIY POLISH — flat (X.com uslubi, 2026-08-30 tozalandi)
+   Bu yerda avval bo'lgan specular/liquid-glow/spring-bounce effektlar
+   butunlay olib tashlandi. Faqat oddiy, funksional transitionlar qoldi.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* .app-hdr glow/shimmer bloki o'chirildi — CSS/00-components.core.css
+   allaqachon flat .app-hdr'ni belgilaydi. AUDIT.md 2-bo'limga qarang. */
+
+/* header icon buttons — flat, oddiy hover */
+.hdr-icon-btn {
+  border-radius: 12px;
+  transition: none;
+}
+.hdr-icon-btn:hover {
+  background: var(--glass-mid);
+  border: 0.5px solid var(--glass-border);
+  color: var(--text);
+}
+.hdr-icon-btn:active {
+  opacity: 0.7;
+}
+
+/* ── 2. Nav-btn — flat, glow olib tashlandi ── */
+.nav-btn {
+  transition: none;
+}
+.nav-btn:hover {
+  background: var(--glass-mid);
+  border: 0.5px solid var(--glass-border);
+  /* box-shadow → CSS/borderless.css'da 'none' bilan yengiladi */
+}
+/* .nav-btn.on scale-pulse va svg glow o'chirildi — flat active holat
+   CSS/00-components.core.css yoki nav.css orqali boshqariladi */
+
+/* .bot-nav glow bloki o'chirildi — CSS/00-components.core.css'da
+   flat versiyasi belgilangan. AUDIT.md 2-bo'limga qarang. */
+
+/* ── 4. Sheet handle — oddiy hover ── */
+.sheet-handle {
+  cursor: grab;
+  transition: none;
+}
+.sheet-handle:hover {
+  opacity: 1;
+}
+
+/* ── 5. Sheet — inner glow olib tashlandi, flat shadow ── */
+.sheet {
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* .post glow/tilt bloki o'chirildi — CSS/00-components.core.css'da
+   flat versiyasi belgilangan (transform: none). AUDIT.md 2-bo'limga qarang. */
+
+/* ── 7. Input fields — flat focus ring (faqat .cmt-input/.ta/.sb-panel
+   uchun, .field o'z fokus-ringini CSS/00-components.core.css'dan oladi) ── */
+.cmt-input:focus,
+.ta:focus,
+.sb-panel-input-wrap:focus-within {
+  box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+/* .btn-primary/.btn-ghost/.btn-danger spring-bounce o'chirildi —
+   CSS/00-components.core.css flat hover'ni belgilaydi. */
+.cmt-send {
+  transition: none;
+}
+
+/* ── 9. Avatar — flat ring, glow/scale olib tashlandi ── */
+.dm-avi, .cmt-avi, .cmt-my-avi {
+  box-shadow: 0 0 0 1.5px var(--glass-border);
+}
+.dm-avi:hover, .cmt-avi:hover {
+  box-shadow: 0 0 0 2px var(--blue);
+}
+
+/* ── 10. Zoom modal — oddiy fade, "liquid" animatsiya nomi va
+   spring-easing olib tashlandi ── */
+
+/* ── 11. File card — flat hover, lift/scale olib tashlandi ── */
+.file-card {
+  transition: none;
+}
+.file-card:hover {
+  background: var(--glass-mid);
+}
+
+/* ── 12. Toggle — flat, glow olib tashlandi ── */
+.toggle-track {
+  transition: none;
+}
+.toggle-track::after {
+  box-shadow: none;
+  transition: none;
+}
+.toggle input:checked + .toggle-track::after {
+  box-shadow: none;
+}
+
+/* ── 13. Comment body — flat, glow/translateX olib tashlandi ── */
+.cmt-body {
+  transition: none;
+}
+.cmt-body:hover {
+  background: var(--glass-mid);
+}
+
+/* ── 14. Search overlay — flat panel ── */
+.search-overlay-inner {
+  background: var(--glass-mid);
+  border: 0.5px solid var(--glass-border-top);
+}
+
+/* ── 15. Scrollbar — solid style ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--glass-border) transparent;
+}
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--glass-border-top); }
+
+/* ── 16. Upload drop zone — flat, owned by nav.css base (no inner-glow override) ── */
+
+/* ── 17. Detail modal — flat shadow, glass depth olib tashlandi ── */
+#detailContent {
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ── 18. Create button — pulse animatsiya butunlay o'chirildi (flat) ── */
+.nav-center-btn {
+  transition: none;
+}
+/* .nav-center-btn::before pulse-glow pseudo-element olib tashlandi */
+.nav-center-btn:hover {
+  opacity: 0.85;
+}
+
+/* Create (+) tugma — oddiy plus, fon/soya/highlight yo'q (id → boshqa temalardan ustun) */
+#createBtn.nav-center-btn {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 12px;
+  overflow: visible;
+}
+#createBtn.nav-center-btn::before,
+#createBtn.nav-center-btn::after { display: none; }
+#createBtn.nav-center-btn:hover { background: transparent; box-shadow: none; opacity: .7; }
+#createBtn.nav-center-btn svg { stroke: var(--text); stroke-width: 2; width: 26px; height: 26px; }
+
+/* ── 19. @prefers-reduced-motion — ikkinchi blok o'chirildi, chunki
+   transition-duration'ni 0.18s'ga qaytarib, birinchi blokning
+   (yuqorida, "reduce" bo'limi) reduced-motion sozlamasini bekor
+   qilib qo'ygan edi — accessibility bug, 2026-08-30 tuzatildi */
+
+/* ── 20. Global focus ring — accessibility uchun saqlandi, glow
+   kamaytirildi (faqat bitta aniq ring, ikkinchi "glow2" halo olib
+   tashlandi) ── */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--blue);
+  border-radius: inherit;
+}
+

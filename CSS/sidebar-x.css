@@ -1,0 +1,312 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   SIDEBAR — X.com uslubi
+   • ≥1100px  : keng sidebar (ikonka + yozuv, Post tugmasi, pastda akkaunt)
+   • 768–1099 : ingichka rail (faqat ikonkalar)
+   • <768px   : mobil — ingichka chap rail (pastki nav o'rniga)
+   Eski qoidalar nav.css / 00-components.core.css da; bu fayl ularni
+   nav.bot-nav specificity bilan ustidan yozadi.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Umumiy: akkaunt bloki ─────────────────────────────────────────── */
+.sb-account[hidden] { display: none !important; }
+.sb-account {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 12px;
+  background: none; border: none; border-radius: 999px;
+  color: var(--text); font-family: var(--font); text-align: left;
+  cursor: pointer;
+}
+.sb-acc-avi {
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 50%; overflow: hidden; background: var(--bg3, #222);
+}
+.sb-acc-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sb-acc-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.25; }
+.sb-acc-name { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-acc-user { font-size: 15px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-acc-dots { flex-shrink: 0; color: var(--text); }
+
+/* Yozuvlar faqat keng rejimda */
+nav.bot-nav .nav-btn .nav-label { display: none; }
+
+/* ── Rail (mobil + planshet) umumiy ────────────────────────────────── */
+@media (max-width: 1099px) {
+  nav.bot-nav .sb-acc-meta,
+  nav.bot-nav .sb-acc-dots { display: none; }
+  nav.bot-nav .sb-account {
+    width: 44px; height: 44px; padding: 0;
+    justify-content: center; border-radius: 50%;
+  }
+  nav.bot-nav .sb-acc-avi { width: 36px; height: 36px; }
+
+  /* Post → dumaloq compose tugma */
+  nav.bot-nav #createBtn.nav-center-btn {
+    display: flex !important;
+    align-items: center; justify-content: center;
+    width: 48px; height: 48px; margin: 10px 0;
+    border-radius: 50%; padding: 0; flex-shrink: 0;
+    background: var(--text); color: var(--bg);
+    border: none; box-shadow: none;
+  }
+  nav.bot-nav #createBtn.nav-center-btn::before,
+  nav.bot-nav #createBtn.nav-center-btn::after { display: none !important; }
+  nav.bot-nav #createBtn.nav-center-btn svg { display: block; width: 22px; height: 22px; stroke: currentColor; }
+  nav.bot-nav #createBtn.nav-center-btn .sb-create-label { display: none; }
+}
+
+/* ── Mobil: chap rail ──────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  :root { --rail: 56px; --sidebar: 56px; --content-left: 56px; --nav: 0px; }
+
+  nav.bot-nav {
+    top: 0; bottom: 0; left: 0; right: auto;
+    width: var(--rail); height: 100dvh;
+    flex-direction: column; justify-content: flex-start; align-items: center;
+    gap: 2px;
+    padding: max(env(safe-area-inset-top), 10px) 0 max(env(safe-area-inset-bottom), 10px);
+    border: none;
+    overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
+  }
+  nav.bot-nav::-webkit-scrollbar { display: none; }
+
+  nav.bot-nav .sb-top {
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%; padding: 0 0 6px; margin: 0; border: none;
+  }
+  nav.bot-nav .sb-logo-row { width: 44px; height: 44px; padding: 0; background: none; border: none; }
+  nav.bot-nav .sb-logo-glass { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: none; border: none; box-shadow: none; }
+  nav.bot-nav .sb-logo-img { width: 28px; height: 28px; }
+
+  nav.bot-nav .nav-btn,
+  nav.bot-nav .sb-search-toggle {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 44px; height: 44px; padding: 0; flex: 0 0 auto;
+    border-radius: 14px; position: relative;
+  }
+  nav.bot-nav .nav-btn.nav-hidden { display: none !important; }
+  nav.bot-nav .nav-btn.admin-only-btn.d-none { display: none !important; }
+  nav.bot-nav .nav-btn svg { width: 24px; height: 24px; }
+  nav.bot-nav .nav-btn.on { background: none; }
+
+  nav.bot-nav .sb-bottom {
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%; margin-top: auto; padding-top: 8px; border: none;
+  }
+
+  /* kontent rail'dan o'ngda */
+  #homeView, #followingView, #reelsView, #profileView, #chatsView,
+  #actionsView { margin-left: var(--rail); }
+  #reelsView { width: calc(100vw - var(--rail)); }
+  .app-hdr { left: var(--rail); }
+}
+
+/* ── Keng sidebar (≥1100px) ────────────────────────────────────────── */
+@media (min-width: 1100px) {
+  :root { --sidebar: 260px; --content-left: 260px; }
+
+  nav.bot-nav {
+    width: var(--sidebar);
+    align-items: stretch; gap: 2px;
+    padding: 8px 12px 12px;
+    overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
+  }
+  nav.bot-nav::-webkit-scrollbar { display: none; }
+
+  nav.bot-nav .sb-top {
+    align-items: flex-start; padding: 0 0 4px 4px; margin: 0; border: none;
+  }
+  nav.bot-nav .sb-logo-row { width: 52px; height: 52px; }
+  nav.bot-nav .sb-logo-img { width: 30px; height: 30px; }
+  nav.bot-nav .sb-logo-tip { display: none; }
+
+  nav.bot-nav .nav-btn,
+  nav.bot-nav .sb-search-toggle {
+    flex-direction: row; justify-content: flex-start; align-items: center;
+    align-self: flex-start;
+    width: auto; max-width: 100%; height: 52px;
+    padding: 0 22px 0 14px; gap: 18px;
+    border-radius: 999px;
+    background: none; border: none; box-shadow: none;
+  }
+  nav.bot-nav .nav-btn:hover { background: rgba(128, 128, 128, .16); border: none; box-shadow: none; }
+  nav.bot-nav .nav-btn.on,
+  nav.bot-nav #sbSearchToggle.search-active { background: none; border: none; box-shadow: none; }
+  nav.bot-nav .nav-btn svg { width: 26px; height: 26px; stroke: var(--text); flex-shrink: 0; }
+  nav.bot-nav .nav-btn.on svg,
+  nav.bot-nav #sbSearchToggle.search-active svg { stroke: var(--text); stroke-width: 2.4; }
+
+  nav.bot-nav .nav-btn .nav-label {
+    display: block; font-size: 19px; line-height: 1; font-weight: 400;
+    color: var(--text); white-space: nowrap;
+  }
+  nav.bot-nav .nav-btn.on .nav-label,
+  nav.bot-nav #sbSearchToggle.search-active .nav-label { font-weight: 700; }
+
+  /* yozuv bor — tooltip kerak emas */
+  nav.bot-nav .nav-btn::after,
+  #sbSearchToggle::after { display: none !important; }
+
+  nav.bot-nav .nav-badge { left: 30px; right: auto; top: 6px; }
+
+  /* Post — keng oq tugma */
+  nav.bot-nav #createBtn.nav-center-btn {
+    display: flex !important; align-items: center; justify-content: center;
+    align-self: stretch; width: auto; height: 52px;
+    margin: 16px 8px; padding: 0; border-radius: 999px;
+    background: var(--text); color: var(--bg);
+    border: none; box-shadow: none;
+  }
+  nav.bot-nav #createBtn.nav-center-btn::before,
+  nav.bot-nav #createBtn.nav-center-btn::after { display: none !important; }
+  nav.bot-nav #createBtn.nav-center-btn svg { display: none; }
+  nav.bot-nav #createBtn.nav-center-btn .sb-create-label {
+    display: block; font-size: 17px; font-weight: 700; color: var(--bg);
+  }
+
+  /* pastda akkaunt */
+  nav.bot-nav .sb-bottom {
+    display: flex; flex-direction: column; align-items: stretch;
+    margin-top: auto; padding: 12px 0 0; border: none;
+  }
+  nav.bot-nav .sb-account:hover { background: rgba(128, 128, 128, .16); }
+}
+
+/* Post tugma hover: ui-improvements.css dagi #createBtn:hover (transparent) ni bosib o'tadi */
+nav.bot-nav #createBtn.nav-center-btn:hover {
+  background: var(--text); opacity: .88; box-shadow: none;
+}
+
+/* ── Akkaunt menyusi (faqat "Chiqish") ─────────────────────────────── */
+.sb-acc-menu {
+  position: fixed; z-index: 400;
+  background: var(--bg, #000);
+  border: 0.5px solid var(--glass-border, #2f3336);
+  border-radius: 16px; padding: 6px 0;
+  box-shadow: 0 0 12px rgba(255, 255, 255, .12), 0 0 3px rgba(255, 255, 255, .1);
+}
+.sb-acc-logout {
+  display: block; width: 100%; padding: 14px 18px;
+  background: none; border: none; text-align: left; white-space: nowrap;
+  font-family: var(--font); font-size: 15px; font-weight: 700;
+  color: var(--text); cursor: pointer;
+}
+.sb-acc-logout:hover { background: rgba(128, 128, 128, .16); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CHATS — desktop'da X.com uslubi (chap: ro'yxat, o'ng: suhbat / bo'sh holat)
+   ═══════════════════════════════════════════════════════════════════════ */
+.chats-filter-btn, .chats-x-pane, .chats-x-empty { display: none; }
+
+/* Filtr menyusi (body ga qo'shiladi, har qanday kenglikda xavfsiz) */
+.chats-x-menu {
+  position: fixed; z-index: 400; min-width: 150px; padding: 6px 0;
+  background: var(--bg, #000);
+  border: 0.5px solid var(--glass-border, #2f3336);
+  border-radius: 14px;
+  box-shadow: 0 0 12px rgba(255, 255, 255, .12), 0 0 3px rgba(255, 255, 255, .1);
+}
+.chats-x-item {
+  display: block; width: 100%; padding: 12px 18px; text-align: left;
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font); font-size: 15px; font-weight: 500; color: var(--text);
+}
+.chats-x-item.on { font-weight: 700; }
+.chats-x-item:hover { background: rgba(128, 128, 128, .16); }
+
+@media (min-width: 768px) {
+  :root { --chats-w: clamp(300px, 32vw, 400px); }
+
+  /* chap panel */
+  #chatsView.on {
+    position: fixed !important;
+    top: 0; bottom: 0; left: var(--sidebar);
+    width: var(--chats-w); height: auto !important; min-height: 0 !important;
+    margin-left: 0 !important; padding: 0 !important;
+    overflow-y: auto; overflow-x: hidden;
+    background: var(--bg); z-index: 2;
+    border-right: 0.5px solid var(--glass-border);
+    scrollbar-width: thin;
+  }
+  #chatsView .chats-hdr {
+    position: sticky; top: 0; z-index: 3;
+    max-width: none; margin: 0;
+    padding: 14px 16px 8px; gap: 8px;
+    font-size: 20px; font-weight: 800;
+    background: var(--bg) !important;
+  }
+  #chatsView .chats-hdr > span { flex: 1; }
+  #chatsView .chats-list { max-width: none; margin: 0; padding-bottom: 16px; }
+
+  .chats-filter-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 34px; padding: 0 12px 0 16px; flex-shrink: 0;
+    background: none; border: 1px solid var(--glass-border, #2f3336);
+    border-radius: 999px; cursor: pointer;
+    font-family: var(--font); font-size: 14px; font-weight: 700; color: var(--text);
+  }
+  .chats-filter-btn:hover { background: rgba(128, 128, 128, .16); }
+
+  /* qidiruv — pill */
+  #chatsView .ulist-search-wrap {
+    margin: 4px 16px 10px; padding: 0 16px; height: 44px;
+    border: 1px solid transparent; border-radius: 999px;
+    background: var(--bg3, #16181c);
+  }
+  #chatsView .ulist-search-wrap:focus-within { border-color: var(--blue, #fff); box-shadow: none; }
+
+  /* filtr: Shaxsiy / Guruhlar */
+  #chatsListWrap[data-filter="dm"] .grp-rows-section { display: none; }
+  #chatsListWrap[data-filter="groups"] #chatRowsWrap { display: none; }
+
+  /* chap bo'sh holat */
+  .chats-x-empty.show { display: block; padding: 18vh 24px 0; text-align: center; }
+  .chats-x-empty-title { font-size: 28px; font-weight: 800; color: var(--text); }
+  .chats-x-empty-sub { margin-top: 8px; font-size: 15px; color: var(--text3); }
+
+  /* o'ng panel: "Suhbatni boshlang" */
+  .chats-x-pane {
+    display: flex; position: fixed; z-index: 1;
+    top: 0; bottom: 0; right: 0; left: calc(var(--sidebar) + var(--chats-w));
+    align-items: center; justify-content: center;
+    background: var(--bg);
+  }
+  .chats-x-pane-in { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 340px; padding: 0 24px; }
+  .chats-x-pane-ico {
+    width: 96px; height: 96px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg3, #16181c); color: var(--text);
+  }
+  .chats-x-pane-title { margin-top: 24px; font-size: 22px; font-weight: 800; color: var(--text); }
+  .chats-x-pane-sub { margin-top: 8px; font-size: 15px; line-height: 1.35; color: var(--text3); }
+  .chats-x-newbtn {
+    margin-top: 20px; padding: 0 22px; height: 40px;
+    background: var(--text); color: var(--bg); border: none; border-radius: 999px;
+    font-family: var(--font); font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .chats-x-newbtn:hover { opacity: .88; }
+
+  /* suhbat: ro'yxat yonida, o'ng panelda (faqat Chats sahifasidan ochilganda) */
+  body:has(#chatsView.on) #chatThreadModal {
+    left: calc(var(--sidebar) + var(--chats-w));
+    border-left: 0.5px solid var(--glass-border);
+  }
+}
+
+/* ── Post tugma: desktop'da ro'yxat OSTIDA (More/Boshqaruv dan keyin), ikonka emas "Post" yozuvi ── */
+@media (min-width: 768px) {
+  nav.bot-nav #createBtn.nav-center-btn { order: 1; }
+  nav.bot-nav .sb-bottom { order: 2; }
+}
+@media (min-width: 768px) and (max-width: 1099px) {
+  nav.bot-nav #createBtn.nav-center-btn { width: 52px; height: 40px; margin: 12px 0; border-radius: 999px; }
+  nav.bot-nav #createBtn.nav-center-btn svg { display: none; }
+  nav.bot-nav #createBtn.nav-center-btn .sb-create-label {
+    display: block; font-size: 14px; font-weight: 700; color: var(--bg);
+  }
+}
+
+/* ── Mobil (<768px): Post ikonka tugma ro'yxat OSTIDA, akkaunt (avatar) undan pastda ── */
+@media (max-width: 767px) {
+  nav.bot-nav #createBtn.nav-center-btn { order: 1; margin: 12px 0 0; }
+  nav.bot-nav .sb-bottom { order: 2; }
+}
