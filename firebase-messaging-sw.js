@@ -125,7 +125,7 @@ const PRECACHE_URLS = [
   '/modules/cover-crop.js',
   '/modules/groups.js',
   '/modules/local-cache.js',
-  '/modules/explore.js',
+
   '/modules/profile.js',
   '/modules/push.js',
   '/modules/upload.js',
