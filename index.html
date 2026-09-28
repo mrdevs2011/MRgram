@@ -53,7 +53,7 @@
     </div>
     <div class="auth-title" id="authTitle">Hisobingizga kiring</div>
     <div id="nameRow" class="d-none"><input class="field" type="text" id="aFullname" placeholder="To'liq ism"></div>
-    <input class="field" type="text"     id="aUsername" placeholder="Foydalanuvchi nomi" autocomplete="username">
+    <input class="field" type="text"     id="aUsername" maxlength="20" placeholder="Foydalanuvchi nomi" autocomplete="username">
     <input class="field" type="password" id="aPassword" placeholder="Parol (kamida 6 ta belgi)"   autocomplete="current-password">
     <div id="confirmRow" class="d-none"><input class="field" type="password" id="aConfirm" placeholder="Parolni tasdiqlang"></div>
     <div class="err-msg" id="authErr"></div>
@@ -404,7 +404,7 @@
       <div class="pe-field-label">Foydalanuvchi nomi</div>
       <div class="pe-field-prefix-wrap">
         <span class="pe-prefix">@</span>
-        <input class="field pe-prefix-field" type="text" id="editUsername" placeholder="username" autocomplete="username" autocapitalize="none">
+        <input class="field pe-prefix-field" type="text" id="editUsername" maxlength="20" placeholder="username" autocomplete="username" autocapitalize="none">
       </div>
 
       <div class="pe-field-label">Bio</div>

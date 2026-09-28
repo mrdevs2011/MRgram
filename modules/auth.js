@@ -233,6 +233,10 @@ if (authBtn) {
       showErr(`Foydalanuvchi nomi kamida 2 ta belgi (a-z, 0-9, _)`, ['aUsername']);
       return;
     }
+    if (cleaned.length > 20) {
+      showErr(`Foydalanuvchi nomi 20 ta belgidan oshmasligi kerak`, ['aUsername']);
+      return;
+    }
     if (!p || p.length < 6) {
       showErr(`Parol kamida 6 ta belgi bo'lishi kerak`, ['aPassword']);
       return;
@@ -1067,6 +1071,7 @@ if (saveProfileBtn) {
     if (rawUser) {
       const cleaned = rawUser.toLowerCase().replace(/[^a-z0-9_]/g, '');
       if (cleaned.length < 2) { toast("Username kamida 2 ta belgi bo'lishi kerak (a-z, 0-9, _)", 'error'); return; }
+      if (cleaned.length > 20) { toast("Username 20 ta belgidan oshmasligi kerak", 'error'); return; }
       updates.username = cleaned;
     }
 
