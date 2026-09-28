@@ -42,14 +42,7 @@
   --tg-primary-blue: #ffffff;  /* active / selected icon color */
   --tg-text-main:    #ffffff;  /* active icon color on filled/dark surfaces */
 
-  /* --glass/--glass-mid/--glass-heavy/--glass-border/--glass-border-top/
-     --glass-shine/--glass-blur*/--specular-top/--specular-edge/
-     --liquid-shadow-*/--shadow-sm/md/lg → CSS/dark-theme-fix.css'da
-     qayta belgilangan (o'sha fayl keyinroq yuklanadi, shu property'lar
-     uchun g'olib chiqadi) — bu yerdagi eski qatorlar o'lik edi,
-     o'chirildi. Custom property'lar element darajasida kaskad orqali
-     hal bo'ladi, shuning uchun boshqa joyda var(--glass) kabi
-     ishlatilishi baribir dark-theme-fix.css qiymatini oladi. */
+  /* glass/specular/shadow tokenlari → CSS/dark-theme-fix.css */
 
   /* iOS 27 Extended — refraction & tint (glass o'chirildi) */
   --glass-refract:      var(--bg3);
