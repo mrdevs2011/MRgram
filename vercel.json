@@ -1,11 +1,11 @@
 {
-  "buildCommand": "node scripts/build-env.mjs",
+  "buildCommand": "node scripts/build-env.mjs && node scripts/build-css.mjs",
   "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!modules/|CSS/|svg/|icons/).*)",
+      "source": "/((?!modules/|CSS/|svg/|icons/|app.css).*)",
       "destination": "/index.html"
     }
   ]

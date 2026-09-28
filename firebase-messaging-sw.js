@@ -88,26 +88,11 @@ const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
 const PRECACHE_URLS = [
   '/',
   '/index.html',
-  '/style.css',
+  '/app.css',
   '/manifest.json',
-  '/CSS/theme.css',
-  '/CSS/nav.css',
-  '/CSS/chat.css',
-  '/CSS/feed.css',
-  '/CSS/groups.css',
-  '/CSS/profile.css',
-  '/CSS/admin.css',
-  '/CSS/admin-plain.css',
-  '/CSS/borderless.css',
-  '/CSS/dark-theme-fix.css',
-  '/CSS/loading.css',
-  '/CSS/local-utility.css',
-  '/CSS/splash.css',
-  '/CSS/devs-utility.css',
-  '/CSS/ui-improvements.css',
-  '/CSS/chat-dark-redesign.css',
-  '/CSS/mono.css',
-  '/CSS/x-design.css',
+  // DIET F4.5: eski 24 ta alohida CSS fayllar o'rniga bitta /app.css
+  // (build-css.mjs yig'adi). Eski fayl nomlari ro'yxatdan olib tashlandi —
+  // ular hali repoda (manba sifatida), lekin brauzer endi faqat app.css oladi.
   // Barcha JS modullari (modules/ papkasi to'liq)
   '/modules/script.js',
   '/modules/router.js',
