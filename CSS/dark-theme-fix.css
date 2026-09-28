@@ -43,11 +43,8 @@
    2. DARK — Body wallopaper
    ══════════════════════════════════════════ */
 [data-theme="dark"] body {
+  background: #000000;
   background-color: #000000;
-  background-image:
-    #16181c,
-    #16181c,
-    #111111;
 }
 
 [data-theme="dark"] .app {
@@ -471,8 +468,7 @@
    ══════════════════════════════════════════ */
 [data-theme="dark"] #splash {
   background: #000000;
-  background-image:
-    #16181c;
+  
 }
 
 [data-theme="dark"] .splash-wordmark { color: var(--text); }

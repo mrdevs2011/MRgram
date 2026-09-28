@@ -9360,11 +9360,8 @@ svg { color: inherit; }
    2. DARK — Body wallopaper
    ══════════════════════════════════════════ */
 [data-theme="dark"] body {
+  background: #000000;
   background-color: #000000;
-  background-image:
-    #16181c,
-    #16181c,
-    #111111;
 }
 
 [data-theme="dark"] .app {
@@ -9788,8 +9785,7 @@ svg { color: inherit; }
    ══════════════════════════════════════════ */
 [data-theme="dark"] #splash {
   background: #000000;
-  background-image:
-    #16181c;
+  
 }
 
 [data-theme="dark"] .splash-wordmark { color: var(--text); }
@@ -16648,4 +16644,20 @@ nav.bot-nav #createBtn.nav-center-btn *,
 #authWrap .btn-primary:hover,
 #authWrap #authBtn:hover {
   background: #d7dbdc !important;
+}
+
+
+/* DIET force dark canvas — oq fonni yo'qotish */
+html, body, #app, .app {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  color: #e7e9ea !important;
+}
+.view.on,
+.feed,
+#homeView, #followingView, #reelsView, #profileView, #chatsView {
+  background: transparent;
+}
+#authWrap {
+  background: #000000 !important;
 }

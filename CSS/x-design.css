@@ -919,3 +919,19 @@ nav.bot-nav #createBtn.nav-center-btn *,
 #authWrap #authBtn:hover {
   background: #d7dbdc !important;
 }
+
+
+/* DIET force dark canvas — oq fonni yo'qotish */
+html, body, #app, .app {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  color: #e7e9ea !important;
+}
+.view.on,
+.feed,
+#homeView, #followingView, #reelsView, #profileView, #chatsView {
+  background: transparent;
+}
+#authWrap {
+  background: #000000 !important;
+}
