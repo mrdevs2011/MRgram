@@ -125,23 +125,10 @@ create policy profiles_delete on public.profiles for delete to authenticated usi
 -- INSERT policy yo'q: profilni faqat handle_new_user() trigger yaratadi
 
 -- ═══════════════════════════════════════════════════════════════════════
--- 2. FOLLOWS, CONTACTS, LOGIN HISTORY, PUSH
+-- 2. CONTACTS, LOGIN HISTORY, PUSH
+-- (follows jadvali DIET F1: kodda hech qayerda ishlatilmaydi; jadval DB'da
+--  vaqtincha qoladi — contract bosqichi supabase/patch-diet-01-junk.sql)
 -- ═══════════════════════════════════════════════════════════════════════
-create table public.follows (
-  follower_id  uuid not null references public.profiles(id) on delete cascade,
-  following_id uuid not null references public.profiles(id) on delete cascade,
-  created_at   timestamptz not null default now(),
-  primary key (follower_id, following_id),
-  check (follower_id <> following_id)
-);
-create index follows_following_idx on public.follows (following_id);
-alter table public.follows enable row level security;
-create policy follows_select on public.follows for select to authenticated using (true);
-create policy follows_insert on public.follows for insert to authenticated
-  with check (follower_id = auth.uid() and public.is_approved());
-create policy follows_delete on public.follows for delete to authenticated
-  using (follower_id = auth.uid() or public.is_admin());
-
 create table public.contacts (
   owner_id   uuid not null references public.profiles(id) on delete cascade,
   contact_id uuid not null references public.profiles(id) on delete cascade,

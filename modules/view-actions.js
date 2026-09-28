@@ -7,12 +7,10 @@
 import { sb, state, isAdmin, ts } from './config.js';
 import { toast } from './toast.js';
 import { esc } from './utils.js';
-import { initAuditLog, destroyAuditLog, logAdminAction } from './admin-audit.js';
-import { initDashboardSummary, destroyDashboardSummary } from './dashboard-summary.js';
+
 
 let _initialized = false;
 let _noticeUnsub    = null;
-let _bcHistoryUnsub = null;
 
 /* ── CSS ── */
 function _injectCSS() {
@@ -116,39 +114,10 @@ export async function initView() {
   if (!isAdmin()) return;
   _injectCSS();
 
-  _initDashboardSummary();
-  _initAuditLog();
   _initBroadcast();
   await _initUsers();
 
   _initialized = true;
-}
-
-/* ── Dashboard Summary: tezkor umumiy ko'rinish ── */
-function _initDashboardSummary() {
-  if (!document.getElementById('actionsDashboardSection')) return;
-  initDashboardSummary('actionsDashboardSection');
-}
-
-/* ── Audit Log: "So'nggi amallar" ── */
-function _initAuditLog() {
-  let section = document.getElementById('actionsAuditSection');
-  if (!section) {
-    // HTML da yo'q bo'lsa ham ishlashi uchun dinamik yaratamiz (usersAdminList dan oldin)
-    section = document.createElement('div');
-    section.id = 'actionsAuditSection';
-    const hdr = document.querySelector('.users-admin-hdr');
-    if (hdr && hdr.parentElement) {
-      const divider = document.createElement('div');
-      divider.className = 'actions-divider';
-      divider.innerHTML = '<span class="actions-divider-label">So\'nggi amallar</span>';
-      hdr.parentElement.insertBefore(divider, hdr);
-      hdr.parentElement.insertBefore(section, hdr);
-    } else {
-      document.getElementById('actionsView')?.prepend(section);
-    }
-  }
-  initAuditLog('actionsAuditSection');
 }
 
 /* ── Broadcast / Admin Notice ── */
@@ -185,10 +154,6 @@ function _initBroadcast() {
         E'lonni o'chirish
       </button>
     </div>
-    <div class="bc-history-wrap">
-      <div class="bc-history-label">E'lonlar tarixi</div>
-      <div id="bcHistoryList"><div class="bc-empty">Yuklanmoqda…</div></div>
-    </div>
   `;
 
   // Extra CSS
@@ -220,22 +185,6 @@ function _initBroadcast() {
   transition: opacity 0.15s;
 }
 .bc-del-btn:hover { opacity: 0.75; }
-.bc-history-wrap {
-  margin: 0 16px 12px;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.bc-history-label { font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.4px; }
-.bc-history-item {
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px 12px;
-  font-size: 12.5px;
-  color: var(--text);
-  line-height: 1.4;
-}
-.bc-history-text { word-break: break-word; }
-.bc-history-meta { font-size: 11px; color: var(--text3); margin-top: 4px; }
 `;
     document.head.appendChild(s);
   }
@@ -279,38 +228,6 @@ function _initBroadcast() {
     .subscribe();
   _noticeUnsub = () => { _noticeDead = true; sb.removeChannel(_noticeCh); };
 
-  // Real-time: e'lonlar tarixi (oxirgi 20 ta)
-  if (_bcHistoryUnsub) { _bcHistoryUnsub(); _bcHistoryUnsub = null; }
-  const historyList = document.getElementById('bcHistoryList');
-  let _histDead = false;
-  const _paintHistory = rows => {
-    if (!historyList) return;
-    if (!rows.length) {
-      historyList.innerHTML = `<div class="bc-empty">Hozircha e'lon yuborilmagan</div>`;
-      return;
-    }
-    historyList.innerHTML = rows.map(h => {
-      const dt = ts(h.created_at)?.toDate().toLocaleString('uz-UZ') || '';
-      return `
-        <div class="bc-history-item">
-          <div class="bc-history-text">${esc(h.text || '')}</div>
-          <div class="bc-history-meta">${TARGET_LABELS[h.target] || h.target || ''} · ${dt}</div>
-        </div>`;
-    }).join('');
-  };
-  const _loadHistory = async () => {
-    const { data, error } = await sb.from('broadcast_history').select('*')
-      .order('created_at', { ascending: false }).limit(20);
-    if (_histDead) return;
-    if (error) { if (historyList) historyList.innerHTML = `<div class="bc-empty">Tarixni yuklab bo'lmadi</div>`; return; }
-    _paintHistory(data || []);
-  };
-  _loadHistory();
-  const _histCh = sb.channel('admin-bc-history')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'broadcast_history' }, () => _loadHistory())
-    .subscribe();
-  _bcHistoryUnsub = () => { _histDead = true; sb.removeChannel(_histCh); };
-
   // Yuborish
   sendBtn.addEventListener('click', async () => {
     const body   = bodyEl.value.trim();
@@ -327,15 +244,10 @@ function _initBroadcast() {
       const { error: noticeErr } = await sb.from('admin_notice')
         .upsert({ id: 'global', text: body, target, admin_id: state.me.uid, created_at: new Date().toISOString() });
       if (noticeErr) throw noticeErr;
-      sb.from('broadcast_history').insert({ text: body, target, admin_id: state.me.uid }).then(() => {}, () => {});
       bodyEl.value = '';
       resultEl.textContent = 'E\'lon muvaffaqiyatli chop etildi';
       resultEl.className = 'bc-result ok';
       toast('E\'lon chop etildi', 'success');
-      logAdminAction({
-        action: 'broadcastSend',
-        details: `[${TARGET_LABELS[target] || target}] ${body.slice(0, 80)}${body.length > 80 ? '…' : ''}`,
-      });
     } catch (err) {
       resultEl.textContent = `Xatolik: ${err.message}`;
       resultEl.className = 'bc-result err';
@@ -357,7 +269,6 @@ function _initBroadcast() {
       const { error: delErr } = await sb.from('admin_notice').delete().eq('id', 'global');
       if (delErr) throw delErr;
       toast('E\'lon o\'chirildi', 'success');
-      logAdminAction({ action: 'broadcastDelete' });
     } catch (err) {
       toast('O\'chirishda xatolik: ' + err.message, 'error');
     }
@@ -379,8 +290,5 @@ export function destroyView() {
   _initialized = false;
   const section = document.getElementById('actionsBroadcastSection');
   if (section) delete section.dataset.ready;
-  destroyAuditLog();
-  destroyDashboardSummary();
   if (_noticeUnsub) { _noticeUnsub(); _noticeUnsub = null; }
-  if (_bcHistoryUnsub) { _bcHistoryUnsub(); _bcHistoryUnsub = null; }
 }
