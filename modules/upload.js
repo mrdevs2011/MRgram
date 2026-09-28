@@ -266,8 +266,8 @@ function hideProgress() {
 /* ── File pick ───────────────────────────────────────────────────────── */
 export function pickFile(f) {
   if (f.size > MAX_FILE) {
-    $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 25 MB`;
-    toast('Fayl hajmi 25 MB dan oshmasligi kerak', 'error');
+    $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 50 MB`;
+    toast('Fayl hajmi 50 MB dan oshmasligi kerak', 'error');
     return;
   }
   $('sizeWarn').textContent = '';
