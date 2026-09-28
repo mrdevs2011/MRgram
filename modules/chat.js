@@ -281,7 +281,7 @@ import {
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLastSeen } from './utils.js';
 import { toast }            from './toast.js';
 import {
-  startGroupsWatcher, stopGroupsWatcher,
+  startGroupsWatcher, stopGroupsWatcher, bindGroupsRealtime,
   openGroupThread, closeGroupThread,
   sendGroupMessage, sendGroupFile,
   injectGroupsDOM, openCreateChoice, getGroupRows,
@@ -460,15 +460,16 @@ export function startChatsWatcher() {
       if (state.view === 'chats') paintChatsList(_usersCache || [], chatMap);
     };
     const schedChats = () => { clearTimeout(_chTimer); _chTimer = setTimeout(loadChats, 200); };
-    const chCh = sb.channel('chats-watcher')
+    const chBase = sb.channel('chats-watcher')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_notice' }, () => { _loadNoticeFn?.(); })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chats' }, schedChats)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_members', filter: `user_id=eq.${state.me.uid}` }, p => {
         // faqat typing/last_seen o'zgargan bo'lsa ro'yxatni qayta yuklamaymiz
         if (p.eventType === 'UPDATE' && p.old && p.new.unread_count === p.old.unread_count) return;
         schedChats();
-      })
-      .subscribe();
+      });
+    // guruh o'zgarishlari ham shu kanalda (5.3: 'groups-watcher' kanali yo'q)
+    const chCh = bindGroupsRealtime(chBase).subscribe();
     _chatsUnsub = () => { _chDead = true; clearTimeout(_chTimer); sb.removeChannel(chCh); };
     loadChats();
 

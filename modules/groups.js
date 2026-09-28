@@ -127,20 +127,27 @@ function _resetGroupUnread(groupId) {
    ───────────────────────────────────────────────────────────────────── */
 export function startGroupsWatcher() {
   if (_groupsUnsub || !state.me?.uid) return;
-  const me = state.me.uid;
-  let timer = null;
-  const sched = () => { clearTimeout(timer); timer = setTimeout(_loadGroups, 250); };
-  const ch = sb.channel('groups-watcher')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'groups' }, p => {
-      const id = p.new?.id || p.old?.id;
-      if (id && _latestGroupMap[id]) sched();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members', filter: `user_id=eq.${me}` }, sched)
-    .subscribe();
+  // Realtime tinglovchilar alohida kanalda emas — chat.js 'chats-watcher' kanaliga
+  // bindGroupsRealtime() orqali ulanadi (roadmap 5.3).
   // DELETE hodisalari filtr bilan kelmaydi (masalan guruhdan chiqarilish) — zaxira so'rov
   _groupsTick = setInterval(_loadGroups, 60000);
-  _groupsUnsub = () => { clearTimeout(timer); clearInterval(_groupsTick); _groupsTick = null; sb.removeChannel(ch); };
+  _groupsUnsub = () => { clearTimeout(_groupsTimer); clearInterval(_groupsTick); _groupsTick = null; };
   _loadGroups();
+}
+
+let _groupsTimer = null;
+const _groupsSched = () => { clearTimeout(_groupsTimer); _groupsTimer = setTimeout(_loadGroups, 250); };
+
+/** Guruh o'zgarishlarini berilgan (hali subscribe qilinmagan) kanalga ulaydi. */
+export function bindGroupsRealtime(ch) {
+  const me = state.me?.uid;
+  if (!me) return ch;
+  return ch
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'groups' }, p => {
+      const id = p.new?.id || p.old?.id;
+      if (id && _latestGroupMap[id]) _groupsSched();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members', filter: `user_id=eq.${me}` }, _groupsSched);
 }
 
 export function stopGroupsWatcher() {
