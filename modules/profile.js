@@ -328,9 +328,58 @@ export async function doLikeGen(id, btn) {
 }
 
 /* ── Other user's profile modal ──────────────────────────────────────── */
+
+/* ── Boshqa foydalanuvchi profili: tablar (Barchasi / Photos / Videos / Text / Musics) ── */
+const UP_TABS = [['all','Barchasi'],['photos','Photos'],['videos','Videos'],['text','Text posts'],['music','Musics']];
+let _upTab = 'all';
+
+function _upGridHtml(posts, uid, tab) {
+  const list = _filterPgPosts(posts, tab);
+  if (!list.length) {
+    return tab === 'all'
+      ? '<div class="up-grid-empty"><div class="up-grid-empty-title">Ommaviy postlar yo\'q</div><div class="up-grid-empty-sub">Bu foydalanuvchi hali hech narsa joylamagan</div></div>'
+      : '<div class="up-grid-empty"><div class="up-grid-empty-title">Bu turdagi postlar yo\'q</div></div>';
+  }
+  return list.map(p => {
+    let c = '';
+    if (p.mediaUrl && p.mediaType?.startsWith('image'))
+      c = `<img class="w-full h-full object-cover" src="${esc(p.mediaUrl)}" loading="lazy" onerror="this.classList.add('d-none')">`;
+    else if (p.mediaUrl && p.mediaType?.startsWith('video'))
+      c = `<video src="${esc(p.mediaUrl)}" preload="metadata" muted></video>`;
+    else
+      c = `<div class="up-grid-cell-txt">${esc((p.text||p.fileName||'').substring(0,40))}</div>`;
+    const isVid = p.mediaType?.startsWith('video');
+    const _um = !!(p.mediaUrl && (p.mediaType?.startsWith('image') || p.mediaType?.startsWith('video')));
+    return `<div class="up-grid-cell ${_um ? 'up-grid-cell--media' : 'up-grid-cell--text'}" data-id="${p.id}" data-uid="${uid}">${c}
+      ${isVid ? `<div class="grid-play-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="m5 3 14 9-14 9V3z"/></svg></div>` : ''}
+      <div class="up-grid-cell-overlay">
+        <div class="grid-stat">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          ${p.likes||0}
+        </div>
+        <div class="grid-stat">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          ${p.views||0}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _paintUpGrid(uid) {
+  const grid = document.getElementById('upGrid');
+  if (!grid) return;
+  grid.innerHTML = _upGridHtml(state.currentViewingUserPosts || [], uid, _upTab);
+  grid.classList.toggle('up-grid--uniform', _upTab !== 'all');
+  grid.querySelectorAll('.up-grid-cell[data-id]').forEach(cell => {
+    cell.addEventListener('click', () => openDetail(cell.dataset.id));
+  });
+}
+
 export async function openUserProfileModal(uid) {
   if (!uid || uid === state.me?.uid) return;
   state.currentViewingUserId = uid;
+  _upTab = 'all';
   $('userProfileModal').classList.add('show');
   $('upBody').innerHTML = '<div class="spin-wrap pt-80px"><div class="spinner"></div></div>';
   await renderUserProfileModal(uid);
@@ -353,32 +402,7 @@ export async function renderUserProfileModal(uid) {
 
   const totalLikes     = userPublicPosts.reduce((s,p) => s + (p.likes||0), 0);
 
-  const gridHTML = userPublicPosts.length === 0
-    ? '<div class="up-grid-empty"><div class="up-grid-empty-title">Ommaviy postlar yo\'q</div><div class="up-grid-empty-sub">Bu foydalanuvchi hali hech narsa joylamagan</div></div>'
-    : userPublicPosts.map(p => {
-        let c = '';
-        if (p.mediaUrl && p.mediaType?.startsWith('image'))
-          c = `<img class="w-full h-full object-cover" src="${esc(p.mediaUrl)}" loading="lazy" onerror="this.classList.add('d-none')">`;
-        else if (p.mediaUrl && p.mediaType?.startsWith('video'))
-          c = `<video src="${esc(p.mediaUrl)}" preload="metadata" muted></video>`;
-        else
-          c = `<div class="up-grid-cell-txt">${esc((p.text||p.fileName||'').substring(0,40))}</div>`;
-        const isVid = p.mediaType?.startsWith('video');
-        const _um = !!(p.mediaUrl && (p.mediaType?.startsWith('image') || p.mediaType?.startsWith('video')));
-        return `<div class="up-grid-cell ${_um ? 'up-grid-cell--media' : 'up-grid-cell--text'}" data-id="${p.id}" data-uid="${uid}">${c}
-          ${isVid ? `<div class="grid-play-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="m5 3 14 9-14 9V3z"/></svg></div>` : ''}
-          <div class="up-grid-cell-overlay">
-            <div class="grid-stat">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              ${p.likes||0}
-            </div>
-            <div class="grid-stat">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              ${p.views||0}
-            </div>
-          </div>
-        </div>`;
-      }).join('');
+  const gridHTML = _upGridHtml(userPublicPosts, uid, _upTab);
 
   const coverStyle = ud.coverUrl
     ? `background-image:url(${ud.coverUrl});background-size:cover;background-position:center;`
@@ -392,13 +416,10 @@ export async function renderUserProfileModal(uid) {
         <div class="up-stat"><div class="up-stat-val">${userPublicPosts.length}</div><div class="up-stat-lbl">postlar</div></div>
         <div class="up-stat"><div class="up-stat-val">${totalLikes}</div><div class="up-stat-lbl">yoqtirishlar</div></div>
       </div>
-      <div class="up-posts-tab">
-        <span class="up-posts-tab-item">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          Postlar
-        </span>
+      <div class="up-posts-tab" id="upGridTabs" role="tablist">
+        ${UP_TABS.map(([k, l]) => `<button type="button" class="profile-grid-tab${k === _upTab ? ' active' : ''}" data-up-tab="${k}" role="tab" aria-selected="${k === _upTab}">${l}</button>`).join('')}
       </div>
-      <div class="up-grid" id="upGrid">${gridHTML}</div>
+      <div class="up-grid${_upTab !== 'all' ? ' up-grid--uniform' : ''}" id="upGrid">${gridHTML}</div>
     </div>`;
 
   // Avatar rasmini kattalashtirish (boshqa user profili)
@@ -409,6 +430,18 @@ export async function renderUserProfileModal(uid) {
 
   document.querySelectorAll('.up-grid-cell[data-id]').forEach(cell => {
     cell.addEventListener('click', () => openDetail(cell.dataset.id));
+  });
+
+  document.getElementById('upGridTabs')?.addEventListener('click', e => {
+    const btn = e.target.closest('[data-up-tab]');
+    if (!btn || btn.dataset.upTab === _upTab) return;
+    _upTab = btn.dataset.upTab;
+    document.querySelectorAll('#upGridTabs [data-up-tab]').forEach(b => {
+      const on = b.dataset.upTab === _upTab;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    _paintUpGrid(uid);
   });
 }
 
