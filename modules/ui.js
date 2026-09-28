@@ -1,3 +1,4 @@
+// test 3: diff uchun izoh
 import { state, sb }                               from './config.js';
 import { $ }                                       from './utils.js';
 
