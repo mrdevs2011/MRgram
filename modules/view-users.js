@@ -42,13 +42,18 @@ let _lastUsers = [];
 let _searchQuery = '';
 let _statusFilter = 'all';
 let _stats = {}; // uid -> { posts, views, likes, publicPosts, lastPostAt, chats, lastChatAt }
-let _statsLoaded = false;
 
 /* ── Modal state ────────────────────────────────────────────────────── */
 let _pendingAction = null; // { type: 'delete'|'block'|'unblock', uid, name }
 
 /* ── Admin panel blok countdown ─────────────────────────────────────── */
-let _adminBlockTimers = {}; // uid -> intervalId
+let _blockDur = 'perm';
+const BLOCK_DURATIONS = {
+  '1h':   { label: '1 soat',  ms: 3600e3 },
+  '1d':   { label: '1 kun',   ms: 86400e3 },
+  '7d':   { label: '7 kun',   ms: 7 * 86400e3 },
+  'perm': { label: 'Doimiy',  ms: 0 },
+};
 
 /* ── initView ───────────────────────────────────────────────────────── */
 export function initView() {
@@ -185,24 +190,25 @@ function _openBlockModal(uid, name, isBlocked) {
     $('uaModalBody').innerHTML     = `<strong>${_esc(name)}</strong> ga qayta kirish ruxsati berilsinmi?`;
     $('uaModalConfirmTxt').textContent = "Blokdan chiqarish";
     $('uaModalConfirm').className  = 'ua-modal-confirm ua-modal-confirm--safe';
-    // Vaqt inputini yashiramiz
-    const tw = document.getElementById('uaBlockUntilWrap');
-    if (tw) tw.style.display = 'none';
   } else {
     $('uaModalIcon').innerHTML    = _svgLock();
     $('uaModalTitle').textContent  = "Bloklaymizmi?";
 
+    _blockDur = 'perm';
     $('uaModalBody').innerHTML = `<strong>${_esc(name)}</strong> bloklansinmi?<br>
-      <span class="ua-modal-warn">Muddatni belgilang (millisoniyagacha aniqlik bilan):</span>
-      <div id="uaBlockUntilWrap" style="margin-top:12px;"></div>`;
-
-    import('./duration-picker.js').then(({ createDurationPicker }) => {
-      const wrap = document.getElementById('uaBlockUntilWrap');
-      if (!wrap) return;
-      const picker = createDurationPicker(wrap, { allowPermanent: true });
-      wrap._picker = picker;
+      <span class="ua-modal-warn">Muddatni tanlang:</span>
+      <div id="uaBlockDur" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;">
+        ${Object.entries(BLOCK_DURATIONS).map(([k, d]) =>
+          `<button type="button" class="ua-dur-btn" data-dur="${k}">${d.label}</button>`).join('')}
+      </div>`;
+    const _paintDur = () => document.querySelectorAll('#uaBlockDur .ua-dur-btn').forEach(b => {
+      const on = b.dataset.dur === _blockDur;
+      b.style.cssText = 'flex:1;min-width:70px;padding:8px 10px;border-radius:8px;cursor:pointer;font:inherit;font-size:13px;'
+        + 'border:1px solid ' + (on ? 'var(--blue)' : 'var(--line2)') + ';'
+        + 'background:' + (on ? 'var(--blue)' : 'var(--bg3)') + ';color:' + (on ? '#fff' : 'var(--text2)') + ';';
+      b.onclick = () => { _blockDur = b.dataset.dur; _paintDur(); };
     });
-
+    _paintDur();
     $('uaModalConfirmTxt').textContent = "Bloklash";
     $('uaModalConfirm').className  = 'ua-modal-confirm ua-modal-confirm--warn';
   }
@@ -234,12 +240,8 @@ async function _confirmAction() {
       await _invalidateAndRefreshFeed(uid);
 
     } else if (type === 'block') {
-      // Advanced Duration Picker'dan aniq muddatni (ms) olamiz
-      const untilWrap = document.getElementById('uaBlockUntilWrap');
-      const picker = untilWrap?._picker;
-      const selectedMs = picker ? picker.getMs() : 0;
-      let untilDate = null;
-      if (selectedMs > 0) untilDate = picker.getUntilDate();
+      const selectedMs = (BLOCK_DURATIONS[_blockDur] || BLOCK_DURATIONS.perm).ms;
+      const untilDate = selectedMs > 0 ? new Date(Date.now() + selectedMs) : null;
       await _updateProfile(uid, {
         blocked: true,
         approval: 'pending',
@@ -379,75 +381,6 @@ function _openPasswordModal() {
   if (!modal) return;
   modal.classList.add('show');
   setTimeout(() => $('uaPwdInput')?.focus(), 50);
-}
-
-/* ── Postlar va chatlar bo'yicha qo'shimcha statistika ─────────────────
- * Faqat parol tasdiqlangandan keyin, bir martagina yuklanadi
- * (ko'p o'qishdan saqlanish uchun keshlanadi). ──────────────────────── */
-async function _loadExtraStats() {
-  if (_statsLoaded) { _renderList(); return; }
-
-  const wrap = $('usersAdminList');
-  try {
-    const [postRows, chatRows] = await Promise.all([
-      fetchAllRows('posts', 'id,user_id,text,media_path,is_public,views,likes_count,created_at'),
-      fetchAllRows('chats', 'id,user_a,user_b,last_message,last_sender_id,last_message_at', 'last_message_at'),
-    ]);
-
-    const stats = {};
-    const ensure = uid => (stats[uid] ||= {
-      posts: 0, views: 0, likes: 0, publicPosts: 0, lastPostAt: 0, chats: 0, lastChatAt: 0,
-      postList: [], chatList: []
-    });
-
-    postRows.forEach(r => {
-      const d = { id: r.id };
-      const p = mapPost(r);
-      const uid = p.userId;
-      if (!uid) return;
-      const s = ensure(uid);
-      s.posts++;
-      s.views += p.views || 0;
-      s.likes += p.likes || 0;
-      if (p.isPublic) s.publicPosts++;
-      const t = p.createdAt?.toMillis?.() || 0;
-      if (t > s.lastPostAt) s.lastPostAt = t;
-      s.postList.push({
-        id: d.id, url: p.mediaUrl || '', text: p.text || '',
-        isPublic: !!p.isPublic, views: p.views || 0, likes: p.likes || 0, at: t
-      });
-    });
-
-    chatRows.forEach(r => {
-      const d = { id: r.id };
-      const c = { lastMessageAt: ts(r.last_message_at), participants: [r.user_a, r.user_b], lastMessage: r.last_message, lastSenderId: r.last_sender_id };
-      const t = c.lastMessageAt?.toMillis?.() || 0;
-      const parts = c.participants || [];
-      parts.forEach(uid => {
-        const s = ensure(uid);
-        s.chats++;
-        if (t > s.lastChatAt) s.lastChatAt = t;
-        const otherUid = parts.find(p => p !== uid) || '';
-        s.chatList.push({
-          chatId: d.id, otherUid,
-          lastMessage: c.lastMessage || '',
-          lastSenderId: c.lastSenderId || '',
-          at: t
-        });
-      });
-    });
-
-    Object.values(stats).forEach(s => {
-      s.postList.sort((a,b) => b.at - a.at);
-      s.chatList.sort((a,b) => b.at - a.at);
-    });
-
-    _stats = stats;
-    _statsLoaded = true;
-  } catch (err) {
-    console.warn('[Admin] Stats yuklashda xato:', err.message);
-  }
-  _renderList();
 }
 
 /* ── Foydalanuvchi bo'yicha "USER MALUMOTLARI" panel (3 tab) ──────────
@@ -823,7 +756,6 @@ function _render(wrap, users) {
     const blockedUntil = u.blockedUntil?.toDate ? u.blockedUntil.toDate().toLocaleString('uz-UZ') : '';
     const blockBtnLabel = isBlocked ? 'Blokdan chiqarish' : 'Bloklash';
     const blockBtnClass = isBlocked ? 'ua-unblock-btn' : 'ua-block-btn';
-    const blockedUntilMs = u.blockedUntil?.toMillis ? u.blockedUntil.toMillis() : (u.blockedUntil ? Number(u.blockedUntil) : 0);
 
     return `
     <div class="ua-row${isBlocked ? ' ua-row--blocked' : ''}" data-uid="${uid}">
@@ -836,7 +768,7 @@ function _render(wrap, users) {
       <div class="ua-actions">
         ${_approveBtn(u)}
         ${_rejectBtn(u)}
-        <button class="${blockBtnClass}" data-uid="${uid}" data-name="${_esc(name)}" data-blocked="${isBlocked}" data-blocked-until-ms="${blockedUntilMs}">${blockBtnLabel}</button>
+        <button class="${blockBtnClass}" data-uid="${uid}" data-name="${_esc(name)}" data-blocked="${isBlocked}">${blockBtnLabel}</button>
         <button class="ua-reset-pwd-btn" data-uid="${uid}" data-name="${_esc(name)}">Parolni tiklash</button>
         <button class="ua-delete-btn" data-uid="${uid}" data-name="${_esc(name)}">O'chirish</button>
       </div>
@@ -870,15 +802,6 @@ function _render(wrap, users) {
     });
   });
 
-  /* Admin panel — vaqtli blok countdownlari */
-  _clearAllAdminTimers();
-  wrap.querySelectorAll('.ua-unblock-btn[data-blocked-until-ms]').forEach(btn => {
-    const uid = btn.dataset.uid;
-    const untilMs = Number(btn.dataset.blockedUntilMs);
-    if (!untilMs || untilMs <= 0) return;
-    _startAdminBlockCountdown(btn, uid, untilMs);
-  });
-
   /* Delete */
   wrap.querySelectorAll('.ua-delete-btn').forEach(btn => {
     btn.addEventListener('click', e => {
@@ -894,51 +817,6 @@ function _render(wrap, users) {
       adminResetPassword(btn.dataset.uid, btn.dataset.name);
     });
   });
-}
-
-/* ── Admin panel blok countdown yordamchilari ───────────────────────── */
-function _clearAllAdminTimers() {
-  Object.values(_adminBlockTimers).forEach(id => clearInterval(id));
-  _adminBlockTimers = {};
-}
-
-function _fmtCountdown(ms) {
-  if (ms <= 0) return '0s';
-  const totalSec = Math.floor(ms / 1000);
-  const d = Math.floor(totalSec / 86400);
-  const h = Math.floor((totalSec % 86400) / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  if (d > 0) return `${d}k ${h}s ${m}m`;
-  if (h > 0) return `${h}s ${m}m ${s}sec`;
-  if (m > 0) return `${m}m ${s}sec`;
-  return `${s}sec`;
-}
-
-function _startAdminBlockCountdown(btn, uid, untilMs) {
-  // Darhol ko'rsatamiz
-  const update = () => {
-    const remaining = untilMs - Date.now();
-    if (remaining <= 0) {
-      // Vaqt tugadi — Firestore da unblock, tugmani qizilga o'zgartir
-      clearInterval(_adminBlockTimers[uid]);
-      delete _adminBlockTimers[uid];
-      // Firestore ni yangilaymiz
-      _updateProfile(uid, { blocked: false, blocked_until: null, approval: 'approved' }).catch(() => {});
-      // Tugmani darhol o'zgartiramiz
-      btn.className = 'ua-block-btn';
-      btn.textContent = 'Bloklash';
-      btn.dataset.blocked = 'false';
-      btn.dataset.blockedUntilMs = '0';
-      // Row dan blocked klassini olamiz
-      const row = btn.closest('.ua-row');
-      if (row) row.classList.remove('ua-row--blocked');
-      return;
-    }
-    btn.textContent = _fmtCountdown(remaining);
-  };
-  update();
-  _adminBlockTimers[uid] = setInterval(update, 1000);
 }
 
 function _svgTrash() {
@@ -971,9 +849,7 @@ function _esc(str) {
 
 export function destroyView() {
   if (_unsubUsers) { _unsubUsers(); _unsubUsers = null; }
-  _clearAllAdminTimers();
   _initialized = false;
   _unlocked = false;
-  _statsLoaded = false;
   _stats = {};
 }

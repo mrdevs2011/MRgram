@@ -105,7 +105,6 @@ const PRECACHE_URLS = [
   '/modules/call.js',
   '/modules/comments.js',
   '/modules/cover-crop.js',
-  '/modules/duration-picker.js',
   '/modules/groups.js',
   '/modules/local-cache.js',
   '/modules/explore.js',
