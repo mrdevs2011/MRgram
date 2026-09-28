@@ -1034,13 +1034,9 @@ if (editProfileBtn) {
     const editName = $('editName');
     const editBioInput = $('editBioInput');
     const editUsername = $('editUsername');
-    const editWebsite = $('editWebsite');
-    const editLocation = $('editLocation');
     if (editName) editName.value = d.fullName || '';
     if (editBioInput) editBioInput.value = d.bio || '';
     if (editUsername) editUsername.value = d.username || '';
-    if (editWebsite) editWebsite.value = d.website || '';
-    if (editLocation) editLocation.value = d.location || '';
 
     _peAviPending = null;
     const peAviImg = $('peAviImg');
@@ -1082,8 +1078,6 @@ if (saveProfileBtn) {
     const updates = {
       full_name: fn,
       bio:       $('editBioInput')?.value?.trim() || '',
-      website:   $('editWebsite')?.value?.trim() || '',
-      location:  $('editLocation')?.value?.trim() || '',
     };
 
     const rawUser = $('editUsername')?.value?.trim() || '';

@@ -2744,25 +2744,6 @@ body:has(.search-overlay.open) .app-hdr {
   margin-top: 2px;
   font-weight: 500;
 }
-.profile-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 6px;
-  font-size: 12.5px;
-  color: var(--text3);
-}
-.profile-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-a.profile-meta-link {
-  color: var(--blue2);
-  text-decoration: none;
-}
-a.profile-meta-link:hover { text-decoration: underline; }
-
 /* Avatar picker in edit sheet */
 .pe-avi-wrap {
   position: relative;
