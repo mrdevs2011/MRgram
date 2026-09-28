@@ -147,3 +147,5 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
   yuqori burchakda.
 - Qo'ng'iroq oynalari: markazda ism/avatar + qabul qilish/rad etish
   tugmalari; faol qo'ng'iroqda to'liq ekran video/audio ko'rinishi.
+
+<!-- redeploy: Supabase env -->
