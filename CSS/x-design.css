@@ -663,3 +663,48 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 }
 #chatThreadModal .chat-msg.mine .chat-bubble a { color: #fff; text-decoration: underline; }
 #chatThreadModal .chat-msg.mine .cvm-play { background: rgba(255,255,255,.25) !important; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   X 1:1 — tuzatish (haqiqiy X bilan solishtirilgach)
+   • Post tugma: ko'k EMAS — X'da dark'da oq (#eff3f4/qora matn), light'da qora
+   • Qidiruv va o'ng kartalar: dark'da to'ldirilmagan, ingichka chiziqli
+   • Lenta tepasida yopishqoq sarlavha (X'dagi kabi, xira shaffof fon)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+nav.bot-nav #createBtn.nav-center-btn,
+#uploadOverlay .composer-post-btn,
+#uploadBtn.composer-post-btn,
+#uploadOverlay .composer-post-btn:disabled { background: var(--x-inv-bg) !important; }
+nav.bot-nav #createBtn.nav-center-btn:hover,
+#uploadBtn.composer-post-btn:hover:not(:disabled) { background: var(--x-inv-bg-hover) !important; }
+nav.bot-nav #createBtn.nav-center-btn,
+nav.bot-nav #createBtn.nav-center-btn *,
+#uploadOverlay .composer-post-btn,
+#uploadOverlay .composer-post-btn *,
+#uploadOverlay .composer-post-btn:disabled,
+#uploadOverlay .composer-post-btn:disabled * { color: var(--x-inv-fg) !important; }
+#uploadOverlay .composer-post-btn:disabled { opacity: .5; }
+
+/* O'ng ustun: dark = chiziqli, light = to'ldirilgan (X'dagidek) */
+.rc-search { background: transparent; border: 1px solid var(--line); }
+.rc-search:hover { background: transparent; }
+.rc-card { background: transparent; border: 1px solid var(--line); }
+[data-theme="light"] .rc-search { background: var(--bg4); border-color: transparent; }
+[data-theme="light"] .rc-search:hover { background: var(--bg4); }
+[data-theme="light"] .rc-card { background: var(--bg3); border-color: transparent; }
+
+/* Harakat qatori butun kenglikka yoyiladi (X kabi) */
+.post-actions { max-width: none; margin-right: 0; }
+
+/* Lenta sarlavhasi: yopishqoq, xira shaffof, 53px */
+#homeView .feed::before {
+  content: "Bosh sahifa";
+  display: flex; align-items: center;
+  position: sticky; top: 0; z-index: 5;
+  height: 53px; padding: 0 16px;
+  font-size: 20px; font-weight: 800; color: var(--text);
+  background: color-mix(in srgb, var(--bg) 65%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
