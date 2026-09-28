@@ -160,11 +160,9 @@ export async function renderProfileGrid(posts) {
   if (grid) grid.classList.toggle('profile-grid--uniform', _pgTab !== 'all');
 
   if (!list.length) {
-    $('profileGrid').innerHTML = `<div class="empty">
-      <svg class="opacity-30 mx-auto mb-10px d-block" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/>
-      </svg>
-      Hozircha postlar yo'q
+    $('profileGrid').innerHTML = `<div class="up-grid-empty">
+      <div class="up-grid-empty-title">Hozircha postlar yo'q</div>
+      <div class="up-grid-empty-sub">Birinchi postingizni joylang — shu yerda ko'rinadi</div>
     </div>`;
     return;
   }
@@ -356,7 +354,7 @@ export async function renderUserProfileModal(uid) {
   const totalLikes     = userPublicPosts.reduce((s,p) => s + (p.likes||0), 0);
 
   const gridHTML = userPublicPosts.length === 0
-    ? '<div class="grid-col-span-full p-32px tac c-text3-theme fs-13px">Ommaviy postlar yo\'q</div>'
+    ? '<div class="up-grid-empty"><div class="up-grid-empty-title">Ommaviy postlar yo\'q</div><div class="up-grid-empty-sub">Bu foydalanuvchi hali hech narsa joylamagan</div></div>'q</div>'
     : userPublicPosts.map(p => {
         let c = '';
         if (p.mediaUrl && p.mediaType?.startsWith('image'))

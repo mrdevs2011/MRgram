@@ -1185,3 +1185,31 @@ a.profile-meta-link:hover { text-decoration: underline; }
   aspect-ratio: 1;
   min-height: 0;
 }
+
+
+/* Profile grid empty state */
+.up-grid-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 48px 20px;
+  text-align: center;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  margin: 8px 0 16px;
+}
+.up-grid-empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text, #e7e9ea);
+}
+.up-grid-empty-sub {
+  font-size: 13px;
+  color: var(--text3, #71767b);
+  max-width: 260px;
+  line-height: 1.4;
+}
