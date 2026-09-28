@@ -9,23 +9,23 @@
   --bg:  #000000;
   --bg2: #000000;
   --bg3: #000000;
-  --bg4: #161616;
-  --bg5: #202020;
+  --bg4: #16181c;
+  --bg5: #202327;
 
   --blue:  #ffffff;
   --blue2: #e7e9ea;
   --blue3: #d0d0d0;
-  --blue-glow:  #1a1a1a;
-  --blue-glow2: #141414;
+  --blue-glow:  #16181c;
+  --blue-glow2: #16181c;
   --blue-glow3: #0d0d0d;
 
   --tg-bg:      #000000;
   --tg-surface: #000000;
-  --tg-input:   #161616;
+  --tg-input:   #16181c;
   --tg-blue:    #ffffff;
-  --tg-out:     #2f2f2f;
-  --tg-in:      #161616;
-  --tg-text-muted:   #8a8a8a;
+  --tg-out:     #2f3336;
+  --tg-in:      #16181c;
+  --tg-text-muted:   #71767b;
   --tg-primary-blue: #ffffff;
   --tg-text-main:    #ffffff;
 }
@@ -155,7 +155,7 @@ meta[name="theme-color"] { color: #000000; }
 
 /* ── Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan ── */
 [data-theme="dark"] .post,
-.post { background: #000000; border-bottom: 1px solid #1f1f1f; }
+.post { background: #000000; border-bottom: 1px solid #16181c; }
 
 /* ── Logo hech qaysi konteyner ichida qirqilmasin (bubble dumchasi ko'rinib tursin) ── */
 .splash-inner, .splash-logo-wrap, .splash-logo-glass,

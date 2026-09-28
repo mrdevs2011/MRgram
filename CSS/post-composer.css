@@ -55,7 +55,7 @@
 }
 #uploadOverlay .composer-post-btn:disabled,
 #uploadOverlay .composer-post-btn:disabled * {
-  background: #2a2a2a !important;
+  background: #202327 !important;
   color: #6e6e6e !important;
   cursor: not-allowed;
   opacity: 1;
@@ -75,7 +75,7 @@
   border-radius: 999px;
   overflow: hidden;
   flex-shrink: 0;
-  background: #1c1c1c;
+  background: #16181c;
 }
 #uploadOverlay .composer-avi img {
   width: 100%;

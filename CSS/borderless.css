@@ -24,7 +24,7 @@
 
 /* ── Dark: line tokenlar ham yo'qolsin ── */
 [data-theme="dark"] {
-  --line:  #1a1a1a;
+  --line:  #16181c;
   --line2: transparent;
   --line3: transparent;
 }

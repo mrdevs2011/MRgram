@@ -210,14 +210,14 @@
   letter-spacing: 0.1px;
 }
 .ua-badge--approved {
-  background: #1c1c1c;
+  background: #16181c;
   color: var(--green);
-  border: 1px solid #2a2a2a;
+  border: 1px solid #202327;
 }
 .ua-badge--pending {
-  background: #212121;
+  background: #202327;
   color: var(--amber);
-  border: 1px solid #323232;
+  border: 1px solid #2f3336;
 }
 .ua-badge--rejected {
   background: var(--red-glow);
@@ -259,9 +259,9 @@
 .ua-reject-btn {
   background: var(--red-glow);
   color: var(--red);
-  border: 1px solid #2a2a2a;
+  border: 1px solid #202327;
 }
-.ua-reject-btn:hover    { background: #2a2a2a; }
+.ua-reject-btn:hover    { background: #202327; }
 .ua-reject-btn:disabled { opacity: 1; cursor: not-allowed; }
 
 /* ── Block / Unblock buttons ─────────────────────────────────────────── */
@@ -280,16 +280,16 @@
 .ua-block-btn {
   background: var(--red-glow);
   color: var(--red);
-  border: 1px solid #2a2a2a;
+  border: 1px solid #202327;
 }
-.ua-block-btn:hover { background: #2a2a2a; }
+.ua-block-btn:hover { background: #202327; }
 
 .ua-unblock-btn {
   background: var(--green-glow);
   color: var(--green);
-  border: 1px solid #262626;
+  border: 1px solid #202327;
 }
-.ua-unblock-btn:hover { background: #262626; }
+.ua-unblock-btn:hover { background: #202327; }
 
 /* Bloklangan row */
 .ua-row--blocked { opacity: 1; }
@@ -788,51 +788,51 @@
    DARK THEME — Admin Panel Override
    ═══════════════════════════════════════════════════════════════════════ */
 [data-theme="dark"] .ua-row {
-  border-bottom-color: #212121;
+  border-bottom-color: #202327;
 }
 [data-theme="dark"] .ua-row:hover {
-  background: #212121;
+  background: #202327;
 }
 [data-theme="dark"] .ua-modal {
-  background: #262626;
-  border-color: #242424;
+  background: #202327;
+  border-color: #202327;
   box-shadow: 0 24px 64px #000000;
 }
 [data-theme="dark"] .ua-detail-tabs {
-  background: #212121;
-  border-color: #212121;
+  background: #202327;
+  border-color: #202327;
 }
 [data-theme="dark"] .ua-detail-tab:hover {
-  background: #212121;
+  background: #202327;
 }
 [data-theme="dark"] .ua-detail-row,
 [data-theme="dark"] .ua-post-link {
-  background: #212121;
-  border-color: #212121;
+  background: #202327;
+  border-color: #202327;
 }
 [data-theme="dark"] .ua-post-link:hover {
-  background: #323232;
+  background: #2f3336;
 }
 [data-theme="dark"] .ua-field-row {
-  border-bottom-color: #212121;
+  border-bottom-color: #202327;
 }
 [data-theme="dark"] .ua-modal-cancel {
-  background: #212121;
-  border-color: #242424;
+  background: #202327;
+  border-color: #202327;
 }
 [data-theme="dark"] .ua-modal-cancel:hover {
-  background: #323232;
+  background: #2f3336;
 }
 [data-theme="dark"] .ua-locked-banner {
-  background: #181818;
-  border-color: #212121;
+  background: #16181c;
+  border-color: #202327;
 }
 [data-theme="dark"] .ua-history-btn {
-  background: #212121;
-  border-color: #222222;
+  background: #202327;
+  border-color: #202327;
 }
 [data-theme="dark"] .ua-history-btn:hover {
-  background: #323232;
+  background: #2f3336;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -1013,17 +1013,17 @@
   --ag-glass-mid:      var(--bg4);
   --ag-glass-strong:   var(--bg5);
   --ag-border-top:     #3F3F44;
-  --ag-border-side:    #323232;
-  --ag-border-bot:     #181818;
+  --ag-border-side:    #2f3336;
+  --ag-border-bot:     #16181c;
   --ag-specular:       none;
   --ag-blur:           none;
   --ag-blur-light:     none;
-  --ag-shadow:         0 8px 32px #000000, 0 32px 80px #000000, 0 0 0 0.5px #1a1a1a;
-  --ag-shadow-hover:   0 12px 40px #000000, 0 40px 100px #000000, 0 0 0 0.5px #242424;
+  --ag-shadow:         0 8px 32px #000000, 0 32px 80px #000000, 0 0 0 0.5px #16181c;
+  --ag-shadow-hover:   0 12px 40px #000000, 0 40px 100px #000000, 0 0 0 0.5px #202327;
   --ag-modal-bg:       var(--bg3);
   --ag-row-bg:         var(--bg2);
   --ag-row-hover:      var(--bg4);
-  --ag-badge-glow:     #2b2b2b;
+  --ag-badge-glow:     #202327;
   --ag-overlay:        #000000;
 }
 [data-theme="light"] {
@@ -1130,7 +1130,7 @@
 
 /* ── Field rows — solid cards ── */
 .ua-field-row {
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid #16181c;
 }
 @media (min-width: 768px) {
   #uaDetailModal #uaDetailBody .ua-field-row {
@@ -1210,10 +1210,10 @@
 
 /* ── Badges — glass glow ── */
 .ua-badge--approved {
-  box-shadow: 0 0 12px #242424;
+  box-shadow: 0 0 12px #202327;
 }
 .ua-badge--blocked {
-  box-shadow: 0 0 12px #2a2a2a;
+  box-shadow: 0 0 12px #202327;
 }
 
 /* ── Actions view desktop — solid cards ── */

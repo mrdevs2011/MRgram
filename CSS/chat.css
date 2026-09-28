@@ -124,7 +124,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background: var(--c-bg-header, var(--bg3, #121212));
+  background: var(--c-bg-header, var(--bg3, #16181c));
   border-bottom: 1px solid var(--c-divider, rgba(255,255,255,0.06));
   flex-shrink: 0;
   position: relative;
@@ -224,7 +224,7 @@
   border-bottom-right-radius: 5px;
 }
 .chat-msg.theirs .chat-bubble {
-  background: #262626;
+  background: #202327;
   color: var(--text);
   border-bottom-left-radius: 5px;
 }
@@ -521,7 +521,7 @@
   flex-shrink: 0;
   transition: none;
 }
-.cfp-remove:hover { background: #1e1e1e; color: #ef4444; }
+.cfp-remove:hover { background: #16181c; color: #ef4444; }
 
 /* ── Voice message bubble ── */
 
@@ -624,10 +624,10 @@
 }
 .chat-msg.theirs .chat-reply-preview {
   border-left-color: var(--blue);
-  background: #181818;
+  background: #16181c;
 }
 .chat-reply-preview:hover { background: #3A3A3F; }
-.chat-msg.theirs .chat-reply-preview:hover { background: #202020; }
+.chat-msg.theirs .chat-reply-preview:hover { background: #202327; }
 
 .crp-name {
   font-size: 11.5px;
@@ -719,8 +719,8 @@
 }
 .reaction-pill:hover { background: var(--bg5);}
 .reaction-pill.mine  {
-  background: #1d1d1d;
-  border-color: #343434;
+  background: #16181c;
+  border-color: #2f3336;
   color: var(--blue);
 }
 
@@ -931,7 +931,7 @@
   transition: none;
 }
 .chat-search-btn:hover { background: var(--bg5); color: var(--text); }
-.chat-search-btn.active { background: #212121; color: var(--blue); }
+.chat-search-btn.active { background: #202327; color: var(--blue); }
 
 /* ════════════════════════════════════════════════════════════════════
    FEATURE 3: Chat ichida qidiruv (Search Bar)
@@ -1037,7 +1037,7 @@
   flex-shrink: 0;
   transition: none;
 }
-.chat-call-btn:hover { background: #181818; color: #22c55e; }
+.chat-call-btn:hover { background: #16181c; color: #22c55e; }
 
 /* ════════════════════════════════════════════════════════════════════
    INCOMING CALL MODAL
@@ -1047,7 +1047,7 @@
   inset: 0;
   z-index: 1000000;
   background:
-    radial-gradient(circle at 50% 0%, #2a2a2a 0%, #000000 55%),
+    radial-gradient(circle at 50% 0%, #202327 0%, #000000 55%),
     #000000;
   display: none;
   /* Telegram-style: haqiqiy full-screen, hech qanday "karta" chegarasi yo'q */
@@ -1347,7 +1347,7 @@
 .call-ctrl-btn {
   width: 54px; height: 54px;
   border-radius: 50%;
-  background: #242424;
+  background: #202327;
   border: 0.5px solid #35353B;
   display: flex; align-items: center; justify-content: center;
   color: #fff;
@@ -1366,7 +1366,7 @@
 }
 .call-ctrl-btn.active  {
   background: #2c2c2c;
-  border-color: #343434;
+  border-color: #2f3336;
   color: #ffffff;
 }
 .call-ctrl-btn.end-btn {
@@ -1527,7 +1527,7 @@ a.cfm-name--link:hover {
   max-height: 320px;
   object-fit: cover;
   border-radius: 14px;
-  background: #1a1a1a;
+  background: #16181c;
 }
 
 .cfm-video-preview {
@@ -1572,7 +1572,7 @@ a.cfm-name--link:hover {
   box-shadow:
     inset 0 1px 0 #525257,
     0 0 0 calc((var(--rec-scale, 1.0) - 1) * 28px) #232323,
-    0 0 calc(var(--rec-glow, 0) * 0.4px) #393939,
+    0 0 calc(var(--rec-glow, 0) * 0.4px) #2f3336,
     0 4px 16px #2e2e2e !important;
   transition: none !important;
 }
@@ -1661,7 +1661,7 @@ a.cfm-name--link:hover {
 /* Incoming call — true edge-to-edge fullscreen (Telegram-style), no card box */
 #incomingCallModal {
   background:
-    radial-gradient(circle at 50% 0%, #262626 0%, #000000 55%),
+    radial-gradient(circle at 50% 0%, #202327 0%, #000000 55%),
     #000000 !important;
 }
 
@@ -1672,7 +1672,7 @@ a.cfm-name--link:hover {
 /* Ring animation — green glass rings */
 .incoming-call-ring-anim span {
   border: 1.5px solid #145D33 !important;
-  box-shadow: 0 0 12px #1e1e1e !important;
+  box-shadow: 0 0 12px #16181c !important;
 }
 
 /* Avatar glass border */
@@ -1680,8 +1680,8 @@ a.cfm-name--link:hover {
   border: 2.5px solid #1A8C46 !important;
   box-shadow:
     inset 0 1px 0 #3A3A3F,
-    0 0 0 4px #161616,
-    0 0 32px #202020,
+    0 0 0 4px #16181c,
+    0 0 32px #202327,
     0 8px 24px #000000 !important;
 }
 
@@ -1709,7 +1709,7 @@ a.cfm-name--link:hover {
   position: fixed;
   inset: 0;
   background:
-    #1c1c1c,
+    #16181c,
     #000000;
   pointer-events: none;
   z-index: 0;
@@ -1720,10 +1720,10 @@ a.cfm-name--link:hover {
   border: 2px solid #35353B !important;
   box-shadow:
     inset 0 2px 0 #35353B,
-    0 0 0 8px #181818,
-    0 0 60px #282828,
+    0 0 0 8px #16181c,
+    0 0 60px #2f3336,
     0 16px 48px #000000 !important;
-  background: #1a1a1a !important;
+  background: #16181c !important;
 }
 
 /* ── Control buttons — consolidated into single definition above ── */
@@ -1750,7 +1750,7 @@ a.cfm-name--link:hover {
   margin-top: auto;           /* pinned to bottom of message row */
   border: none;
   padding: 0;
-  background: var(--bg3, #323232);
+  background: var(--bg3, #2f3336);
   cursor: pointer;
   transition: none;
   position: relative;
@@ -1876,7 +1876,7 @@ a.cfm-name--link:hover {
 /* ── 8. File preview — shimmer loading skeleton ── */
 
 .cfm-skeleton {
-  background: var(--bg3, #1a1a1a);
+  background: var(--bg3, #16181c);
   background-size: 400px 100%;
   animation: none;
   border-radius: 12px;
@@ -1915,7 +1915,7 @@ a.cfm-name--link:hover {
   transition: none !important;
 }
 #chatThreadInput:focus {
-  box-shadow: 0 0 0 3px #2b2b2b !important;
+  box-shadow: 0 0 0 3px #202327 !important;
   border-color: #4c4c4c !important;
   outline: none;
 }
@@ -1928,12 +1928,12 @@ a.cfm-name--link:hover {
   font-size: 16px;
   padding: 2px 6px;
   border-radius: 999px;
-  background: #242424;
+  background: #202327;
   cursor: pointer;
   transition: none;
   display: inline-flex; align-items: center; gap: 3px;
   font-size: 14px;
-  border: 1px solid #202020;
+  border: 1px solid #202327;
 }
 .msg-reaction:hover  {background: #35353B; }
 
@@ -2200,7 +2200,7 @@ a.cfm-name--link:hover {
   gap: 10px;
   padding: 8px 12px;
   padding-top: calc(8px + env(safe-area-inset-top, 0px));
-  background: var(--bg3, #161616);
+  background: var(--bg3, #16181c);
   border-bottom: 1px solid var(--line, #232428);
   box-shadow: 0 2px 10px rgba(0, 0, 0,0.25);
   cursor: pointer;

@@ -9,42 +9,48 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. Palitra ───────────────────────────────────────────────────────── */
+/* Aniq X (Twitter) ranglari. Dark = "Lights out", Light = standart oq. */
 :root,
 [data-theme="dark"] {
-  --bg:   #0e1012;  /* sahifa */
-  --bg2:  #0e1012;
-  --bg3:  #14171a;  /* panel, sheet */
-  --bg4:  #1a1e22;  /* input, hover */
-  --bg5:  #23282d;  /* ko'tarilgan hover */
+  --bg:   #000000;  /* sahifa */
+  --bg2:  #000000;
+  --bg3:  #16181c;  /* karta / panel (Trends, Who to follow) */
+  --bg4:  #202327;  /* qidiruv maydoni, hover */
+  --bg5:  #2f3336;  /* ko'tarilgan hover */
 
-  --text:  #e7e9ea; /* oppoq emas — ko'zni charchatmaydi */
-  --text2: #8b949b;
-  --text3: #6f7880;
-  --text4: #4d555c;
+  --text:  #e7e9ea;
+  --text2: #71767b;
+  --text3: #71767b;
+  --text4: #536471;
 
-  --blue:  #eff3f4; /* to'ldirilgan tugma (matn qora) */
-  --blue2: #d7dbdc;
-  --blue3: #c2c7c9;
-  --link:  #58a6e8; /* havola, fokus */
-  --blue-glow:  #1a1e22;
-  --blue-glow2: #161a1d;
-  --blue-glow3: #0e1012;
+  --blue:  #1d9bf0; /* X ko'ki: Post, faol holat, toggle, badge */
+  --blue2: #1a8cd8; /* hover */
+  --blue3: #1d9bf0;
+  --link:  #1d9bf0;
+  --x-blue: #1d9bf0; --x-blue-hover: #1a8cd8;
+  --x-like: #f91880; --x-repost: #00ba7c;
+  --x-inv-bg: #eff3f4; --x-inv-bg-hover: #d7dbdc; --x-inv-fg: #0f1419; /* oq pill tugma (Next / Follow) */
+  --hover:        rgba(231, 233, 234, .03);
+  --hover-strong: rgba(231, 233, 234, .10);
+  --blue-glow:  rgba(29, 155, 240, .10);
+  --blue-glow2: rgba(29, 155, 240, .10);
+  --blue-glow3: #000000;
 
-  --line:  #262b30;
-  --line2: #262b30;
-  --line3: #1c2024;
-  --glass-border:     #262b30;
-  --glass-border-top: #2f353a;
+  --line:  #2f3336;
+  --line2: #2f3336;
+  --line3: #2f3336;
+  --glass-border:     #2f3336;
+  --glass-border-top: #2f3336;
 
-  --red:   #f0697b;
-  --green: #5ec99a;
+  --red:   #f4212e;
+  --green: #00ba7c;
 
-  --tg-bg: #0e1012; --tg-surface: #14171a; --tg-input: #1a1e22;
-  --tg-blue: #eff3f4; --tg-out: #2a3036; --tg-in: #1a1e22;
-  --tg-text: #e7e9ea; --tg-muted: #8b949b;
-  --tg-text-muted: #8b949b; --tg-primary-blue: #eff3f4; --tg-text-main: #e7e9ea;
+  --tg-bg: #000000; --tg-surface: #000000; --tg-input: #202327;
+  --tg-blue: #1d9bf0; --tg-out: #1d9bf0; --tg-in: #2f3336;
+  --tg-text: #e7e9ea; --tg-muted: #71767b;
+  --tg-text-muted: #71767b; --tg-primary-blue: #1d9bf0; --tg-text-main: #e7e9ea;
 
-  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --r: 16px; --r2: 12px; --r3: 10px;
 }
 
@@ -53,39 +59,42 @@
   --bg2:  #ffffff;
   --bg3:  #f7f9f9;
   --bg4:  #eff3f4;
-  --bg5:  #e5eaec;
+  --bg5:  #e7e7e8;
 
   --text:  #0f1419;
   --text2: #536471;
-  --text3: #6b7883;
-  --text4: #9aa6b0;
+  --text3: #536471;
+  --text4: #8b98a5;
 
-  --blue:  #0f1419; /* to'ldirilgan tugma (matn oq) */
-  --blue2: #272c30;
-  --blue3: #3d4348;
-  --link:  #1a7fd0;
-  --blue-glow:  #eff3f4;
-  --blue-glow2: #f7f9f9;
+  --blue:  #1d9bf0;
+  --blue2: #1a8cd8;
+  --blue3: #1d9bf0;
+  --link:  #1d9bf0;
+  --x-inv-bg: #0f1419; --x-inv-bg-hover: #272c30; --x-inv-fg: #ffffff;
+  --hover:        rgba(15, 20, 25, .03);
+  --hover-strong: rgba(15, 20, 25, .10);
+  --blue-glow:  rgba(29, 155, 240, .10);
+  --blue-glow2: rgba(29, 155, 240, .10);
   --blue-glow3: #ffffff;
 
-  --line:  #e6ebee;
-  --line2: #e6ebee;
+  --line:  #eff3f4;
+  --line2: #eff3f4;
   --line3: #eff3f4;
-  --glass-border:     #e6ebee;
-  --glass-border-top: #dfe5e8;
+  --glass-border:     #eff3f4;
+  --glass-border-top: #eff3f4;
 
-  --red:   #e0364c;
-  --green: #12a36b;
+  --red:   #f4212e;
+  --green: #00ba7c;
 
-  --tg-bg: #ffffff; --tg-surface: #f7f9f9; --tg-input: #eff3f4;
-  --tg-blue: #0f1419; --tg-out: #dfe9ef; --tg-in: #eff3f4;
+  --tg-bg: #ffffff; --tg-surface: #ffffff; --tg-input: #eff3f4;
+  --tg-blue: #1d9bf0; --tg-out: #1d9bf0; --tg-in: #eff3f4;
   --tg-text: #0f1419; --tg-muted: #536471;
-  --tg-text-muted: #536471; --tg-primary-blue: #0f1419; --tg-text-main: #0f1419;
+  --tg-text-muted: #536471; --tg-primary-blue: #1d9bf0; --tg-text-main: #0f1419;
 }
 
 html, body, #app { background: var(--bg); color: var(--text); }
 body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
-::selection { background: rgba(88, 166, 232, .28); }
+::selection { background: rgba(29, 155, 240, .30); }
 
 /* ── 2. Tugmalar: pill, tinch ─────────────────────────────────────────── */
 .btn-primary {
@@ -161,119 +170,115 @@ nav.bot-nav .sb-account:hover { background: var(--bg4); }
 a { color: var(--link); }
 
 /* ── Yorug' temada to'ldirilgan (qora) elementlarda matn oq (mono.css ning aksi) ── */
-[data-theme="light"] .btn-primary * { color: #fff !important; }
-[data-theme="light"] .btn-primary:hover,
-[data-theme="light"] .btn-primary:hover * { color: #fff !important; }
-[data-theme="light"] .ua-avi-placeholder,
-[data-theme="light"] .ua-avi-placeholder * { color: #fff !important; }
-[data-theme="light"] .ua-approve-btn,
-[data-theme="light"] .ua-approve-btn * { color: #fff !important; }
-[data-theme="light"] .ua-unlock-banner-btn,
-[data-theme="light"] .ua-unlock-banner-btn * { color: #fff !important; }
-[data-theme="light"] .ua-detail-tab.active,
-[data-theme="light"] .ua-detail-tab.active * { color: #fff !important; }
-[data-theme="light"] #chatThreadModal .chat-msg.theirs .cvm-bar.played,
-[data-theme="light"] #chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: #fff !important; }
-[data-theme="light"] .chat-row-badge,
-[data-theme="light"] .chat-row-badge * { color: #fff !important; }
-[data-theme="light"] .chat-thread-send,
-[data-theme="light"] .chat-thread-send * { color: #fff !important; }
-[data-theme="light"] .chat-thread-send:hover,
-[data-theme="light"] .chat-thread-send:hover * { color: #fff !important; }
-[data-theme="light"] .cv-pulse,
-[data-theme="light"] .cv-pulse * { color: #fff !important; }
-[data-theme="light"] .chat-voice-btn,
-[data-theme="light"] .chat-voice-btn * { color: #fff !important; }
-[data-theme="light"] .crb-line,
-[data-theme="light"] .crb-line * { color: #fff !important; }
-[data-theme="light"] .typing-dots span,
-[data-theme="light"] .typing-dots span * { color: #fff !important; }
-[data-theme="light"] .chat-voice-btn.recording,
-[data-theme="light"] .chat-voice-btn.recording * { color: #fff !important; }
-[data-theme="light"] .typing-dot,
-[data-theme="light"] .typing-dot * { color: #fff !important; }
-[data-theme="light"] #chatScrollDownBtn,
-[data-theme="light"] #chatScrollDownBtn * { color: #fff !important; }
-[data-theme="light"] .chat-msg.theirs .cvm-play,
-[data-theme="light"] .chat-msg.theirs .cvm-play * { color: #fff !important; }
-[data-theme="light"] .chat-msg.theirs .cvm-play:hover,
-[data-theme="light"] .chat-msg.theirs .cvm-play:hover * { color: #fff !important; }
-[data-theme="light"] .chat-msg.theirs .cvm-bar.played,
-[data-theme="light"] .chat-msg.theirs .cvm-bar.played * { color: #fff !important; }
-[data-theme="light"] .vmp-play,
-[data-theme="light"] .vmp-play * { color: #fff !important; }
-[data-theme="light"] .vmp-progress-fill,
-[data-theme="light"] .vmp-progress-fill * { color: #fff !important; }
-[data-theme="light"] [data-theme="dark"] .msg-out .msg-bubble,
-[data-theme="light"] [data-theme="dark"] .msg-out .msg-bubble * { color: #fff !important; }
-[data-theme="light"] [data-theme="dark"] .splash-fill,
-[data-theme="light"] [data-theme="dark"] .splash-fill * { color: #fff !important; }
-[data-theme="light"] [data-theme="dark"] .reel-progress-fill,
-[data-theme="light"] [data-theme="dark"] .reel-progress-fill * { color: #fff !important; }
-[data-theme="light"] .reel-progress-fill,
-[data-theme="light"] .reel-progress-fill * { color: #fff !important; }
-[data-theme="light"] .rcap-follow,
-[data-theme="light"] .rcap-follow * { color: #fff !important; }
-[data-theme="light"] .ufb-icon,
-[data-theme="light"] .ufb-icon * { color: #fff !important; }
-[data-theme="light"] .ufb-fill,
-[data-theme="light"] .ufb-fill * { color: #fff !important; }
-[data-theme="light"] .feed-empty-cta,
-[data-theme="light"] .feed-empty-cta * { color: #fff !important; }
-[data-theme="light"] .grp-avi-badge--group,
-[data-theme="light"] .grp-avi-badge--group * { color: #fff !important; }
-[data-theme="light"] .grp-avi-badge--channel,
-[data-theme="light"] .grp-avi-badge--channel * { color: #fff !important; }
-[data-theme="light"] .chat-row-grp-badge--group,
-[data-theme="light"] .chat-row-grp-badge--group * { color: #fff !important; }
-[data-theme="light"] .chat-row-grp-badge--channel,
-[data-theme="light"] .chat-row-grp-badge--channel * { color: #fff !important; }
-[data-theme="light"] .grp-picker-check.on,
-[data-theme="light"] .grp-picker-check.on * { color: #fff !important; }
-[data-theme="light"] .grp-privacy-opt.active,
-[data-theme="light"] .grp-privacy-opt.active * { color: #fff !important; }
-[data-theme="light"] .nav-center-btn,
-[data-theme="light"] .nav-center-btn * { color: #fff !important; }
-[data-theme="light"] .upload-progress-fill,
-[data-theme="light"] .upload-progress-fill * { color: #fff !important; }
-[data-theme="light"] .toggle input:checked + .toggle-track,
-[data-theme="light"] .toggle input:checked + .toggle-track * { color: #fff !important; }
-[data-theme="light"] .cmt-send,
-[data-theme="light"] .cmt-send * { color: #fff !important; }
-[data-theme="light"] .switch-toggle.on,
-[data-theme="light"] .switch-toggle.on * { color: #fff !important; }
-[data-theme="light"] .avi-edit-badge,
-[data-theme="light"] .avi-edit-badge * { color: #fff !important; }
-[data-theme="light"] ::selection { color: #fff !important; }
-[data-theme="light"] .nav-btn.on::before { color: #fff !important; }
-[data-theme="light"] .empty-cta,
-[data-theme="light"] .empty-cta * { color: #fff !important; }
-[data-theme="light"] .avatar-crop-save,
-[data-theme="light"] .avatar-crop-save * { color: #fff !important; }
-[data-theme="light"] .upload-file-icon.image,
-[data-theme="light"] .upload-file-icon.image * { color: #fff !important; }
-[data-theme="light"] .toast-progress,
-[data-theme="light"] .toast-progress * { color: #fff !important; }
-[data-theme="light"] .scroll-progress-bar,
-[data-theme="light"] .scroll-progress-bar * { color: #fff !important; }
-[data-theme="light"] .nav-badge,
-[data-theme="light"] .nav-badge * { color: #fff !important; }
-[data-theme="light"] .upload-float-bar,
-[data-theme="light"] .upload-float-bar * { color: #fff !important; }
-[data-theme="light"] .ufb-fill.indeterminate,
-[data-theme="light"] .ufb-fill.indeterminate * { color: #fff !important; }
-[data-theme="light"] .scroll-progress,
-[data-theme="light"] .scroll-progress * { color: #fff !important; }
-[data-theme="light"] .cc-btn--apply,
-[data-theme="light"] .cc-btn--apply * { color: #fff !important; }
-[data-theme="light"] .bc-send-btn,
-[data-theme="light"] .bc-send-btn * { color: #fff !important; }
-[data-theme="light"] .stats-ptab.active,
-[data-theme="light"] .stats-ptab.active * { color: #fff !important; }
-[data-theme="light"] .stats-top-avi,
-[data-theme="light"] .stats-top-avi * { color: #fff !important; }
-[data-theme="light"] .stats-top-bar-fill,
-[data-theme="light"] .stats-top-bar-fill * { color: #fff !important; }
+.ua-avi-placeholder,
+.ua-avi-placeholder * { color: #fff !important; }
+.ua-approve-btn,
+.ua-approve-btn * { color: #fff !important; }
+.ua-unlock-banner-btn,
+.ua-unlock-banner-btn * { color: #fff !important; }
+.ua-detail-tab.active,
+.ua-detail-tab.active * { color: #fff !important; }
+#chatThreadModal .chat-msg.theirs .cvm-bar.played,
+#chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: #fff !important; }
+.chat-row-badge,
+.chat-row-badge * { color: #fff !important; }
+.chat-thread-send,
+.chat-thread-send * { color: #fff !important; }
+.chat-thread-send:hover,
+.chat-thread-send:hover * { color: #fff !important; }
+.cv-pulse,
+.cv-pulse * { color: #fff !important; }
+.chat-voice-btn,
+.chat-voice-btn * { color: #fff !important; }
+.crb-line,
+.crb-line * { color: #fff !important; }
+.typing-dots span,
+.typing-dots span * { color: #fff !important; }
+.chat-voice-btn.recording,
+.chat-voice-btn.recording * { color: #fff !important; }
+.typing-dot,
+.typing-dot * { color: #fff !important; }
+#chatScrollDownBtn,
+#chatScrollDownBtn * { color: #fff !important; }
+.chat-msg.theirs .cvm-play,
+.chat-msg.theirs .cvm-play * { color: #fff !important; }
+.chat-msg.theirs .cvm-play:hover,
+.chat-msg.theirs .cvm-play:hover * { color: #fff !important; }
+.chat-msg.theirs .cvm-bar.played,
+.chat-msg.theirs .cvm-bar.played * { color: #fff !important; }
+.vmp-play,
+.vmp-play * { color: #fff !important; }
+.vmp-progress-fill,
+.vmp-progress-fill * { color: #fff !important; }
+[data-theme="dark"] .msg-out .msg-bubble,
+[data-theme="dark"] .msg-out .msg-bubble * { color: #fff !important; }
+[data-theme="dark"] .splash-fill,
+[data-theme="dark"] .splash-fill * { color: #fff !important; }
+[data-theme="dark"] .reel-progress-fill,
+[data-theme="dark"] .reel-progress-fill * { color: #fff !important; }
+.reel-progress-fill,
+.reel-progress-fill * { color: #fff !important; }
+.rcap-follow,
+.rcap-follow * { color: #fff !important; }
+.ufb-icon,
+.ufb-icon * { color: #fff !important; }
+.ufb-fill,
+.ufb-fill * { color: #fff !important; }
+.feed-empty-cta,
+.feed-empty-cta * { color: #fff !important; }
+.grp-avi-badge--group,
+.grp-avi-badge--group * { color: #fff !important; }
+.grp-avi-badge--channel,
+.grp-avi-badge--channel * { color: #fff !important; }
+.chat-row-grp-badge--group,
+.chat-row-grp-badge--group * { color: #fff !important; }
+.chat-row-grp-badge--channel,
+.chat-row-grp-badge--channel * { color: #fff !important; }
+.grp-picker-check.on,
+.grp-picker-check.on * { color: #fff !important; }
+.grp-privacy-opt.active,
+.grp-privacy-opt.active * { color: #fff !important; }
+.nav-center-btn,
+.nav-center-btn * { color: #fff !important; }
+.upload-progress-fill,
+.upload-progress-fill * { color: #fff !important; }
+.toggle input:checked + .toggle-track,
+.toggle input:checked + .toggle-track * { color: #fff !important; }
+.cmt-send,
+.cmt-send * { color: #fff !important; }
+.switch-toggle.on,
+.switch-toggle.on * { color: #fff !important; }
+.avi-edit-badge,
+.avi-edit-badge * { color: #fff !important; }
+.nav-btn.on::before { color: #fff !important; }
+.empty-cta,
+.empty-cta * { color: #fff !important; }
+.avatar-crop-save,
+.avatar-crop-save * { color: #fff !important; }
+.upload-file-icon.image,
+.upload-file-icon.image * { color: #fff !important; }
+.toast-progress,
+.toast-progress * { color: #fff !important; }
+.scroll-progress-bar,
+.scroll-progress-bar * { color: #fff !important; }
+.nav-badge,
+.nav-badge * { color: #fff !important; }
+.upload-float-bar,
+.upload-float-bar * { color: #fff !important; }
+.ufb-fill.indeterminate,
+.ufb-fill.indeterminate * { color: #fff !important; }
+.scroll-progress,
+.scroll-progress * { color: #fff !important; }
+.cc-btn--apply,
+.cc-btn--apply * { color: #fff !important; }
+.bc-send-btn,
+.bc-send-btn * { color: #fff !important; }
+.stats-ptab.active,
+.stats-ptab.active * { color: #fff !important; }
+.stats-top-avi,
+.stats-top-avi * { color: #fff !important; }
+.stats-top-bar-fill,
+.stats-top-bar-fill * { color: #fff !important; }
 
 /* ── Sidebar tuzatishlari ───────────────────────────────────────────────
    Faol tugma ostidagi chiziq/nur (ui-improvements.css) X uslubida yo'q:
@@ -542,3 +547,119 @@ nav.bot-nav #sbSearchToggle.search-active svg { stroke-width: 2.4; }
   nav.bot-nav .sb-account:hover { background: var(--bg4); }
   nav.bot-nav .sb-acc-name, nav.bot-nav .sb-acc-user { font-size: 15px; line-height: 20px; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   X 1:1 — aniq X ranglari va komponent holatlari (faqat CSS, mantiq yo'q)
+   Dark = "Lights out" (#000 / #16181c / #2f3336), Light = oq (#fff / #f7f9f9 / #eff3f4)
+   Ko'k #1d9bf0 = faol/aksent, oq(qora) pill = asosiy CTA (Next / Follow / Save)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+::selection { color: inherit !important; }
+
+/* Asosiy CTA: X'dagi kabi teskari pill (dark: oq/qora matn, light: qora/oq matn) */
+.btn-primary { background: var(--x-inv-bg); }
+.btn-primary:hover { background: var(--x-inv-bg-hover); }
+.btn-primary,
+.btn-primary *,
+.btn-primary:hover,
+.btn-primary:hover * { color: var(--x-inv-fg) !important; }
+
+/* Post / Reply tugmalari: X ko'ki, matn oq, o'chiq holatda 50% */
+#uploadOverlay .composer-post-btn,
+#uploadBtn.composer-post-btn { background: var(--x-blue); }
+#uploadBtn.composer-post-btn:hover:not(:disabled) { background: var(--x-blue-hover); }
+#uploadOverlay .composer-post-btn,
+#uploadOverlay .composer-post-btn *,
+#uploadOverlay .composer-post-btn:disabled,
+#uploadOverlay .composer-post-btn:disabled * { color: #fff !important; }
+#uploadOverlay .composer-post-btn:disabled { background: var(--x-blue) !important; opacity: .5; }
+
+/* Sidebar: X hover (10% shaffof) va ko'k Post */
+nav.bot-nav .nav-btn:hover,
+nav.bot-nav .sb-search-toggle:hover,
+nav.bot-nav .sb-account:hover { background: var(--hover-strong); }
+nav.bot-nav #createBtn.nav-center-btn { background: var(--x-blue); }
+nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
+
+/* Post qatori: X hover va harakat ranglari */
+.post:hover,
+[data-theme] .post:hover { background: var(--hover); border-color: var(--line); }
+
+.act-btn svg, .act-views svg { border-radius: 50%; }
+.act-btn:hover, .act-views:hover { background: none; color: var(--x-blue); }
+.act-btn:hover svg, .act-views:hover svg {
+  background: rgba(29, 155, 240, .10); box-shadow: 0 0 0 8px rgba(29, 155, 240, .10);
+}
+.like-btn:hover,
+.act-btn.liked,
+.act-btn.liked svg { color: var(--x-like); }
+.like-btn:hover svg,
+.act-btn.liked:hover svg {
+  background: rgba(249, 24, 128, .10); box-shadow: 0 0 0 8px rgba(249, 24, 128, .10);
+}
+
+/* O'ng ustun: X kartalari (chegarasiz, #16181c / #f7f9f9) */
+.rc-card { background: var(--bg3); border: none; }
+.rc-row:hover { background: var(--hover-strong); }
+.rc-search { background: var(--bg4); border: 1px solid transparent; }
+.rc-search:hover { background: var(--bg4); }
+
+/* Oyna / sheet: X overlay va soyasi (chegarasiz) */
+:root,
+[data-theme="dark"],
+[data-theme="light"] { --overlay: rgba(91, 112, 131, .40); }
+
+.sheet,
+[data-theme] .sheet,
+#uploadOverlay .composer-sheet,
+:is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet {
+  border: none;
+  box-shadow: rgba(101, 119, 134, .20) 0 0 15px, rgba(101, 119, 134, .15) 0 0 3px 1px;
+}
+#uploadOverlay .composer-close:hover { background: var(--hover-strong); }
+
+/* Fokus / drop: X ko'ki (dark-theme-fix.css dagi oq chegara o'rniga) */
+[data-theme] textarea:focus,
+[data-theme] input:focus,
+[data-theme] .chat-input-wrap:focus-within,
+[data-theme] .cmt-input:focus,
+[data-theme] .upload-drop:hover,
+.upload-drop:hover { border-color: var(--x-blue); }
+
+/* Toggle: ko'k trek, oq tugma */
+.toggle input:checked + .toggle-track::after,
+.switch-toggle.on .switch-knob { background: #fff !important; }
+
+/* Progress / ovoz: oq o'rniga X ko'ki */
+.cpb-progress-fill,
+.vmp-progress-fill,
+.vmp-play,
+.vc-fill,
+.vc-fill::after,
+.chat-voice-btn,
+#chatThreadModal .chat-msg.theirs .cvm-bar.played { background: var(--x-blue) !important; }
+.chat-voice-btn.recording { background: var(--red) !important; }
+#chatThreadModal .chat-msg.theirs .cvm-play,
+#chatThreadModal .chat-msg.theirs .cvm-play:hover { background: var(--x-blue) !important; }
+
+/* Suhbat (DM): yuborilgan = X ko'ki, kelgan = #2f3336 / #eff3f4, 22px yumaloq */
+#chatThreadModal,
+[data-theme] #chatThreadModal {
+  --c-bg-chat: var(--bg); --c-bg-pattern: var(--bg);
+  --c-bg-header: var(--bg); --c-bg-input: var(--bg4);
+  --c-bubble-in: var(--line); --c-bubble-out: var(--x-blue); --c-bubble-out2: var(--x-blue);
+  --c-text-1: var(--text); --c-text-2: var(--text2); --c-text-time: var(--text2);
+  --c-accent: var(--x-blue); --c-accent-2: var(--x-blue-hover); --c-tick-read: var(--x-blue);
+  --c-divider: var(--line); --c-danger: var(--red);
+}
+#chatThreadModal .chat-thread-messages { background-image: none; }
+#chatThreadModal .chat-bubble { font-size: 15px; line-height: 1.33; }
+#chatThreadModal .chat-msg.mine .chat-bubble {
+  background: var(--x-blue); color: #fff; border-radius: 22px 22px 4px 22px;
+}
+#chatThreadModal .chat-msg.theirs .chat-bubble {
+  background: var(--line); color: var(--text); border-radius: 22px 22px 22px 4px;
+}
+#chatThreadModal .chat-msg.mine .chat-bubble a { color: #fff; text-decoration: underline; }
+#chatThreadModal .chat-msg.mine .cvm-play { background: rgba(255,255,255,.25) !important; }

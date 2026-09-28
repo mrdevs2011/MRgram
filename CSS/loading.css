@@ -64,7 +64,7 @@
   padding: 20px;
   z-index: 100;
   background: var(--bg);
-  background-color: #181818;
+  background-color: #16181c;
 }
 
 #authWrap.show {
@@ -198,7 +198,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: #212121;
+  background: #202327;
   animation: none;
 }
 
@@ -260,7 +260,7 @@
 /* Dark mode auth */
 [data-theme="dark"] #authWrap {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  background-color: #181818;
+  background-color: #16181c;
 }
 
 /* [data-theme="dark"] .auth-card, .auth-brand → to'liq CSS/dark-theme-fix.css'da
@@ -293,18 +293,18 @@
 }
 
 [data-theme="dark"] #toast.toast-success {
-  background: #1a1a1a;
+  background: #16181c;
   border-color: #155234;
 }
 
 [data-theme="dark"] #toast.toast-error {
-  background: #1a1a1a;
+  background: #16181c;
   border-color: #521529;
 }
 
 [data-theme="dark"] #toast.toast-info {
-  background: #282828;
-  border-color: #393939;
+  background: #2f3336;
+  border-color: #2f3336;
 }
 
 [data-theme="light"] #toast.toast-success {
@@ -324,8 +324,8 @@
 
 /* Empty state theme aware */
 [data-theme="dark"] .empty-search-icon {
-  background: #181818;
-  border: 1px solid #202020;
+  background: #16181c;
+  border: 1px solid #202327;
 }
 
 [data-theme="light"] .empty-search-icon {
@@ -400,8 +400,8 @@
   max-width: 320px;
   width: 100%;
   box-shadow:
-    0 0 0 1px #141414,
-    0 8px 40px #222222,
+    0 0 0 1px #16181c,
+    0 8px 40px #202327,
     0 2px 8px #000000;
   transform: scale(0.88) translateY(12px);
   transition: none;
@@ -428,7 +428,7 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #1e1e1e;
+  background: #16181c;
   border: 1px solid #2c2c2c;
   display: flex;
   align-items: center;
@@ -463,7 +463,7 @@
   padding: 11px;
   border: none;
   border-radius: 12px;
-  background: #222222;
+  background: #202327;
   border: 1px solid #4E1928;
   color: #f04060;
   font-size: 14px;

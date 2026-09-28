@@ -7,38 +7,38 @@
 [data-theme="dark"] {
   --bg:           #000000;   /* Main App/Page Background (Primary) */
   --bg2:          #000000;   /* Primary — chat list rows, frost */
-  --bg3:          #121212;   /* Surface — headers, panels, sheets */
-  --bg4:          #1c1c1e;   /* Inputs / hover / search fields */
-  --bg5:          #262626;   /* Elevated hover / heavy surface */
+  --bg3:          #16181c;   /* Surface — headers, panels, sheets */
+  --bg4:          #16181c;   /* Inputs / hover / search fields */
+  --bg5:          #202327;   /* Elevated hover / heavy surface */
   /* --line/--line2/--line3 → CSS/borderless.css'da yengiladi (yagona manba) */
   --text:         #ffffff;   /* Main Text */
-  --text2:        #8a8a8a;   /* Muted / Secondary Text */
-  --text3:        #6b6b6b;
+  --text2:        #71767b;   /* Muted / Secondary Text */
+  --text3:        #71767b;
   --text4:        #4a4a4a;
   --blue:         #ffffff;   /* Primary Telegram Blue */
   --blue2:        #ffffff;
   --blue3:        #ffffff;
-  --blue-glow:    #181818;
-  --blue-glow2:   #141414;
+  --blue-glow:    #16181c;
+  --blue-glow2:   #16181c;
   --blue-glow3:   #000000;
   --red:          #ec5e6f;
-  --red-glow:     #1d1d1d;
+  --red-glow:     #16181c;
   --green:        #5acb8c;
-  --green-glow:   #161616;
+  --green-glow:   #16181c;
   --amber:        #f0a855;
 
   /* ── Dark — pure black spec, dedicated names ── */
   --tg-bg:        #000000;   /* Main Page/App Background */
-  --tg-surface:   #121212;   /* Chat Area/Header/Panels Background */
-  --tg-input:     #1c1c1e;   /* Inputs / Search Fields Background */
+  --tg-surface:   #16181c;   /* Chat Area/Header/Panels Background */
+  --tg-input:     #16181c;   /* Inputs / Search Fields Background */
   --tg-blue:      #ffffff;   /* Primary Telegram Blue */
-  --tg-out:       #2f2f2f;   /* Outgoing Message Bubble */
-  --tg-in:        #1c1c1e;   /* Incoming Message Bubble */
+  --tg-out:       #2f3336;   /* Outgoing Message Bubble */
+  --tg-in:        #16181c;   /* Incoming Message Bubble */
   --tg-text:      #ffffff;   /* Main Text Color */
-  --tg-muted:     #8a8a8a;   /* Muted / Secondary Text Color */
+  --tg-muted:     #71767b;   /* Muted / Secondary Text Color */
 
   /* ── Icon system aliases ── */
-  --tg-text-muted:   #929292;  /* default icon color */
+  --tg-text-muted:   #71767b;  /* default icon color */
   --tg-primary-blue: #ffffff;  /* active / selected icon color */
   --tg-text-main:    #ffffff;  /* active icon color on filled/dark surfaces */
 
@@ -66,8 +66,8 @@
 
 /* Dark — glass element overrides */
 [data-theme="dark"] .post {
-  background: #212121;
-  border: 0.5px solid #323232;
+  background: #202327;
+  border: 0.5px solid #2f3336;
   box-shadow: var(--specular-top), var(--liquid-shadow-sm);
 }
 

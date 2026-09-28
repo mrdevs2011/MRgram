@@ -20,15 +20,15 @@
   --glass:             var(--bg3);
   --glass-mid:         var(--bg4);
   --glass-heavy:       var(--bg5);
-  --glass-border:      #1c1c1e;
-  --glass-border-top:  #262626;
+  --glass-border:      #16181c;
+  --glass-border-top:  #202327;
   --glass-shine:       var(--bg4);
   --glass-blur:        none;
   --glass-blur-heavy:  none;
   --glass-blur-light:  none;
 
-  --specular-top:   inset 0 1px 0 #262626;
-  --specular-edge:  inset 0 0 0 0.5px #1f1f1f;
+  --specular-top:   inset 0 1px 0 #202327;
+  --specular-edge:  inset 0 0 0 0.5px #16181c;
 
   --liquid-shadow-sm: 0 4px 20px #000000, 0 1px 4px #000000;
   --liquid-shadow-md: 0 8px 36px #000000, 0 2px 10px #000000;
@@ -45,8 +45,8 @@
 [data-theme="dark"] body {
   background-color: #000000;
   background-image:
-    #121212,
-    #121212,
+    #16181c,
+    #16181c,
     #111111;
 }
 
@@ -81,7 +81,7 @@
 
 /* Post head subtle separator */
 [data-theme="dark"] .post-head {
-  border-bottom: 0.5px solid #121212;
+  border-bottom: 0.5px solid #16181c;
 }
 
 /* Post gradient border on hover — more subtle */
@@ -96,19 +96,19 @@
 
 /* ── Post action buttons ── */
 [data-theme="dark"] .post-stats {
-  border-top: 0.5px solid #121212;
-  border-bottom: 0.5px solid #121212;
+  border-top: 0.5px solid #16181c;
+  border-bottom: 0.5px solid #16181c;
   color: var(--text3);
 }
 
 [data-theme="dark"] .act-btn {
   color: var(--text2);
-  border-right: 0.5px solid #121212;
+  border-right: 0.5px solid #16181c;
   transition: none;
 }
 
 [data-theme="dark"] .act-btn:hover {
-  background: #121212;
+  background: #16181c;
   color: var(--text);
 }
 
@@ -118,14 +118,14 @@
    5. AVATAR — Avatar halqasi
    ══════════════════════════════════════════ */
 [data-theme="dark"] .avi {
-  border: 0.5px solid #1c1c1e;
-  box-shadow: inset 0 1px 0 #1c1c1e, 0 2px 8px #000000;
-  background: #121212;
+  border: 0.5px solid #16181c;
+  box-shadow: inset 0 1px 0 #16181c, 0 2px 8px #000000;
+  background: #16181c;
 }
 
 [data-theme="dark"] .avi:hover {
   border-color: #ffffff;
-  box-shadow: inset 0 1px 0 #262626, 0 0 0 3px #181818;
+  box-shadow: inset 0 1px 0 #202327, 0 0 0 3px #16181c;
 }
 
 /* ══════════════════════════════════════════
@@ -142,9 +142,9 @@
    here — same reasoning as the header/post fix above. */
 
 [data-theme="dark"] .nav-btn.on {
-  background: #181818;
-  border: 0.5px solid #1c1c1e;
-  box-shadow: inset 0 1px 0 #262626, 0 0 0 2px #000000;
+  background: #16181c;
+  border: 0.5px solid #16181c;
+  box-shadow: inset 0 1px 0 #202327, 0 0 0 2px #000000;
 }
 
 /* ══════════════════════════════════════════
@@ -152,14 +152,14 @@
    ══════════════════════════════════════════ */
 [data-theme="dark"] .sheet {
   background: #000000;
-  border-top: 0.5px solid #262626;
+  border-top: 0.5px solid #202327;
   box-shadow:
-    inset 0 1px 0 #262626,
+    inset 0 1px 0 #202327,
     0 -12px 56px #000000;
 }
 
 [data-theme="dark"] .sheet-handle {
-  background: #262626;
+  background: #202327;
 }
 
 /* ══════════════════════════════════════════
@@ -167,9 +167,9 @@
    ══════════════════════════════════════════ */
 [data-theme="dark"] .modal-content {
   background: #000000;
-  border: 0.5px solid #1c1c1e;
+  border: 0.5px solid #16181c;
   box-shadow:
-    inset 0 1px 0 #262626,
+    inset 0 1px 0 #202327,
     0 24px 72px #000000;
 }
 
@@ -183,9 +183,9 @@
 [data-theme="dark"] .field,
 [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
 [data-theme="dark"] textarea {
-  background: #262626;
-  border: 0.5px solid #1c1c1e;
-  box-shadow: inset 0 1px 0 #1c1c1e;
+  background: #202327;
+  border: 0.5px solid #16181c;
+  box-shadow: inset 0 1px 0 #16181c;
   color: var(--text);
   caret-color: var(--blue);
 }
@@ -193,11 +193,11 @@
 [data-theme="dark"] .field:focus,
 [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):focus,
 [data-theme="dark"] textarea:focus {
-  background: #262626;
+  background: #202327;
   border-color: #ffffff;
   box-shadow:
-    inset 0 1px 0 #1c1c1e,
-    0 0 0 3px #181818;
+    inset 0 1px 0 #16181c,
+    0 0 0 3px #16181c;
   outline: none;
 }
 
@@ -213,14 +213,14 @@
 [data-theme="dark"] #authWrap {
   background: #000000;
   background-image:
-    #141414;
+    #16181c;
 }
 
 [data-theme="dark"] .auth-card {
-  background: #121212;
-  border: 0.5px solid #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
   box-shadow:
-    inset 0 1px 0 #262626,
+    inset 0 1px 0 #202327,
     0 24px 72px #000000;
 }
 
@@ -244,28 +244,28 @@
 [data-theme="dark"] .profile-avi {
   border: 0.5px solid #2D2D33;
   box-shadow:
-    inset 0 1px 0 #262626,
+    inset 0 1px 0 #202327,
     0 6px 20px #000000;
 }
 
 [data-theme="dark"] .profile-avi:hover {
   border-color: #ffffff;
   box-shadow:
-    inset 0 1px 0 #262626,
+    inset 0 1px 0 #202327,
     0 0 0 4px #252525,
     0 8px 28px #000000;
 }
 
 [data-theme="dark"] .edit-btn {
-  background: #121212;
-  border: 0.5px solid #1c1c1e;
-  box-shadow: inset 0 1px 0 #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
+  box-shadow: inset 0 1px 0 #16181c;
   color: var(--text);
 }
 
 [data-theme="dark"] .edit-btn:hover {
-  background: #1c1c1e;
-  border-color: #262626;
+  background: #16181c;
+  border-color: #202327;
 }
 
 /* Profile grid tabs */
@@ -282,8 +282,8 @@
 
 /* Profile grid cells */
 [data-theme="dark"] .grid-cell {
-  background: #121212;
-  border: 0.5px solid #121212;
+  background: #16181c;
+  border: 0.5px solid #16181c;
 }
 
 [data-theme="dark"] .grid-cell:hover {
@@ -295,26 +295,26 @@
    12. FILE CARD — Panel
    ══════════════════════════════════════════ */
 [data-theme="dark"] .file-card {
-  background: #121212;
-  border: 0.5px solid #222222;
-  box-shadow: inset 0 1px 0 #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #202327;
+  box-shadow: inset 0 1px 0 #16181c;
 }
 
 [data-theme="dark"] .file-card:hover {
-  background: #121212;
+  background: #16181c;
   border-color: #2D2D33;
   /* box-shadow → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
 }
 
 [data-theme="dark"] .file-dl {
-  background: #141414;
-  border: 0.5px solid #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
   color: var(--blue2);
-  box-shadow: inset 0 1px 0 #1c1c1e;
+  box-shadow: inset 0 1px 0 #16181c;
 }
 
 [data-theme="dark"] .file-dl:hover {
-  background: #181818;
+  background: #16181c;
   border-color: #3a3a3a;
 }
 
@@ -322,11 +322,11 @@
    13. CHAT — Xabar pufakchalari
    ══════════════════════════════════════════ */
 [data-theme="dark"] .chat-row:hover {
-  background: #121212;
+  background: #16181c;
 }
 
 [data-theme="dark"] .chat-row:active {
-  background: #121212;
+  background: #16181c;
 }
 
 [data-theme="dark"] .msg-out .msg-bubble {
@@ -337,28 +337,28 @@
 }
 
 [data-theme="dark"] .msg-in .msg-bubble {
-  background: #121212;
+  background: #16181c;
   /* border, box-shadow → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
   color: var(--text);
 }
 
 [data-theme="dark"] .chat-input-bar {
   background: #000000;
-  border-top: 0.5px solid #1c1c1e;
-  box-shadow: inset 0 1px 0 #121212;
+  border-top: 0.5px solid #16181c;
+  box-shadow: inset 0 1px 0 #16181c;
 }
 
 [data-theme="dark"] .chat-input-wrap {
-  background: #121212;
-  border: 0.5px solid #1c1c1e;
-  box-shadow: inset 0 1px 0 #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
+  box-shadow: inset 0 1px 0 #16181c;
 }
 
 [data-theme="dark"] .chat-input-wrap:focus-within {
   border-color: #ffffff;
   box-shadow:
-    inset 0 1px 0 #1c1c1e,
-    0 0 0 3px #141414;
+    inset 0 1px 0 #16181c,
+    0 0 0 3px #16181c;
 }
 
 /* ══════════════════════════════════════════
@@ -369,22 +369,22 @@
 }
 
 [data-theme="dark"] .search-overlay-box {
-  background: #121212;
-  border: 0.5px solid #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
   box-shadow:
     inset 0 1px 0 #2D2D33,
     0 8px 40px #000000;
 }
 
 [data-theme="dark"] .search-overlay-close {
-  background: #1c1c1e;
-  border: 0.5px solid #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
   color: var(--text2);
-  box-shadow: inset 0 1px 0 #1c1c1e;
+  box-shadow: inset 0 1px 0 #16181c;
 }
 
 [data-theme="dark"] .search-overlay-close:hover {
-  background: #1c1c1e;
+  background: #16181c;
   color: var(--text);
 }
 
@@ -392,11 +392,11 @@
    15. TOAST — Pill
    ══════════════════════════════════════════ */
 [data-theme="dark"] #toast {
-  background: #121212;
-  border: 0.5px solid #262626;
+  background: #16181c;
+  border: 0.5px solid #202327;
   color: var(--text);
   box-shadow:
-    inset 0 1px 0 #262626,
+    inset 0 1px 0 #202327,
     0 8px 36px #000000;
 }
 
@@ -404,16 +404,16 @@
    16. BADGES — Pills
    ══════════════════════════════════════════ */
 [data-theme="dark"] .badge-pub {
-  background: #141414;
+  background: #16181c;
   color: var(--blue2);
-  border: 0.5px solid #1c1c1e;
-  box-shadow: inset 0 1px 0 #1c1c1e;
+  border: 0.5px solid #16181c;
+  box-shadow: inset 0 1px 0 #16181c;
 }
 
 [data-theme="dark"] .badge-priv {
-  background: #121212;
+  background: #16181c;
   color: var(--text3);
-  border: 0.5px solid #1c1c1e;
+  border: 0.5px solid #16181c;
 }
 
 /* ══════════════════════════════════════════
@@ -422,11 +422,11 @@
 [data-theme="dark"] .del-btn { color: var(--text3); }
 [data-theme="dark"] .del-btn:hover {
   color: var(--red);
-  background: #181818;
+  background: #16181c;
 }
 
 [data-theme="dark"] .hdr-icon-btn:hover {
-  background: #121212;
+  background: #16181c;
 }
 
 /* ══════════════════════════════════════════
@@ -434,23 +434,23 @@
    ══════════════════════════════════════════ */
 [data-theme="dark"] #detailContent {
   background: #000000;
-  border: 0.5px solid #1c1c1e;
+  border: 0.5px solid #16181c;
   box-shadow:
-    inset 0 1px 0 #262626,
+    inset 0 1px 0 #202327,
     0 -12px 56px #000000;
 }
 
 [data-theme="dark"] .dm-act:hover {
-  background: #121212;
+  background: #16181c;
 }
 
 [data-theme="dark"] .dm-close {
-  background: #121212;
-  border: 0.5px solid #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
 }
 
 [data-theme="dark"] .dm-close:hover {
-  background: #222222;
+  background: #202327;
 }
 
 /* ══════════════════════════════════════════
@@ -458,13 +458,13 @@
    ══════════════════════════════════════════ */
 [data-theme="dark"] .skeleton-post {
   background: #000000;
-  border: 0.5px solid #121212;
+  border: 0.5px solid #16181c;
 }
 
 [data-theme="dark"] .skel-avi,
 [data-theme="dark"] .skel-line,
 [data-theme="dark"] .skel-media {
-  background: #121212;
+  background: #16181c;
   background-size: 200% 100%;
 }
 
@@ -474,13 +474,13 @@
 [data-theme="dark"] #splash {
   background: #000000;
   background-image:
-    #121212;
+    #16181c;
 }
 
 [data-theme="dark"] .splash-wordmark { color: var(--text); }
 
 [data-theme="dark"] .splash-bar {
-  background: #121212;
+  background: #16181c;
   /* border → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
   border-radius: 8px;
   overflow: hidden;
@@ -497,15 +497,15 @@
 [data-theme="dark"] .onb-card,
 [data-theme="dark"] .admin-card,
 [data-theme="dark"] .verify-card {
-  background: #121212;
-  border: 0.5px solid #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
   box-shadow:
-    inset 0 1px 0 #1c1c1e,
+    inset 0 1px 0 #16181c,
     0 4px 20px #000000;
 }
 
 [data-theme="dark"] .admin-card:hover {
-  border-color: #2f2f2f;
+  border-color: #2f3336;
   /* box-shadow → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
 }
 
@@ -514,11 +514,11 @@
    ══════════════════════════════════════════ */
 [data-theme="dark"] .sb-item { color: var(--text2); }
 [data-theme="dark"] .sb-item:hover {
-  background: #121212;
+  background: #16181c;
   color: var(--text);
 }
 [data-theme="dark"] .sb-item.active {
-  background: #141414;
+  background: #16181c;
   color: var(--blue2);
 }
 
@@ -528,11 +528,11 @@
 [data-theme="dark"] ::-webkit-scrollbar { width: 3px; height: 3px; }
 [data-theme="dark"] ::-webkit-scrollbar-track { background: transparent; }
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #1c1c1e;
+  background: #16181c;
   border-radius: 3px;
 }
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: #262626;
+  background: #202327;
 }
 
 /* ══════════════════════════════════════════
@@ -549,14 +549,14 @@
 [data-theme="dark"] .reel { background: #000000; }
 
 [data-theme="dark"] .reel-avi {
-  border: 1.5px solid #262626;
+  border: 1.5px solid #202327;
   box-shadow: 0 2px 12px #000000;
 }
 
 [data-theme="dark"] .reel-top-btn,
 [data-theme="dark"] .reel-vol-top {
   background: #000000;
-  border: 0.5px solid #1c1c1e;
+  border: 0.5px solid #16181c;
 }
 
 /* ══════════════════════════════════════════
@@ -565,7 +565,7 @@
 [data-theme="dark"] .theme-btn { color: var(--text2); }
 
 [data-theme="dark"] .theme-btn:hover {
-  background: #121212;
+  background: #16181c;
   color: var(--text);
 }
 
@@ -573,10 +573,10 @@
    27. FLOATING UPLOAD BAR — Pill
    ══════════════════════════════════════════ */
 [data-theme="dark"] .upload-float-bar {
-  background: #121212;
-  border: 0.5px solid #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
   box-shadow:
-    inset 0 1px 0 #262626,
+    inset 0 1px 0 #202327,
     0 8px 36px #000000;
 }
 
@@ -584,18 +584,18 @@
    28. VISIBILITY ROW & UPLOAD SHEET — Panel
    ══════════════════════════════════════════ */
 [data-theme="dark"] .visibility-row {
-  background: #121212;
-  border: 0.5px solid #222222;
+  background: #16181c;
+  border: 0.5px solid #202327;
 }
 
 [data-theme="dark"] .visibility-row.is-public {
-  border-color: #2f2f2f;
+  border-color: #2f3336;
   background: #000000;
 }
 
 [data-theme="dark"] .upload-drop {
   background: #000000;
-  border: 1px dashed #1c1c1e;
+  border: 1px dashed #16181c;
 }
 
 [data-theme="dark"] .upload-drop:hover {
@@ -605,8 +605,8 @@
 
 [data-theme="dark"] .upload-drop.drag-over {
   border-color: var(--blue);
-  background: #121212;
-  box-shadow: 0 0 0 3px #181818, inset 0 1px 0 #1c1c1e;
+  background: #16181c;
+  box-shadow: 0 0 0 3px #16181c, inset 0 1px 0 #16181c;
 }
 
 /* ══════════════════════════════════════════
@@ -619,36 +619,36 @@
 [data-theme="dark"] .feed-empty-icon,
 [data-theme="dark"] .empty-icon,
 [data-theme="dark"] .empty-search-icon {
-  background: #121212;
-  border: 0.5px solid #282828;
-  box-shadow: inset 0 1px 0 #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #2f3336;
+  box-shadow: inset 0 1px 0 #16181c;
 }
 
 /* ══════════════════════════════════════════
    30. COMMENTS MODAL — Panel
    ══════════════════════════════════════════ */
 [data-theme="dark"] .cmt-body {
-  background: #121212;
-  border: 0.5px solid #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
 }
 
 [data-theme="dark"] .cmt-body:hover {
-  background: #121212;
-  border-color: #1c1c1e;
+  background: #16181c;
+  border-color: #16181c;
 }
 
 [data-theme="dark"] .cmt-input {
-  background: #121212;
-  border: 0.5px solid #1c1c1e;
+  background: #16181c;
+  border: 0.5px solid #16181c;
 }
 
 [data-theme="dark"] .cmt-input:focus {
-  background: #121212;
+  background: #16181c;
   border-color: #ffffff;
-  box-shadow: 0 0 0 3px #141414;
+  box-shadow: 0 0 0 3px #16181c;
 }
 
 [data-theme="dark"] .cmt-input-row {
-  border-top: 0.5px solid #1c1c1e;
+  border-top: 0.5px solid #16181c;
 }
 

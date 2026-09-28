@@ -136,7 +136,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #161616;
+  background: #16181c;
   border: 1px solid var(--line2);
   border-radius: 12px;
   color: var(--text2);
@@ -145,7 +145,7 @@
 }
 
 .settings-icon-btn:hover {
-  background: #1d1d1d;
+  background: #16181c;
   border-color: var(--line3);
   color: var(--text);
 }
@@ -246,7 +246,7 @@
 }
 
 .settings-more-btn:hover {
-  background: #1d1d1d;
+  background: #16181c;
   color: var(--text2);
 }
 
@@ -256,7 +256,7 @@
   right: 0;
   min-width: 220px;
   padding: 4px;
-  background: #191919;
+  background: #16181c;
   border: 1px solid var(--line2);
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0,0.45);
@@ -301,7 +301,7 @@
 }
 
 .edit-btn:hover {
-  background: #1d1d1d;
+  background: #16181c;
   border-color: var(--line3);
 }
 
@@ -394,7 +394,7 @@
 
 .up-cover {
   height: 180px;
-  background: #202020;
+  background: #202327;
   position: relative;
   overflow: visible;
 }
@@ -424,8 +424,8 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: #2f2f2f,
-              #1c1c1c;
+  background: #2f3336,
+              #16181c;
   pointer-events: none;
   clip-path: inset(0);
 }
@@ -628,12 +628,12 @@
    bu yerdagi qoidalar o'lik edi */
 
 [data-theme="dark"] .profile-stat {
-  background: #181818;
-  border: 1px solid #202020;
+  background: #16181c;
+  border: 1px solid #202327;
 }
 
 [data-theme="dark"] .profile-stat:hover {
-  background: #212121;
+  background: #202327;
   border-color: #2D2D33;
 }
 
@@ -669,7 +669,7 @@
 
 [data-theme="dark"] .profile-grid-tab.active {
   /* color, border-bottom-color → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  background: #1f1f1f;
+  background: #16181c;
 }
 
 [data-theme="light"] .profile-grid-tab {
@@ -791,23 +791,23 @@
 
 /* Dynamic cover gradient based on user */
 .up-cover-gradient-1 {
-  background: #202020;
+  background: #202327;
 }
 
 .up-cover-gradient-2 {
-  background: #191919;
+  background: #16181c;
 }
 
 .up-cover-gradient-3 {
-  background: #191919;
+  background: #16181c;
 }
 
 .up-cover-gradient-4 {
-  background: #191919;
+  background: #16181c;
 }
 
 .up-cover-gradient-5 {
-  background: #191919;
+  background: #16181c;
 }
 
 /* Cover animation on load */
@@ -834,7 +834,7 @@
   --pg-glass-mid:    var(--bg4);
   --pg-glass-strong: var(--bg5);
   --pg-border-top:   #444449;
-  --pg-border-side:  #222222;
+  --pg-border-side:  #202327;
   --pg-blur:         none;
   --pg-blur-light:   none;
   --pg-hdr-bg:       var(--bg2);
@@ -956,7 +956,7 @@
   box-shadow: 0 4px 24px #000000;
 }
 .avi-zoom-edit-btn:hover {
-  background: #323232;
+  background: #2f3336;
   border-color: #ffffff;
   transform: translateX(-50%) scale(1.04);
 }
@@ -969,7 +969,7 @@
   transition: none;
 }
 #upAviImg:hover {
-  box-shadow: 0 0 0 4px #393939, 0 6px 24px #000000;
+  box-shadow: 0 0 0 4px #2f3336, 0 6px 24px #000000;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -1245,7 +1245,7 @@ a.profile-meta-link:hover { text-decoration: underline; }
   transition: none;
   border-radius: 12px;
 }
-.settings-profile-card:hover { background: #161616; }
+.settings-profile-card:hover { background: #16181c; }
 
 .settings-profile-avi {
   width: 56px;

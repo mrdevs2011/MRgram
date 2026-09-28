@@ -196,7 +196,7 @@ body:has(.search-overlay.open) .app-hdr {
   display: none; /* hidden on mobile; shown on desktop search-open */
   align-items: center;
   gap: 6px;
-  background: #161616;
+  background: #16181c;
   border: 1px solid var(--line);
   border-radius: 50px;
   padding: 6px 10px;
@@ -205,9 +205,9 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .hdr-search:focus-within {
-  border-color: #323232;
-  background: #121212;
-  box-shadow: 0 0 0 3px #141414;
+  border-color: #2f3336;
+  background: #16181c;
+  box-shadow: 0 0 0 3px #16181c;
 }
 
 .hdr-search input {
@@ -241,7 +241,7 @@ body:has(.search-overlay.open) .app-hdr {
   flex-shrink: 0;
   transition: none;
 }
-.hdr-mute-btn:hover { background: #212121; color: var(--text); }
+.hdr-mute-btn:hover { background: #202327; color: var(--text); }
 .hdr-mute-btn.is-unmuted { color: var(--blue); }
 
 /* ── Header New Post Button (Mobile) ── */
@@ -375,7 +375,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 .avi:hover {
   border-color: #464646;
-  box-shadow: var(--specular-top), 0 0 0 3px #222222;
+  box-shadow: var(--specular-top), 0 0 0 3px #202327;
 }
 .avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
@@ -403,13 +403,13 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .badge-pub {
-  background: #1e1e1e;
+  background: #16181c;
   color: var(--blue);
-  border: 1px solid #2b2b2b;
+  border: 1px solid #202327;
 }
 
 .badge-priv {
-  background: #161616;
+  background: #16181c;
   color: var(--text3);
   border: 1px solid var(--line);
 }
@@ -463,7 +463,7 @@ body:has(.search-overlay.open) .app-hdr {
 /* Media hali to'liq yuklanmagan holat: o'lchami saqlanadi, faqat blur bilan.
    Post matni buldMedia'dan alohida chizilgani uchun har doim darrov o'qiladi. */
 .post-media.pm-loading {
-  background: #2a2a2a;
+  background: #202327;
 }
 .post-media.pm-loading img,
 .post-media.pm-loading video {
@@ -600,7 +600,7 @@ body:has(.search-overlay.open) .app-hdr {
   width: 42px; height: 42px;
   border-radius: 12px;
   background: var(--blue-glow2);
-  border: 1px solid #282828;
+  border: 1px solid #2f3336;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -627,7 +627,7 @@ body:has(.search-overlay.open) .app-hdr {
 .file-dl {
   padding: 7px 14px;
   background: var(--blue-glow2);
-  border: 1px solid #2b2b2b;
+  border: 1px solid #202327;
   border-radius: 10px;
   color: var(--blue);
   font-size: 12px;
@@ -639,7 +639,7 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .file-dl:hover {
-  background: #282828;
+  background: #2f3336;
 }
 
 /* ── Stats & Actions ── */
@@ -679,7 +679,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 .act-btn:last-child { border-right: none; }
 .act-btn:hover {
-  background: #161616;
+  background: #16181c;
   color: var(--text);
 }
 .act-btn:active {transition: none; }
@@ -722,22 +722,22 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 [data-theme="dark"] .reel-follow {
-  background: #323232;
-  border: 1px solid #343434;
+  background: #2f3336;
+  border: 1px solid #2f3336;
 }
 
 [data-theme="dark"] .reel-follow:hover {
-  background: #343434;
+  background: #2f3336;
 }
 
 [data-theme="dark"] .reel-follow.following {
-  background: #2f2f2f;
-  border-color: #393939;
+  background: #2f3336;
+  border-color: #2f3336;
 }
 
 /* Light mode reels */
 [data-theme="light"] .reel {
-  background: #262626;
+  background: #202327;
 }
 
 [data-theme="light"] .reel-avi {
@@ -764,7 +764,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* Progress bar theme aware */
 [data-theme="dark"] .reel-progress-track {
-  background: #343434;
+  background: #2f3336;
 }
 
 [data-theme="dark"] .reel-progress-fill {
@@ -784,7 +784,7 @@ body:has(.search-overlay.open) .app-hdr {
 /* Reel pause icon theme aware */
 [data-theme="dark"] .reel-pause-icon {
   background: #000000;
-  border: 1px solid #323232;
+  border: 1px solid #2f3336;
 }
 
 [data-theme="light"] .reel-pause-icon {
@@ -810,7 +810,7 @@ body:has(.search-overlay.open) .app-hdr {
 .reel-progress-track {
   width: 100%;
   height: 3px;
-  background: #343434;
+  background: #2f3336;
   border-radius: 2px;
   overflow: hidden;
   pointer-events: none;
@@ -826,7 +826,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* ── Reel Caption Sheet ── */
 #reelCapSheet .sheet {
-  background: #181818;
+  background: #16181c;
 }
 
 /* ── YouTube Shorts top bar controls ── */
@@ -1248,7 +1248,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 [data-theme="dark"] .skeleton-post {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  border-color: #202020;
+  border-color: #202327;
 }
 
 [data-theme="light"] .skeleton-post {
@@ -1296,7 +1296,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* ── YouTube Like (thumbs up) active state ── */
 .reel-like-btn.liked .reel-act-icon {
-  background: #343434;
+  background: #2f3336;
 }
 .reel-like-btn.liked svg {
   fill: #fff;
@@ -1450,7 +1450,7 @@ body:has(.search-overlay.open) .app-hdr {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #323232;
+  background: #2f3336;
   animation: none;
 }
 
@@ -1505,7 +1505,7 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .feed-empty-cta:hover {
-  box-shadow: 0 6px 20px #323232;
+  box-shadow: 0 6px 20px #2f3336;
 }
 
 /* ── Admin delete bar ──────────────────────────────────────────────── */
@@ -1514,8 +1514,8 @@ body:has(.search-overlay.open) .app-hdr {
   align-items: center;
   justify-content: space-between;
   padding: 6px 12px;
-  background: #121212;
-  border-bottom: 1px solid #202020;
+  background: #16181c;
+  border-bottom: 1px solid #202327;
   border-radius: 12px 12px 0 0;
 }
 
@@ -1546,7 +1546,7 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .admin-del-btn:hover {
-  background: #1a1a1a;
+  background: #16181c;
   border-color: #871A1D;
 }
 
