@@ -1060,24 +1060,29 @@ html, body, #app, .app {
   border-radius: 50%;
   background: #202327;
   flex-shrink: 0;
-  overflow: hidden;
+  overflow: visible; /* presence dot tashqariga chiqsin */
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
 }
-.rr-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rr-avi img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  border-radius: 50%;
+}
 
 .rr-avi .rr-dot {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 11px;
-  height: 11px;
+  right: -1px;
+  bottom: -1px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: #00ba7c;
   border: 2px solid #000;
   box-sizing: border-box;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .rr-meta { min-width: 0; flex: 1; }

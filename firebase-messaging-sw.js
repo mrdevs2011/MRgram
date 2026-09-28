@@ -73,7 +73,7 @@ self.addEventListener('notificationclick', (event) => {
 /* ── Cache versiyasi ── */
 // Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
 // bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 't-1790621552068'; /* BUILD_VERSION_LINE */
+const CACHE_VERSION  = 't-1790622705835'; /* BUILD_VERSION_LINE */
 const STATIC_CACHE   = `mrspace-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `mrspace-runtime-${CACHE_VERSION}`;
 

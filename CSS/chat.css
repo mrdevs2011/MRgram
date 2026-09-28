@@ -46,6 +46,8 @@
   background: var(--glass-mid);
   border: 0.5px solid var(--glass-border);
   box-shadow: var(--specular-top);
+  position: relative;
+  overflow: visible; /* presence-dot kesilmasin */
 }
 .chat-avi img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
 

@@ -4,15 +4,18 @@ function _injectPresenceCSS() {
   const s = document.createElement('style');
   s.id = 'chat-presence-css';
   s.textContent = `
-.chat-avi { position: relative; }
+.chat-avi { position: relative; overflow: visible !important; }
+.chat-avi img { border-radius: 50%; }
 .presence-dot {
   position: absolute;
   right: -1px; bottom: -1px;
-  width: 11px; height: 11px;
+  width: 12px; height: 12px;
   background: #3ecf8e;
   border: 2px solid var(--bg1, #1a1a1a);
   border-radius: 50%;
   box-shadow: 0 0 0 1px rgba(0, 0, 0,0.15);
+  z-index: 2;
+  pointer-events: none;
 }
 #chatTypingStatus {
   font-size: 12.5px;
