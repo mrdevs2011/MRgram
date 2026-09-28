@@ -1898,7 +1898,7 @@ async function uploadViaControllerProgress(file, folder, onProgress) {
   if (!token || !state.me) throw new Error('Tizimga kirilmagan');
 
   const safeName = file.name.replace(/[^\w.\-]/g, '_').replace(/_+/g, '_');
-  const path = `${state.me.uid}/${folder}/${Date.now()}_${safeName}`;
+  const path = `${state.me.uid}/${folder}/${Date.now()}_${(crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2))}_${safeName}`;
   const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${MEDIA_BUCKET}/${path}`;
 
   return new Promise((resolve, reject) => {

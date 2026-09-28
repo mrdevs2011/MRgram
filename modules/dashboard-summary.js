@@ -107,7 +107,7 @@ export function initDashboardSummary(containerId) {
       if (dead) return;
       _usersSnapCache = rows.map(mapProfile).filter(u => u.uid !== state.me?.uid);
       _render(containerId);
-    } catch (_) {}
+    } catch (e) { console.warn('[dashboard-summary]', e?.message || e); }
   };
   // presence (last_seen) yangilanishlari ko'p — UPDATE'larni siyraklashtiramiz
   const schedule = ev => { clearTimeout(timer); timer = setTimeout(load, ev === 'UPDATE' ? 5000 : 400); };

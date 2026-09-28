@@ -118,7 +118,7 @@ export async function getMediaUrl(post) {
 export async function uploadViaController(file, folder = 'posts') {
   if (!state.me) throw new Error('Tizimga kirilmagan');
   const safeName = file.name.replace(/[^\w.\-]/g, '_').replace(/_+/g, '_');
-  const path = `${state.me.uid}/${folder}/${Date.now()}_${safeName}`;
+  const path = `${state.me.uid}/${folder}/${Date.now()}_${(crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2))}_${safeName}`;
   const { data, error } = await sb.storage.from(MEDIA_BUCKET).upload(path, file, {
     contentType: file.type || 'application/octet-stream',
     upsert: false,

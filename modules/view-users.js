@@ -28,7 +28,7 @@ async function _invalidateAndRefreshFeed(uid) {
     // ham ko'rinib turadi (5 daqiqagacha eski keshdan o'qilardi).
     const { invalidateChatsUsersCache } = await import('./chat.js');
     await invalidateChatsUsersCache();
-  } catch(_) {}
+  } catch (e) { console.warn('[view-users]', e?.message || e); }
 }
 
 let _unsubUsers = null;

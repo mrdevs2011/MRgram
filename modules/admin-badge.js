@@ -37,7 +37,7 @@ export function initAdminBadge() {
       if (error || dead) return;
       _pendingCount = count || 0;
       _updateBadge();
-    } catch (_) {}
+    } catch (e) { console.warn('[admin-badge]', e?.message || e); }
   };
   const schedule = ev => { clearTimeout(timer); timer = setTimeout(recount, ev === 'UPDATE' ? 3000 : 300); };
   recount();

@@ -16,9 +16,16 @@ if (!url || !key) {
   process.exit(0);
 }
 
+const turnUrls = process.env.TURN_URLS || '';        // vergul bilan: turn:host:3478,turns:host:443
+const turnUser = process.env.TURN_USERNAME || '';
+const turnCred = process.env.TURN_CREDENTIAL || '';
+
 writeFileSync('modules/env.js',
 `// AVTOMATIK YARATILADI (scripts/build-env.mjs) — qo'lda tahrirlamang.
 export const SUPABASE_URL      = ${JSON.stringify(url)};
 export const SUPABASE_ANON_KEY = ${JSON.stringify(key)};
+export const TURN_URLS         = ${JSON.stringify(turnUrls)};
+export const TURN_USERNAME     = ${JSON.stringify(turnUser)};
+export const TURN_CREDENTIAL   = ${JSON.stringify(turnCred)};
 `);
 console.log('✅ modules/env.js yozildi (' + new URL(url).host + ')');

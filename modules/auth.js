@@ -395,7 +395,7 @@ function _startPendingNoticeWatcher() {
     try {
       const { data } = await sb.from('admin_notice').select('text,target').eq('id', 'global').maybeSingle();
       if (!dead) _updatePendingNotice(data || null);
-    } catch (_) {}
+    } catch (e) { console.warn('[auth]', e?.message || e); }
   };
   load();
   try {

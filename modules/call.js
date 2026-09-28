@@ -20,6 +20,7 @@ export {
 
 import { sb, state } from './config.js';
 import { $ } from './utils.js';
+import { TURN_URLS, TURN_USERNAME, TURN_CREDENTIAL } from './env.js';
 
 /* calls qatori (snake_case) → eski Firestore ko'rinishi */
 function mapCall(r) {
@@ -51,7 +52,7 @@ async function _userInfo(uid) {
 
 // ICE candidate'ni atomik qo'shadi (RPC o'zi caller/callee ustunini tanlaydi)
 async function _sendIce(callId, cand) {
-  try { await sb.rpc('append_call_candidate', { p_call: callId, p_candidate: cand }); } catch (_) {}
+  try { await sb.rpc('append_call_candidate', { p_call: callId, p_candidate: cand }); } catch (e) { console.warn('[call]', e?.message || e); }
 }
 
 // Bitta qo'ng'iroq yozuvini kuzatish: realtime (UPDATE) + har 4 soniyada zaxira so'rov.
@@ -92,29 +93,24 @@ function _watchCall(id, onRow) {
 // ulanish imkonsiz bo'ladi va TURN relay orqali o'tish SHART bo'ladi —
 // shuning uchun TURN serverlar ham qo'shildi (aks holda qo'ng'iroq "ulanadi,
 // lekin ovoz/video kelmaydi" yoki "tez-tez uziladi" bo'lib chiqadi).
-// PASTDAGI OpenRelay (Metered.ca) — bepul, umumiy, sinov uchun yaroqli TURN.
-// Productionda o'zingizning TURN serveringiz (masalan coturn) yoki
-// Twilio/Metered'ning shaxsiy hisobidagi kalitlaringiz bilan almashtiring —
-// bepul umumiy server yuklama ostida sekinlashishi/cheklanishi mumkin.
+// TURN: Vercel Environment Variables'da TURN_URLS (vergul bilan), TURN_USERNAME,
+// TURN_CREDENTIAL bering (Metered / Cloudflare / o'z coturn'ingiz). Bo'lmasa —
+// bepul umumiy OpenRelay ishlatiladi (beqaror: mobil tarmoqda qo'ng'iroq ulanmasligi mumkin).
+const _turnList = TURN_URLS.split(',').map(x => x.trim()).filter(Boolean);
+if (!_turnList.length) {
+  console.warn('[call] TURN_URLS sozlanmagan — umumiy OpenRelay ishlatilmoqda (beqaror)');
+}
 const ICE_SERVERS = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:openrelay.metered.ca:80' },
-    {
-      urls: 'turn:openrelay.metered.ca:80',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    },
-    {
-      urls: 'turn:openrelay.metered.ca:443',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    },
-    {
-      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-      username: 'openrelayproject',
-      credential: 'openrelayproject'
-    }
+    ..._turnList.length
+      ? [{ urls: _turnList, username: TURN_USERNAME, credential: TURN_CREDENTIAL }]
+      : [
+          { urls: 'stun:openrelay.metered.ca:80' },
+          { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+          { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+          { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
+        ],
   ],
   iceCandidatePoolSize: 10
 };
@@ -703,7 +699,7 @@ async function initiateCall(isVideo) {
     const d = await _userInfo(uid);
     otherName = d.fullName || otherName;
     otherAvi  = d.avatar   || '';
-  } catch (_) {}
+  } catch (e) { console.warn('[call]', e?.message || e); }
 
   _showActiveCallModal(otherName, otherAvi, isVideo);
   _playRingback();
@@ -762,7 +758,7 @@ async function initiateCall(isVideo) {
       const newOnes  = data.calleeCandidates.slice(existing);
       _pc._addedCallee = data.calleeCandidates.length;
       for (const c of newOnes) {
-        try { await _pc.addIceCandidate(new RTCIceCandidate(c)); } catch (_) {}
+        try { await _pc.addIceCandidate(new RTCIceCandidate(c)); } catch (e) { console.warn('[call]', e?.message || e); }
       }
     }
 
@@ -786,7 +782,7 @@ async function _acceptIncomingCall(callData, callId) {
     );
   } catch (err) {
     alert("Mikrofon/kameraga ruxsat yo'q: " + err.message);
-    try { await _updateCall(callId, { status: 'declined' }); } catch (_) {}
+    try { await _updateCall(callId, { status: 'declined' }); } catch (e) { console.warn('[call]', e?.message || e); }
     _callId = null;
     return;
   }
@@ -802,7 +798,7 @@ async function _acceptIncomingCall(callData, callId) {
     const d = await _userInfo(callData.callerId);
     callerName = d.fullName || callerName;
     callerAvi  = d.avatar   || '';
-  } catch (_) {}
+  } catch (e) { console.warn('[call]', e?.message || e); }
 
   _showActiveCallModal(callerName, callerAvi, _callIsVideo);
 
@@ -815,7 +811,7 @@ async function _acceptIncomingCall(callData, callId) {
   if (callData.callerCandidates?.length) {
     _pc._addedCaller = callData.callerCandidates.length;
     for (const c of callData.callerCandidates) {
-      try { await _pc.addIceCandidate(new RTCIceCandidate(c)); } catch (_) {}
+      try { await _pc.addIceCandidate(new RTCIceCandidate(c)); } catch (e) { console.warn('[call]', e?.message || e); }
     }
   }
 
@@ -843,7 +839,7 @@ async function _acceptIncomingCall(callData, callId) {
       const newOnes  = data.callerCandidates.slice(existing);
       _pc._addedCaller = data.callerCandidates.length;
       for (const c of newOnes) {
-        try { await _pc.addIceCandidate(new RTCIceCandidate(c)); } catch (_) {}
+        try { await _pc.addIceCandidate(new RTCIceCandidate(c)); } catch (e) { console.warn('[call]', e?.message || e); }
       }
     }
 
@@ -887,7 +883,7 @@ async function _handleIncomingRow(data) {
 
   // Allaqachon qo'ng'iroqda bo'lsak — rad etamiz
   if (_pc) {
-    try { await _updateCall(data.id, { status: 'declined' }); } catch (_) {}
+    try { await _updateCall(data.id, { status: 'declined' }); } catch (e) { console.warn('[call]', e?.message || e); }
     return;
   }
 
@@ -901,7 +897,7 @@ async function _handleIncomingRow(data) {
     const ud = await _userInfo(data.callerId);
     callerName = ud.fullName || callerName;
     callerAvi  = ud.avatar   || '';
-  } catch (_) {}
+  } catch (e) { console.warn('[call]', e?.message || e); }
 
   // Kiruvchi qo'ng'iroq modal
   const modal     = document.getElementById('incomingCallModal');
@@ -927,7 +923,7 @@ async function _handleIncomingRow(data) {
   // Rad etish
   _boundReject = async () => {
     _cleanCallModal();
-    try { await _updateCall(data.id, { status: 'declined' }); } catch (_) {}
+    try { await _updateCall(data.id, { status: 'declined' }); } catch (e) { console.warn('[call]', e?.message || e); }
   };
 
   acceptBtn?.addEventListener('click', _boundAccept);
@@ -937,7 +933,7 @@ async function _handleIncomingRow(data) {
   _autoRejectTimer = setTimeout(async () => {
     if (_activeCallDocId === data.id) {
       _cleanCallModal();
-      try { await _updateCall(data.id, { status: 'declined' }); } catch (_) {}
+      try { await _updateCall(data.id, { status: 'declined' }); } catch (e) { console.warn('[call]', e?.message || e); }
     }
   }, 30000);
 }
@@ -992,7 +988,7 @@ document.getElementById('chatVoiceCallBtn')?.addEventListener('click', () => ini
 /* ── Active call controls ── */
 document.getElementById('callEndBtn')?.addEventListener('click', async () => {
   if (_callId) {
-    try { await _updateCall(_callId, { status: 'ended' }); } catch (_) {}
+    try { await _updateCall(_callId, { status: 'ended' }); } catch (e) { console.warn('[call]', e?.message || e); }
   }
   await _endCall(false);
 });

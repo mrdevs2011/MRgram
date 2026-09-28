@@ -57,7 +57,7 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 - Xabar holati: bitta belgi = yuborildi, ikkita ko'k belgi = o'qildi.
 - "Yozmoqda..." indikatori va oxirgi ko'rilgan/onlayn holati real vaqtda
   ko'rinadi.
-- Har bir suhbatda push-bildirishnoma (FCM) orqali xabar beriladi.
+- Har bir suhbatda Web Push (Supabase Edge Function `send-push`) orqali xabar beriladi.
 - Matnda Markdown belgilari har bir foydalanuvchi xabari uchun ham
   ishlaydi.
 
@@ -74,8 +74,8 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 
 ## 6. Qo'ng'iroqlar
 
-- WebRTC orqali audio/video qo'ng'iroqlar, Firestore orqali
-  signalizatsiya.
+- WebRTC orqali audio/video qo'ng'iroqlar, Supabase (`calls` jadvali +
+  Realtime) orqali signalizatsiya.
 - Chat oynasida yuqorida ovozli va videoli qo'ng'iroq tugmalari bor.
 - Kiruvchi qo'ng'iroqda qabul qilish (yashil) / rad etish (qizil)
   tugmalari.
@@ -100,10 +100,27 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 
 - Frontend: vanilla JavaScript (modul asosida), PWA (manifest, service
   worker, offline keshlash).
-- Backend: Firebase (Authentication + Firestore) va fayllar uchun
-  Supabase Storage.
-- Push-bildirishnomalar: Firebase Cloud Messaging (FCM).
+- Backend: Supabase — Auth (username@mrgram.uz ichki email), Postgres + RLS
+  (`supabase/schema.sql`), Realtime, Storage (`media` bucket), Edge Function
+  (`supabase/functions/send-push`). Firebase ENDI ISHLATILMAYDI.
+- Push-bildirishnomalar: standart Web Push (VAPID). Service worker fayli
+  nomi eski (`firebase-messaging-sw.js`), lekin ichida Firebase yo'q.
 - Domen: mrgram.vercel.app (Vercel'da joylashtirilgan).
+
+## 9.1 Sozlash va xavfsizlik
+
+- Vercel Environment Variables: `SUPABASE_URL`, `SUPABASE_ANON_KEY`
+  (service_role hech qachon brauzerga tushmasin).
+- Qo'ng'iroqlar uchun `TURN_URLS` (vergul bilan), `TURN_USERNAME`,
+  `TURN_CREDENTIAL`. Bo'lmasa beqaror umumiy OpenRelay ishlatiladi.
+- DB o'zgarishlari: yangi o'rnatishda `schema.sql`; mavjud bazada
+  `supabase/patch-*.sql` fayllarini tartib bilan ishga tushiring
+  (oxirgisi: `patch-security-2026-09.sql`).
+- `media` bucket ommaviy (public). Fayl havolalari taxmin qilib bo'lmaydigan
+  (tasodifiy UUID li) yo'l bilan yaratiladi, lekin bu haqiqiy maxfiylik EMAS —
+  havolani olgan har kim ocha oladi. To'liq maxfiylik uchun signed URL kerak.
+- Service worker keshini yangilash uchun `firebase-messaging-sw.js` ichidagi
+  `CACHE_VERSION` ni oshiring.
 
 ## 10. Interfeys tuzilishi — UI xaritasi
 

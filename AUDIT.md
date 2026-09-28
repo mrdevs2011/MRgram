@@ -1,4 +1,4 @@
-# MRtube CSS Audit — topilmalar va tozalash rejasi
+# MRgram CSS Audit (eski nomi: MRtube) — topilmalar va tozalash rejasi
 
 ## 1. Umumiy holat
 

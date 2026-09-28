@@ -116,7 +116,8 @@ create trigger profiles_guard before update on public.profiles
   for each row execute function public.guard_profile_update();
 
 alter table public.profiles enable row level security;
-create policy profiles_select on public.profiles for select to authenticated using (true);
+create policy profiles_select on public.profiles for select to authenticated
+  using (id = auth.uid() or public.is_approved() or public.is_admin());
 create policy profiles_update on public.profiles for update to authenticated
   using (id = auth.uid() or public.is_admin())
   with check (id = auth.uid() or public.is_admin());
@@ -273,19 +274,27 @@ create policy posts_delete on public.posts for delete to authenticated
 revoke update on public.posts from authenticated;
 grant  update (text, is_public, is_max_private) on public.posts to authenticated;
 
+create function public.post_is_visible(p_post uuid) returns boolean
+language sql stable security definer set search_path = public as $$
+  select public.is_admin() or exists (
+    select 1 from public.posts
+    where id = p_post and (is_public or user_id = auth.uid())
+  );
+$$;
+
 alter table public.post_likes enable row level security;
 create policy likes_select on public.post_likes for select to authenticated
-  using (public.is_approved() or public.is_admin());
+  using (public.is_admin() or (public.is_approved() and public.post_is_visible(post_id)));
 create policy likes_insert on public.post_likes for insert to authenticated
-  with check (user_id = auth.uid() and public.is_approved());
+  with check (user_id = auth.uid() and public.is_approved() and public.post_is_visible(post_id));
 create policy likes_delete on public.post_likes for delete to authenticated
   using (user_id = auth.uid());
 
 alter table public.comments enable row level security;
 create policy comments_select on public.comments for select to authenticated
-  using (public.is_approved() or public.is_admin());
+  using (public.is_admin() or (public.is_approved() and public.post_is_visible(post_id)));
 create policy comments_insert on public.comments for insert to authenticated
-  with check (user_id = auth.uid() and public.is_approved());
+  with check (user_id = auth.uid() and public.is_approved() and public.post_is_visible(post_id));
 create policy comments_update on public.comments for update to authenticated
   using (user_id = auth.uid()) with check (user_id = auth.uid());
 create policy comments_delete on public.comments for delete to authenticated
@@ -713,7 +722,8 @@ create policy media_insert on storage.objects for insert to authenticated
               and (storage.foldername(name))[1] = auth.uid()::text
               and public.is_approved());
 create policy media_update on storage.objects for update to authenticated
-  using (bucket_id = 'media' and (storage.foldername(name))[1] = auth.uid()::text);
+  using (bucket_id = 'media' and (storage.foldername(name))[1] = auth.uid()::text
+         and public.is_approved());
 create policy media_delete on storage.objects for delete to authenticated
   using (bucket_id = 'media'
          and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin()));

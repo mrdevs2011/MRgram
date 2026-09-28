@@ -264,7 +264,7 @@ export async function renderFeedTo(feedEl, posts) {
       const { data, error } = await sb.from('post_likes').select('post_id')
         .eq('user_id', state.me.uid).in('post_id', unknownPosts.map(p => p.id));
       if (!error) likedRows = new Set((data || []).map(r => r.post_id));
-    } catch (_) {}
+    } catch (e) { console.warn('[feed]', e?.message || e); }
     if (likedRows) {
       unknownPosts.forEach(p => {
         if (likedRows.has(p.id)) state.myLikedPosts.add(p.id);
