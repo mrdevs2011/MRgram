@@ -1,7 +1,7 @@
 /**
  * Right rail (desktop ≥1200px) — ~50 kishilik doira:
  * Onlayn, Guruhlar, So‘nggi faollik.
- * Realtime: profiles / posts / groups yangilanganda darhol yangilanadi.
+ * Yangilanish: postsUpdated / groupsUpdated hodisalari + 15s zaxira tick (o'z realtime kanali yo'q — roadmap 5.3).
  */
 import { sb, state, mapProfile } from './config.js';
 import { $, esc, defAvi, isOnline } from './utils.js';
@@ -13,7 +13,6 @@ const MAX_RECENT = 8;
 
 let _tick = null;
 let _started = false;
-let _ch = null;
 let _refreshTimer = null;
 
 function rail() { return $('rightRail'); }
@@ -169,52 +168,6 @@ function onClick(e) {
   }
 }
 
-function startRealtime() {
-  if (_ch || !state.me?.uid) return;
-  _ch = sb.channel('right-rail-rt')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
-      scheduleRefresh(150);
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, (payload) => {
-      // state.allPosts ni ham yangilab qo'yamiz (So'nggi uchun)
-      try {
-        if (payload.eventType === 'INSERT' && payload.new) {
-          const r = payload.new;
-          const exists = (state.allPosts || []).some(p => p.id === r.id);
-          if (!exists) {
-            const mapped = {
-              id: r.id,
-              userId: r.user_id,
-              userFullName: r.user_name || '',
-              text: r.text || '',
-              mediaType: r.media_type || '',
-              mediaPath: r.media_path || '',
-              createdAt: r.created_at,
-              likes: r.likes_count || 0,
-              views: r.views_count || 0,
-              commentCount: r.comment_count || 0,
-              isPublic: r.is_public !== false,
-            };
-            state.allPosts = [mapped, ...(state.allPosts || [])];
-          }
-        } else if (payload.eventType === 'DELETE' && payload.old?.id) {
-          state.allPosts = (state.allPosts || []).filter(p => p.id !== payload.old.id);
-        }
-      } catch (_) {}
-      scheduleRefresh(100);
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'groups' }, () => scheduleRefresh(200))
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members' }, () => scheduleRefresh(200))
-    .subscribe();
-}
-
-function stopRealtime() {
-  if (_ch) {
-    try { sb.removeChannel(_ch); } catch (_) {}
-    _ch = null;
-  }
-}
-
 export function startRightRail() {
   if (_started) return;
   _started = true;
@@ -225,7 +178,6 @@ export function startRightRail() {
   document.addEventListener('postsUpdated', () => { if (!cmtOpen()) loadRecent(); });
   fit();
   refresh();
-  startRealtime();
   // Zaxira: realtime uzilsa ham 15s da yangilanadi (oldin 45s edi)
   _tick = setInterval(() => scheduleRefresh(0), 15000);
 }
@@ -233,7 +185,6 @@ export function startRightRail() {
 export function stopRightRail() {
   if (_tick) { clearInterval(_tick); _tick = null; }
   clearTimeout(_refreshTimer);
-  stopRealtime();
   showRail(false);
   _started = false;
 }
@@ -243,6 +194,5 @@ startRightRail();
 setInterval(() => {
   if (state.me?.uid) {
     fit();
-    if (!_ch) startRealtime();
   }
 }, 2000);
