@@ -1,3 +1,4 @@
+// test 2: diff uchun izoh
 /**
  * MRdatabase — Navigation Bar Controller
  * Single source of truth for sidebar/bottom navigation
