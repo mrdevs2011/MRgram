@@ -1,5 +1,5 @@
 {
-  "buildCommand": "node scripts/bump-sw.mjs && node scripts/build-env.mjs",
+  "buildCommand": "node scripts/bump-sw.mjs && npm run build",
   "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
