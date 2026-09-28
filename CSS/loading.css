@@ -425,6 +425,9 @@
   pointer-events: none;
 }
 
+/* ::before qatlami kontentni yopib qo'ymasin (icon/matn/tugma uning ustida turadi) */
+.pwd-warn-bubble > * { position: relative; }
+
 .pwd-warn-icon {
   width: 44px;
   height: 44px;
