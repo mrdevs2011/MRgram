@@ -19,7 +19,7 @@
 
 /* ── Dark: line tokenlar ham yo'qolsin ── */
 [data-theme="dark"] {
-  --line:  #16181c;
+  --line:  var(--pal-gray-900);
   --line2: transparent;
   --line3: transparent;
 }
@@ -80,7 +80,7 @@
 /* Mobile: solid dark bar (was semi-transparent frosted glass — looked washed-out over content) */
 @media (max-width: 767px) {
   [data-theme="dark"] .bot-nav {
-    background: #000000;
+    background: var(--pal-black);
   }
   }
 

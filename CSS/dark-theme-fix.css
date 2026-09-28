@@ -20,14 +20,14 @@
   --glass:             var(--bg3);
   --glass-mid:         var(--bg4);
   --glass-heavy:       var(--bg5);
-  --glass-border:      #16181c;
-  --glass-border-top:  #202327;
+  --glass-border:      var(--pal-gray-900);
+  --glass-border-top:  var(--pal-gray-800);
 
-  --specular-top:   inset 0 1px 0 #202327;
+  --specular-top:   inset 0 1px 0 var(--pal-gray-800);
 
-  --liquid-shadow-sm: 0 4px 20px #000000, 0 1px 4px #000000;
-  --liquid-shadow-md: 0 8px 36px #000000, 0 2px 10px #000000;
-  --liquid-shadow-lg: 0 20px 64px #000000, 0 4px 20px #000000;
+  --liquid-shadow-sm: 0 4px 20px var(--pal-black), 0 1px 4px var(--pal-black);
+  --liquid-shadow-md: 0 8px 36px var(--pal-black), 0 2px 10px var(--pal-black);
+  --liquid-shadow-lg: 0 20px 64px var(--pal-black), 0 4px 20px var(--pal-black);
 
 }
 
@@ -35,8 +35,8 @@
    2. DARK — Body wallopaper
    ══════════════════════════════════════════ */
 [data-theme="dark"] body {
-  background: #000000;
-  background-color: #000000;
+  background: var(--pal-black);
+  background-color: var(--pal-black);
 }
 
 [data-theme="dark"] .app {
@@ -57,7 +57,7 @@
 }
 
 [data-theme="dark"] .hdr-brand {
-  background: #ffffff;
+  background: var(--pal-white);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -70,7 +70,7 @@
 
 /* Post head subtle separator */
 [data-theme="dark"] .post-head {
-  border-bottom: 0.5px solid #16181c;
+  border-bottom: 0.5px solid var(--pal-gray-900);
 }
 
 /* Post gradient border on hover — more subtle */
@@ -85,19 +85,19 @@
 
 /* ── Post action buttons ── */
 [data-theme="dark"] .post-stats {
-  border-top: 0.5px solid #16181c;
-  border-bottom: 0.5px solid #16181c;
+  border-top: 0.5px solid var(--pal-gray-900);
+  border-bottom: 0.5px solid var(--pal-gray-900);
   color: var(--text3);
 }
 
 [data-theme="dark"] .act-btn {
   color: var(--text2);
-  border-right: 0.5px solid #16181c;
+  border-right: 0.5px solid var(--pal-gray-900);
   transition: none;
 }
 
 [data-theme="dark"] .act-btn:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
   color: var(--text);
 }
 
@@ -107,14 +107,14 @@
    5. AVATAR — Avatar halqasi
    ══════════════════════════════════════════ */
 [data-theme="dark"] .avi {
-  border: 0.5px solid #16181c;
-  box-shadow: inset 0 1px 0 #16181c, 0 2px 8px #000000;
-  background: #16181c;
+  border: 0.5px solid var(--pal-gray-900);
+  box-shadow: inset 0 1px 0 var(--pal-gray-900), 0 2px 8px var(--pal-black);
+  background: var(--pal-gray-900);
 }
 
 [data-theme="dark"] .avi:hover {
-  border-color: #ffffff;
-  box-shadow: inset 0 1px 0 #202327, 0 0 0 3px #16181c;
+  border-color: var(--pal-white);
+  box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 0 0 3px var(--pal-gray-900);
 }
 
 /* ══════════════════════════════════════════
@@ -131,28 +131,28 @@
    here — same reasoning as the header/post fix above. */
 
 [data-theme="dark"] .nav-btn.on {
-  background: #16181c;
-  border: 0.5px solid #16181c;
-  box-shadow: inset 0 1px 0 #202327, 0 0 0 2px #000000;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
+  box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 0 0 2px var(--pal-black);
 }
 
 /* ══════════════════════════════════════════
    7. SHEET — Panel
    ══════════════════════════════════════════ */
 [data-theme="dark"] .sheet {
-  background: #000000;
-  border-top: 0.5px solid #202327;
+  background: var(--pal-black);
+  border-top: 0.5px solid var(--pal-gray-800);
   box-shadow:
-    inset 0 1px 0 #202327,
-    0 -12px 56px #000000;
+    inset 0 1px 0 var(--pal-gray-800),
+    0 -12px 56px var(--pal-black);
 }
 
 [data-theme="dark"] .sheet-handle {
-  background: #202327;
+  background: var(--pal-gray-800);
 }
 
 [data-theme="dark"] .overlay {
-  background: #000000;
+  background: var(--pal-black);
 }
 
 /* ══════════════════════════════════════════
@@ -161,9 +161,9 @@
 [data-theme="dark"] .field,
 [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
 [data-theme="dark"] textarea {
-  background: #202327;
-  border: 0.5px solid #16181c;
-  box-shadow: inset 0 1px 0 #16181c;
+  background: var(--pal-gray-800);
+  border: 0.5px solid var(--pal-gray-900);
+  box-shadow: inset 0 1px 0 var(--pal-gray-900);
   color: var(--text);
   caret-color: var(--blue);
 }
@@ -171,11 +171,11 @@
 [data-theme="dark"] .field:focus,
 [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):focus,
 [data-theme="dark"] textarea:focus {
-  background: #202327;
-  border-color: #ffffff;
+  background: var(--pal-gray-800);
+  border-color: var(--pal-white);
   box-shadow:
-    inset 0 1px 0 #16181c,
-    0 0 0 3px #16181c;
+    inset 0 1px 0 var(--pal-gray-900),
+    0 0 0 3px var(--pal-gray-900);
   outline: none;
   border-radius: 12px;
 }
@@ -190,19 +190,19 @@
    10. AUTH CARD — Panel
    ══════════════════════════════════════════ */
 [data-theme="dark"] #authWrap {
-  background: #000000;
+  background: var(--pal-black);
 }
 
 [data-theme="dark"] .auth-card {
-  background: #16181c;
-  border: 0.5px solid #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
   box-shadow:
-    inset 0 1px 0 #202327,
-    0 24px 72px #000000;
+    inset 0 1px 0 var(--pal-gray-800),
+    0 24px 72px var(--pal-black);
 }
 
 [data-theme="dark"] .auth-brand {
-  background: #ffffff;
+  background: var(--pal-white);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -221,28 +221,28 @@
 [data-theme="dark"] .profile-avi {
   border: 0.5px solid #2D2D33;
   box-shadow:
-    inset 0 1px 0 #202327,
-    0 6px 20px #000000;
+    inset 0 1px 0 var(--pal-gray-800),
+    0 6px 20px var(--pal-black);
 }
 
 [data-theme="dark"] .profile-avi:hover {
-  border-color: #ffffff;
+  border-color: var(--pal-white);
   box-shadow:
-    inset 0 1px 0 #202327,
+    inset 0 1px 0 var(--pal-gray-800),
     0 0 0 4px #252525,
-    0 8px 28px #000000;
+    0 8px 28px var(--pal-black);
 }
 
 [data-theme="dark"] .edit-btn {
-  background: #16181c;
-  border: 0.5px solid #16181c;
-  box-shadow: inset 0 1px 0 #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
+  box-shadow: inset 0 1px 0 var(--pal-gray-900);
   color: var(--text);
 }
 
 [data-theme="dark"] .edit-btn:hover {
-  background: #16181c;
-  border-color: #202327;
+  background: var(--pal-gray-900);
+  border-color: var(--pal-gray-800);
 }
 
 /* Profile grid tabs */
@@ -259,8 +259,8 @@
 
 /* Profile grid cells */
 [data-theme="dark"] .grid-cell {
-  background: #16181c;
-  border: 0.5px solid #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
 }
 
 [data-theme="dark"] .grid-cell:hover {
@@ -272,26 +272,26 @@
    12. FILE CARD — Panel
    ══════════════════════════════════════════ */
 [data-theme="dark"] .file-card {
-  background: #16181c;
-  border: 0.5px solid #202327;
-  box-shadow: inset 0 1px 0 #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-800);
+  box-shadow: inset 0 1px 0 var(--pal-gray-900);
 }
 
 [data-theme="dark"] .file-card:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
   border-color: #2D2D33;
   /* box-shadow → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
 }
 
 [data-theme="dark"] .file-dl {
-  background: #16181c;
-  border: 0.5px solid #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
   color: var(--blue2);
-  box-shadow: inset 0 1px 0 #16181c;
+  box-shadow: inset 0 1px 0 var(--pal-gray-900);
 }
 
 [data-theme="dark"] .file-dl:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
   border-color: #3a3a3a;
 }
 
@@ -299,37 +299,37 @@
    13. CHAT — Xabar pufakchalari
    ══════════════════════════════════════════ */
 [data-theme="dark"] .chat-row:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
 }
 
 [data-theme="dark"] .chat-row:active {
-  background: #16181c;
+  background: var(--pal-gray-900);
 }
 
 /* ══════════════════════════════════════════
    14. SEARCH OVERLAY — Qidiruv overlay
    ══════════════════════════════════════════ */
 [data-theme="dark"] .search-overlay {
-  background: #000000;
+  background: var(--pal-black);
 }
 
 [data-theme="dark"] .search-overlay-box {
-  background: #16181c;
-  border: 0.5px solid #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
   box-shadow:
     inset 0 1px 0 #2D2D33,
-    0 8px 40px #000000;
+    0 8px 40px var(--pal-black);
 }
 
 [data-theme="dark"] .search-overlay-close {
-  background: #16181c;
-  border: 0.5px solid #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
   color: var(--text2);
-  box-shadow: inset 0 1px 0 #16181c;
+  box-shadow: inset 0 1px 0 var(--pal-gray-900);
 }
 
 [data-theme="dark"] .search-overlay-close:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
   color: var(--text);
 }
 
@@ -337,12 +337,12 @@
    15. TOAST — Pill
    ══════════════════════════════════════════ */
 [data-theme="dark"] #toast {
-  background: #16181c;
-  border: 0.5px solid #202327;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-800);
   color: var(--text);
   box-shadow:
-    inset 0 1px 0 #202327,
-    0 8px 36px #000000;
+    inset 0 1px 0 var(--pal-gray-800),
+    0 8px 36px var(--pal-black);
 }
 
 /* ══════════════════════════════════════════
@@ -351,49 +351,49 @@
 [data-theme="dark"] .del-btn { color: var(--text3); }
 [data-theme="dark"] .del-btn:hover {
   color: var(--red);
-  background: #16181c;
+  background: var(--pal-gray-900);
 }
 
 [data-theme="dark"] .hdr-icon-btn:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
 }
 
 /* ══════════════════════════════════════════
    18. DETAIL MODAL (#detailContent) — Panel
    ══════════════════════════════════════════ */
 [data-theme="dark"] #detailContent {
-  background: #000000;
-  border: 0.5px solid #16181c;
+  background: var(--pal-black);
+  border: 0.5px solid var(--pal-gray-900);
   box-shadow:
-    inset 0 1px 0 #202327,
-    0 -12px 56px #000000;
+    inset 0 1px 0 var(--pal-gray-800),
+    0 -12px 56px var(--pal-black);
 }
 
 [data-theme="dark"] .dm-act:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
 }
 
 [data-theme="dark"] .dm-close {
-  background: #16181c;
-  border: 0.5px solid #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
 }
 
 [data-theme="dark"] .dm-close:hover {
-  background: #202327;
+  background: var(--pal-gray-800);
 }
 
 /* ══════════════════════════════════════════
    19. SKELETON LOADING — Shimmer
    ══════════════════════════════════════════ */
 [data-theme="dark"] .skeleton-post {
-  background: #000000;
-  border: 0.5px solid #16181c;
+  background: var(--pal-black);
+  border: 0.5px solid var(--pal-gray-900);
 }
 
 [data-theme="dark"] .skel-avi,
 [data-theme="dark"] .skel-line,
 [data-theme="dark"] .skel-media {
-  background: #16181c;
+  background: var(--pal-gray-900);
   background-size: 200% 100%;
 }
 
@@ -401,14 +401,14 @@
    20. SPLASH SCREEN — Panel
    ══════════════════════════════════════════ */
 [data-theme="dark"] #splash {
-  background: #000000;
+  background: var(--pal-black);
   
 }
 
 [data-theme="dark"] .splash-wordmark { color: var(--text); }
 
 [data-theme="dark"] .splash-bar {
-  background: #16181c;
+  background: var(--pal-gray-900);
   /* border → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
   border-radius: 8px;
   overflow: hidden;
@@ -425,11 +425,11 @@
 [data-theme="dark"] ::-webkit-scrollbar { width: 3px; height: 3px; }
 [data-theme="dark"] ::-webkit-scrollbar-track { background: transparent; }
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: #16181c;
+  background: var(--pal-gray-900);
   border-radius: 3px;
 }
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: #202327;
+  background: var(--pal-gray-800);
 }
 
 /* ══════════════════════════════════════════
@@ -437,18 +437,18 @@
    ══════════════════════════════════════════ */
 [data-theme="dark"] ::selection {
   background: #3d3d3d;
-  color: #fff;
+  color: var(--pal-white);
 }
 
 /* ══════════════════════════════════════════
    25. REEL — Overlays
    ══════════════════════════════════════════ */
-[data-theme="dark"] .reel { background: #000000; }
+[data-theme="dark"] .reel { background: var(--pal-black); }
 
 [data-theme="dark"] .reel-top-btn,
 [data-theme="dark"] .reel-vol-top {
-  background: #000000;
-  border: 0.5px solid #16181c;
+  background: var(--pal-black);
+  border: 0.5px solid var(--pal-gray-900);
 }
 
 /* ══════════════════════════════════════════
@@ -457,7 +457,7 @@
 [data-theme="dark"] .theme-btn { color: var(--text2); }
 
 [data-theme="dark"] .theme-btn:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
   color: var(--text);
 }
 
@@ -465,63 +465,63 @@
    27. FLOATING UPLOAD BAR — Pill
    ══════════════════════════════════════════ */
 [data-theme="dark"] .upload-float-bar {
-  background: #16181c;
-  border: 0.5px solid #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
   box-shadow:
-    inset 0 1px 0 #202327,
-    0 8px 36px #000000;
+    inset 0 1px 0 var(--pal-gray-800),
+    0 8px 36px var(--pal-black);
 }
 
 [data-theme="dark"] .upload-drop {
-  background: #000000;
-  border: 1px dashed #16181c;
+  background: var(--pal-black);
+  border: 1px dashed var(--pal-gray-900);
 }
 
 [data-theme="dark"] .upload-drop:hover {
-  border-color: #ffffff;
-  background: #000000;
+  border-color: var(--pal-white);
+  background: var(--pal-black);
 }
 
 [data-theme="dark"] .upload-drop.drag-over {
   border-color: var(--blue);
-  background: #16181c;
-  box-shadow: 0 0 0 3px #16181c, inset 0 1px 0 #16181c;
+  background: var(--pal-gray-900);
+  box-shadow: 0 0 0 3px var(--pal-gray-900), inset 0 1px 0 var(--pal-gray-900);
 }
 [data-theme="dark"] .empty { color: var(--text3); }
 
 [data-theme="dark"] .feed-empty-icon,
 [data-theme="dark"] .empty-icon,
 [data-theme="dark"] .empty-search-icon {
-  background: #16181c;
-  border: 0.5px solid #2f3336;
-  box-shadow: inset 0 1px 0 #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-700);
+  box-shadow: inset 0 1px 0 var(--pal-gray-900);
 }
 
 /* ══════════════════════════════════════════
    30. COMMENTS MODAL — Panel
    ══════════════════════════════════════════ */
 [data-theme="dark"] .cmt-body {
-  background: #16181c;
-  border: 0.5px solid #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
 }
 
 [data-theme="dark"] .cmt-body:hover {
-  background: #16181c;
-  border-color: #16181c;
+  background: var(--pal-gray-900);
+  border-color: var(--pal-gray-900);
 }
 
 [data-theme="dark"] .cmt-input {
-  background: #16181c;
-  border: 0.5px solid #16181c;
+  background: var(--pal-gray-900);
+  border: 0.5px solid var(--pal-gray-900);
 }
 
 [data-theme="dark"] .cmt-input:focus {
-  background: #16181c;
-  border-color: #ffffff;
-  box-shadow: 0 0 0 3px #16181c;
+  background: var(--pal-gray-900);
+  border-color: var(--pal-white);
+  box-shadow: 0 0 0 3px var(--pal-gray-900);
 }
 
 [data-theme="dark"] .cmt-input-row {
-  border-top: 0.5px solid #16181c;
+  border-top: 0.5px solid var(--pal-gray-900);
 }
 

@@ -219,7 +219,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--pal-white);
   box-shadow: 0 1px 3px rgba(0, 0, 0,0.35);
   transition: none;
 }
@@ -260,7 +260,7 @@
 }
 
 .settings-more-btn:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
   color: var(--text2);
 }
 
@@ -270,7 +270,7 @@
   right: 0;
   min-width: 220px;
   padding: 4px;
-  background: #16181c;
+  background: var(--pal-gray-900);
   border: 1px solid var(--line2);
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0,0.45);
@@ -315,7 +315,7 @@
 }
 
 .edit-btn:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
   border-color: var(--line3);
 }
 
@@ -385,11 +385,11 @@
   cursor: pointer;
   z-index: 351;
   transition: none;
-  color: #fff;
+  color: var(--pal-white);
 }
 
 .up-back:hover {
-  background: #000000;
+  background: var(--pal-black);
 }
 
 .up-body { padding-bottom: 60px; }
@@ -411,7 +411,7 @@
   background: var(--bg4);
   overflow: hidden;
   border: 3.5px solid var(--bg);
-  box-shadow: 0 4px 20px #000000;
+  box-shadow: 0 4px 20px var(--pal-black);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -532,12 +532,12 @@
    bu yerdagi qoidalar o'lik edi */
 
 [data-theme="dark"] .profile-stat {
-  background: #16181c;
-  border: 1px solid #202327;
+  background: var(--pal-gray-900);
+  border: 1px solid var(--pal-gray-800);
 }
 
 [data-theme="dark"] .profile-stat:hover {
-  background: #202327;
+  background: var(--pal-gray-800);
   border-color: #2D2D33;
 }
 
@@ -554,12 +554,12 @@
 
 /* User profile modal */
 [data-theme="dark"] .up-back {
-  background: #000000;
+  background: var(--pal-black);
   border: 1px solid #2D2D33;
 }
 
 [data-theme="dark"] .up-back:hover {
-  background: #000000;
+  background: var(--pal-black);
 }
 
 /* Grid cell overlay — engil qorayish, to'liq qora emas */
@@ -606,7 +606,7 @@
   --pg-glass-mid:    var(--bg4);
   --pg-glass-strong: var(--bg5);
   --pg-border-top:   #444449;
-  --pg-border-side:  #202327;
+  --pg-border-side:  var(--pal-gray-800);
   --pg-hdr-bg:       var(--bg2);
 }
 
@@ -679,7 +679,7 @@
 
 /* Avi edit badge — flat */
 .avi-edit-badge {
-  background: #ffffff;
+  background: var(--pal-white);
   border: 1px solid #525257;
 }
 
@@ -696,7 +696,7 @@
   border-radius: 100px;
   background: #26262C;
   border: 1px solid #3F3F44;
-  color: #fff;
+  color: var(--pal-white);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.01em;
@@ -704,11 +704,11 @@
   z-index: 10;
   transition: none;
   white-space: nowrap;
-  box-shadow: 0 4px 24px #000000;
+  box-shadow: 0 4px 24px var(--pal-black);
 }
 .avi-zoom-edit-btn:hover {
-  background: #2f3336;
-  border-color: #ffffff;
+  background: var(--pal-gray-700);
+  border-color: var(--pal-white);
   transform: translateX(-50%) scale(1.04);
 }
 .avi-zoom-edit-btn:active {
@@ -720,7 +720,7 @@
   transition: none;
 }
 #upAviImg:hover {
-  box-shadow: 0 0 0 4px #2f3336, 0 6px 24px #000000;
+  box-shadow: 0 0 0 4px var(--pal-gray-700), 0 6px 24px var(--pal-black);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -918,7 +918,7 @@
   transition: none;
   border-radius: 12px;
 }
-.settings-profile-card:hover { background: #16181c; }
+.settings-profile-card:hover { background: var(--pal-gray-900); }
 
 .settings-profile-avi {
   width: 56px;

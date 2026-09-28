@@ -10,7 +10,7 @@
   justify-content: center;
   z-index: 9999;
   transition: none;
-  background-color: #16181c;
+  background-color: var(--pal-gray-900);
 }
 
 #splash.out {

@@ -32,7 +32,7 @@
   background: var(--blue3, var(--blue));
   border: none;
   border-radius: 12px;
-  color: #fff;
+  color: var(--pal-white);
   font-size: 14px;
   font-weight: 600;
   font-family: var(--font);
@@ -66,7 +66,7 @@
   width: 100%;
   padding: 12px;
   background: transparent;
-  border: 0.5px solid #2f3336;
+  border: 0.5px solid var(--pal-gray-700);
   border-radius: 12px;
   color: var(--red);
   font-size: 13px;
@@ -76,7 +76,7 @@
   transition: none;
 }
 
-.btn-danger:hover  { background: #16181c; }
+.btn-danger:hover  { background: var(--pal-gray-900); }
 .btn-danger:active { opacity: 0.85; }
 
 /* ── 2. Bottom nav / sidebar ────────────────────────────────── */

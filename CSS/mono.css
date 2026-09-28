@@ -6,104 +6,104 @@
    ═══════════════════════════════════════════ */
 :root,
 [data-theme="dark"] {
-  --bg:  #000000;
-  --bg2: #000000;
-  --bg3: #000000;
-  --bg4: #16181c;
-  --bg5: #202327;
+  --bg:  var(--pal-black);
+  --bg2: var(--pal-black);
+  --bg3: var(--pal-black);
+  --bg4: var(--pal-gray-900);
+  --bg5: var(--pal-gray-800);
 
-  --blue:  #ffffff;
+  --blue:  var(--pal-white);
   --blue2: #e7e9ea;
   --blue3: #d0d0d0;
-  --blue-glow:  #16181c;
-  --blue-glow2: #16181c;
+  --blue-glow:  var(--pal-gray-900);
+  --blue-glow2: var(--pal-gray-900);
 
-  --tg-blue:    #ffffff;
+  --tg-blue:    var(--pal-white);
   --tg-text-muted:   #71767b;
-  --tg-primary-blue: #ffffff;
-  --tg-text-main:    #ffffff;
+  --tg-primary-blue: var(--pal-white);
+  --tg-text-main:    var(--pal-white);
 }
 
-html, body, #app { background: #000000; }
-meta[name="theme-color"] { color: #000000; }
+html, body, #app { background: var(--pal-black); }
+meta[name="theme-color"] { color: var(--pal-black); }
 
 /* ── Oq (accent) fonli elementlarda matn/ikonka qora ── */
 .btn-primary,
-.btn-primary * { color: #000 !important; }
+.btn-primary * { color: var(--pal-black) !important; }
 .btn-primary:hover,
-.btn-primary:hover * { color: #000 !important; }
+.btn-primary:hover * { color: var(--pal-black) !important; }
 .ua-approve-btn,
-.ua-approve-btn * { color: #000 !important; }
+.ua-approve-btn * { color: var(--pal-black) !important; }
 #chatThreadModal .chat-msg.theirs .cvm-bar.played,
-#chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: #000 !important; }
+#chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: var(--pal-black) !important; }
 .chat-row-badge,
-.chat-row-badge * { color: #000 !important; }
+.chat-row-badge * { color: var(--pal-black) !important; }
 .cv-pulse,
-.cv-pulse * { color: #000 !important; }
+.cv-pulse * { color: var(--pal-black) !important; }
 .chat-voice-btn,
-.chat-voice-btn * { color: #000 !important; }
+.chat-voice-btn * { color: var(--pal-black) !important; }
 .crb-line,
-.crb-line * { color: #000 !important; }
+.crb-line * { color: var(--pal-black) !important; }
 .chat-voice-btn.recording,
-.chat-voice-btn.recording * { color: #000 !important; }
+.chat-voice-btn.recording * { color: var(--pal-black) !important; }
 .chat-msg.theirs .cvm-play,
-.chat-msg.theirs .cvm-play * { color: #000 !important; }
+.chat-msg.theirs .cvm-play * { color: var(--pal-black) !important; }
 .chat-msg.theirs .cvm-play:hover,
-.chat-msg.theirs .cvm-play:hover * { color: #000 !important; }
+.chat-msg.theirs .cvm-play:hover * { color: var(--pal-black) !important; }
 .chat-msg.theirs .cvm-bar.played,
-.chat-msg.theirs .cvm-bar.played * { color: #000 !important; }
+.chat-msg.theirs .cvm-bar.played * { color: var(--pal-black) !important; }
 .vmp-play,
-.vmp-play * { color: #000 !important; }
+.vmp-play * { color: var(--pal-black) !important; }
 .vmp-progress-fill,
-.vmp-progress-fill * { color: #000 !important; }
+.vmp-progress-fill * { color: var(--pal-black) !important; }
 [data-theme="dark"] .splash-fill,
-[data-theme="dark"] .splash-fill * { color: #000 !important; }
+[data-theme="dark"] .splash-fill * { color: var(--pal-black) !important; }
 .ufb-icon,
-.ufb-icon * { color: #000 !important; }
+.ufb-icon * { color: var(--pal-black) !important; }
 .ufb-fill,
-.ufb-fill * { color: #000 !important; }
+.ufb-fill * { color: var(--pal-black) !important; }
 .grp-avi-badge--group,
-.grp-avi-badge--group * { color: #000 !important; }
+.grp-avi-badge--group * { color: var(--pal-black) !important; }
 .grp-avi-badge--channel,
-.grp-avi-badge--channel * { color: #000 !important; }
+.grp-avi-badge--channel * { color: var(--pal-black) !important; }
 .chat-row-grp-badge--group,
-.chat-row-grp-badge--group * { color: #000 !important; }
+.chat-row-grp-badge--group * { color: var(--pal-black) !important; }
 .grp-picker-check.on,
-.grp-picker-check.on * { color: #000 !important; }
+.grp-picker-check.on * { color: var(--pal-black) !important; }
 .nav-center-btn,
-.nav-center-btn * { color: #000 !important; }
+.nav-center-btn * { color: var(--pal-black) !important; }
 .upload-progress-fill,
-.upload-progress-fill * { color: #000 !important; }
+.upload-progress-fill * { color: var(--pal-black) !important; }
 .cmt-send,
-.cmt-send * { color: #000 !important; }
+.cmt-send * { color: var(--pal-black) !important; }
 .switch-toggle.on,
-.switch-toggle.on * { color: #000 !important; }
+.switch-toggle.on * { color: var(--pal-black) !important; }
 .avi-edit-badge,
-.avi-edit-badge * { color: #000 !important; }
-::selection { color: #000 !important; }
-.nav-btn.on::before { color: #000 !important; }
+.avi-edit-badge * { color: var(--pal-black) !important; }
+::selection { color: var(--pal-black) !important; }
+.nav-btn.on::before { color: var(--pal-black) !important; }
 .empty-cta,
-.empty-cta * { color: #000 !important; }
+.empty-cta * { color: var(--pal-black) !important; }
 .toast-progress,
-.toast-progress * { color: #000 !important; }
+.toast-progress * { color: var(--pal-black) !important; }
 .nav-badge,
-.nav-badge * { color: #000 !important; }
+.nav-badge * { color: var(--pal-black) !important; }
 .upload-float-bar,
-.upload-float-bar * { color: #000 !important; }
+.upload-float-bar * { color: var(--pal-black) !important; }
 .ufb-fill.indeterminate,
-.ufb-fill.indeterminate * { color: #000 !important; }
+.ufb-fill.indeterminate * { color: var(--pal-black) !important; }
 
 /* ── Toggle/switch: oq trek ustida tugma qora ── */
 .toggle input:checked + .toggle-track::after,
-.switch-toggle.on .switch-knob { background: #000 !important; box-shadow: none; }
+.switch-toggle.on .switch-knob { background: var(--pal-black) !important; box-shadow: none; }
 .cc-btn--apply,
-.cc-btn--apply * { color: #000 !important; }
+.cc-btn--apply * { color: var(--pal-black) !important; }
 .bc-send-btn,
-.bc-send-btn * { color: #000 !important; }
+.bc-send-btn * { color: var(--pal-black) !important; }
 
 /* ── Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan ── */
 [data-theme="dark"] .post,
-.post { background: #000000; border-bottom: 1px solid #16181c; }
+.post { background: var(--pal-black); border-bottom: 1px solid var(--pal-gray-900); }
 
 /* ── Logo hech qaysi konteyner ichida qirqilmasin (bubble dumchasi ko'rinib tursin) ── */
 .splash-inner, .splash-logo-wrap, .splash-logo-glass,

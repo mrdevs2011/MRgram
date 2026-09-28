@@ -12,9 +12,9 @@
 /* Aniq X (Twitter) ranglari. Dark = "Lights out", Light = standart oq. */
 :root,
 [data-theme="dark"] {
-  --bg:   #000000;  /* sahifa */
+  --bg:   var(--pal-black);  /* sahifa */
   --bg2:  #000000;
-  --bg3:  #16181c;  /* karta / panel (Trends, Who to follow) */
+  --bg3:  var(--pal-gray-900);  /* karta / panel (Trends, Who to follow) */
   --bg4:  #202327;  /* qidiruv maydoni, hover */
   --bg5:  #2f3336;  /* ko'tarilgan hover */
 
@@ -35,11 +35,11 @@
   --blue-glow:  rgba(29, 155, 240, .10);
   --blue-glow2: rgba(29, 155, 240, .10);
 
-  --line:  #2f3336;
-  --line2: #2f3336;
-  --line3: #2f3336;
-  --glass-border:     #2f3336;
-  --glass-border-top: #2f3336;
+  --line:  var(--pal-gray-700);
+  --line2: var(--pal-gray-700);
+  --line3: var(--pal-gray-700);
+  --glass-border:     var(--pal-gray-700);
+  --glass-border-top: var(--pal-gray-700);
 
   --red:   #f4212e;
   --green: #00ba7c;
@@ -130,68 +130,68 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 }
 a { color: var(--link); }
 .ua-approve-btn,
-.ua-approve-btn * { color: #fff !important; }
+.ua-approve-btn * { color: var(--pal-white) !important; }
 #chatThreadModal .chat-msg.theirs .cvm-bar.played,
-#chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: #fff !important; }
+#chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: var(--pal-white) !important; }
 .chat-row-badge,
-.chat-row-badge * { color: #fff !important; }
+.chat-row-badge * { color: var(--pal-white) !important; }
 .cv-pulse,
-.cv-pulse * { color: #fff !important; }
+.cv-pulse * { color: var(--pal-white) !important; }
 .chat-voice-btn,
-.chat-voice-btn * { color: #fff !important; }
+.chat-voice-btn * { color: var(--pal-white) !important; }
 .crb-line,
-.crb-line * { color: #fff !important; }
+.crb-line * { color: var(--pal-white) !important; }
 .chat-voice-btn.recording,
-.chat-voice-btn.recording * { color: #fff !important; }
+.chat-voice-btn.recording * { color: var(--pal-white) !important; }
 .chat-msg.theirs .cvm-play,
-.chat-msg.theirs .cvm-play * { color: #fff !important; }
+.chat-msg.theirs .cvm-play * { color: var(--pal-white) !important; }
 .chat-msg.theirs .cvm-play:hover,
-.chat-msg.theirs .cvm-play:hover * { color: #fff !important; }
+.chat-msg.theirs .cvm-play:hover * { color: var(--pal-white) !important; }
 .chat-msg.theirs .cvm-bar.played,
-.chat-msg.theirs .cvm-bar.played * { color: #fff !important; }
+.chat-msg.theirs .cvm-bar.played * { color: var(--pal-white) !important; }
 .vmp-play,
-.vmp-play * { color: #fff !important; }
+.vmp-play * { color: var(--pal-white) !important; }
 .vmp-progress-fill,
-.vmp-progress-fill * { color: #fff !important; }
+.vmp-progress-fill * { color: var(--pal-white) !important; }
 [data-theme="dark"] .splash-fill,
-[data-theme="dark"] .splash-fill * { color: #fff !important; }
+[data-theme="dark"] .splash-fill * { color: var(--pal-white) !important; }
 .ufb-icon,
-.ufb-icon * { color: #fff !important; }
+.ufb-icon * { color: var(--pal-white) !important; }
 .ufb-fill,
-.ufb-fill * { color: #fff !important; }
+.ufb-fill * { color: var(--pal-white) !important; }
 .grp-avi-badge--group,
-.grp-avi-badge--group * { color: #fff !important; }
+.grp-avi-badge--group * { color: var(--pal-white) !important; }
 .grp-avi-badge--channel,
-.grp-avi-badge--channel * { color: #fff !important; }
+.grp-avi-badge--channel * { color: var(--pal-white) !important; }
 .chat-row-grp-badge--group,
-.chat-row-grp-badge--group * { color: #fff !important; }
+.chat-row-grp-badge--group * { color: var(--pal-white) !important; }
 .grp-picker-check.on,
-.grp-picker-check.on * { color: #fff !important; }
+.grp-picker-check.on * { color: var(--pal-white) !important; }
 .nav-center-btn,
-.nav-center-btn * { color: #fff !important; }
+.nav-center-btn * { color: var(--pal-white) !important; }
 .upload-progress-fill,
-.upload-progress-fill * { color: #fff !important; }
+.upload-progress-fill * { color: var(--pal-white) !important; }
 .cmt-send,
-.cmt-send * { color: #fff !important; }
+.cmt-send * { color: var(--pal-white) !important; }
 .switch-toggle.on,
-.switch-toggle.on * { color: #fff !important; }
+.switch-toggle.on * { color: var(--pal-white) !important; }
 .avi-edit-badge,
-.avi-edit-badge * { color: #fff !important; }
-.nav-btn.on::before { color: #fff !important; }
+.avi-edit-badge * { color: var(--pal-white) !important; }
+.nav-btn.on::before { color: var(--pal-white) !important; }
 .empty-cta,
-.empty-cta * { color: #fff !important; }
+.empty-cta * { color: var(--pal-white) !important; }
 .toast-progress,
-.toast-progress * { color: #fff !important; }
+.toast-progress * { color: var(--pal-white) !important; }
 .nav-badge,
-.nav-badge * { color: #fff !important; }
+.nav-badge * { color: var(--pal-white) !important; }
 .upload-float-bar,
-.upload-float-bar * { color: #fff !important; }
+.upload-float-bar * { color: var(--pal-white) !important; }
 .ufb-fill.indeterminate,
-.ufb-fill.indeterminate * { color: #fff !important; }
+.ufb-fill.indeterminate * { color: var(--pal-white) !important; }
 .cc-btn--apply,
-.cc-btn--apply * { color: #fff !important; }
+.cc-btn--apply * { color: var(--pal-white) !important; }
 .bc-send-btn,
-.bc-send-btn * { color: #fff !important; }
+.bc-send-btn * { color: var(--pal-white) !important; }
 
 /* ── Sidebar tuzatishlari ───────────────────────────────────────────────
    Faol tugma ostidagi chiziq/nur (ui-improvements.css) X uslubida yo'q:
@@ -453,7 +453,7 @@ nav.bot-nav #sbSearchToggle.search-active svg { stroke-width: 2.4; }
 #uploadOverlay .composer-post-btn,
 #uploadOverlay .composer-post-btn *,
 #uploadOverlay .composer-post-btn:disabled,
-#uploadOverlay .composer-post-btn:disabled * { color: #fff !important; }
+#uploadOverlay .composer-post-btn:disabled * { color: var(--pal-white) !important; }
 #uploadOverlay .composer-post-btn:disabled { background: var(--x-blue) !important; opacity: .5; }
 
 /* Sidebar: X hover (10% shaffof) va ko'k Post */
@@ -505,7 +505,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 
 /* Toggle: ko'k trek, oq tugma */
 .toggle input:checked + .toggle-track::after,
-.switch-toggle.on .switch-knob { background: #fff !important; }
+.switch-toggle.on .switch-knob { background: var(--pal-white) !important; }
 
 /* Progress / ovoz: oq o'rniga X ko'ki */
 .cpb-progress-fill,
@@ -532,12 +532,12 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 #chatThreadModal .chat-thread-messages { background-image: none; }
 #chatThreadModal .chat-bubble { font-size: 15px; line-height: 1.33; }
 #chatThreadModal .chat-msg.mine .chat-bubble {
-  background: var(--x-blue); color: #fff; border-radius: 22px 22px 4px 22px;
+  background: var(--x-blue); color: var(--pal-white); border-radius: 22px 22px 4px 22px;
 }
 #chatThreadModal .chat-msg.theirs .chat-bubble {
   background: var(--line); color: var(--text); border-radius: 22px 22px 22px 4px;
 }
-#chatThreadModal .chat-msg.mine .chat-bubble a { color: #fff; text-decoration: underline; }
+#chatThreadModal .chat-msg.mine .chat-bubble a { color: var(--pal-white); text-decoration: underline; }
 #chatThreadModal .chat-msg.mine .cvm-play { background: rgba(255,255,255,.25) !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -721,7 +721,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 [data-theme] .search-overlay .exp-pill input {
   width: 100%; height: 44px; padding: 0 16px 0 46px;
   background: transparent; color: var(--text); outline: none; box-shadow: none;
-  border: 1px solid #2f3336; border-radius: 999px; font-size: 15px;
+  border: 1px solid var(--pal-gray-700); border-radius: 999px; font-size: 15px;
 }
 [data-theme] .search-overlay .exp-pill input:focus { border-color: var(--x-blue, #1d9bf0); background: transparent; }
 [data-theme] .search-overlay .exp-pill input::placeholder { color: var(--text3); }
@@ -787,7 +787,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 
 /* soyasiz qolgan ochiladigan kartalar (menyu/typeahead/emoji) — chiziq bilan ajraladi */
 [data-theme] :is(.search-suggestions, .emoji-picker, .chat-emoji-quickpick, #chatContextMenu,
-  .settings-more-menu, .sb-acc-menu, .chats-x-menu) { border: 1px solid #2f3336; }
+  .settings-more-menu, .sb-acc-menu, .chats-x-menu) { border: 1px solid var(--pal-gray-700); }
 
 /* DIET auth-form fix — login/register maydon va tugma (kesh/kaskaddan mustaqil) */
 #authWrap .field,
@@ -796,8 +796,8 @@ nav.bot-nav #createBtn.nav-center-btn *,
   display: block;
   width: 100%;
   box-sizing: border-box;
-  background: #202327 !important;
-  border: 1px solid #2f3336 !important;
+  background: var(--pal-gray-800) !important;
+  border: 1px solid var(--pal-gray-700) !important;
   border-radius: 12px !important;
   color: #e7e9ea !important;
   padding: 13px 16px !important;
@@ -815,7 +815,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 #authWrap .field:focus,
 #authWrap input.field:focus {
   border-color: #1d9bf0 !important;
-  background: #202327 !important;
+  background: var(--pal-gray-800) !important;
 }
 #authWrap .btn-primary,
 #authWrap #authBtn {
@@ -843,8 +843,8 @@ nav.bot-nav #createBtn.nav-center-btn *,
 
 /* DIET force dark canvas — oq fonni yo'qotish */
 html, body, #app, .app {
-  background: #000000 !important;
-  background-color: #000000 !important;
+  background: var(--pal-black) !important;
+  background-color: var(--pal-black) !important;
   color: #e7e9ea !important;
 }
 .view.on,
@@ -853,7 +853,7 @@ html, body, #app, .app {
   background: transparent;
 }
 #authWrap {
-  background: #000000 !important;
+  background: var(--pal-black) !important;
 }
 
 /* Right-rail — chegarali karta, feed bilan 16px oraliq */
@@ -881,7 +881,7 @@ html, body, #app, .app {
     max-width: var(--center-w);
     width: 100%;
     margin: 0;
-    border-right: 1px solid #2f3336;
+    border-right: 1px solid var(--pal-gray-700);
   }
 
   /* Qidiruv (explore) — markaz ustunda, o'ng rail ochiq qoladi */
@@ -892,7 +892,7 @@ html, body, #app, .app {
     right: auto !important;
     width: var(--center-w) !important;
     max-width: var(--center-w) !important;
-    border-right: 1px solid #2f3336;
+    border-right: 1px solid var(--pal-gray-700);
   }
 
   /* O'ng panel: chegarali, burchaklari yumaloq karta — chap va o'ng tomondan bir xil chetdan */
@@ -912,8 +912,8 @@ html, body, #app, .app {
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 40;
-    background: #000;
-    border: 1px solid #2f3336;
+    background: var(--pal-black);
+    border: 1px solid var(--pal-gray-700);
     border-radius: 16px;
     scrollbar-width: thin;
   }
@@ -930,7 +930,7 @@ html, body, #app, .app {
   border: none;
   border-radius: 0;
   padding: 16px 0 8px;
-  border-bottom: 1px solid #2f3336;
+  border-bottom: 1px solid var(--pal-gray-700);
 }
 .rr-card:last-child { border-bottom: none; }
 
@@ -972,7 +972,7 @@ html, body, #app, .app {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #202327;
+  background: var(--pal-gray-800);
   flex-shrink: 0;
   overflow: visible; /* presence dot tashqariga chiqsin */
   display: flex;
@@ -993,7 +993,7 @@ html, body, #app, .app {
   height: 12px;
   border-radius: 50%;
   background: #00ba7c;
-  border: 2px solid #000;
+  border: 2px solid var(--pal-black);
   box-sizing: border-box;
   z-index: 2;
   pointer-events: none;
@@ -1054,7 +1054,7 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 [data-theme] :is(.post-cmt-panel, .rr-cmt-panel) .cmt-send {
   height: 36px; min-height: 36px; padding: 0 16px;
   border: none; border-radius: 999px; box-shadow: none;
-  background: var(--x-blue); color: #fff;
+  background: var(--x-blue); color: var(--pal-white);
   font-family: var(--font); font-size: 15px; font-weight: 700;
 }
 [data-theme] :is(.post-cmt-panel, .rr-cmt-panel) .cmt-send:hover:not(:disabled) { background: var(--x-blue-hover); box-shadow: none; }

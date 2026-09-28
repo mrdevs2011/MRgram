@@ -187,7 +187,7 @@ body:has(.search-overlay.open) .app-hdr {
   display: none; /* hidden on mobile; shown on desktop search-open */
   align-items: center;
   gap: 6px;
-  background: #16181c;
+  background: var(--pal-gray-900);
   border: 1px solid var(--line);
   border-radius: 50px;
   padding: 6px 10px;
@@ -196,9 +196,9 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .hdr-search:focus-within {
-  border-color: #2f3336;
-  background: #16181c;
-  box-shadow: 0 0 0 3px #16181c;
+  border-color: var(--pal-gray-700);
+  background: var(--pal-gray-900);
+  box-shadow: 0 0 0 3px var(--pal-gray-900);
 }
 
 .hdr-search input {
@@ -232,7 +232,7 @@ body:has(.search-overlay.open) .app-hdr {
   flex-shrink: 0;
   transition: none;
 }
-.hdr-mute-btn:hover { background: #202327; color: var(--text); }
+.hdr-mute-btn:hover { background: var(--pal-gray-800); color: var(--text); }
 .hdr-mute-btn.is-unmuted { color: var(--blue); }
 
 /* ── Header New Post Button (Mobile) ── */
@@ -348,13 +348,13 @@ body:has(.search-overlay.open) .app-hdr {
   font-weight: 600;
   cursor: pointer;
   border: 0.5px solid var(--glass-border);
-  box-shadow: var(--specular-top), 0 2px 8px #000000;
+  box-shadow: var(--specular-top), 0 2px 8px var(--pal-black);
   transition: none;
 }
 
 .avi:hover {
   border-color: #464646;
-  box-shadow: var(--specular-top), 0 0 0 3px #202327;
+  box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-800);
 }
 .avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
@@ -400,7 +400,7 @@ body:has(.search-overlay.open) .app-hdr {
 /* ── Media ─ */
 .post-media {
   cursor: pointer;
-  background: #000000;
+  background: var(--pal-black);
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -411,7 +411,7 @@ body:has(.search-overlay.open) .app-hdr {
   width: 100%;
   height: auto;
   display: block;
-  background: #000000;
+  background: var(--pal-black);
   filter: blur(0);
   transition: none;
 }
@@ -421,7 +421,7 @@ body:has(.search-overlay.open) .app-hdr {
   height: auto;
   max-height: 70vh;
   display: block;
-  background: #000000;
+  background: var(--pal-black);
   object-fit: contain;
   filter: blur(0);
   transition: none;
@@ -430,7 +430,7 @@ body:has(.search-overlay.open) .app-hdr {
 /* Media hali to'liq yuklanmagan holat: o'lchami saqlanadi, faqat blur bilan.
    Post matni buldMedia'dan alohida chizilgani uchun har doim darrov o'qiladi. */
 .post-media.pm-loading {
-  background: #202327;
+  background: var(--pal-gray-800);
 }
 .post-media.pm-loading img,
 .post-media.pm-loading video {
@@ -454,7 +454,7 @@ body:has(.search-overlay.open) .app-hdr {
 .vid-wrap {
   position: relative;
   width: 100%;
-  background: #000000;
+  background: var(--pal-black);
   overflow: hidden;
 }
 
@@ -472,7 +472,7 @@ body:has(.search-overlay.open) .app-hdr {
   left: 0;
   right: 0;
   height: 36px;
-  background: #000000;
+  background: var(--pal-black);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -483,7 +483,7 @@ body:has(.search-overlay.open) .app-hdr {
 .vc-play, .vc-mute, .vc-fs {
   background: none;
   border: none;
-  color: #fff;
+  color: var(--pal-white);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -511,7 +511,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 .vc-fill {
   height: 100%;
-  background: #fff;
+  background: var(--pal-white);
   width: 0%;
   border-radius: 2px;
   transition: none;
@@ -519,7 +519,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 .vc-time {
   font-size: 11px;
-  color: #fff;
+  color: var(--pal-white);
   flex-shrink: 0;
   min-width: 28px;
 }
@@ -566,7 +566,7 @@ body:has(.search-overlay.open) .app-hdr {
   width: 42px; height: 42px;
   border-radius: 12px;
   background: var(--blue-glow2);
-  border: 1px solid #2f3336;
+  border: 1px solid var(--pal-gray-700);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -593,7 +593,7 @@ body:has(.search-overlay.open) .app-hdr {
 .file-dl {
   padding: 7px 14px;
   background: var(--blue-glow2);
-  border: 1px solid #202327;
+  border: 1px solid var(--pal-gray-800);
   border-radius: 10px;
   color: var(--blue);
   font-size: 12px;
@@ -605,7 +605,7 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .file-dl:hover {
-  background: #2f3336;
+  background: var(--pal-gray-700);
 }
 
 /* ── Stats & Actions ── */
@@ -645,7 +645,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 .act-btn:last-child { border-right: none; }
 .act-btn:hover {
-  background: #16181c;
+  background: var(--pal-gray-900);
   color: var(--text);
 }
 .act-btn:active {transition: none; }
@@ -653,7 +653,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* ── Reel Caption Sheet ── */
 #reelCapSheet .sheet {
-  background: #16181c;
+  background: var(--pal-gray-900);
 }
 
 .rcap-user-row {
@@ -725,16 +725,16 @@ body:has(.search-overlay.open) .app-hdr {
   position: absolute;
   top: 14px; right: 14px;
   z-index: 20;
-  background: #000000;
+  background: var(--pal-black);
 }
-.reel-vol-top:hover { background: #000000; }
+.reel-vol-top:hover { background: var(--pal-black); }
 .reel-vol-top svg { width: 18px; height: 18px; }
 
 /* Desktop: top bar ichida — position reset */
 @media (min-width: 768px) {
   .reel-vol-top {
     position: static;
-    background: #000000;
+    background: var(--pal-black);
     width: 36px; height: 36px;
   }
 }
@@ -758,7 +758,7 @@ body:has(.search-overlay.open) .app-hdr {
   align-items: center;
   gap: 8px;
   z-index: 9999;
-  box-shadow: 0 4px 20px #000000;
+  box-shadow: 0 4px 20px var(--pal-black);
   min-width: 200px;
   max-width: calc(100vw - 32px);
 }
@@ -769,7 +769,7 @@ body:has(.search-overlay.open) .app-hdr {
   background: var(--blue);
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
-  color: #fff;
+  color: var(--pal-white);
 }
 
 .ufb-icon.done {
@@ -830,11 +830,11 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* Dark mode: stronger borders and shadows */
 [data-theme="dark"] .post {
-  box-shadow: 0 2px 12px #000000;
+  box-shadow: 0 2px 12px var(--pal-black);
 }
 
 [data-theme="dark"] .post:hover {
-  box-shadow: 0 4px 20px #000000;
+  box-shadow: 0 4px 20px var(--pal-black);
 }
 
 /* Light mode: softer shadows */
@@ -844,7 +844,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* Video controls - theme aware */
 [data-theme="dark"] .vid-controls {
-  background: #000000;
+  background: var(--pal-black);
 }
 
 /* File card hover - theme aware */
@@ -944,7 +944,7 @@ body:has(.search-overlay.open) .app-hdr {
   right: 10px;
   width: 32px;
   height: 32px;
-  background: #000000;
+  background: var(--pal-black);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -956,7 +956,7 @@ body:has(.search-overlay.open) .app-hdr {
   position: absolute;
   top: 10px;
   right: 10px;
-  color: #fff;
+  color: var(--pal-white);
   font-size: 12px;
   z-index: 2;
 }
@@ -982,7 +982,7 @@ body:has(.search-overlay.open) .app-hdr {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #2f3336;
+  background: var(--pal-gray-700);
   animation: none;
 }
 

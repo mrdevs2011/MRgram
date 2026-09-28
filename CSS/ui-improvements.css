@@ -60,7 +60,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #202327;
+  background: var(--pal-gray-800);
   animation: none;
 }
 
@@ -317,7 +317,7 @@
   transition: background 0.15s ease, transform 0.15s ease;
 }
 .empty-cta:hover {
-  background: #fff;
+  background: var(--pal-white);
   transform: translateY(-1px);
 }
 
@@ -400,17 +400,17 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #fff;
+  color: var(--pal-white);
   font-size: 12px;
   font-weight: 600;
-  text-shadow: 0 1px 3px #000000;
+  text-shadow: 0 1px 3px var(--pal-black);
 }
 
 .grid-play-badge {
   position: absolute;
   top: 6px;
   right: 6px;
-  background: #000000;
+  background: var(--pal-black);
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -453,7 +453,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: #000000;
+    background: var(--pal-black);
     opacity: 0;
     transition: none;
     pointer-events: none;
@@ -549,7 +549,7 @@
 /* Warning toast */
 #toast.toast-warning {
   border-color: var(--amber);
-  box-shadow: 0 8px 32px #2f3336;
+  box-shadow: 0 8px 32px var(--pal-gray-700);
   background: #131313;
 }
 
@@ -593,7 +593,7 @@
   --line: #525257;
   --line2: #848487;
   --line3: #B5B5B7;
-  --text: #ffffff;
+  --text: var(--pal-white);
   --text2: #e0e0e0;
   --text3: #b0b0b0;
 }
@@ -619,13 +619,13 @@
 }
 
 .vid-controls {
-  background: #000000;
+  background: var(--pal-black);
 }
 
 .vc-play,
 .vc-mute,
 .vc-fs {
-  background: #202327;
+  background: var(--pal-gray-800);
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -666,7 +666,7 @@
   transform: translateY(-50%);
   width: 10px;
   height: 10px;
-  background: #fff;
+  background: var(--pal-white);
   border-radius: 50%;
   opacity: 0;
   transition: none;
@@ -691,7 +691,7 @@
   padding: 8px;
   max-height: 320px;
   overflow-y: auto;
-  box-shadow: 0 8px 32px #000000;
+  box-shadow: 0 8px 32px var(--pal-black);
   z-index: 501;
   display: none;
 }
@@ -760,17 +760,17 @@
 
 #toast.toast-success {
   border-color: var(--green);
-  box-shadow: 0 8px 32px #202327;
+  box-shadow: 0 8px 32px var(--pal-gray-800);
 }
 
 #toast.toast-error {
   border-color: var(--red);
-  box-shadow: 0 8px 32px #202327;
+  box-shadow: 0 8px 32px var(--pal-gray-800);
 }
 
 #toast.toast-info {
   border-color: var(--blue);
-  box-shadow: 0 8px 32px #202327;
+  box-shadow: 0 8px 32px var(--pal-gray-800);
 }
 
 /* ═══════════════════════════════════════════
@@ -784,15 +784,15 @@
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  background: var(--tg-blue, #ffffff);
+  background: var(--tg-blue, var(--pal-white));
   border-radius: 9px;
   font-size: 10px;
   font-weight: 700;
-  color: #fff;
+  color: var(--pal-white);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px var(--blue-glow, #2f3336);
+  box-shadow: 0 2px 8px var(--blue-glow, var(--pal-gray-700));
 }
 
 /* Nav icon no longer shakes continuously while unread — a badge with a
@@ -953,8 +953,8 @@
   }
 
   body {
-    background: #fff !important;
-    color: #000000 !important;
+    background: var(--pal-white) !important;
+    color: var(--pal-black) !important;
   }
 
   .post {

@@ -17,8 +17,8 @@
   max-height: 90dvh;
   margin: 0;
   overflow-y: auto;
-  background: #16181c;
-  border: 1px solid #2f3336;
+  background: var(--pal-gray-900);
+  border: 1px solid var(--pal-gray-700);
   border-radius: 16px;
   box-shadow: 0 8px 40px rgba(0,0,0,.55);
   padding: 16px;

@@ -3,9 +3,18 @@
    MRspace — Theme System
    ═══════════════════════════════════════════ */
 
+/* ── PALITRA (primitivlar) — yagona manba. Boshqa fayllarda qattiq hex o'rniga shular ishlatiladi. ── */
+:root {
+  --pal-black:    #000000;
+  --pal-white:    #ffffff;
+  --pal-gray-900: #16181c;   /* surface */
+  --pal-gray-800: #202327;   /* surface-2 / hover */
+  --pal-gray-700: #2f3336;   /* line / elevated */
+}
+
 /* ── DARK theme — Telegram Dark Palette ── */
 [data-theme="dark"] {
-  --bg:           #000000;   /* Main App/Page Background (Primary) */
+  --bg:           var(--pal-black);   /* Main App/Page Background (Primary) */
   --bg2:          #000000;   /* Primary — chat list rows, frost */
   --bg3:          #16181c;   /* Surface — headers, panels, sheets */
   --bg4:          #16181c;   /* Inputs / hover / search fields */
@@ -15,15 +24,15 @@
   --text2:        #71767b;   /* Muted / Secondary Text */
   --text3:        #71767b;
   --text4:        #4a4a4a;
-  --blue:         #ffffff;   /* Primary Telegram Blue */
+  --blue:         var(--pal-white);   /* Primary Telegram Blue */
   --blue2:        #ffffff;
-  --blue3:        #ffffff;
-  --blue-glow:    #16181c;
-  --blue-glow2:   #16181c;
+  --blue3:        var(--pal-white);
+  --blue-glow:    var(--pal-gray-900);
+  --blue-glow2:   var(--pal-gray-900);
   --red:          #ec5e6f;
-  --red-glow:     #16181c;
+  --red-glow:     var(--pal-gray-900);
   --green:        #5acb8c;
-  --green-glow:   #16181c;
+  --green-glow:   var(--pal-gray-900);
   --amber:        #f0a855;
 
   /* ── Dark — pure black spec, dedicated names ── */
@@ -47,8 +56,8 @@
 
 /* Dark — glass element overrides */
 [data-theme="dark"] .post {
-  background: #202327;
-  border: 0.5px solid #2f3336;
+  background: var(--pal-gray-800);
+  border: 0.5px solid var(--pal-gray-700);
   box-shadow: var(--specular-top), var(--liquid-shadow-sm);
 }
 
@@ -178,7 +187,7 @@ input:focus, textarea:focus {
 
 input::placeholder, textarea::placeholder { color: var(--text3); }
 
-::selection { background: var(--blue); color: #fff; }
+::selection { background: var(--blue); color: var(--pal-white); }
 
 /* ═══════════════════════════════════════════
    Unified Icon System — 2026 minimalist line icons

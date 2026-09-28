@@ -143,14 +143,14 @@
   letter-spacing: 0.1px;
 }
 .ua-badge--approved {
-  background: #16181c;
+  background: var(--pal-gray-900);
   color: var(--green);
-  border: 1px solid #202327;
+  border: 1px solid var(--pal-gray-800);
 }
 .ua-badge--pending {
-  background: #202327;
+  background: var(--pal-gray-800);
   color: var(--amber);
-  border: 1px solid #2f3336;
+  border: 1px solid var(--pal-gray-700);
 }
 .ua-badge--rejected {
   background: var(--red-glow);
@@ -183,7 +183,7 @@
 }
 .ua-approve-btn {
   background: var(--blue);
-  color: #fff;
+  color: var(--pal-white);
   box-shadow: 0 2px 8px var(--blue-glow2);
 }
 .ua-approve-btn:hover   { opacity: 1; }
@@ -192,9 +192,9 @@
 .ua-reject-btn {
   background: var(--red-glow);
   color: var(--red);
-  border: 1px solid #202327;
+  border: 1px solid var(--pal-gray-800);
 }
-.ua-reject-btn:hover    { background: #202327; }
+.ua-reject-btn:hover    { background: var(--pal-gray-800); }
 .ua-reject-btn:disabled { opacity: 1; cursor: not-allowed; }
 
 /* ── Block / Unblock buttons ─────────────────────────────────────────── */
@@ -213,16 +213,16 @@
 .ua-block-btn {
   background: var(--red-glow);
   color: var(--red);
-  border: 1px solid #202327;
+  border: 1px solid var(--pal-gray-800);
 }
-.ua-block-btn:hover { background: #202327; }
+.ua-block-btn:hover { background: var(--pal-gray-800); }
 
 .ua-unblock-btn {
   background: var(--green-glow);
   color: var(--green);
-  border: 1px solid #202327;
+  border: 1px solid var(--pal-gray-800);
 }
-.ua-unblock-btn:hover { background: #202327; }
+.ua-unblock-btn:hover { background: var(--pal-gray-800); }
 
 /* Bloklangan row */
 .ua-row--blocked { opacity: 1; }
@@ -234,7 +234,7 @@
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background: #000000;
+  background: var(--pal-black);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -257,7 +257,7 @@
   text-align: center;
   transform: scale(0.93);
   transition: none;
-  box-shadow: 0 24px 64px #000000;
+  box-shadow: 0 24px 64px var(--pal-black);
 }
 .ua-modal-overlay.show .ua-modal { transform: scale(1); }
 .ua-modal-icon {
@@ -312,16 +312,16 @@
 }
 .ua-modal-cancel:hover { background: var(--bg5); }
 
-.ua-modal-confirm { background: var(--red); color: #fff; }
+.ua-modal-confirm { background: var(--red); color: var(--pal-white); }
 .ua-modal-confirm:hover   { opacity: 1; }
 .ua-modal-confirm:disabled { opacity: 1; cursor: not-allowed; }
 
 /* Modal variants */
-.ua-modal-confirm--danger { background: var(--red); color: #fff; }
+.ua-modal-confirm--danger { background: var(--red); color: var(--pal-white); }
 .ua-modal-confirm--danger:hover { opacity: 1; }
-.ua-modal-confirm--warn   { background: var(--amber); color: #fff; }
+.ua-modal-confirm--warn   { background: var(--amber); color: var(--pal-white); }
 .ua-modal-confirm--warn:hover   { opacity: 1; }
-.ua-modal-confirm--safe   { background: var(--green); color: #fff; }
+.ua-modal-confirm--safe   { background: var(--green); color: var(--pal-white); }
 .ua-modal-confirm--safe:hover   { opacity: 1; }
 
 /* Juda kichik telefonlar — joy tejaymiz */
@@ -338,22 +338,22 @@
    DARK THEME — Admin Panel Override
    ═══════════════════════════════════════════════════════════════════════ */
 [data-theme="dark"] .ua-row {
-  border-bottom-color: #202327;
+  border-bottom-color: var(--pal-gray-800);
 }
 [data-theme="dark"] .ua-row:hover {
-  background: #202327;
+  background: var(--pal-gray-800);
 }
 [data-theme="dark"] .ua-modal {
-  background: #202327;
-  border-color: #202327;
-  box-shadow: 0 24px 64px #000000;
+  background: var(--pal-gray-800);
+  border-color: var(--pal-gray-800);
+  box-shadow: 0 24px 64px var(--pal-black);
 }
 [data-theme="dark"] .ua-modal-cancel {
-  background: #202327;
-  border-color: #202327;
+  background: var(--pal-gray-800);
+  border-color: var(--pal-gray-800);
 }
 [data-theme="dark"] .ua-modal-cancel:hover {
-  background: #2f3336;
+  background: var(--pal-gray-700);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -495,15 +495,15 @@
   --ag-glass-mid:      var(--bg4);
   --ag-glass-strong:   var(--bg5);
   --ag-border-top:     #3F3F44;
-  --ag-border-side:    #2f3336;
-  --ag-border-bot:     #16181c;
+  --ag-border-side:    var(--pal-gray-700);
+  --ag-border-bot:     var(--pal-gray-900);
   --ag-specular:       none;
-  --ag-shadow:         0 8px 32px #000000, 0 32px 80px #000000, 0 0 0 0.5px #16181c;
-  --ag-shadow-hover:   0 12px 40px #000000, 0 40px 100px #000000, 0 0 0 0.5px #202327;
+  --ag-shadow:         0 8px 32px var(--pal-black), 0 32px 80px var(--pal-black), 0 0 0 0.5px var(--pal-gray-900);
+  --ag-shadow-hover:   0 12px 40px var(--pal-black), 0 40px 100px var(--pal-black), 0 0 0 0.5px var(--pal-gray-800);
   --ag-modal-bg:       var(--bg3);
   --ag-row-bg:         var(--bg2);
   --ag-row-hover:      var(--bg4);
-  --ag-overlay:        #000000;
+  --ag-overlay:        var(--pal-black);
 }
 
 /* ── Admin row — solid card ── */
@@ -513,7 +513,7 @@
   border-radius: 16px;
   margin: 4px 8px;
   border: 0.5px solid var(--ag-border-side);
-  box-shadow: var(--ag-specular), 0 2px 12px #000000;
+  box-shadow: var(--ag-specular), 0 2px 12px var(--pal-black);
   transition: none;
   position: relative;
   overflow: hidden;
@@ -558,15 +558,15 @@
 }
 .ua-modal-cancel:hover {
   background: var(--ag-glass-strong);
-  box-shadow: var(--ag-specular), 0 4px 16px #000000;
+  box-shadow: var(--ag-specular), 0 4px 16px var(--pal-black);
 }
 
 /* ── Badges — glass glow ── */
 .ua-badge--approved {
-  box-shadow: 0 0 12px #202327;
+  box-shadow: 0 0 12px var(--pal-gray-800);
 }
 .ua-badge--blocked {
-  box-shadow: 0 0 12px #202327;
+  box-shadow: 0 0 12px var(--pal-gray-800);
 }
 
 /* ── Actions view desktop — solid cards ── */
@@ -575,7 +575,7 @@
     background: var(--ag-glass);
     border: 0.5px solid var(--ag-border-side);
     border-radius: 16px;
-    box-shadow: var(--ag-specular), 0 2px 12px #000000;
+    box-shadow: var(--ag-specular), 0 2px 12px var(--pal-black);
     margin-bottom: 8px;
   }
   #actionsView .ua-row:hover {

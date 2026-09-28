@@ -13,8 +13,8 @@
   max-height: 90dvh;
   margin: 0;
   overflow-y: auto;
-  background: #16181c;
-  border: 1px solid #2f3336;
+  background: var(--pal-gray-900);
+  border: 1px solid var(--pal-gray-700);
   border-radius: 16px;
   box-shadow: 0 8px 40px rgba(0,0,0,.55);
   padding: 10px 16px max(14px, env(safe-area-inset-bottom));
@@ -55,7 +55,7 @@
 }
 #uploadOverlay .composer-post-btn:disabled,
 #uploadOverlay .composer-post-btn:disabled * {
-  background: #202327 !important;
+  background: var(--pal-gray-800) !important;
   color: #6e6e6e !important;
   cursor: not-allowed;
   opacity: 1;
@@ -75,7 +75,7 @@
   border-radius: 999px;
   overflow: hidden;
   flex-shrink: 0;
-  background: #16181c;
+  background: var(--pal-gray-900);
 }
 #uploadOverlay .composer-avi img {
   width: 100%;
@@ -118,7 +118,7 @@
   align-items: center;
   gap: 2px;
   padding-top: 8px;
-  border-top: 1px solid #2f3336;
+  border-top: 1px solid var(--pal-gray-700);
 }
 
 /* Rasm/video tugmasi — endi katta dashed box emas, ixcham doira ikonka */
