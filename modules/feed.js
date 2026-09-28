@@ -4,60 +4,6 @@ import { $, esc, renderMarkdown, fmt, fmtSz, defAvi,
          buildSkeletons, dlFile, openZoom, showHeartBurst, fmtCount } from './utils.js';
 import { toast }                            from './toast.js';
 
-// ── Ko'rishlar (views) hisoblagichi ────────────────────────────────────
-// Ilgari bu funksiya bo'sh edi ("placeholder") — postlar millionlab marta
-// ko'rilsa ham "views" hech qachon oshmasdi. Endi: post kamida 60% ko'rinib,
-// 1.2 soniya ekran ichida tursa (tasodifiy tez skroll hisoblanmaydi), 1 marta
-// (shu sessiyada) serverga +1 yoziladi. Postning egasi o'z postini ko'rsa
-// hisoblanmaydi.
-const _viewedThisSession = new Set(); // postId lar — bir sessiyada faqat bitta marta hisoblanadi
-let _viewObs = null;
-
-function setupViewObserver() {
-  if (_viewObs) _viewObs.disconnect();
-  const timers = new Map(); // postId -> setTimeout id
-
-  _viewObs = new IntersectionObserver(entries => {
-    entries.forEach(en => {
-      const el     = en.target;
-      const postId = el.dataset.id;
-      if (!postId) return;
-
-      if (en.isIntersecting && en.intersectionRatio >= 0.6) {
-        if (_viewedThisSession.has(postId) || timers.has(postId)) return;
-        const t = setTimeout(() => {
-          timers.delete(postId);
-          _countView(postId);
-        }, 1200);
-        timers.set(postId, t);
-      } else {
-        const t = timers.get(postId);
-        if (t) { clearTimeout(t); timers.delete(postId); }
-      }
-    });
-  }, { threshold: [0, 0.6] });
-
-  document.querySelectorAll('.post[data-id]').forEach(el => _viewObs.observe(el));
-}
-
-async function _countView(postId) {
-  if (_viewedThisSession.has(postId)) return;
-  _viewedThisSession.add(postId); // darhol belgilaymiz — parallel double-fire bo'lmasin
-
-  const post = state.allPosts?.find(p => p.id === postId);
-  if (post?.userId && post.userId === state.me?.uid) return; // o'z posti — hisoblanmaydi
-
-  try {
-    const { error: viewErr } = await sb.rpc('increment_post_view', { p_post: postId });
-    if (viewErr) throw viewErr;
-    if (post) post.views = (post.views || 0) + 1;
-    const card = document.querySelector(`.post[data-id="${postId}"] .pv-count`);
-    if (card && post) card.textContent = fmtCount(post.views);
-  } catch (_) {
-    _viewedThisSession.delete(postId); // xato bo'lsa keyinroq qayta urinib ko'rsin
-  }
-}
-
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 
 /* File type → SVG icon (mirrors upload.js getFileTypeInfo) */
@@ -191,7 +137,6 @@ async function appendPostsToFeed(feedEl, newPosts) {
   posts.forEach(p => feedEl.appendChild(p));
 
   bindFeedEvents(feedEl);
-  requestAnimationFrame(() => setupViewObserver());
 }
 
 export async function renderFeedTo(feedEl, posts) {
@@ -323,10 +268,6 @@ export async function renderFeedTo(feedEl, posts) {
           </svg>
             <span id="lc-${p.id}">${fmtCount(p.likes || 0)}</span>
           </button>
-          <span class="act-views">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="11"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg>
-            <span class="pv-count">${fmtCount(p.views || 0)}</span>
-          </span>
           <button class="act-btn share-btn"
             data-id="${p.id}"
             data-url="${p.mediaUrl ? esc(p.mediaUrl) : ''}"
@@ -343,8 +284,6 @@ export async function renderFeedTo(feedEl, posts) {
 
   feedEl.innerHTML = html;
   bindFeedEvents(feedEl);
-  // FIX: setTimeout o'rniga requestAnimationFrame — render tugagandan keyin observer qo'yish
-  requestAnimationFrame(() => setupViewObserver());
 }
 
 /* ── Auto-play videos on scroll ──────────────────────────────────────── */
@@ -653,8 +592,6 @@ export function patchCounts(posts) {
     const rcc = document.querySelector(`.rcmt-${p.id}`);
     if (rcc) rcc.textContent = `${p.commentCount || 0}`;
 
-    const pv = document.querySelector(`.post[data-id="${p.id}"] .pv-count`);
-    if (pv) pv.textContent = fmtCount(p.views || 0);
   });
 }
 
