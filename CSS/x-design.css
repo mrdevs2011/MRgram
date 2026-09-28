@@ -817,3 +817,28 @@ body:has(.search-overlay.open) .rc-search { display: none; }
 :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) {
   background: var(--overlay);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Post hover: yashil gradient chegara YO'Q (ui-improvements.css .post::before),
+   harakat tugmalari — X'dagidek: faqat ikonka orqasida doira, rangli ikonka.
+   ═══════════════════════════════════════════════════════════════════════ */
+.post::before,
+.post:hover::before,
+[data-theme] .post::before,
+[data-theme] .post:hover::before { content: none !important; display: none !important; }
+
+/* tugmalar orasidagi ajratgich chiziqlar va eski hover fon (dark-theme-fix.css) */
+[data-theme] .act-btn { border: none; gap: 10px; }
+[data-theme] .act-btn:hover,
+[data-theme] .act-views:hover { background: none; color: var(--x-blue); }
+[data-theme] .act-btn:hover svg,
+[data-theme] .act-views:hover svg {
+  background: rgba(29, 155, 240, .10); box-shadow: 0 0 0 8px rgba(29, 155, 240, .10);
+}
+[data-theme] .like-btn:hover,
+[data-theme] .act-btn.liked,
+[data-theme] .act-btn.liked svg { color: var(--x-like); }
+[data-theme] .like-btn:hover svg,
+[data-theme] .act-btn.liked:hover svg {
+  background: rgba(249, 24, 128, .10); box-shadow: 0 0 0 8px rgba(249, 24, 128, .10);
+}
