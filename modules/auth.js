@@ -1,4 +1,4 @@
-import { sb, state, uploadViaController, mapProfile, mapPost, purgeUserMedia } from './config.js';
+import { sb, state, uploadViaController, mapProfile, mapPost, purgeUserMedia, verifyPassword } from './config.js';
 import { $, esc, defAvi, uToEmail, lockScroll, unlockScroll, showConfirm } from './utils.js';
 import { toast }                       from './toast.js';
 import { initPush, removePushToken, areNotificationsEnabled, setNotificationsEnabled, notificationsUserDisabled } from './push.js';
@@ -1153,22 +1153,54 @@ if (saveProfileBtn) {
     if (_peAviPending)   updates.avatar    = _peAviPending;
     if (_peCoverPending) updates.cover_url = _peCoverPending;
 
+    // Parol o'zgartirish (ixtiyoriy)
+    const oldPwd = $('editOldPassword')?.value || '';
+    const newPwd = $('editNewPassword')?.value || '';
+    const newPwd2 = $('editNewPassword2')?.value || '';
+    const wantsPwd = !!(oldPwd || newPwd || newPwd2);
+    if (wantsPwd) {
+      if (!oldPwd) { toast('Joriy parolni kiriting', 'error'); return; }
+      if (newPwd.length < 6) { toast("Yangi parol kamida 6 ta belgi bo'lishi kerak", 'error'); return; }
+      if (newPwd !== newPwd2) { toast('Yangi parollar mos emas', 'error'); return; }
+      try {
+        const email = state.me.email || (state.me.username ? (state.me.username + '@mrspace.local') : null);
+        // email DB dan
+        let loginEmail = email;
+        if (state.me.username) {
+          const { data: em } = await sb.rpc('email_for_username', { p_username: state.me.username });
+          if (em) loginEmail = em;
+        }
+        if (!loginEmail) { toast('Email topilmadi', 'error'); return; }
+        await verifyPassword(loginEmail, oldPwd);
+      } catch (err) {
+        toast(err.code === 'wrong-password' ? 'Joriy parol noto'g'ri' : ('Parol tekshiruvi: ' + err.message), 'error');
+        return;
+      }
+    }
+
     try {
       const { error } = await sb.from('profiles').update(updates).eq('id', state.me.uid);
       if (error) {
         if (error.code === '23505') { toast('Bu username band', 'error'); return; }
         throw error;
       }
-      // Login username'dan email'ni DB'dan topadi (email_for_username) —
-      // username o'zgarsa ham login yangi nom bilan ishlayveradi.
+      if (wantsPwd) {
+        const { error: pErr } = await sb.auth.updateUser({ password: newPwd });
+        if (pErr) throw pErr;
+      }
       state.me.displayName = fn;
       if (updates.username) state.me.username = updates.username;
       if (updates.avatar)   state.me.photoURL = updates.avatar;
       invalidateUserCache(state.me.uid);
 
+      // parol maydonlarini tozalash
+      ['editOldPassword','editNewPassword','editNewPassword2'].forEach(id => {
+        const el = $(id); if (el) el.value = '';
+      });
+
       const profileEditOverlay = $('profileEditOverlay');
       if (profileEditOverlay) { profileEditOverlay.classList.remove('show'); unlockScroll(); }
-      toast('Profil yangilandi', 'success');
+      toast(wantsPwd ? 'Profil va parol yangilandi' : 'Profil yangilandi', 'success');
       _cb.renderProfile?.();
     } catch(e) { toast('Xato: ' + e.message, 'error'); }
   };

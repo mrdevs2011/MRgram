@@ -196,13 +196,18 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
   border-radius: 16px; padding: 6px 0;
   box-shadow: 0 0 12px rgba(255, 255, 255, .12), 0 0 3px rgba(255, 255, 255, .1);
 }
-.sb-acc-logout {
-  display: block; width: 100%; padding: 14px 18px;
+.sb-acc-item {
+  display: block; width: 100%; padding: 12px 18px;
   background: none; border: none; text-align: left; white-space: nowrap;
-  font-family: var(--font); font-size: 15px; font-weight: 700;
+  font-family: var(--font); font-size: 15px; font-weight: 600;
   color: var(--text); cursor: pointer;
 }
-.sb-acc-logout:hover { background: rgba(128, 128, 128, .16); }
+.sb-acc-item:hover { background: rgba(128, 128, 128, .16); }
+.sb-acc-logout { color: #f4212e; font-weight: 700; }
+.sb-acc-sep {
+  height: 1px; margin: 4px 12px;
+  background: rgba(255,255,255,0.08);
+}
 
 /* ═══════════════════════════════════════════════════════════════════════
    CHATS — desktop'da X.com uslubi (chap: ro'yxat, o'ng: suhbat / bo'sh holat)

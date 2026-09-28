@@ -44,28 +44,50 @@ function openMenu() {
   _menu = document.createElement('div');
   _menu.className = 'sb-acc-menu';
   const uname = state.me?.username ? ' @' + state.me.username : '';
-  _menu.innerHTML = `<button type="button" class="sb-acc-logout">Chiqish${esc(uname)}</button>`;
+  _menu.innerHTML = `
+    <button type="button" class="sb-acc-item" data-act="settings">Sozlamalar</button>
+    <button type="button" class="sb-acc-item" data-act="account">Hisob</button>
+    <div class="sb-acc-sep"></div>
+    <button type="button" class="sb-acc-item sb-acc-logout" data-act="logout">Chiqish${esc(uname)}</button>
+  `;
   document.body.appendChild(_menu);
 
   _menu.style.bottom = (window.innerHeight - r.top + 8) + 'px';
   if (wide) {
     _menu.style.left = (r.left + 8) + 'px';
-    _menu.style.minWidth = Math.max(r.width - 16, 180) + 'px';
+    _menu.style.minWidth = Math.max(r.width - 16, 200) + 'px';
   } else {
     _menu.style.left = (r.right + 8) + 'px';
   }
 
-  _menu.querySelector('.sb-acc-logout').addEventListener('click', async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    closeMenu();
-    try {
-      const { logOut } = await import('./auth.js');
-      await logOut();
-    } catch (err) {
-      console.error('[logout]', err);
-      location.replace('/');
-    }
+  _menu.querySelectorAll('[data-act]').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const act = btn.dataset.act;
+      closeMenu();
+      if (act === 'logout') {
+        try {
+          const { logOut } = await import('./auth.js');
+          await logOut();
+        } catch (err) {
+          console.error('[logout]', err);
+          location.replace('/');
+        }
+        return;
+      }
+      if (act === 'settings') {
+        document.getElementById('settingsBtn')?.click()
+          || document.getElementById('settingsOverlay')?.classList.add('show');
+        return;
+      }
+      if (act === 'account') {
+        // Sozlamalar → profil tahriri
+        const so = document.getElementById('settingsOverlay');
+        if (so) so.classList.add('show');
+        setTimeout(() => document.getElementById('editProfileBtn')?.click(), 50);
+      }
+    });
   });
 }
 
