@@ -4,15 +4,19 @@
    modallariga (izoh, profil va h.k.) tegmaydi.
    ═══════════════════════════════════════════ */
 
+/* Orqa fon — to'liq qora emas, 0.8 shaffoflik (sahifa sal ko'rinadi) */
+#uploadOverlay { background: rgba(0,0,0,.8); }
+
 #uploadOverlay .composer-sheet {
   width: 100%;
   max-width: 500px;
   max-height: 90dvh;
   margin: 0;
   overflow-y: auto;
-  background: var(--bg3, #121212);
-  border: none;
+  background: #16181c;
+  border: 1px solid #2f3336;
   border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.55);
   padding: 10px 16px max(14px, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
@@ -39,7 +43,7 @@
   cursor: pointer;
   padding: 0;
 }
-#uploadOverlay .composer-close:hover { background: #181818; }
+#uploadOverlay .composer-close:hover { background: #272c30; }
 
 #uploadOverlay .composer-post-btn {
   width: auto;
@@ -130,7 +134,7 @@
   align-items: center;
   gap: 2px;
   padding-top: 8px;
-  border-top: 0.5px solid #262626;
+  border-top: 1px solid #2f3336;
 }
 
 /* Rasm/video tugmasi — endi katta dashed box emas, ixcham doira ikonka */
