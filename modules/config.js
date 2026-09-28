@@ -160,7 +160,7 @@ export async function purgeUserMedia(uid) {
 }
 
 // Constants
-export const MAX_FILE = 50 * 1024 * 1024;
+export const MAX_FILE = 25 * 1024 * 1024;
 export const CAP_LIMIT = 100;
 
 /** Joriy foydalanuvchi admin (profiles.is_admin) */
@@ -266,7 +266,7 @@ export function mapGroup(r) {
     members,
     isPrivate: r.is_private === true,
     inviteCode: r.invite_code || null,
-    username: (r.type === 'channel' && !r.is_private) ? (r.invite_code || '') : '',
+    username: '',
     msgPermission: r.msg_permission || 'all',
     lastMessage: r.last_message || '',
     lastSenderId: r.last_sender_id || null,

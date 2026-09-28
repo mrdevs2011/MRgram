@@ -5,7 +5,7 @@
  * Ma'lumot shakli (Supabase qatorlaridan config.js dagi mapGroup()/mapMessage()
  * eski Firestore ko'rinishida yasaydi):
  *   groups/{groupId} {
- *     type: 'group' | 'channel',
+ *     type: 'group',
  *     name, avatar, description?,
  *     ownerId, adminIds: [uid,...],
  *     members: [uid,...],
@@ -127,20 +127,27 @@ function _resetGroupUnread(groupId) {
    ───────────────────────────────────────────────────────────────────── */
 export function startGroupsWatcher() {
   if (_groupsUnsub || !state.me?.uid) return;
-  const me = state.me.uid;
-  let timer = null;
-  const sched = () => { clearTimeout(timer); timer = setTimeout(_loadGroups, 250); };
-  const ch = sb.channel('groups-watcher')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'groups' }, p => {
-      const id = p.new?.id || p.old?.id;
-      if (id && _latestGroupMap[id]) sched();
-    })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members', filter: `user_id=eq.${me}` }, sched)
-    .subscribe();
+  // Realtime tinglovchilar alohida kanalda emas — chat.js 'chats-watcher' kanaliga
+  // bindGroupsRealtime() orqali ulanadi (roadmap 5.3).
   // DELETE hodisalari filtr bilan kelmaydi (masalan guruhdan chiqarilish) — zaxira so'rov
   _groupsTick = setInterval(_loadGroups, 60000);
-  _groupsUnsub = () => { clearTimeout(timer); clearInterval(_groupsTick); _groupsTick = null; sb.removeChannel(ch); };
+  _groupsUnsub = () => { clearTimeout(_groupsTimer); clearInterval(_groupsTick); _groupsTick = null; };
   _loadGroups();
+}
+
+let _groupsTimer = null;
+const _groupsSched = () => { clearTimeout(_groupsTimer); _groupsTimer = setTimeout(_loadGroups, 250); };
+
+/** Guruh o'zgarishlarini berilgan (hali subscribe qilinmagan) kanalga ulaydi. */
+export function bindGroupsRealtime(ch) {
+  const me = state.me?.uid;
+  if (!me) return ch;
+  return ch
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'groups' }, p => {
+      const id = p.new?.id || p.old?.id;
+      if (id && _latestGroupMap[id]) _groupsSched();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_members', filter: `user_id=eq.${me}` }, _groupsSched);
 }
 
 export function stopGroupsWatcher() {
@@ -155,93 +162,6 @@ export function stopGroupsWatcher() {
 /* ─────────────────────────────────────────────────────────────────────
    OPEN GROUP/CHANNEL THREAD
    ───────────────────────────────────────────────────────────────────── */
-/* ── Kanal uchun Join / Leave tugmasi ───────────────────────────────── */
-function _renderChannelActionBar(groupId, groupData) {
-  // Input row ni yashirish
-  const inputRow = document.querySelector('.chat-thread-input-row');
-  if (inputRow) inputRow.style.display = 'none';
-
-  // Eski bar ni olib tashlash
-  document.getElementById('channelActionBar')?.remove();
-
-  const members   = groupData.memberIds || groupData.members || groupData.participants || [];
-  const isMember  = Array.isArray(members)
-    ? members.includes(state.me.uid)
-    : (members[state.me.uid] != null);
-
-  const bar = document.createElement('div');
-  bar.id = 'channelActionBar';
-  bar.style.cssText = [
-    'display:flex', 'align-items:center', 'justify-content:center',
-    'padding:10px 16px 10px',
-    'background:var(--bg,#1c1c1c)',
-    'border-top:1px solid var(--line,rgba(255,255,255,0.08))',
-    'flex-shrink:0',
-  ].join(';');
-
-  if (isMember) {
-    // Kanaldan chiqish
-    bar.innerHTML = `
-      <button id="channelLeaveBtn" style="
-        width:100%; padding:13px 0; border-radius:14px; border:1.5px solid rgba(239,68,68,0.4);
-        background:rgba(239,68,68,0.08); color:#ef4444; font-size:15px; font-weight:600;
-        cursor:pointer; transition:all 0.18s; display:flex; align-items:center; justify-content:center; gap:8px;
-      ">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        Kanalni tark etish
-      </button>`;
-
-    bar.querySelector('#channelLeaveBtn').addEventListener('click', async () => {
-      try {
-        await _removeMember(groupId, state.me.uid);
-        groupData.members = (groupData.members || []).filter(id => id !== state.me.uid);
-        _renderChannelActionBar(groupId, groupData);
-        toast("Kanaldan chiqdingiz", 'info');
-      } catch (e) { toast("Xato: " + e.message, 'error'); }
-    });
-  } else {
-    // Kanalga qo'shilish
-    bar.innerHTML = `
-      <button id="channelJoinBtn" style="
-        width:100%; padding:13px 0; border-radius:14px; border:none;
-        background:#ffffff; color:#fff;
-        font-size:15px; font-weight:600; cursor:pointer;
-        transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px;
-        box-shadow:0 4px 16px rgba(255, 255, 255,0.35);
-      ">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-        </svg>
-        Kanalga qo'shilish
-      </button>`;
-
-    bar.querySelector('#channelJoinBtn').addEventListener('mouseenter', function() {
-      this.style.transform = 'scale(1.02)';
-      this.style.boxShadow = '0 6px 24px rgba(255, 255, 255,0.5)';
-    });
-    bar.querySelector('#channelJoinBtn').addEventListener('mouseleave', function() {
-      this.style.transform = '';
-      this.style.boxShadow = '0 4px 16px rgba(255, 255, 255,0.35)';
-    });
-
-    bar.querySelector('#channelJoinBtn').addEventListener('click', async () => {
-      try {
-        await _addMembers(groupId, [state.me.uid]);
-        groupData.members = [...(groupData.members || []), state.me.uid];
-        _renderChannelActionBar(groupId, groupData);
-        toast("Kanalga qo'shildingiz!", 'success');
-      } catch (e) { toast("Xato: " + e.message, 'error'); }
-    });
-  }
-
-  // chatThreadModal pastiga qo'shamiz
-  const modal = $('chatThreadModal');
-  if (modal) modal.appendChild(bar);
-}
-
 function _restoreInputRow() {
   // Join/Leave barni o'chirish
   document.getElementById('channelActionBar')?.remove();
@@ -256,7 +176,7 @@ export async function openGroupThread(groupId) {
 
   _currentGroupId   = groupId;
   _currentGroupData = groupData;
-  state.currentChatKind = groupData.type; // 'group' | 'channel'
+  state.currentChatKind = groupData.type; // har doim 'group' (kanal turi olib tashlangan, 3.2)
 
   const modal = $('chatThreadModal');
   modal.classList.add('show');
@@ -273,15 +193,11 @@ export async function openGroupThread(groupId) {
   if (existingBadge) existingBadge.remove();
   const badge = document.createElement('div');
   badge.className = 'grp-avi-badge grp-avi-badge--' + groupData.type;
-  badge.innerHTML = groupData.type === 'channel'
-    ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>`
-    : `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+  badge.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
   $('chatThreadAvi').appendChild(badge);
 
   const memberCount = (groupData.members || []).length;
-  const subLabel = groupData.type === 'channel'
-    ? `${memberCount} ta obunaçhi`
-    : `${memberCount} ta a'zo`;
+  const subLabel = `${memberCount} ta a'zo`;
   $('chatThreadName').textContent = groupData.name || 'Guruh';
 
   // Subtitle (typing slot reused)
@@ -296,18 +212,12 @@ export async function openGroupThread(groupId) {
   // Input area logic
   const isOwner    = groupData.ownerId === state.me.uid;
   const isGrpAdmin = (groupData.adminIds || []).includes(state.me.uid);
-  const isChannel  = groupData.type === 'channel';
-  // Guruh (kanal emas) uchun "Xabar yuborish huquqi: Faqat adminlar"
-  // sozlamasi bo'lsa — oddiy a'zolar yoza olmaydi (faqat egasi/admin).
-  const msgRestricted = !isChannel && groupData.msgPermission === 'admins';
-  const canPost    = isChannel
-    ? (isOwner || isGrpAdmin)
-    : (isOwner || isGrpAdmin || !msgRestricted);
+  // "Xabar yuborish huquqi: Faqat adminlar" sozlamasi bo'lsa —
+  // oddiy a'zolar yoza olmaydi (faqat egasi/admin).
+  const msgRestricted = groupData.msgPermission === 'admins';
+  const canPost    = isOwner || isGrpAdmin || !msgRestricted;
 
-  if (isChannel && !canPost) {
-    // Kanal — oddiy foydalanuvchi: input row o'rniga Join/Leave tugmasi
-    _renderChannelActionBar(groupId, groupData);
-  } else if (!canPost) {
+  if (!canPost) {
     // Guruh — "faqat adminlar yozsin" yoqilgan va bu oddiy a'zo:
     // input qatorini ko'rsatamiz, lekin yozish taqiqlangan holatda.
     _restoreInputRow();
@@ -318,10 +228,10 @@ export async function openGroupThread(groupId) {
     $('chatVoiceBtn')  && ($('chatVoiceBtn').style.opacity = '0.4');
     $('chatVoiceBtn')  && ($('chatVoiceBtn').style.pointerEvents = 'none');
   } else {
-    // Guruh yoki kanal admin/egasi: oddiy input
+    // Oddiy input (yozish huquqi bor)
     _restoreInputRow();
     $('chatThreadInput').disabled    = false;
-    $('chatThreadInput').placeholder = isChannel ? 'Kanal xabari...' : 'Xabar yozing...';
+    $('chatThreadInput').placeholder = 'Xabar yozing...';
     $('chatAttachBtn') && ($('chatAttachBtn').style.opacity = '');
     $('chatAttachBtn') && ($('chatAttachBtn').style.pointerEvents = '');
     $('chatVoiceBtn')  && ($('chatVoiceBtn').style.opacity = '');
@@ -430,7 +340,7 @@ async function paintGroupMessages(msgs, groupData) {
   if (!msgs.length) {
     box.innerHTML = `<div class="empty pt-30vh tac">
       <div class="fs-14px fw-600 c-text mb-6px">Hozircha xabarlar yo'q</div>
-      <div class="fs-13px c-text2">${groupData.type === 'channel' ? 'Kanal tashkil etildi' : 'Birinchi xabar yuboring!'}</div>
+      <div class="fs-13px c-text2">Birinchi xabar yuboring!</div>
     </div>`;
     return;
   }
@@ -462,7 +372,7 @@ async function paintGroupMessages(msgs, groupData) {
     }
 
     const senderAvi = sender.avatar || defAvi(sName);
-    const senderLine = (!mine && groupData.type !== 'channel')
+    const senderLine = !mine
       ? `<div class="grp-sender-name">${esc(sName)}</div>`
       : '';
 
@@ -561,12 +471,11 @@ export async function sendGroupFile(file) {
 export async function openGroupInfo(groupId) {
   const g = _latestGroupMap[groupId];
   if (!g) return;
-  const isChannel = g.type === 'channel';
   const isOwner   = g.ownerId === state.me?.uid;
   const isGrpAdm  = (g.adminIds || []).includes(state.me?.uid);
   const canManage = isOwner || isGrpAdm || isAdmin();
   const members   = g.members || [];
-  const typeLabel  = isChannel ? 'Kanal' : 'Guruh';
+  const typeLabel  = 'Guruh';
 
   const panel = document.getElementById('grpInfoOverlay');
   if (!panel) return;
@@ -646,16 +555,12 @@ export async function openGroupInfo(groupId) {
   }
 
   if (cntEl) cntEl.textContent = members.length;
-  if (lblEl) lblEl.textContent = isChannel ? 'obunachi' : "a'zo";
-
-  /* ── Channel: hide members list; Group: show ── */
-  const membersSection = panel.querySelector('#grpMembersSection');
-  if (membersSection) membersSection.style.display = isChannel ? 'none' : '';
+  if (lblEl) lblEl.textContent = "a'zo";
 
   /* ── Buttons ── */
   panel.querySelector('#grpInfoLeaveBtn').style.display      = isOwner ? 'none' : '';
   panel.querySelector('#grpInfoDeleteBtn').style.display     = isOwner ? '' : 'none';
-  panel.querySelector('#grpInfoAddMemberBtn').style.display  = (canManage && !isChannel) ? '' : 'none';
+  panel.querySelector('#grpInfoAddMemberBtn').style.display  = canManage ? '' : 'none';
   panel.querySelector('#grpInfoEditBtn').style.display       = canManage ? '' : 'none';
 
   /* ── Button handlers ── */
@@ -692,7 +597,7 @@ export async function openGroupInfo(groupId) {
   };
 
   /* ── Load members list (group only) in parallel ── */
-  if (!isChannel) {
+  {
     const membersEl = panel.querySelector('#grpMembersList');
     if (membersEl) {
       membersEl.innerHTML = '<div class="gi-media-spin"><div class="spinner"></div></div>';
@@ -809,7 +714,7 @@ export function openGroupEdit(groupId, g) {
   _editingGroupId = groupId;
   _grpEditPendingAviUrl = null;
 
-  const typeLabel = g.type === 'channel' ? 'Kanal' : 'Guruh';
+  const typeLabel = 'Guruh';
   panel.querySelector('#grpEditTitle').textContent = `${typeLabel}ni sozlash`;
   panel.querySelector('#grpEditNameLabel').textContent = `${typeLabel} nomi *`;
   panel.querySelector('#grpEditName').value = g.name || '';
@@ -820,13 +725,8 @@ export function openGroupEdit(groupId, g) {
   const aviEl = panel.querySelector('#grpEditAviImg');
   aviEl.innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
 
-  // Show/hide type-specific fields
-  const isChannel = g.type === 'channel';
-  panel.querySelector('#grpEditGroupFields').style.display = isChannel ? 'none' : '';
-
-  if (!isChannel) {
-    panel.querySelector('#grpEditMsgPerm').value = g.msgPermission || 'all';
-  }
+  panel.querySelector('#grpEditGroupFields').style.display = '';
+  panel.querySelector('#grpEditMsgPerm').value = g.msgPermission || 'all';
 
   // Avatar file input
   const aviBadge = panel.querySelector('#grpEditAviBadge');
@@ -854,7 +754,7 @@ export function openGroupEdit(groupId, g) {
     const updates = { name, description: desc };
     if (_grpEditPendingAviUrl) updates.avatar = _grpEditPendingAviUrl;
 
-    if (!isChannel) updates.msg_permission = panel.querySelector('#grpEditMsgPerm').value;
+    updates.msg_permission = panel.querySelector('#grpEditMsgPerm').value;
 
     try {
       await _updateGroup(groupId, updates);
@@ -882,7 +782,7 @@ export function openCreateChoice() {
   openCreateForm('group');
 }
 
-let _createType    = 'group'; // faqat 'group' (eski 'channel'lar bazada qoladi, yangisi yaratilmaydi)
+let _createType    = 'group';
 let _selectedMembers = new Set();
 let _pendingPhotoUrl = null;
 let _usersForPicker = [];

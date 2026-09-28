@@ -983,6 +983,8 @@ export function listenPosts() {
     } else if (countChanged) {
       _cb.patchCounts?.(newPosts);
     }
+    // O'ng panel ("So'nggi") shu hodisa orqali yangilanadi — alohida realtime kanal kerak emas (5.3)
+    if (structural) document.dispatchEvent(new CustomEvent('postsUpdated'));
   };
 
   const POST_LIMIT = 1000; // scroll orqali 10 tadan ko'rsatiladi

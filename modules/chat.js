@@ -281,7 +281,7 @@ import {
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLastSeen } from './utils.js';
 import { toast }            from './toast.js';
 import {
-  startGroupsWatcher, stopGroupsWatcher,
+  startGroupsWatcher, stopGroupsWatcher, bindGroupsRealtime,
   openGroupThread, closeGroupThread,
   sendGroupMessage, sendGroupFile,
   injectGroupsDOM, openCreateChoice, getGroupRows,
@@ -327,6 +327,7 @@ let _usersCache     = null;
 let _latestChatMap  = {};
 let _watcherPromise = null;
 let _noticeUnsub    = null;   // adminNotice real-time listener
+let _loadNoticeFn   = null;   // 'chats-watcher' kanali admin_notice o'zgarganda shuni chaqiradi
 let _presenceRepaintTick = null; // onlayn nuqtalarni vaqt bo'yicha yangilab turadi
 let _latestNotice   = null;   // { text, target, createdAt } | null
 let _contactsUnsub  = null;   // contacts real-time listener
@@ -430,10 +431,9 @@ export function startChatsWatcher() {
         _latestNotice = data ? { text: data.text, target: data.target, createdAt: ts(data.created_at) } : null;
         if (state.view === 'chats') _repaintNoticeBanner();
       };
-      const nCh = sb.channel('chat-notice')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_notice' }, loadNotice)
-        .subscribe();
-      _noticeUnsub = () => { _nDead = true; sb.removeChannel(nCh); };
+      // admin_notice o'zgarishini 'chats-watcher' kanali tinglaydi (5.3: alohida kanal yo'q)
+      _noticeUnsub = () => { _nDead = true; };
+      _loadNoticeFn = loadNotice;
       loadNotice();
     }
 
@@ -460,14 +460,16 @@ export function startChatsWatcher() {
       if (state.view === 'chats') paintChatsList(_usersCache || [], chatMap);
     };
     const schedChats = () => { clearTimeout(_chTimer); _chTimer = setTimeout(loadChats, 200); };
-    const chCh = sb.channel('chats-watcher')
+    const chBase = sb.channel('chats-watcher')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_notice' }, () => { _loadNoticeFn?.(); })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chats' }, schedChats)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_members', filter: `user_id=eq.${state.me.uid}` }, p => {
         // faqat typing/last_seen o'zgargan bo'lsa ro'yxatni qayta yuklamaymiz
         if (p.eventType === 'UPDATE' && p.old && p.new.unread_count === p.old.unread_count) return;
         schedChats();
-      })
-      .subscribe();
+      });
+    // guruh o'zgarishlari ham shu kanalda (5.3: 'groups-watcher' kanali yo'q)
+    const chCh = bindGroupsRealtime(chBase).subscribe();
     _chatsUnsub = () => { _chDead = true; clearTimeout(_chTimer); sb.removeChannel(chCh); };
     loadChats();
 
@@ -488,6 +490,7 @@ export function stopChatsWatcher() {
   stopGroupsWatcher();
   if (_chatsUnsub) { _chatsUnsub(); _chatsUnsub = null; }
   if (_noticeUnsub) { _noticeUnsub(); _noticeUnsub = null; }
+  _loadNoticeFn = null;
   if (_contactsUnsub) { _contactsUnsub(); _contactsUnsub = null; }
   if (_presenceRepaintTick) { clearInterval(_presenceRepaintTick); _presenceRepaintTick = null; }
   _usersCache    = null;
@@ -596,12 +599,10 @@ function _appendGroupRows(root) {
       const av      = g.avatar || defAvi(g.name || 'G');
       const unread  = g.unreadCount?.[state.me?.uid] || 0;
       const badgeTxt = unread > 99 ? '+99' : `+${unread}`;
-      const preview  = g.lastMessage ? esc(g.lastMessage.slice(0, 46)) : (g.type === 'channel' ? 'Kanal' : 'Guruh');
+      const preview  = g.lastMessage ? esc(g.lastMessage.slice(0, 46)) : 'Guruh';
       const time     = g.lastMessageAt ? fmt(g.lastMessageAt) : '';
-      const typeIcon = g.type === 'channel'
-        ? `<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>`
-        : `<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
-      const badgeClass = g.type === 'channel' ? 'chat-row-grp-badge--channel' : 'chat-row-grp-badge--group';
+      const typeIcon = `<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+      const badgeClass = 'chat-row-grp-badge--group';
 
       return `<div class="chat-row${unread ? ' unread' : ''}" data-gid="${g.id}">
         <div class="chat-avi">

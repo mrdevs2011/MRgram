@@ -1,5 +1,6 @@
 /**
  * firebase-messaging-sw.js  (fayl nomi eski — index.html shu nom bilan ro'yxatdan o'tkazadi)
+ * NOMNI O'ZGARTIRMANG (roadmap Q6): mavjud push obunalari shu SW yo'liga bog'langan, nom o'zgarsa hamma obuna uziladi.
  * Firebase endi ishlatilmaydi: standart Web Push ('push' hodisasi).
  * Payload Edge Function'dan keladi: { title, body, type, fromUid, chatId, groupId }
  * Android: sayt yopiq bo'lsa ham ishlaydi. Desktop: brauzer ochiq bo'lsa.
