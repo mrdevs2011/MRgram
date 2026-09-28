@@ -274,3 +274,14 @@ a { color: var(--link); }
 [data-theme="light"] .stats-top-avi * { color: #fff !important; }
 [data-theme="light"] .stats-top-bar-fill,
 [data-theme="light"] .stats-top-bar-fill * { color: #fff !important; }
+
+/* ── Sidebar tuzatishlari ───────────────────────────────────────────────
+   Faol tugma ostidagi chiziq/nur (ui-improvements.css) X uslubida yo'q:
+   faol holat qalin yozuv va qalin ikonka bilan ko'rsatiladi. */
+.nav-btn.on::before,
+nav.bot-nav .nav-btn.on::before { content: none !important; display: none !important; }
+
+/* Logotip markazi ikonkalar markaziga tushsin */
+@media (min-width: 1100px) {
+  nav.bot-nav .sb-top { padding-left: 0; }
+}
