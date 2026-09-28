@@ -56,7 +56,7 @@
 | 0 | Xavfsizlik to'ri | past | 1–2 soat | — | ⚠️ qisman (tag va remote tayyor; preview/smoke — MR ishi) |
 | 1 | Axlat va o'lik kod | past | 2–3 soat | 0 | ✅ deyarli tayyor (`09bce2c`) |
 | 2 | Admin dieta + parol reset | o'rta | 1 kun | 0, 1 | ✅ kod tayyor (branch `diet/02-admin`, Preview sinovi + 1 hafta kuzatuv → `patch-diet-02-admin.sql` kutilmoqda) |
-| 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.1 (branch `diet/03-explore`), 3.2, 3.3, 3.4 ✅, 3.5 deyarli ✅; 3.6 ❌ |
+| 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.1 (main'da, sinalmagan), 3.2, 3.3, 3.4 ✅, 3.5 deyarli ✅; 3.6 ❌ |
 | 4 | CSS konsolidatsiya | o'rta–yuqori (vizual) | 2–3 kun | 3 (oldin nima qolishi aniq bo'lsin) | 🔶 4.4/4.5 ✅ (bitta `app.css`); 23 fayl/~16.7k qator, 351 `!important` |
 | 5 | Realtime va presence | o'rta | 1 kun | 3 | 🔶 5.1/5.2 ✅; 5.3 deyarli ✅ (doimiy kanallar ~8 → 5, sinov MR) |
 | 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya, network-first, yangilanish toast'i ✅; `Ts` adapteri, vendored supabase ❌ |
@@ -153,7 +153,7 @@ drop table if exists public.login_history;
 - **3.3 Guruh ochiq/maxfiy [QAROR Q1 = B, 2026-09-29]:** ✅ kod tomoni (branch `diet/03-groups-b`): yaratishda faqat yopiq (`is_private:true`, `invite_code` yo'q), maxfiylik/havola/username UI, "havola orqali qo'shilish" oynasi va chat qidiruvidagi kod-join olib tashlandi (`groups.js` −264 qator). DB: `supabase/unfulfilled/patch-diet-03-groups.sql` yozildi, ISHGA TUSHIRILMAGAN (1 hafta kuzatuvdan keyin). RLS/`group_is_private()` tegilmadi. ⚠️ Brauzerda sinalmagan.
 - **3.4 Post views:** ✅ kod tomoni tag `diet-progress-03` bilan olib tashlangan (`posts.views` ustunini bazadan drop — contract, keyinroq).
 - **3.5 Profil [QAROR]:** 🔶 muqova (cover) va `cover-crop.js` butunlay olib tashlandi (2026-09-29, `bd3fb42`); `cover_url` ustuni bazada qoldi. `website`/`location` UI va kod tomonidan olib tashlandi ✅ (branch `diet/03-product-profile`; `profiles.website`/`location` ustunlarini drop — contract, 1 hafta kuzatuvdan keyin).
-- **3.6 Eski shaxsiy postlar [QAROR]:** ❌ sanov skripti yozilmagan.
+- **3.6 Eski shaxsiy postlar [QAROR]:** 🔶 sanov SQL tayyor: `supabase/queries/3.6-private-posts.sql` (faqat select, 3 blok). Natijani MR Supabase SQL Editor'da yurgizadi → keyin Q4 qarori.
 
 ### DB (contract, keyin)
 ```sql
@@ -184,7 +184,7 @@ drop table if exists public.follows;
   - F1.2: `vercel.json` da `/api`, `/img`, `/.well-known` rewrite/header'lari topildi → **o'chirildi** (2026-09-29, branch `diet/01-vercel-cleanup`; papkalar yo'q, kodda ishlatilmaydi — grep). Catch-all faqat `modules/ CSS/ svg/ icons/` ni istisno qiladi. ⚠️ Preview'da ochilishi sinalmagan.
   - F1.8 (Eruda) tasdiqlandi: `index.html` da 0 ta.
   - **Qaror kerak (MR):** (a) tartibni `x-design → mono` ga o'zgartirish vizual natija beradi (qoida 8 — avval brauzerda ko'z bilan), (b) yoki mavjud tartib rasmiy qabul qilinadi. Shu qarorgacha CSS'da o'chirish/ko'chirish qilinmaydi.
-- [ ] **4.1b Inventar (to'liq):** Chrome DevTools Coverage yoki `purgecss --content index.html modules/*.js` bilan ishlatilmaydigan selektorlar ro'yxati. Taqqoslash **property darajasida** (AUDIT.md sabog'i).
+- [~] **4.1b Inventar:** ✅ hisobot tayyor (2026-09-29): `node scripts/css-inventory.mjs` → `docs/CSS-INVENTORY.md`. Token-darajasida: 3089 qoidadan **1001 hard-o'lik** (5538 qator, ~33%), 210 maybe; eng katta: `devs-utility.css` (438 hard + 159 maybe), `admin.css` (602 qator), `ui-improvements.css` (675). `!important` 335 dan 65 tasi o'lik qoidalarda. ❌ Hali hech narsa o'chirilmagan (qoida 8 + property-daraja tekshiruvi kerak); birinchi nomzod `devs-utility.css`.
 - [ ] **4.2 Tokenlar:** `theme.css` → yagona manba: ranglar, spacing, radius, shrift. Hard-coded ranglar tokenga o'tadi.
 - [ ] **4.3 Tuzilma (maqsad):** `tokens.css / base.css / components.css / features.css / admin.css`. **Hozir: 22 fayl / 17 055 qator.**
 - [ ] **4.4 `no-animations.css`:** `style.css`da hali eng oxirgi qatlam — transition/animation'larni manba faylidan olish. `[QAROR]` splash/loading uchun bitta yengil animatsiya (Q9).
@@ -366,7 +366,7 @@ main  (ac66409)
  ├─ diet/00-safety      (tag: pre-diet)        ← qismiy (tag/remote bor; preview/smoke MR ishi)
  ├─ diet/02-admin       ✅ main'ga qo'shilgan
  ├─ diet/03-channel-*, 03-groups-b, 03-product-profile   ✅ main'ga qo'shilgan
- ├─ diet/03-explore     🔶 main'dan 1 commit oldinda (f35b021) — 3.1 Explore→filtr; brauzer sinovini kutmoqda
+ ├─ diet/03-explore, 01-vercel-cleanup, 06-precache, 04-inventory, 03-6-query   ✅ main'ga qo'shilgan (2026-09-29, tag `pre-merge-0929` = qaytish nuqtasi). ⚠️ Preview/brauzerda sinalmagan
  ├─ diet/04-css*        ✅ main'ga qo'shilgan (4.4/4.5); qolgani 4-fazada
  ├─ diet/05-realtime, 05-realtime-2   ✅ main'ga qo'shilgan
  ├─ diet/06-sw-update-toast           ✅ main'ga qo'shilgan
