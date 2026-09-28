@@ -234,14 +234,10 @@ function refreshPostBtn() {
 export function resetUpload() {
   revokeObjUrl();
   state.selFile = null;
-  state._visMode = 'private';
   $('fileInput').value = '';
   $('previewArea').style.display = 'none';
   $('previewArea').innerHTML = '';
   $('captionInput').value = '';
-  $('pubToggle').checked = false;
-  /* Visibility tugmalarni reset qilish */
-  setVisMode('private');
   $('uploadBtn').disabled = true;
   $('uploadBtn').textContent = 'Yuklash';
   $('sizeWarn').textContent = '';
@@ -322,25 +318,6 @@ function clearFile() {
   refreshPostBtn();
 }
 
-/* ── Visibility mode helper ─────────────────────────────────────────── */
-const VIS_ICON = {
-  private: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
-  public:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>'
-};
-function setVisMode(mode) {
-  state._visMode = mode;
-  const isPub = mode === 'public';
-  $('pubToggle').checked = isPub;
-  $('visibilityRow').classList.toggle('is-public', isPub);
-  $('visLabel').textContent = isPub ? 'Hammaga ochiq' : 'Faqat men';
-  $('visIcon').innerHTML = VIS_ICON[isPub ? 'public' : 'private'];
-}
-
-/* ── Visibility toggle ──────────────────────────────────────────────── */
-$('visToggle').addEventListener('click', () => {
-  setVisMode(state._visMode === 'public' ? 'private' : 'public');
-});
-
 /* ── Yuklash / Post ───────────────────────────────────────────────────── */
 /* ── Float bar helpers ───────────────────────────────────────────────── */
 function floatBarShow(name) {
@@ -392,8 +369,7 @@ function floatBarDone(success) {
 /* ── Yuklash / Post ───────────────────────────────────────────────────── */
 $('uploadBtn').onclick = async () => {
   const caption      = $('captionInput').value.trim();
-  const visMode      = state._visMode || 'private';
-  const isPublic     = visMode === 'public';
+  const isPublic     = true; // yopiq tarmoq: yangi postlar hamma tasdiqlangan a'zoga ko'rinadi
   if (!state.me) return;
   if (!caption && !state.selFile) return;
 
