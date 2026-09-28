@@ -208,8 +208,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
    Oldin card-sheets.css va post-composer.css da #16181c / #2f3336 kabi
    qattiq yozilgan ranglar bor edi — sahifa palitrasiga zid chiqardi.
    Endi hammasi tokenlardan: modal = sahifa rangi + ingichka chiziq. */
-:root,
-[data-theme="dark"]  { }
 
 .overlay,
 [data-theme] .overlay,
@@ -483,8 +481,6 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 /* O'ng ustun: X kartalari (chegarasiz, #16181c / #f7f9f9) */
 
 /* Oyna / sheet: X overlay va soyasi (chegarasiz) */
-:root,
-[data-theme="dark"]{ }
 
 .sheet,
 [data-theme] .sheet,
