@@ -73,7 +73,7 @@ self.addEventListener('notificationclick', (event) => {
 /* ── Cache versiyasi ── */
 // Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
 // bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 'v103';
+const CACHE_VERSION  = 't-1790603453544'; /* BUILD_VERSION_LINE */
 const STATIC_CACHE   = `mrgram-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
 
@@ -88,26 +88,8 @@ const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
 const PRECACHE_URLS = [
   '/',
   '/index.html',
-  '/style.css',
+  '/app.css',
   '/manifest.json',
-  '/CSS/theme.css',
-  '/CSS/nav.css',
-  '/CSS/chat.css',
-  '/CSS/feed.css',
-  '/CSS/groups.css',
-  '/CSS/profile.css',
-  '/CSS/admin.css',
-  '/CSS/admin-plain.css',
-  '/CSS/borderless.css',
-  '/CSS/dark-theme-fix.css',
-  '/CSS/loading.css',
-  '/CSS/local-utility.css',
-  '/CSS/splash.css',
-  '/CSS/devs-utility.css',
-  '/CSS/ui-improvements.css',
-  '/CSS/chat-dark-redesign.css',
-  '/CSS/mono.css',
-  '/CSS/x-design.css',
   // Barcha JS modullari (modules/ papkasi to'liq)
   '/modules/script.js',
   '/modules/router.js',
