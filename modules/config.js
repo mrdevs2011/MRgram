@@ -206,10 +206,9 @@ export async function verifyPassword(email, password) {
 /** chats qatori (+ chat_members embed) → eski Firestore ko'rinishi */
 export function mapChat(r) {
   if (!r) return null;
-  const unread = {}, typing = {};
+  const unread = {};
   (r.chat_members || []).forEach(m => {
     unread[m.user_id] = m.unread_count || 0;
-    typing[m.user_id] = !!m.typing_until;
   });
   return {
     id: r.id,
@@ -218,7 +217,6 @@ export function mapChat(r) {
     lastSenderId: r.last_sender_id || null,
     lastMessageAt: ts(r.last_message_at),
     unreadCount: unread,
-    typing,
     createdAt: ts(r.created_at),
   };
 }
