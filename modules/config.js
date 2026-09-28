@@ -160,7 +160,7 @@ export async function purgeUserMedia(uid) {
 }
 
 // Constants
-export const MAX_FILE = 50 * 1024 * 1024;
+export const MAX_FILE = 25 * 1024 * 1024;
 export const CAP_LIMIT = 100;
 
 /** Joriy foydalanuvchi admin (profiles.is_admin) */

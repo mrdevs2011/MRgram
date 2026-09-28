@@ -226,7 +226,7 @@ function _measureSelectedMedia(file, objUrl) {
 /* ── Composer rejimi: 'post' (odatiy) yoki 'story' (24 soatlik hikoya) ──
    Story ham xuddi shu composer kartasida ochiladi — faqat matn maydoni o'rniga
    qisqa izoh, faqat rasm/video, tugma "Story". */
-const STORY_MAX = 30 * 1024 * 1024;
+const STORY_MAX = 25 * 1024 * 1024;
 const STORY_CAPTION_MAX = 200;
 const _POST_ACCEPT = $('fileInput').accept;
 const _POST_PLACEHOLDER = $('captionInput').placeholder;
@@ -291,14 +291,14 @@ export function pickFile(f) {
       return;
     }
     if (f.size > STORY_MAX) {
-      $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 30 MB`;
-      toast('Fayl juda katta (max 30MB)', 'error');
+      $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 25 MB`;
+      toast('Fayl juda katta (max 25MB)', 'error');
       return;
     }
   }
   if (f.size > MAX_FILE) {
-    $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 50 MB`;
-    toast('Fayl hajmi 50 MB dan oshmasligi kerak', 'error');
+    $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 25 MB`;
+    toast('Fayl hajmi 25 MB dan oshmasligi kerak', 'error');
     return;
   }
   $('sizeWarn').textContent = '';
