@@ -7,6 +7,7 @@ import { sb, state, isAdmin, fetchAllRows, mapProfile, mapPost, ts, purgeUserMed
 import { $ } from './utils.js';
 import { toast } from './toast.js';
 import { logAdminAction } from './admin-audit.js';
+import { adminResetPassword } from './admin-reset-password.js';
 
 async function _updateProfile(uid, patch) {
   const { error } = await sb.from('profiles').update(patch).eq('id', uid);
@@ -842,6 +843,7 @@ function _render(wrap, users) {
         ${_approveBtn(u)}
         ${_rejectBtn(u)}
         <button class="${blockBtnClass}" data-uid="${uid}" data-name="${_esc(name)}" data-blocked="${isBlocked}" data-blocked-until-ms="${blockedUntilMs}">${blockBtnLabel}</button>
+        <button class="ua-reset-pwd-btn" data-uid="${uid}" data-name="${_esc(name)}">Parolni tiklash</button>
         <button class="ua-delete-btn" data-uid="${uid}" data-name="${_esc(name)}">O'chirish</button>
       </div>
     </div>`;
@@ -888,6 +890,14 @@ function _render(wrap, users) {
     btn.addEventListener('click', e => {
       e.stopPropagation();
       _openDeleteModal(btn.dataset.uid, btn.dataset.name);
+    });
+  });
+
+  /* Parolni tiklash */
+  wrap.querySelectorAll('.ua-reset-pwd-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      adminResetPassword(btn.dataset.uid, btn.dataset.name);
     });
   });
 }
