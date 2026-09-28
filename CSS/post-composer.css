@@ -156,7 +156,6 @@
   }
 }
 
-
 /* Fayl sahifaga sudralganda — yengil ko'rsatkich */
 body.file-dragging::after {
   content: '';

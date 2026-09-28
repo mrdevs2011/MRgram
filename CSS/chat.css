@@ -382,19 +382,6 @@
 }
 .chat-emoji-quickpick button:hover  { background: var(--bg4);}
 
-.chat-thread-send {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: var(--blue);
-  border: none;
-  display: flex; align-items: center; justify-content: center;
-  color: #fff;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: none;
-}
-.chat-thread-send:hover { background: var(--blue3); }
-
 /* ── Desktop ── */
 @media (min-width: 768px) {
   .chats-hdr, .chats-list { max-width: 560px; margin-left: auto; margin-right: auto; }
@@ -578,77 +565,6 @@
 .cfm-dl:hover { background: rgba(255,255,255,0.35); }
 .chat-msg.theirs .cfm-dl:hover { background: var(--bg4, #d4d4d4); }
 
-/* ═══════════════════════════════════════════
-   NEW FEATURES: Image, Video, Reply, Reactions,
-   Context Menu, Lightbox, Edit badge
-   ═══════════════════════════════════════════ */
-
-/* ── Image message ── */
-.chat-img-msg {
-  max-width: 260px;
-  min-width: 80px;
-  border-radius: 12px;
-  overflow: hidden;
-  cursor: pointer;
-}
-.chat-img-msg img {
-  display: block;
-  width: 100%;
-  max-width: 260px;
-  max-height: 320px;
-  object-fit: cover;
-  border-radius: 12px;
-  transition: none;
-}
-.chat-img-msg img:hover { opacity: 1; }
-
-/* ── Video message ── */
-.chat-video-msg {
-  max-width: 260px;
-  border-radius: 12px;
-  overflow: hidden;
-}
-.chat-video-msg video {
-  display: block;
-  border-radius: 10px;
-  background: #000000;
-}
-
-/* ── Reply preview inside bubble ── */
-.chat-reply-preview {
-  border-left: 3px solid #848487;
-  padding: 4px 8px;
-  margin-bottom: 6px;
-  border-radius: 0 6px 6px 0;
-  background: #26262C;
-  cursor: pointer;
-  transition: none;
-}
-.chat-msg.theirs .chat-reply-preview {
-  border-left-color: var(--blue);
-  background: #16181c;
-}
-.chat-reply-preview:hover { background: #3A3A3F; }
-.chat-msg.theirs .chat-reply-preview:hover { background: #202327; }
-
-.crp-name {
-  font-size: 11.5px;
-  font-weight: 700;
-  color: #E6E6E7;
-  margin-bottom: 1px;
-}
-.chat-msg.theirs .crp-name { color: var(--blue); }
-
-.crp-text {
-  font-size: 12px;
-  color: #C1C1C3;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
-}
-.chat-msg.theirs .crp-text { color: var(--text2); }
-
 /* ── Reply bar (above input) ── */
 .chat-reply-bar {
   display: none;
@@ -695,63 +611,6 @@
   flex-shrink: 0;
 }
 .crb-close:hover { background: var(--bg5); color: var(--text); }
-
-/* ── Reactions ── */
-.chat-reactions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 4px;
-  padding: 0 2px;
-}
-.chat-msg.mine .chat-reactions { justify-content: flex-end; }
-
-.reaction-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 8px;
-  background: var(--bg4);
-  border: 1px solid var(--line2);
-  border-radius: 12px;
-  font-size: 13px;
-  cursor: pointer;
-  transition: none;
-  color: var(--text);
-}
-.reaction-pill:hover { background: var(--bg5);}
-.reaction-pill.mine  {
-  background: #16181c;
-  border-color: #2f3336;
-  color: var(--blue);
-}
-
-/* ── Emoji picker ── */
-.emoji-picker {
-  display: none;
-  position: absolute;
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 6px 8px;
-  gap: 4px;
-  box-shadow: 0 4px 20px #000000;
-  z-index: 400;
-  flex-wrap: nowrap;
-}
-.emoji-picker.show { display: flex; }
-
-.emoji-pick-btn {
-  background: none;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 8px;
-  transition: none;
-  line-height: 1;
-}
-.emoji-pick-btn:hover {background: var(--bg4); }
 
 /* ── Context menu ── */
 #chatContextMenu {
@@ -828,15 +687,6 @@
 }
 #chatLightboxClose:hover { background: #46464B; }
 
-/* ── Edited badge ── */
-.msg-edited {
-  font-size: 10.5px;
-  color: #909093;
-  margin-right: 3px;
-  font-style: italic;
-}
-.chat-msg.theirs .msg-edited { color: var(--text3); }
-
 /* ── Highlight (reply scroll) ── */
 
 /* ════════════════════════════════════════════════════════════════════
@@ -875,46 +725,6 @@
 .chat-typing-indicator.active {
   max-height: 42px;
 }
-
-.typing-bubble {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: var(--bg4);
-  border-radius: 18px 18px 18px 4px;
-  padding: 6px 12px;
-  margin-bottom: 4px;
-  font-size: 13px;
-  color: var(--text2);
-}
-
-.typing-name {
-  font-weight: 600;
-  color: var(--text);
-}
-
-.typing-label {
-  font-style: italic;
-  color: var(--text2);
-}
-
-/* Animated 3-dot pulse */
-.typing-dots {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  margin-left: 2px;
-}
-.typing-dots span {
-  display: block;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--blue);
-  animation: none;
-}
-.typing-dots span:nth-child(2) { animation-delay: 0s; }
-.typing-dots span:nth-child(3) { animation-delay: 0s; }
 
 /* Search button in header */
 .chat-search-btn {
@@ -983,18 +793,6 @@
   transition: none;
 }
 .chat-search-close:hover { background: var(--bg5); color: var(--text); }
-
-/* Search highlight in message text */
-.chat-search-hl {
-  background: #6B5909;
-  color: var(--text);
-  border-radius: 2px;
-  padding: 0 1px;
-}
-.chat-msg.mine .chat-search-hl {
-  background: #525257;
-  color: #fff;
-}
 
 /* ════════════════════════════════════════════════════════════════════
    FEATURE 4: Sana Ajratgichlari — Date Separator Pills
@@ -1751,16 +1549,6 @@ a.cfm-name--link:hover {
 .chat-msg.mine.anim-in  { transform-origin: bottom right; }
 .chat-msg.theirs.anim-in{ transform-origin: bottom left;  }
 
-/* ── 2. Yangi xabar yuborilganda send-btn bounce ── */
-
-/* ── 3. Emoji / reaksiya — heart fly up ── */
-.emoji-fly {
-  position: fixed;
-  pointer-events: none;
-  font-size: 22px;
-  z-index: 9999999;
-}
-
 /* ── 4. Call modal — scale+blur in ── */
 
 /* ── 5. Incoming call modal — slide up ── */
@@ -1782,25 +1570,6 @@ a.cfm-name--link:hover {
 .cfm-img-preview {
   transition: none;
 }
-
-/* ── 10. Xabar o'chirilganda collapse ── */
-.chat-msg.removing {
-  overflow: hidden;
-  transform-origin: top;
-}
-
-/* ── 11. Typing indicator — wave bounce ── */
-
-.typing-dot {
-  display: inline-block;
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--blue, #ffffff);
-  animation: none;
-  margin: 0 2px;
-}
-.typing-dot:nth-child(2) { animation-delay: 0s; }
-.typing-dot:nth-child(3) { animation-delay: 0s; }
 
 /* ── 12b. Voice message play button — buffering/loading spinner ── */
 .cvm-spin { animation: none; }
@@ -1825,53 +1594,6 @@ a.cfm-name--link:hover {
 
 .ctx-item.danger:hover { background: #171717 !important; }
 
-/* ── 2. Message swipe-to-reply hint ── */
-
-/* ── 3. Reply bar slide-down ── */
-
-/* ── 4. Xabar highlight — pulse glow (reply ga bosganda) ── */
-
-/* ── 5. Send tugmasi — morphing mic↔send ── */
-
-/* ── 6. Attach button ripple ── */
-
-/* ── 7. Yangi xabar notification badge bounce ── */
-
-/* ── 8. File preview — shimmer loading skeleton ── */
-
-.cfm-skeleton {
-  background: var(--bg3, #16181c);
-  background-size: 400px 100%;
-  animation: none;
-  border-radius: 12px;
-  min-height: 120px;
-}
-
-/* ── 9. Long-press ripple on bubble ── */
-.bubble-ripple-dot {
-  position:absolute; width:40px; height:40px;
-  border-radius:50%; background:#35353B;
-  pointer-events:none; z-index:10;
-  transform-origin:center;
-}
-
-/* ── 10. Scroll-to-bottom glow button ── */
-#chatScrollDownBtn {
-  position: absolute;
-  bottom: 72px; right: 14px;
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  background: var(--blue, #ffffff);
-  border: none; cursor: pointer;
-  display: none;
-  align-items: center; justify-content: center;
-  color: #fff;
-  box-shadow: 0 4px 16px #464646;
-  z-index: 100;
-}
-#chatScrollDownBtn.visible { display: flex; }
-#chatScrollDownBtn:hover  {box-shadow: 0 6px 24px #ffffff; transition: none; }
-
 /* ── 11. Emoji picker — bounce in ── */
 
 /* ── 12. Input area focus glow ── */
@@ -1883,23 +1605,6 @@ a.cfm-name--link:hover {
   border-color: #4c4c4c !important;
   outline: none;
 }
-
-/* ── 14. Reaction emoji float on bubble ── */
-.msg-reaction-wrap {
-  display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px;
-}
-.msg-reaction {
-  font-size: 16px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: #202327;
-  cursor: pointer;
-  transition: none;
-  display: inline-flex; align-items: center; gap: 3px;
-  font-size: 14px;
-  border: 1px solid #202327;
-}
-.msg-reaction:hover  {background: #35353B; }
 
 /* ═══════════════════════════════════════════
    CLEAN CHAT REDESIGN — Telegram/Instagram style
@@ -1943,22 +1648,6 @@ a.cfm-name--link:hover {
   box-shadow: none !important;
   border: none !important;
 }
-
-/* ── Time & ticks ── */
-/* .chat-msg-time rangi → CSS/chat-dark-redesign.css'da belgilangan
-   (bu yerdagi eski qator o'lik edi, hamisha yengilardi) */
-
-/* ── Voice message — clean ── */
-
-/* .cfm-name / .cfm-size ranglari → CSS/chat-dark-redesign.css'da
-   belgilangan (bu yerdagi qatorlar o'lik edi) */
-
-/* ── Image bubble — chegrasiz ── */
-.chat-img-msg {
-  border-radius: 14px !important;
-  overflow: hidden !important;
-  box-shadow: none !important;
-}
 .chat-msg.mine .chat-bubble:has(.chat-img-msg),
 .chat-msg.theirs .chat-bubble:has(.chat-img-msg) {
   padding: 3px !important;
@@ -1999,18 +1688,6 @@ a.cfm-name--link:hover {
   border: none;
   box-shadow: none;
   width: 36px; height: 36px;
-}
-
-/* ── Reply preview — clean ── */
-.chat-reply-preview {
-  border-left: 3px solid var(--blue) !important;
-  background: rgba(255,255,255,0.08) !important;
-  border-radius: 0 8px 8px 0 !important;
-  margin-bottom: 4px !important;
-  padding: 4px 8px !important;
-}
-.chat-msg.theirs .chat-reply-preview {
-  background: rgba(0, 0, 0,0.1) !important;
 }
 
 /* ── msg-avi-btn — completely hidden in 1v1 ── */

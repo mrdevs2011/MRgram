@@ -119,19 +119,6 @@
 #chatThreadModal .chat-msg.theirs .chat-msg-time { color: var(--c-text-time); }
 #chatThreadModal .msg-ticks { color: rgba(255, 255, 255,0.6); }
 #chatThreadModal .msg-ticks.read { color: var(--c-tick-read); }
-#chatThreadModal .msg-edited { color: var(--c-text-time); }
-
-/* Reply-quote inside bubble */
-#chatThreadModal .chat-reply-preview { background: rgba(255,255,255,0.08); border-left: 3px solid var(--c-accent); }
-#chatThreadModal .chat-msg.theirs .chat-reply-preview { background: rgba(0, 0, 0,0.18); }
-#chatThreadModal .chat-reply-preview:hover { background: rgba(255,255,255,0.13); }
-#chatThreadModal .crp-name { color: var(--c-accent-2); }
-#chatThreadModal .crp-text { color: var(--c-text-2); }
-
-/* Reactions */
-#chatThreadModal .reaction-pill { background: rgba(255,255,255,0.07); border-color: transparent; color: var(--c-text-1); }
-#chatThreadModal .reaction-pill:hover { background: rgba(255,255,255,0.12); }
-#chatThreadModal .reaction-pill.mine { background: rgba(255, 255, 255,0.18); border-color: transparent; color: var(--c-accent-2); }
 
 /* Files & media inside bubble */
 #chatThreadModal .cfm-name { color: var(--c-text-1); }
@@ -140,11 +127,6 @@
 #chatThreadModal .chat-msg.theirs .cfm-size { color: var(--c-text-2); }
 #chatThreadModal .cfm-dl { background: rgba(255,255,255,0.14); color: var(--c-text-1); }
 #chatThreadModal .cfm-dl:hover { background: rgba(255,255,255,0.24); }
-
-/* Typing bubble (floating, above input) */
-#chatThreadModal .typing-bubble { background: var(--c-bubble-in); color: var(--c-text-2); }
-#chatThreadModal .typing-name { color: var(--c-text-1); }
-#chatThreadModal .typing-dots span { background: var(--c-accent); }
 
 /* ── Voice message bubble — circular play + waveform (demo look) ─────── */
 #chatThreadModal .chat-voice-msg { min-width: 210px; gap: 8px; }

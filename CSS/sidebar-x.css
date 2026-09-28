@@ -83,7 +83,6 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
     width: 44px; height: 44px; padding: 0; flex: 0 0 auto;
     border-radius: 14px; position: relative;
   }
-  nav.bot-nav .nav-btn.nav-hidden { display: none !important; }
   nav.bot-nav .nav-btn.admin-only-btn.d-none { display: none !important; }
   nav.bot-nav .nav-btn svg { width: 24px; height: 24px; }
   nav.bot-nav .nav-btn.on { background: none; }
@@ -96,7 +95,6 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   /* kontent rail'dan o'ngda */
   #homeView, #followingView, #reelsView, #profileView, #chatsView,
   #actionsView { margin-left: var(--rail); }
-  #reelsView { width: calc(100vw - var(--rail)); }
   .app-hdr { left: var(--rail); }
 }
 
@@ -120,7 +118,6 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
     justify-content: flex-start;
   }
   nav.bot-nav .sb-logo-img { width: 30px; height: 30px; }
-  nav.bot-nav .sb-logo-tip { display: none; }
   nav.bot-nav .sb-brand-text {
     display: block;
     font-size: 20px;

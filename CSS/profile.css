@@ -37,7 +37,6 @@
   }
 }
 
-
 /* profileView padding — .view.on orqali boshqariladi (feed.css) */
 
 .profile-hdr {
@@ -164,27 +163,6 @@
 .profile-actions-row .edit-btn {
   flex: 1;
   margin-top: 0;
-}
-
-.settings-icon-btn {
-  flex-shrink: 0;
-  width: 40px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #16181c;
-  border: 1px solid var(--line2);
-  border-radius: 12px;
-  color: var(--text2);
-  cursor: pointer;
-  transition: none;
-}
-
-.settings-icon-btn:hover {
-  background: #16181c;
-  border-color: var(--line3);
-  color: var(--text);
 }
 
 .settings-section-label {
@@ -370,17 +348,6 @@
   background: var(--bg2);
 }
 
-/* .grid-stat → to'liq ui-improvements.css:656 tomonidan yopiladi, o'lik, o'chirildi */
-
-.grid-like {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-}
-
 .grid-play-badge {
   /* position/top/right/background/border-radius/display/align-items →
      ui-improvements.css:667 (yagona manba), o'lik. padding u yerda
@@ -508,7 +475,6 @@
 }
 
 .up-divider { display: none; }
-.up-grid-label { display: none; }
 
 .up-posts-tab {
   display: flex;
@@ -517,17 +483,6 @@
   margin: 16px -20px 0;
   width: calc(100% + 40px);
   background: var(--bg);
-}
-
-.up-posts-tab-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 11px 16px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--blue);
-  border-bottom: 2px solid var(--blue);
 }
 
 .up-grid {
@@ -613,7 +568,6 @@
   background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,.12) 100%);
 }
 
-
 /* ═══════════════════════════════════════════
    PROFILE STATS — Animated Numbers
    ═══════════════════════════════════════════ */
@@ -628,51 +582,6 @@
 .stat:nth-child(2) .stat-val.animate { animation-delay: 0s; }
 .stat:nth-child(3) .stat-val.animate { animation-delay: 0s; }
 .stat:nth-child(4) .stat-val.animate { animation-delay: 0s; }
-
-/* Avatar pulse-ring o'chirildi (flat X.com uslubi, 2026) */
-
-/* Profile grid cell play icon for videos */
-.grid-cell-is-video {
-  position: relative;
-}
-
-.grid-cell-is-video::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  background: #000000;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: none;
-}
-
-.grid-cell-is-video:hover::after {
-  opacity: 1;
-}
-
-.grid-cell-is-video::before {
-  content: '▶';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #fff;
-  font-size: 16px;
-  z-index: 2;
-  opacity: 0;
-  transition: none;
-}
-
-.grid-cell-is-video:hover::before {
-  opacity: 1;
-}
 
 /* ═══════════════════════════════════════════
    USER PROFILE MODAL
@@ -1049,7 +958,6 @@
   color: var(--text3);
 }
 
-
 /* Profil post tablar */
 .profile-grid-hdr {
   display: flex;
@@ -1082,7 +990,6 @@
   aspect-ratio: 1;
   min-height: 0;
 }
-
 
 /* Profile grid empty state */
 .up-grid-empty {

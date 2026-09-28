@@ -119,13 +119,6 @@
   box-shadow: none;
 }
 
-/* Modal */
-.modal-content,
-[data-theme="dark"] .modal-content{
-  border: none;
-  box-shadow: none;
-}
-
 /* Glass components */
 .glass,
 .glass-heavy {
@@ -191,13 +184,6 @@
 [data-theme="dark"] .grid-cell:hover {
   box-shadow: none;
 }
-
-/* Profile stats box */
-.up-stat-box,
-[data-theme="dark"] .up-stat-box {
-  border: none;
-  box-shadow: none;
-}
 .up-stat { border-right: none; }
 
 /* Profile grid header */
@@ -247,20 +233,6 @@ textarea:focus,
   outline: none;
 }
 
-/* Chat input */
-.chat-input-bar,
-[data-theme="dark"] .chat-input-bar {
-  border-top: none;
-  box-shadow: none;
-}
-
-.chat-input-wrap,
-[data-theme="dark"] .chat-input-wrap,
-[data-theme="dark"] .chat-input-wrap:focus-within {
-  border: none;
-  box-shadow: none;
-}
-
 /* Chat list rows */
 .chat-row,
 [data-theme="dark"] .chat-thread {
@@ -271,16 +243,6 @@ textarea:focus,
 .chat-thread-hdr,
 [data-theme="dark"] .chat-thread-hdr {
   border-bottom: none;
-}
-
-/* Message bubbles */
-[data-theme="dark"] .msg-in .msg-bubble {
-  border: none;
-  box-shadow: none;
-}
-
-[data-theme="dark"] .msg-out .msg-bubble {
-  box-shadow: none;
 }
 
 /* File card */
@@ -307,15 +269,6 @@ textarea:focus,
   box-shadow: none;
 }
 
-/* Badges */
-.badge-pub,
-.badge-priv,
-[data-theme="dark"] .badge-pub,
-[data-theme="dark"] .badge-priv {
-  border: none;
-  box-shadow: none;
-}
-
 /* Buttons */
 .btn-primary,
 .btn-primary:hover {
@@ -325,12 +278,6 @@ textarea:focus,
 .btn-danger,
 .btn-danger:hover {
   box-shadow: none;
-}
-
-/* Sidebar */
-.sb-wrap,
-[data-theme="dark"] .sb-wrap {
-  border-right: none;
 }
 
 /* Search overlay */
@@ -351,13 +298,6 @@ textarea:focus,
 [data-theme="dark"] .upload-float-bar {
   border: none;
   box-shadow: none;
-}
-
-/* Visibility row */
-.visibility-row,
-[data-theme="dark"] .visibility-row,
-[data-theme="dark"] .visibility-row.is-public {
-  border: none;
 }
 
 /* Upload drop zone — border/hover feedback owned by nav.css, no override here */
@@ -393,21 +333,6 @@ textarea:focus,
   border-top: none;
 }
 
-/* Onboarding / Admin / Verify cards */
-.onb-card,
-.admin-card,
-.verify-card,
-[data-theme="dark"] .onb-card,
-[data-theme="dark"] .admin-card,
-[data-theme="dark"] .verify-card {
-  border: none;
-  box-shadow: none;
-}
-
-[data-theme="dark"] .admin-card:hover {
-  box-shadow: none;
-}
-
 /* Detail modal */
 #detailContent,
 [data-theme="dark"] #detailContent {
@@ -426,35 +351,11 @@ textarea:focus,
   border: none;
 }
 
-/* Reel */
-.reel-avi,
-[data-theme="dark"] .reel-avi {
-  border: none;
-  box-shadow: none;
-}
-
 .reel-top-btn,
 .reel-vol-top,
 [data-theme="dark"] .reel-top-btn,
 [data-theme="dark"] .reel-vol-top {
   border: none;
-}
-
-/* Offline indicator */
-#offlineIndicator {
-  border: none;
-  box-shadow: none;
-}
-
-/* Cached badge */
-.cached-badge {
-  border: none;
-  box-shadow: none;
-}
-
-/* Card hover — shadow olib tashlash */
-.card-hover:hover {
-  box-shadow: none;
 }
 
 /* Sidebar desktop — chegarasiz */
@@ -487,23 +388,6 @@ textarea:focus,
   box-shadow: none;
 }
 
-/* Offline indicator pulse dot */
-#offlineIndicator::before {
-  box-shadow: none;
-}
-
-/* Groups */
-.group-card,
-.group-hdr {
-  border: none;
-  box-shadow: none;
-}
-
-/* Admin */
-[data-theme="dark"] .admin-card {
-  border: none;
-}
-
 /* ════════════════════════════════════════════
    LIGHT THEME — Xatolarni tuzatish
    ════════════════════════════════════════════ */
@@ -517,9 +401,6 @@ textarea:focus,
 /* 3. Sidebar nav-btn aktiv holat — dark styled light temada */
 
 /* Desktop sidebar nav-btn */
-@media (min-width: 768px) {
-  
-  }
 
 /* 4. Visibility buttons (Private/Public) — light temada dark styled */
 

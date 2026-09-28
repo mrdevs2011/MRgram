@@ -35,14 +35,6 @@
 .grp-avi-badge--channel { background: #ffffff; color: #fff; }
 
 .chat-thread-avi { position: relative; }
-
-/* ── Chat row type indicators ── */
-.chat-row-type {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 11px; color: var(--text3);
-  margin-bottom: 1px;
-}
-.chat-row-type svg { opacity: 1; }
 .chat-row-grp-badge {
   position: absolute;
   bottom: 1px; right: 1px;
@@ -52,35 +44,7 @@
   border: 1.5px solid var(--bg);
 }
 .chat-row-grp-badge--group   { background: var(--blue); color: #fff; }
-.chat-row-grp-badge--channel { background: #ffffff; color: #fff; }
 .chat-avi { position: relative; }
-
-/* ── Choice sheet ── */
-.grp-choice-btn {
-  display: flex; align-items: center; gap: 14px;
-  width: 100%; padding: 14px 4px;
-  background: transparent; border: none;
-  color: var(--text); cursor: pointer;
-  border-radius: 12px;
-  transition: none;
-  text-align: left;
-}
-.grp-choice-btn:hover { background: var(--bg4, #16181c); }
-.grp-choice-btn + .grp-choice-btn { border-top: 0.5px solid var(--line, #202327); }
-
-.grp-choice-icon {
-  width: 48px; height: 48px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.grp-choice-icon--group   { background: color-mix(in srgb, var(--blue) 16%, var(--bg2)); color: var(--blue); }
-.grp-choice-icon--channel { background: color-mix(in srgb, #ffffff 16%, var(--bg2)); color: #ffffff; }
-.grp-choice-icon--user    { background: color-mix(in srgb, #10b981 16%, var(--bg2)); color: #10b981; }
-
-.grp-choice-info { flex: 1; }
-.grp-choice-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-.grp-choice-sub  { font-size: 12.5px; color: var(--text2); }
-.grp-choice-arrow { color: var(--text3); flex-shrink: 0; }
 
 /* ── Create form ── */
 .grp-form-title { margin-bottom: 16px !important; }
@@ -174,27 +138,6 @@
 }
 .grp-empty-users { font-size: 13px; color: var(--text3); padding: 12px 0; }
 
-/* ── Group info panel ── */
-.grp-info-header {
-  display: flex; flex-direction: column; align-items: center;
-  text-align: center; gap: 6px; padding: 8px 0 16px;
-  border-bottom: 0.5px solid var(--line, #202327);
-  margin-bottom: 16px;
-}
-.grp-info-avi {
-  width: 72px; height: 72px; border-radius: 50%;
-  overflow: hidden; background: var(--bg3);
-}
-.grp-info-avi img { width: 100%; height: 100%; object-fit: cover; }
-.grp-info-name { font-size: 18px; font-weight: 700; }
-.grp-info-type { font-size: 12.5px; color: var(--text3); }
-.grp-info-desc { font-size: 13px; color: var(--text2); line-height: 1.5; margin-top: 4px; }
-
-.grp-section-title {
-  font-size: 11.5px; font-weight: 600; color: var(--text3);
-  text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px;
-}
-
 .grp-members-list {
   max-height: 250px; overflow-y: auto; margin-bottom: 16px;
   border-radius: 10px;
@@ -222,12 +165,6 @@
   cursor: pointer; transition: none;
 }
 .grp-member-kick:hover { background: color-mix(in srgb, var(--red) 24%, transparent); }
-
-.grp-info-actions {
-  display: flex; flex-direction: column; gap: 8px;
-}
-.grp-info-actions .btn-ghost { width: 100%; }
-.grp-info-actions .btn-danger { width: 100%; }
 .c-red { color: var(--red, #ef4444) !important; }
 
 /* ── Sender name in group messages ── */
@@ -245,44 +182,6 @@
 
 /* ── mt-12px helper ── */
 .mt-12px { margin-top: 12px; }
-
-/* ── Privacy toggle ── */
-.grp-privacy-toggle {
-  display: flex; gap: 6px;
-  background: var(--bg4, #16181c);
-  border: 1px solid var(--line, #202327);
-  border-radius: 12px; padding: 4px;
-}
-.grp-privacy-opt {
-  flex: 1; padding: 9px 0; border: none; border-radius: 9px;
-  background: transparent; color: var(--text2); font-size: 13.5px; font-weight: 600;
-  cursor: pointer; transition: none;
-}
-.grp-privacy-opt.active { background: var(--blue, #ffffff); color: #fff; }
-
-.grp-invite-box {
-  display: flex; align-items: center; gap: 6px;
-}
-.grp-invite-code {
-  flex: 1; font-size: 12px; font-family: monospace; letter-spacing: .01em;
-  color: var(--text2);
-}
-.grp-invite-btn {
-  width: 38px; height: 38px; border-radius: 10px; border: none; flex-shrink: 0;
-  background: var(--bg4, #16181c); color: var(--text2);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: none;
-}
-.grp-invite-btn:hover { background: color-mix(in srgb, var(--blue) 18%, var(--bg4)); color: var(--blue); }
-.grp-add-link-btn { width: 100%; }
-
-/* ── Join-by-link icon next to chats search ── */
-.ulist-link-icon {
-  color: var(--text3, #767676); flex-shrink: 0; cursor: pointer;
-  display: flex; align-items: center; transition: none;
-  margin-left: 4px;
-}
-.ulist-link-icon:hover { color: var(--blue, #ffffff); }
 
 /* ── Badge overflow fix ─────────────────────────────────────────────── */
 /* chat-avi va chat-thread-avi border-radius:50% bilan overflow:hidden   */

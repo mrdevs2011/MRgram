@@ -95,21 +95,6 @@ body,
   transition: none;
 }
 
-.theme-transition-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  z-index: 99999;
-  opacity: 0;
-  pointer-events: none;
-  transition: none;
-}
-
-.theme-transition-overlay.active {
-  opacity: 1;
-  pointer-events: all;
-}
-
 /* ═══════════════════════════════════════════
    Theme Toggle Button
    ═══════════════════════════════════════════ */
@@ -144,13 +129,6 @@ body,
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-}
-
-.theme-btn .icon-sun  { display: block; }
-.theme-btn .icon-moon { display: none;  }
-
-[data-theme="dark"] .theme-btn:hover .icon-sun {
-  filter: drop-shadow(0 0 8px #B5872E);
 }
 
 @media (min-width: 768px) {
@@ -194,16 +172,6 @@ body,
   background: var(--glass-heavy);
   border: 0.5px solid var(--glass-border-top);
   box-shadow: var(--specular-top), var(--liquid-shadow-lg);
-}
-
-/* .btn-primary / .btn-danger → CSS/00-components.core.css'ga ko'chirildi */
-
-.success-glow { box-shadow: 0 4px 16px var(--green-glow); }
-
-/* Card hover — liquid lift */
-.card-hover { transition: none; }
-.card-hover:hover {
-  box-shadow: var(--liquid-shadow-lg);
 }
 
 /* Input fields */
