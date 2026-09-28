@@ -264,6 +264,6 @@ svg { color: inherit; }
 }
 
 .nav-center-btn, .btn-primary, .chat-voice-btn,
-.hdr-new-post-btn, .fab {
+.fab {
   color: var(--tg-text-main);
 }

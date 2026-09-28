@@ -178,24 +178,6 @@
   overflow: hidden;
 }
 
-.nav-btn .ripple,
-.act-btn .ripple,
-.cmt-send .ripple {
-  position: absolute;
-  border-radius: 50%;
-  background: #525257;
-  transform: scale(0);
-  animation: rippleEffect 0.6s ease-out;
-  pointer-events: none;
-}
-
-@keyframes rippleEffect {
-  to {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
 /* Haptic visual cue */
 .nav-btn.haptic {
   animation: hapticFlash 0.15s ease;
@@ -498,28 +480,6 @@
 .up-follow-btn {
   position: relative;
   overflow: hidden;
-}
-
-.btn-primary::after,
-.cmt-send::after,
-.up-follow-btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: #525257;
-  transform: translate(-50%, -50%);
-  transition: width 0.6s ease-out, height 0.6s ease-out;
-}
-
-.btn-primary:active::after,
-.cmt-send:active::after,
-.up-follow-btn:active::after {
-  width: 200px;
-  height: 200px;
 }
 
 /* Ghost button hover */

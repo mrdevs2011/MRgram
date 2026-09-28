@@ -260,34 +260,28 @@ body:has(.search-overlay.open) .app-hdr {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--blue);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: none;
   border: none;
+  box-shadow: none;
+  color: var(--text2);
   cursor: pointer;
   flex-shrink: 0;
   transition: var(--transition);
-  box-shadow: 0 2px 8px #213054;
-  margin-right: 2px;
 }
 
 .hdr-new-post-btn svg {
   width: 20px;
   height: 20px;
-  stroke: #fff;
-  stroke-width: 2.5;
+  stroke: currentColor;
+  stroke-width: 2;
   fill: none;
 }
 
-.hdr-new-post-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 3px 12px #293E6B;
-}
-
-.hdr-new-post-btn:active {
-  transform: scale(0.95);
-}
+.hdr-new-post-btn:hover { background: var(--bg3); color: var(--text); }
+.hdr-new-post-btn:active { opacity: 0.7; }
 
 /* Desktop: hide header new post button (sidebar used instead) */
 @media (min-width: 768px) {
