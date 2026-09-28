@@ -34,10 +34,6 @@ const routes = {
     view: 'usersView',
     title: 'Foydalanuvchilar'
   },
-  'stats': {
-    view: 'statsView',
-    title: 'Statistika'
-  },
   'actions': {
     view: 'actionsView',
     title: 'Boshqaruv'
@@ -45,7 +41,7 @@ const routes = {
 };
 
 // Allowed route names for security
-const ALLOWED_ROUTES = ['home', 'profile', 'chats', 'login', 'users', 'stats', 'actions'];
+const ALLOWED_ROUTES = ['home', 'profile', 'chats', 'login', 'users', 'actions'];
 
 /* ═══════════════════════════════════════════════════════════════════════
    CURRENT STATE
@@ -253,7 +249,7 @@ function updateLayoutForRoute(routeName) {
   // Mobile: hdr search wrap ko'rinishi (actions va login da yashiriladi)
   if (hdrSearchWrap) {
     const hideSearch = routeName === 'actions' || routeName === 'login'
-                    || routeName === 'users'   || routeName === 'stats';
+                    || routeName === 'users';
     hdrSearchWrap.classList.toggle('search-hidden', hideSearch);
   }
 
@@ -453,8 +449,6 @@ export function applyAdminNav() {
   // Eski tugmalar (agar qolgan bo'lsa)
   const adminBtn = $('adminUsersNavBtn');
   if (adminBtn) adminBtn.classList.toggle('d-none', !isAdmin);
-  const statsBtn = $('adminStatsNavBtn');
-  if (statsBtn) statsBtn.classList.toggle('d-none', !isAdmin);
   // Yangi birlashtirilgan actions tugma
   const actionsBtn = $('adminActionsNavBtn');
   if (actionsBtn) actionsBtn.classList.toggle('d-none', !isAdmin);
