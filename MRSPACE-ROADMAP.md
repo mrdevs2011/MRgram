@@ -55,7 +55,7 @@
 |---|---|---|---|---|---|
 | 0 | Xavfsizlik to'ri | past | 1–2 soat | — | ⚠️ qisman (tag va remote tayyor; zaxira/preview/smoke — MR ishi) |
 | 1 | Axlat va o'lik kod | past | 2–3 soat | 0 | ✅ deyarli tayyor (`09bce2c`) |
-| 2 | Admin dieta + parol reset | o'rta | 1 kun | 0, 1 | 🔶 parol reset ✅, dieta (2.1–2.9) ❌ |
+| 2 | Admin dieta + parol reset | o'rta | 1 kun | 0, 1 | ✅ kod tayyor (branch `diet/02-admin`, Preview sinovi + 1 hafta kuzatuv → `patch-diet-02-admin.sql` kutilmoqda) |
 | 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.4 views ✅, 3.5 cover ✅ (qisman); qolgani ❌ |
 | 4 | CSS konsolidatsiya | o'rta–yuqori (vizual) | 2–3 kun | 3 (oldin nima qolishi aniq bo'lsin) | 🔶 4.4/4.5 ✅ (bitta `app.css`); 23 fayl/~16.7k qator, 351 `!important` |
 | 5 | Realtime va presence | o'rta | 1 kun | 3 | 🔶 5.1/5.2 ✅; 5.3 kanallarni birlashtirish ❌ |
@@ -100,7 +100,7 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 
 ---
 
-## FAZA 2 — Admin dieta + parol reset 🔶 (parol reset ✅, dieta ❌)
+## FAZA 2 — Admin dieta + parol reset ✅ kod tayyor (2026-09-29, `diet/02-admin`; DB contract kutilmoqda)
 
 **Muammo:** admin bitta odam, lekin panel korxona darajasida (audit, history, countdown, ms-aniq muddat).
 
@@ -114,15 +114,15 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 ### Ketadi
 | # | Nima | Fayl / jadval | Bog'liqlik | Holat |
 |---|---|---|---|---|
-| 2.1 | Ban muddatini millisoniyagacha tanlash | `duration-picker.js` (312) | `view-users.js` import qiladi → o'rniga 4 tugma: **1 soat / 1 kun / 7 kun / doimiy** | ❌ |
-| 2.2 | Countdown taymerlar | `view-users.js`: `_startAdminBlockCountdown`, `_fmtCountdown` | Statik matn: "bloklangan: 3 okt 14:20 gacha" | ❌ |
-| 2.3 | Admin audit log | `admin-audit.js` (112) + `admin_actions` jadvali | `view-users.js` va `view-actions.js` import qiladi, chaqiruvlarni o'chir | ❌ |
-| 2.4 | Broadcast tarixi | `broadcast_history` jadvali, `view-actions.js` dagi `admin-bc-history` kanali | E'lon yuboriladi, tarix saqlanmaydi | ❌ |
-| 2.5 | Dashboard summary | `dashboard-summary.js` (91), `admin-dash` kanal | Kerak bo'lsa: "kutayotgan: N" bitta raqam (badge yetadi) | ❌ |
-| 2.6 | Qo'shimcha statistika | `view-users.js`: `_loadExtraStats` | — | ❌ |
-| 2.7 | User detail 3 tab → 1 | `view-users.js`: `_openDetailModal`, `_renderDetailBody` | Bitta kartochka: ism, username, holat, oxirgi faollik | ❌ |
-| 2.8 | Parol bilan qayta ochish modal | `view-users.js`: `_ensurePasswordModal`, `_openPasswordModal` | Ortiqcha qatlam | ❌ |
-| 2.9 | `login_history` | `auth.js:118` insert, `view-users.js:573` select, jadval | 50 odamda kerak emas | ❌ |
+| 2.1 | Ban muddatini millisoniyagacha tanlash | `duration-picker.js` (312) | `view-users.js` import qiladi → o'rniga 4 tugma: **1 soat / 1 kun / 7 kun / doimiy** | ✅ 4 tugma, `duration-picker.js` o'chirildi |
+| 2.2 | Countdown taymerlar | `view-users.js`: `_startAdminBlockCountdown`, `_fmtCountdown` | Statik matn: "bloklangan: 3 okt 14:20 gacha" | ✅ countdown olib tashlandi (blok tugashini `auth.js` o'zi tekshiradi) |
+| 2.3 | Admin audit log | `admin-audit.js` (112) + `admin_actions` jadvali | `view-users.js` va `view-actions.js` import qiladi, chaqiruvlarni o'chir | ✅ `admin-audit.js` o'chirildi; jadval drop → patch |
+| 2.4 | Broadcast tarixi | `broadcast_history` jadvali, `view-actions.js` dagi `admin-bc-history` kanali | E'lon yuboriladi, tarix saqlanmaydi | ✅ tarix olib tashlandi; jadval drop → patch |
+| 2.5 | Dashboard summary | `dashboard-summary.js` (91), `admin-dash` kanal | Kerak bo'lsa: "kutayotgan: N" bitta raqam (badge yetadi) | ✅ `dashboard-summary.js` o'chirildi |
+| 2.6 | Qo'shimcha statistika | `view-users.js`: `_loadExtraStats` | — | ✅ `_loadExtraStats` olib tashlandi (chaqirilmasdi) |
+| 2.7 | User detail 3 tab → 1 | `view-users.js`: `_openDetailModal`, `_renderDetailBody` | Bitta kartochka: ism, username, holat, oxirgi faollik | ✅ modal o'lik kod edi (hech kim ochmasdi) — butunlay o'chirildi |
+| 2.8 | Parol bilan qayta ochish modal | `view-users.js`: `_ensurePasswordModal`, `_openPasswordModal` | Ortiqcha qatlam | ✅ parol qulfi va modali olib tashlandi |
+| 2.9 | `login_history` | `auth.js:118` insert, `view-users.js:573` select, jadval | 50 odamda kerak emas | ✅ insert/select olib tashlandi; jadval drop → patch |
 
 ### YANGI (yetishmayotgan funksiya): admin parol reset
 README: "parolni tiklash imkoni yo'q, adminga murojaat qilish mumkin". Lekin adminda buni bajaradigan tugma yo'q (`resetPassword`/`updateUserById` grep: 0 natija — `[TEKSHIR]` tasdiqlandi). Buvi parolni unutsa — muammo.
@@ -132,7 +132,7 @@ README: "parolni tiklash imkoni yo'q, adminga murojaat qilish mumkin". Lekin adm
 
 ### DB (contract bosqichi, kod deploydan 1 hafta keyin)
 ```sql
--- patch-diet-02-admin.sql  (faqat zaxiradan va 1 hafta kuzatuvdan keyin)
+-- supabase/unfulfilled/patch-diet-02-admin.sql  (YOZILDI, ISHGA TUSHIRILMAGAN — zaxiradan va 1 hafta kuzatuvdan keyin)
 drop table if exists public.admin_actions;
 drop table if exists public.broadcast_history;
 drop table if exists public.login_history;
@@ -141,6 +141,7 @@ drop table if exists public.login_history;
 **Xavf:** o'rta. `view-users.js` ni qayta yozishda approve/reject/block/delete oqimi buzilishi mumkin.
 **Tekshiruv:** smoke test "Admin" bloki + yangi user ro'yxatdan o'tkazib tasdiqla/rad et/blokla/o'chir.
 **Kutilgan natija:** ~−1000 JS, `admin.css` 1176 → ~300, `view-users.js` 995 → ~400.
+**Haqiqiy natija (JS):** 14 548 → 13 472 (−1 076), `view-users.js` 985 → 532, `view-actions.js` 386 → 292. `admin.css` qisqartirish F4 ga o'tdi. Brauzerda sinalmagan (faqat `node --check`).
 
 ---
 
@@ -258,7 +259,7 @@ drop table if exists public.follows;
 |---|---|---|---|---|---|---|---|
 | Jami qator | 31.6k | ~31.5k (−64) | | | −104 (x-design) | | |
 | CSS fayl / qator | 24 / 17.4k | 24 / ~17.4k | | | 22 / 17 055 | | |
-| JS qator | ~13k | ~13.4k* | | | | | |
+| JS qator | ~13k | ~13.4k* | 13 472 (`modules/*.js`; F2 boshida 14 548) | | | | |
 | Realtime kanal / user | ~8–10 | | | | | | |
 | DB yozuv / onlayn user / daq | ~2.4+ | | | | | | |
 | `!important` (x-design) | 76 | | | | **26** | | |
