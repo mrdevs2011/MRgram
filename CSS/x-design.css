@@ -285,3 +285,39 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 @media (min-width: 1100px) {
   nav.bot-nav .sb-top { padding-left: 0; }
 }
+
+/* ── Modal / sheet: sahifa bilan BIR XIL rang ───────────────────────────
+   Oldin card-sheets.css va post-composer.css da #16181c / #2f3336 kabi
+   qattiq yozilgan ranglar bor edi — sahifa palitrasiga zid chiqardi.
+   Endi hammasi tokenlardan: modal = sahifa rangi + ingichka chiziq. */
+:root,
+[data-theme="dark"]  { --overlay: rgba(4, 6, 8, .72); }
+[data-theme="light"] { --overlay: rgba(91, 112, 131, .40); }
+
+.overlay,
+[data-theme] .overlay,
+#uploadOverlay,
+:is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) {
+  background: var(--overlay);
+}
+
+.sheet,
+[data-theme] .sheet,
+#uploadOverlay .composer-sheet,
+:is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+/* sheet ustidagi yorqin "specular" chiziq (nav.css) — olib tashlandi */
+.sheet::before,
+[data-theme] .sheet::before { display: none !important; }
+
+/* Composer ichki qismlari */
+#uploadOverlay .composer-close:hover { background: var(--bg4); }
+#uploadOverlay .composer-avi { background: var(--bg4); }
+#uploadOverlay .composer-post-btn:disabled,
+#uploadOverlay .composer-post-btn:disabled * {
+  background: var(--bg5) !important;
+  color: var(--text4) !important;
+}
