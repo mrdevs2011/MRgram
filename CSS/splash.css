@@ -28,7 +28,9 @@
 .splash-svg {
   width: 96px;
   height: 96px;
-  border-radius: 50%;
+  /* Logo dumchasi (bubble tail) kesilib qolmasligi uchun doira bilan qirqilmaydi */
+  border-radius: 0;
+  overflow: visible;
 }
 
 

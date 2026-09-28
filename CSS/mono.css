@@ -156,3 +156,9 @@ meta[name="theme-color"] { color: #000000; }
 /* ── Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan ── */
 [data-theme="dark"] .post,
 .post { background: #000000; border-bottom: 1px solid #1f1f1f; }
+
+/* ── Logo hech qaysi konteyner ichida qirqilmasin (bubble dumchasi ko'rinib tursin) ── */
+.splash-inner, .splash-logo-wrap, .splash-logo-glass,
+.auth-logo, .auth-logo-glass, .hdr-logo, .hdr-logo-glass,
+.sb-logo-row, .sb-logo-glass { overflow: visible !important; }
+.splash-svg, .auth-logo-glass img, .hdr-logo-glass img, .sb-logo-img { border-radius: 0 !important; }
