@@ -359,16 +359,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
     border-right: 1px solid var(--line);
     min-height: 100dvh;
   }
-
-  /* yopishqoq sarlavha (X dagi "For you" qatori o'rnida) */
-  #homeView .feed::before {
-    content: "Bosh sahifa";
-    display: block; position: sticky; top: 0; z-index: 5;
-    padding: 16px; font-size: 20px; font-weight: 800; color: var(--text);
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
-    -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--line);
-  }
 }
 
 /* ── Keng ekran (≥1260px): sidebar + markaz + o'ng ustun, butun guruh markazda ── */
@@ -425,3 +415,65 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 .rc-name { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rc-user { font-size: 14px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rc-foot { padding: 0 16px; font-size: 13px; line-height: 1.5; color: var(--text3); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Header YO'Q (mobil ham) + Post: X uslubi
+   [avatar] | ism @username · vaqt
+            | matn
+            | media (yumaloq, ingichka chiziq)
+            | izoh · yoqtirish · ko'rishlar · ulashish
+   ═══════════════════════════════════════════════════════════════════════ */
+:root { --hdr: 0px; }
+.app-hdr, .app-hdr.search-open { display: none !important; }
+#homeView.on, #followingView.on { padding-top: 0 !important; padding-bottom: 0 !important; }
+
+.post,
+[data-theme] .post {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 16px; overflow: visible;
+}
+.post > .avi { width: 40px; height: 40px; border: none; box-shadow: none; }
+.post > .avi:hover { border: none; box-shadow: none; }
+.post-main { flex: 1; min-width: 0; }
+
+.post-head { padding: 0; gap: 8px; display: flex; align-items: center; }
+.post-meta {
+  flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 4px;
+  white-space: nowrap; overflow: hidden;
+}
+.post-name {
+  font-size: 15px; font-weight: 700; letter-spacing: 0; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; flex-shrink: 1; min-width: 0;
+}
+.post-user, .post-dot, .post-time {
+  font-family: var(--font); font-size: 15px; margin: 0; color: var(--text3);
+}
+.post-user { overflow: hidden; text-overflow: ellipsis; min-width: 0; flex-shrink: 2; }
+.post-dot, .post-time { flex-shrink: 0; }
+
+.post-caption {
+  padding: 2px 0 0; margin: 0;
+  font-size: 15px; line-height: 1.4; color: var(--text);
+}
+.post-media,
+[data-theme] .post-media {
+  margin: 12px 0 0; border: 1px solid var(--line);
+  border-radius: 16px; overflow: hidden;
+}
+
+.post-actions {
+  display: flex; justify-content: space-between; align-items: center;
+  max-width: 425px; margin: 6px 0 0 -8px;
+}
+.act-btn,
+.act-views {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 8px; border: none; border-radius: 999px; background: none;
+  font-family: var(--font); font-size: 13px; color: var(--text3);
+  overflow: visible;
+}
+.act-btn svg, .act-views svg { width: 18px; height: 18px; }
+.act-btn span:empty, .act-views span:empty { display: none; }
+.act-btn:hover { background: none; color: var(--link); }
+.like-btn:hover { color: var(--red); }
+.act-btn.liked { color: var(--red); }

@@ -1,5 +1,5 @@
 import { sb, state, isAdmin, getMediaUrl, mapProfile } from './config.js';
-import { $, esc, renderMarkdown, defAvi }          from './utils.js';
+import { $, esc, renderMarkdown, defAvi, fmtCount }          from './utils.js';
 import { toast }                   from './toast.js';
 
 /* ── Duplicate load oldini olish ──────────────────────────────────────── */
@@ -46,7 +46,7 @@ export async function loadCmtModal(postId) {
 
     // Feed va post-stats da comment sonini yangilash
     const ccSpanFeed = document.getElementById(`cc-${postId}`);
-    if (ccSpanFeed) ccSpanFeed.textContent = `${cmts.length} izoh`;
+    if (ccSpanFeed) ccSpanFeed.textContent = fmtCount(cmts.length);
 
     // allPosts state ni sinxronlash
     const post = state.allPosts.find(p => p.id === postId);
@@ -150,7 +150,7 @@ export async function sendCmtModal() {
     const newCount = (state.allPosts.find(p => p.id === state.cmtPostId)?.commentCount || 0) + 1;
 
     const ccSpan = document.getElementById(`cc-${state.cmtPostId}`);
-    if (ccSpan) ccSpan.textContent = `${newCount} izoh`;
+    if (ccSpan) ccSpan.textContent = fmtCount(newCount);
 
     const rccSpan = document.querySelector(`.rcmt-${state.cmtPostId}`);
     if (rccSpan) rccSpan.textContent = `${newCount}`;

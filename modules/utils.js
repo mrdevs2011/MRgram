@@ -427,3 +427,12 @@ export function unlockScroll() {
     window.scrollTo(0, _scrollY);
   }
 }
+
+/** 1234 -> "1.2K", 0 -> "" (X uslubi) */
+export const fmtCount = n => {
+  n = Number(n) || 0;
+  if (!n) return '';
+  if (n >= 1e6) return (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, '') + 'M';
+  if (n >= 1e3) return (n / 1e3).toFixed(n >= 1e4 ? 0 : 1).replace(/\.0$/, '') + 'K';
+  return String(n);
+};

@@ -1,7 +1,7 @@
 import { sb, state, CAP_LIMIT, getMediaUrl, isAdmin, mapProfile, MEDIA_BUCKET } from './config.js';
 import { $, esc, renderMarkdown, fmt, fmtSz, defAvi,
          initVidWrap, showConfirm,
-         buildSkeletons, dlFile, openZoom, showHeartBurst } from './utils.js';
+         buildSkeletons, dlFile, openZoom, showHeartBurst, fmtCount } from './utils.js';
 import { toast }                            from './toast.js';
 import { follow, unfollow }                 from './auth.js';
 
@@ -52,8 +52,8 @@ async function _countView(postId) {
     const { error: viewErr } = await sb.rpc('increment_post_view', { p_post: postId });
     if (viewErr) throw viewErr;
     if (post) post.views = (post.views || 0) + 1;
-    const card = document.querySelector(`.post[data-id="${postId}"] .post-stats span`);
-    if (card && post) card.textContent = `${post.views} ko'rishlar`;
+    const card = document.querySelector(`.post[data-id="${postId}"] .pv-count`);
+    if (card && post) card.textContent = fmtCount(post.views);
   } catch (_) {
     _viewedThisSession.delete(postId); // xato bo'lsa keyinroq qayta urinib ko'rsin
   }
@@ -295,45 +295,50 @@ export async function renderFeedTo(feedEl, posts) {
     const isSub    = state.myFollowing.has(p.userId);
 
     html += `<div class="post" data-id="${p.id}">
-      <div class="post-head">
-        <div class="avi user-avi-btn" data-uid="${p.userId}"><img src="${u.avatar}" onerror="this.style.display='none'"></div>
-        <div class="post-meta user-avi-btn" data-uid="${p.userId}">
-          <div class="post-name">${esc(u.fullName||'Noma\'lum')}</div>
-          <div class="post-time">${fmt(p.createdAt)}</div>
-        </div>
+      <div class="avi user-avi-btn" data-uid="${p.userId}"><img src="${u.avatar}" onerror="this.style.display='none'"></div>
+      <div class="post-main">
+        <div class="post-head">
+          <div class="post-meta user-avi-btn" data-uid="${p.userId}">
+            <span class="post-name">${esc(u.fullName||'Noma\'lum')}</span>
+            ${u.username ? `<span class="post-user">@${esc(u.username)}</span>` : ''}
+            <span class="post-dot">·</span>
+            <span class="post-time">${fmt(p.createdAt)}</span>
+          </div>
         ${!isMine && !isSub ? `<button class="feed-sub-btn" data-uid="${p.userId}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>` : ''}
         ${canDel ? `<button class="del-btn" data-id="${p.id}">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/>
           </svg></button>` : ''}
-      </div>
-      ${buildMedia(p)}
-      ${buildCaption(p.text, p.id)}
-      <div class="post-stats">
-        <span>${p.views || 0} ko'rishlar</span>
-        <span id="lc-${p.id}">${p.likes || 0} yoqtirish</span>
-        <span id="cc-${p.id}">${cMap[p.id] || 0} izoh</span>
-      </div>
-      <div class="post-actions">
-        <button class="act-btn like-btn${liked?' liked':''}" data-id="${p.id}">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="${liked?'#f04060':'none'}" stroke="${liked?'#f04060':'currentColor'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-        </button>
-        <button class="act-btn cmt-open-btn" data-id="${p.id}">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        </div>
+        ${buildCaption(p.text, p.id)}
+        ${buildMedia(p)}
+        <div class="post-actions">
+          <button class="act-btn cmt-open-btn" data-id="${p.id}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           </svg>
-        </button>
-        <button class="act-btn share-btn"
-          data-id="${p.id}"
-          data-url="${p.mediaUrl ? esc(p.mediaUrl) : ''}"
-          data-private="${!p.isPublic ? '1' : '0'}">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <span id="cc-${p.id}">${fmtCount(cMap[p.id] || 0)}</span>
+          </button>
+          <button class="act-btn like-btn${liked?' liked':''}" data-id="${p.id}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="${liked?'#f04060':'none'}" stroke="${liked?'#f04060':'currentColor'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+            <span id="lc-${p.id}">${fmtCount(p.likes || 0)}</span>
+          </button>
+          <span class="act-views">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="11"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="14"/></svg>
+            <span class="pv-count">${fmtCount(p.views || 0)}</span>
+          </span>
+          <button class="act-btn share-btn"
+            data-id="${p.id}"
+            data-url="${p.mediaUrl ? esc(p.mediaUrl) : ''}"
+            data-private="${!p.isPublic ? '1' : '0'}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
           </svg>
-        </button>
+          </button>
+        </div>
       </div>
     </div>`;
   }
@@ -599,14 +604,14 @@ export async function doLike(postId, btn) {
     state._knownUnliked.add(postId);
     btn.classList.remove('liked');
     svg?.setAttribute('fill','none'); svg?.setAttribute('stroke','currentColor');
-    if (lc) lc.textContent = `${Math.max(0,cur-1)} yoqtirish`;
+    if (lc) lc.textContent = fmtCount(Math.max(0,cur-1));
     if (post) post.likes = Math.max(0, cur-1);
   } else {
     state.myLikedPosts.add(postId);
     state._knownUnliked.delete(postId);
     btn.classList.add('liked');
     svg?.setAttribute('fill','#f04060'); svg?.setAttribute('stroke','#f04060');
-    if (lc) lc.textContent = `${cur+1} yoqtirish`;
+    if (lc) lc.textContent = fmtCount(cur+1);
     if (post) post.likes = cur + 1;
     btn.classList.add('like-pop');
     setTimeout(() => btn.classList.remove('like-pop'), 400);
@@ -646,26 +651,20 @@ export function patchCounts(posts) {
   posts.forEach(p => {
     // Like count
     const lc = document.getElementById(`lc-${p.id}`);
-    if (lc) lc.textContent = `${p.likes || 0} yoqtirish`;
+    if (lc) lc.textContent = fmtCount(p.likes || 0);
 
     const rlc = document.querySelector(`.rlc-${p.id}`);
     if (rlc) rlc.textContent = `${p.likes || 0}`;
 
     // Comment count
     const cc = document.getElementById(`cc-${p.id}`);
-    if (cc) cc.textContent = `${p.commentCount || 0} izoh`;
+    if (cc) cc.textContent = fmtCount(p.commentCount || 0);
 
     const rcc = document.querySelector(`.rcmt-${p.id}`);
     if (rcc) rcc.textContent = `${p.commentCount || 0}`;
 
-    // Post stats block (views + likes)
-    const statsEl = document.querySelector(`.post[data-id="${p.id}"] .post-stats`);
-    if (statsEl) {
-      const spans = statsEl.querySelectorAll('span');
-      if (spans[0]) spans[0].textContent = `${p.views || 0} ko'rishlar`;
-      if (spans[1]) spans[1].textContent = `${p.likes || 0} yoqtirish`;
-      if (spans[2]) spans[2].textContent = `${p.commentCount || 0} izoh`;
-    }
+    const pv = document.querySelector(`.post[data-id="${p.id}"] .pv-count`);
+    if (pv) pv.textContent = fmtCount(p.views || 0);
   });
 }
 
