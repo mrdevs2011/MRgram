@@ -31,15 +31,7 @@
 
 /* ── CSS Variables — struktural, tema-neytral ── */
 :root {
-  --mono:        'SF Mono', 'DM Mono', ui-monospace, monospace;
   --nav:         56px;
-
-  /* iOS 27 Spring easings */
-
-  /* Transition shorthands */
-
-  /* Content safe zone */
-  --content-bottom: var(--nav);
   --content-left:   0px;
 }
 

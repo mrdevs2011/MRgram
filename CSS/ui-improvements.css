@@ -227,9 +227,6 @@
 /* Ghost button hover */
 
 /* Danger button glow on hover */
-.btn-danger:hover {
-  /* box-shadow → CSS/borderless.css'da 'none' bilan yengiladi */
-}
 
 /* ═══════════════════════════════════════════
    EMPTY STATES — Enhanced with CTA

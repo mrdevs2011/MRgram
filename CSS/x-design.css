@@ -11,43 +11,15 @@
 /* ── 1. Palitra ───────────────────────────────────────────────────────── */
 /* Aniq X (Twitter) ranglari. Dark = "Lights out", Light = standart oq. */
 :root,
-[data-theme="dark"] {
-  --bg:   var(--pal-black);  /* sahifa */
-  --bg2:  var(--pal-black);
-  --bg3:  var(--pal-gray-900);  /* karta / panel (Trends, Who to follow) */
-  --bg4:  var(--pal-gray-800);  /* qidiruv maydoni, hover */
-  --bg5:  var(--pal-gray-700);  /* ko'tarilgan hover */
+[data-theme="dark"] {  /* ko'tarilgan hover */
 
   --text:  var(--pal-gray-100);
   --text2: var(--pal-gray-500);
   --text3: var(--pal-gray-500);
-  --text4: #536471;
-
-  --blue:  var(--pal-blue); /* X ko'ki: Post, faol holat, toggle, badge */
-  --blue2: #1a8cd8; /* hover */
-  --blue3: var(--pal-blue);
-  --link:  var(--pal-blue);
-  --x-blue: var(--pal-blue); --x-blue-hover: #1a8cd8;
-  --x-like: #f91880; 
-  --x-inv-bg: #eff3f4; --x-inv-bg-hover: #d7dbdc; --x-inv-fg: var(--pal-ink); /* oq pill tugma (Next / Follow) */
-  --hover:        rgba(231, 233, 234, .03);
-  --hover-strong: rgba(231, 233, 234, .10);
-  --blue-glow:  rgba(29, 155, 240, .10);
-  --blue-glow2: rgba(29, 155, 240, .10);
 
   --line:  var(--pal-gray-700);
   --line2: var(--pal-gray-700);
   --line3: var(--pal-gray-700);
-  --glass-border:     var(--pal-gray-700);
-  --glass-border-top: var(--pal-gray-700);
-
-  --red:   #f4212e;
-  --green: #00ba7c;
-
-  --tg-blue: var(--pal-blue); 
-  --tg-text-muted: var(--pal-gray-500); --tg-primary-blue: var(--pal-blue); --tg-text-main: var(--pal-gray-100);
-
-  --font: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 html, body, #app { background: var(--bg); color: var(--text); }
@@ -302,7 +274,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
             | media (yumaloq, ingichka chiziq)
             | izoh · yoqtirish · ko'rishlar · ulashish
    ═══════════════════════════════════════════════════════════════════════ */
-:root { --hdr: 0px; }
 .app-hdr, .app-hdr.search-open { display: none !important; }
 #homeView.on, #followingView.on { padding-top: 0 !important; padding-bottom: 0 !important; }
 
@@ -651,8 +622,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
    Oyna/card orqa foni: ko'kish-kulrang emas, shunchaki sal xiralashadi.
    Bitta token (--overlay) — hamma card/sheet/dialog uchun umumiy.
    ═══════════════════════════════════════════════════════════════════════ */
-:root,
-[data-theme="dark"]  { --overlay: rgba(0, 0, 0, .45); }
 
 .overlay,
 [data-theme] .overlay,

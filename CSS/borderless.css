@@ -4,14 +4,6 @@
    ═══════════════════════════════════════════ */
 
 /* ── CSS token override: border va shadow tokenlarini o'chiramiz ── */
-:root,
-[data-theme="dark"]{
-  --specular-top:    none;
-
-  --liquid-shadow-sm: none;
-  --liquid-shadow-md: none;
-  --liquid-shadow-lg: none;
-}
 
 /* ── Dark: line tokenlar ham yo'qolsin ── */
 

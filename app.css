@@ -1,5 +1,126 @@
 /* MRspace app.css — build-css.mjs orqali avtomatik yig'ilgan. Qo'lda tahrirlamang! */
 
+/* ─── CSS/tokens.css ─── */
+/* ═══════════════════════════════════════════════════════════
+   MRspace — tokens.css  (DIET 4.2f: token e'lonlari yagona manba)
+   Faqat dark theme. Bu yerga faqat KASKADDA g'olib bo'lgan, boshqa
+   hech qanday (media/element) e'loni yo'q tokenlar ko'chirilgan —
+   shuning uchun tartibni o'zgartirish natijani o'zgartirmaydi.
+   Media / element (#chatThreadModal, .post) e'lonlari o'z fayllarida qoldi.
+   ═══════════════════════════════════════════════════════════ */
+
+:root {
+  /* CSS/theme.css */
+  --pal-black: #000000;
+  --pal-white: #ffffff;
+  --pal-gray-900: #16181c;
+  --pal-gray-800: #202327;
+  --pal-gray-700: #2f3336;
+  --pal-gray-500: #71767b;
+  --pal-gray-100: #e7e9ea;
+  --pal-ink: #0f1419;
+  --pal-red: #ef4444;
+  --pal-green: #22c55e;
+  --pal-blue: #1d9bf0;
+  --pal-white-06: rgba(255,255,255,.06);
+  --pal-white-08: rgba(255,255,255,.08);
+  --pal-white-12: rgba(255,255,255,.12);
+  --pal-white-14: rgba(255,255,255,.14);
+  --pal-white-25: rgba(255,255,255,.25);
+  --pal-white-42: rgba(255,255,255,.42);
+  --pal-black-55: rgba(0,0,0,.55);
+  --pal-black-35: rgba(0,0,0,.35);
+  --pal-black-25: rgba(0,0,0,.25);
+  --pal-mid-16: rgba(128,128,128,.16);
+  --pal-slate-20: rgba(101,119,134,.2);
+  --pal-legacy-2d2d33: #2d2d33;
+  --pal-legacy-35353b: #35353b;
+  --pal-legacy-3a3a3f: #3a3a3f;
+  --pal-legacy-3f3f44: #3f3f44;
+  --pal-legacy-46464b: #46464b;
+  --pal-legacy-464646: #464646;
+  --pal-legacy-4d4d52: #4d4d52;
+  --pal-legacy-525257: #525257;
+  --pal-legacy-26262c: #26262c;
+  --pal-legacy-171717: #171717;
+  --pal-legacy-2e2e2e: #2e2e2e;
+  --pal-legacy-909093: #909093;
+  --pal-legacy-b5b5b7: #b5b5b7;
+  --pal-legacy-9c9c9f: #9c9c9f;
+  /* CSS/borderless.css */
+  --specular-top: none;
+  --liquid-shadow-sm: none;
+  --liquid-shadow-md: none;
+  --liquid-shadow-lg: none;
+  /* style.css */
+  --mono: 'SF Mono', 'DM Mono', ui-monospace, monospace;
+  --content-bottom: var(--nav);
+  /* CSS/x-design.css */
+  --bg: var(--pal-black);
+  --bg2: var(--pal-black);
+  --bg3: var(--pal-gray-900);
+  --bg4: var(--pal-gray-800);
+  --bg5: var(--pal-gray-700);
+  --text4: #536471;
+  --blue: var(--pal-blue);
+  --blue2: #1a8cd8;
+  --blue3: var(--pal-blue);
+  --link: var(--pal-blue);
+  --x-blue: var(--pal-blue);
+  --x-blue-hover: #1a8cd8;
+  --x-like: #f91880;
+  --x-inv-bg: #eff3f4;
+  --x-inv-bg-hover: #d7dbdc;
+  --x-inv-fg: var(--pal-ink);
+  --hover: rgba(231, 233, 234, .03);
+  --hover-strong: rgba(231, 233, 234, .10);
+  --blue-glow: rgba(29, 155, 240, .10);
+  --blue-glow2: rgba(29, 155, 240, .10);
+  --glass-border: var(--pal-gray-700);
+  --glass-border-top: var(--pal-gray-700);
+  --red: #f4212e;
+  --green: #00ba7c;
+  --tg-blue: var(--pal-blue);
+  --tg-text-muted: var(--pal-gray-500);
+  --tg-primary-blue: var(--pal-blue);
+  --tg-text-main: var(--pal-gray-100);
+  --font: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --hdr: 0px;
+  --overlay: rgba(0, 0, 0, .45);
+}
+
+[data-theme="dark"] {
+  /* CSS/profile.css */
+  --pg-glass: var(--bg3);
+  --pg-glass-mid: var(--bg4);
+  --pg-glass-strong: var(--bg5);
+  --pg-border-top: #444449;
+  --pg-border-side: var(--pal-gray-800);
+  --pg-hdr-bg: var(--bg2);
+  /* CSS/theme.css */
+  --red-glow: var(--pal-gray-900);
+  --green-glow: var(--pal-gray-900);
+  --amber: #f0a855;
+  /* CSS/dark-theme-fix.css */
+  --glass: var(--bg3);
+  --glass-mid: var(--bg4);
+  --glass-heavy: var(--bg5);
+  /* CSS/admin.css */
+  --ag-glass: var(--bg3);
+  --ag-glass-mid: var(--bg4);
+  --ag-glass-strong: var(--bg5);
+  --ag-border-top: var(--pal-legacy-3f3f44);
+  --ag-border-side: var(--pal-gray-700);
+  --ag-border-bot: var(--pal-gray-900);
+  --ag-specular: none;
+  --ag-shadow: 0 8px 32px var(--pal-black), 0 32px 80px var(--pal-black), 0 0 0 0.5px var(--pal-gray-900);
+  --ag-shadow-hover: 0 12px 40px var(--pal-black), 0 40px 100px var(--pal-black), 0 0 0 0.5px var(--pal-gray-800);
+  --ag-modal-bg: var(--bg3);
+  --ag-row-bg: var(--bg2);
+  --ag-row-hover: var(--bg4);
+  --ag-overlay: var(--pal-black);
+}
+
 /* ─── CSS/splash.css ─── */
 /* ═══════════════════════
    SPLASH SCREEN — Minimal
@@ -2029,14 +2150,6 @@ body:has(.search-overlay.open) .app-hdr {
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* Profile variables */
-[data-theme="dark"] {
-  --pg-glass:        var(--bg3);
-  --pg-glass-mid:    var(--bg4);
-  --pg-glass-strong: var(--bg5);
-  --pg-border-top:   #444449;
-  --pg-border-side:  var(--pal-gray-800);
-  --pg-hdr-bg:       var(--bg2);
-}
 
 /* Profile header — flat (2026-08-30 tozalandi, halo/glow olib tashlandi) */
 .profile-hdr {
@@ -5952,57 +6065,8 @@ a.cfm-name--link:hover {
    ═══════════════════════════════════════════ */
 
 /* ── PALITRA (primitivlar) — yagona manba. Boshqa fayllarda qattiq hex o'rniga shular ishlatiladi. ── */
-:root {
-  --pal-black:    #000000;
-  --pal-white:    #ffffff;
-  --pal-gray-900: #16181c;   /* surface */
-  --pal-gray-800: #202327;   /* surface-2 / hover */
-  --pal-gray-700: #2f3336;   /* line / elevated */
-
-  /* ── 2-to'lqin: takrorlanadigan ranglar (qiymatlar aynan asl) ── */
-  --pal-gray-500:         #71767b;
-  --pal-gray-100:         #e7e9ea;
-  --pal-ink:              #0f1419;
-  --pal-red:              #ef4444;
-  --pal-green:            #22c55e;
-  --pal-blue:             #1d9bf0;
-  --pal-white-06:         rgba(255,255,255,.06);
-  --pal-white-08:         rgba(255,255,255,.08);
-  --pal-white-12:         rgba(255,255,255,.12);
-  --pal-white-14:         rgba(255,255,255,.14);
-  --pal-white-25:         rgba(255,255,255,.25);
-  --pal-white-42:         rgba(255,255,255,.42);
-  --pal-black-55:         rgba(0,0,0,.55);
-  --pal-black-35:         rgba(0,0,0,.35);
-  --pal-black-25:         rgba(0,0,0,.25);
-  --pal-mid-16:           rgba(128,128,128,.16);
-  --pal-slate-20:         rgba(101,119,134,.2);
-  --pal-legacy-2d2d33:    #2d2d33;
-  --pal-legacy-35353b:    #35353b;
-  --pal-legacy-3a3a3f:    #3a3a3f;
-  --pal-legacy-3f3f44:    #3f3f44;
-  --pal-legacy-46464b:    #46464b;
-  --pal-legacy-464646:    #464646;
-  --pal-legacy-4d4d52:    #4d4d52;
-  --pal-legacy-525257:    #525257;
-  --pal-legacy-26262c:    #26262c;
-  --pal-legacy-171717:    #171717;
-  --pal-legacy-2e2e2e:    #2e2e2e;
-  --pal-legacy-909093:    #909093;
-  --pal-legacy-b5b5b7:    #b5b5b7;
-  --pal-legacy-9c9c9f:    #9c9c9f;
-}
 
 /* ── DARK theme — Telegram Dark Palette ── */
-[data-theme="dark"] {
-  --red-glow:     var(--pal-gray-900);
-  --green-glow:   var(--pal-gray-900);
-  --amber:        #f0a855;  /* active icon color on filled/dark surfaces */
-
-  /* glass/specular/shadow tokenlari → CSS/dark-theme-fix.css */
-
-  /* iOS 27 Extended — refraction & tint (glass o'chirildi) */
-}
 
 /* [data-theme="dark"] body/.app/.bot-nav/.sheet/.modal-content → hammasi
    CSS/dark-theme-fix.css'da (o'sha fayl keyinroq yuklanadi) xuddi shu
@@ -6404,9 +6468,6 @@ svg { color: inherit; }
 /* Ghost button hover */
 
 /* Danger button glow on hover */
-.btn-danger:hover {
-  /* box-shadow → CSS/borderless.css'da 'none' bilan yengiladi */
-}
 
 /* ═══════════════════════════════════════════
    EMPTY STATES — Enhanced with CTA
@@ -7424,13 +7485,6 @@ svg { color: inherit; }
    theme.css change without even needing !important. Removed.
    Only glass/shadow tokens (this file's actual job) stay below.
    ══════════════════════════════════════════ */
-[data-theme="dark"] {
-  /* ── Glass o'chirildi — solid panel ranglar ── */
-  --glass:             var(--bg3);
-  --glass-mid:         var(--bg4);
-  --glass-heavy:       var(--bg5);
-
-}
 
 /* ══════════════════════════════════════════
    2. DARK — Body wallopaper
@@ -7933,14 +7987,6 @@ svg { color: inherit; }
    ═══════════════════════════════════════════ */
 
 /* ── CSS token override: border va shadow tokenlarini o'chiramiz ── */
-:root,
-[data-theme="dark"]{
-  --specular-top:    none;
-
-  --liquid-shadow-sm: none;
-  --liquid-shadow-md: none;
-  --liquid-shadow-lg: none;
-}
 
 /* ── Dark: line tokenlar ham yo'qolsin ── */
 
@@ -9466,15 +9512,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
 
 /* ── CSS Variables — struktural, tema-neytral ── */
 :root {
-  --mono:        'SF Mono', 'DM Mono', ui-monospace, monospace;
   --nav:         56px;
-
-  /* iOS 27 Spring easings */
-
-  /* Transition shorthands */
-
-  /* Content safe zone */
-  --content-bottom: var(--nav);
   --content-left:   0px;
 }
 
@@ -10772,21 +10810,6 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* ── Glass variables ── */
-[data-theme="dark"] {
-  --ag-glass:          var(--bg3);
-  --ag-glass-mid:      var(--bg4);
-  --ag-glass-strong:   var(--bg5);
-  --ag-border-top:     var(--pal-legacy-3f3f44);
-  --ag-border-side:    var(--pal-gray-700);
-  --ag-border-bot:     var(--pal-gray-900);
-  --ag-specular:       none;
-  --ag-shadow:         0 8px 32px var(--pal-black), 0 32px 80px var(--pal-black), 0 0 0 0.5px var(--pal-gray-900);
-  --ag-shadow-hover:   0 12px 40px var(--pal-black), 0 40px 100px var(--pal-black), 0 0 0 0.5px var(--pal-gray-800);
-  --ag-modal-bg:       var(--bg3);
-  --ag-row-bg:         var(--bg2);
-  --ag-row-hover:      var(--bg4);
-  --ag-overlay:        var(--pal-black);
-}
 
 /* ── Admin row — solid card ── */
 .ua-row {
@@ -11123,43 +11146,15 @@ meta[name="theme-color"] { color: var(--pal-black); }
 /* ── 1. Palitra ───────────────────────────────────────────────────────── */
 /* Aniq X (Twitter) ranglari. Dark = "Lights out", Light = standart oq. */
 :root,
-[data-theme="dark"] {
-  --bg:   var(--pal-black);  /* sahifa */
-  --bg2:  var(--pal-black);
-  --bg3:  var(--pal-gray-900);  /* karta / panel (Trends, Who to follow) */
-  --bg4:  var(--pal-gray-800);  /* qidiruv maydoni, hover */
-  --bg5:  var(--pal-gray-700);  /* ko'tarilgan hover */
+[data-theme="dark"] {  /* ko'tarilgan hover */
 
   --text:  var(--pal-gray-100);
   --text2: var(--pal-gray-500);
   --text3: var(--pal-gray-500);
-  --text4: #536471;
-
-  --blue:  var(--pal-blue); /* X ko'ki: Post, faol holat, toggle, badge */
-  --blue2: #1a8cd8; /* hover */
-  --blue3: var(--pal-blue);
-  --link:  var(--pal-blue);
-  --x-blue: var(--pal-blue); --x-blue-hover: #1a8cd8;
-  --x-like: #f91880; 
-  --x-inv-bg: #eff3f4; --x-inv-bg-hover: #d7dbdc; --x-inv-fg: var(--pal-ink); /* oq pill tugma (Next / Follow) */
-  --hover:        rgba(231, 233, 234, .03);
-  --hover-strong: rgba(231, 233, 234, .10);
-  --blue-glow:  rgba(29, 155, 240, .10);
-  --blue-glow2: rgba(29, 155, 240, .10);
 
   --line:  var(--pal-gray-700);
   --line2: var(--pal-gray-700);
   --line3: var(--pal-gray-700);
-  --glass-border:     var(--pal-gray-700);
-  --glass-border-top: var(--pal-gray-700);
-
-  --red:   #f4212e;
-  --green: #00ba7c;
-
-  --tg-blue: var(--pal-blue); 
-  --tg-text-muted: var(--pal-gray-500); --tg-primary-blue: var(--pal-blue); --tg-text-main: var(--pal-gray-100);
-
-  --font: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 html, body, #app { background: var(--bg); color: var(--text); }
@@ -11414,7 +11409,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
             | media (yumaloq, ingichka chiziq)
             | izoh · yoqtirish · ko'rishlar · ulashish
    ═══════════════════════════════════════════════════════════════════════ */
-:root { --hdr: 0px; }
 .app-hdr, .app-hdr.search-open { display: none !important; }
 #homeView.on, #followingView.on { padding-top: 0 !important; padding-bottom: 0 !important; }
 
@@ -11763,8 +11757,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
    Oyna/card orqa foni: ko'kish-kulrang emas, shunchaki sal xiralashadi.
    Bitta token (--overlay) — hamma card/sheet/dialog uchun umumiy.
    ═══════════════════════════════════════════════════════════════════════ */
-:root,
-[data-theme="dark"]  { --overlay: rgba(0, 0, 0, .45); }
 
 .overlay,
 [data-theme] .overlay,

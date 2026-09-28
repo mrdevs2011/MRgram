@@ -15,13 +15,6 @@
    theme.css change without even needing !important. Removed.
    Only glass/shadow tokens (this file's actual job) stay below.
    ══════════════════════════════════════════ */
-[data-theme="dark"] {
-  /* ── Glass o'chirildi — solid panel ranglar ── */
-  --glass:             var(--bg3);
-  --glass-mid:         var(--bg4);
-  --glass-heavy:       var(--bg5);
-
-}
 
 /* ══════════════════════════════════════════
    2. DARK — Body wallopaper

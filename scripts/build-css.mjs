@@ -28,6 +28,9 @@ while ((m = src.match(IMPORT_RE))) {
 const parts = [];
 parts.push('/* MRspace app.css — build-css.mjs orqali avtomatik yig\'ilgan. Qo\'lda tahrirlamang! */');
 
+// 1.5) DIET 4.2f: tokenlar yagona manba — eng birinchi
+parts.push(`/* ─── CSS/tokens.css ─── */\n${readFileSync(join(ROOT, "CSS/tokens.css"), "utf8").trim()}`);
+
 // 2) @import qilingan fayllar (ulardagi ichki @import larni ham ochamiz)
 //    no-animations.css BUTUNLAYIN tashlab yuboriladi (DIET F4.4):
 //    o'rniga quyidagi istisno qatori — manba fayllardagi transition/animation

@@ -490,21 +490,6 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* ── Glass variables ── */
-[data-theme="dark"] {
-  --ag-glass:          var(--bg3);
-  --ag-glass-mid:      var(--bg4);
-  --ag-glass-strong:   var(--bg5);
-  --ag-border-top:     var(--pal-legacy-3f3f44);
-  --ag-border-side:    var(--pal-gray-700);
-  --ag-border-bot:     var(--pal-gray-900);
-  --ag-specular:       none;
-  --ag-shadow:         0 8px 32px var(--pal-black), 0 32px 80px var(--pal-black), 0 0 0 0.5px var(--pal-gray-900);
-  --ag-shadow-hover:   0 12px 40px var(--pal-black), 0 40px 100px var(--pal-black), 0 0 0 0.5px var(--pal-gray-800);
-  --ag-modal-bg:       var(--bg3);
-  --ag-row-bg:         var(--bg2);
-  --ag-row-hover:      var(--bg4);
-  --ag-overlay:        var(--pal-black);
-}
 
 /* ── Admin row — solid card ── */
 .ua-row {

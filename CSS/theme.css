@@ -4,57 +4,8 @@
    ═══════════════════════════════════════════ */
 
 /* ── PALITRA (primitivlar) — yagona manba. Boshqa fayllarda qattiq hex o'rniga shular ishlatiladi. ── */
-:root {
-  --pal-black:    #000000;
-  --pal-white:    #ffffff;
-  --pal-gray-900: #16181c;   /* surface */
-  --pal-gray-800: #202327;   /* surface-2 / hover */
-  --pal-gray-700: #2f3336;   /* line / elevated */
-
-  /* ── 2-to'lqin: takrorlanadigan ranglar (qiymatlar aynan asl) ── */
-  --pal-gray-500:         #71767b;
-  --pal-gray-100:         #e7e9ea;
-  --pal-ink:              #0f1419;
-  --pal-red:              #ef4444;
-  --pal-green:            #22c55e;
-  --pal-blue:             #1d9bf0;
-  --pal-white-06:         rgba(255,255,255,.06);
-  --pal-white-08:         rgba(255,255,255,.08);
-  --pal-white-12:         rgba(255,255,255,.12);
-  --pal-white-14:         rgba(255,255,255,.14);
-  --pal-white-25:         rgba(255,255,255,.25);
-  --pal-white-42:         rgba(255,255,255,.42);
-  --pal-black-55:         rgba(0,0,0,.55);
-  --pal-black-35:         rgba(0,0,0,.35);
-  --pal-black-25:         rgba(0,0,0,.25);
-  --pal-mid-16:           rgba(128,128,128,.16);
-  --pal-slate-20:         rgba(101,119,134,.2);
-  --pal-legacy-2d2d33:    #2d2d33;
-  --pal-legacy-35353b:    #35353b;
-  --pal-legacy-3a3a3f:    #3a3a3f;
-  --pal-legacy-3f3f44:    #3f3f44;
-  --pal-legacy-46464b:    #46464b;
-  --pal-legacy-464646:    #464646;
-  --pal-legacy-4d4d52:    #4d4d52;
-  --pal-legacy-525257:    #525257;
-  --pal-legacy-26262c:    #26262c;
-  --pal-legacy-171717:    #171717;
-  --pal-legacy-2e2e2e:    #2e2e2e;
-  --pal-legacy-909093:    #909093;
-  --pal-legacy-b5b5b7:    #b5b5b7;
-  --pal-legacy-9c9c9f:    #9c9c9f;
-}
 
 /* ── DARK theme — Telegram Dark Palette ── */
-[data-theme="dark"] {
-  --red-glow:     var(--pal-gray-900);
-  --green-glow:   var(--pal-gray-900);
-  --amber:        #f0a855;  /* active icon color on filled/dark surfaces */
-
-  /* glass/specular/shadow tokenlari → CSS/dark-theme-fix.css */
-
-  /* iOS 27 Extended — refraction & tint (glass o'chirildi) */
-}
 
 /* [data-theme="dark"] body/.app/.bot-nav/.sheet/.modal-content → hammasi
    CSS/dark-theme-fix.css'da (o'sha fayl keyinroq yuklanadi) xuddi shu

@@ -601,14 +601,6 @@
    ═══════════════════════════════════════════════════════════════════════ */
 
 /* Profile variables */
-[data-theme="dark"] {
-  --pg-glass:        var(--bg3);
-  --pg-glass-mid:    var(--bg4);
-  --pg-glass-strong: var(--bg5);
-  --pg-border-top:   #444449;
-  --pg-border-side:  var(--pal-gray-800);
-  --pg-hdr-bg:       var(--bg2);
-}
 
 /* Profile header — flat (2026-08-30 tozalandi, halo/glow olib tashlandi) */
 .profile-hdr {
