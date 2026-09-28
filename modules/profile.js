@@ -354,7 +354,7 @@ export async function renderUserProfileModal(uid) {
   const totalLikes     = userPublicPosts.reduce((s,p) => s + (p.likes||0), 0);
 
   const gridHTML = userPublicPosts.length === 0
-    ? '<div class="up-grid-empty"><div class="up-grid-empty-title">Ommaviy postlar yo\'q</div><div class="up-grid-empty-sub">Bu foydalanuvchi hali hech narsa joylamagan</div></div>'q</div>'
+    ? '<div class="up-grid-empty"><div class="up-grid-empty-title">Ommaviy postlar yo\'q</div><div class="up-grid-empty-sub">Bu foydalanuvchi hali hech narsa joylamagan</div></div>'
     : userPublicPosts.map(p => {
         let c = '';
         if (p.mediaUrl && p.mediaType?.startsWith('image'))
