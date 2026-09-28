@@ -83,17 +83,8 @@ export function initNavigation() {
     });
   }
 
-  // Qidiruv toggle (desktop sidebar)
-  const sbSearchToggle = $('sbSearchToggle');
-  if (sbSearchToggle) {
-    sbSearchToggle.addEventListener('click', () => {
-      const searchOverlay = $('searchOverlay');
-      if (searchOverlay) {
-        searchOverlay.classList.add('open');
-        setTimeout(() => $('searchInput')?.focus(), 60);
-      }
-    });
-  }
+  // Qidiruv toggle — router.js/_initSearchHandlers boshqaradi (bu yerda ikkinchi handler bo'lsa,
+  // bittasi ochib, ikkinchisi darhol yopib qo'yardi).
 
   // Mute button (desktop sidebar)
   const sbMuteBtn = $('sbMuteBtn');
