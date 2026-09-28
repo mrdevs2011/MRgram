@@ -1,3 +1,4 @@
+// test 5: diff uchun izoh
 /**
  * MRdatabase — Client-side Router
  * Single Page Application router
