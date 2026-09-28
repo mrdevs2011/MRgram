@@ -73,7 +73,7 @@ self.addEventListener('notificationclick', (event) => {
 /* ── Cache versiyasi ── */
 // Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
 // bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 'v74';
+const CACHE_VERSION  = 'v75';
 const STATIC_CACHE   = `mrgram-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
 
@@ -139,9 +139,9 @@ const PRECACHE_URLS = [
   '/modules/view-users.js',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
-  '/svg/MRgram.svg',
-  '/svg/favicon.svg',
-  '/svg/splash.svg',
+  '/svg/MRgram.png',
+  '/svg/favicon.png',
+  '/svg/splash.png',
 ];
 
 // Qaysi so'rovlarga tegmaymiz: jonli backend (Supabase), tashqi CDN va /api/ —
