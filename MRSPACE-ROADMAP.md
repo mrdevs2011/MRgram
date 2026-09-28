@@ -56,12 +56,12 @@
 | 0 | Xavfsizlik to'ri | past | 1–2 soat | — | ⚠️ qisman (tag va remote tayyor; preview/smoke — MR ishi) |
 | 1 | Axlat va o'lik kod | past | 2–3 soat | 0 | ✅ deyarli tayyor (`09bce2c`) |
 | 2 | Admin dieta + parol reset | o'rta | 1 kun | 0, 1 | ✅ kod tayyor (branch `diet/02-admin`, Preview sinovi + 1 hafta kuzatuv → `patch-diet-02-admin.sql` kutilmoqda) |
-| 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.4 views ✅, 3.5 cover ✅ (qisman); qolgani ❌ |
+| 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.2, 3.3, 3.4 ✅, 3.5 deyarli ✅; 3.1 Explore→filtr, 3.6 ❌ |
 | 4 | CSS konsolidatsiya | o'rta–yuqori (vizual) | 2–3 kun | 3 (oldin nima qolishi aniq bo'lsin) | 🔶 4.4/4.5 ✅ (bitta `app.css`); 23 fayl/~16.7k qator, 351 `!important` |
-| 5 | Realtime va presence | o'rta | 1 kun | 3 | 🔶 5.1/5.2 ✅; 5.3 kanallarni birlashtirish ❌ |
-| 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya + network-first ✅; yangilanish toast'i, `Ts` adapteri ❌ |
+| 5 | Realtime va presence | o'rta | 1 kun | 3 | 🔶 5.1/5.2 ✅; 5.3 deyarli ✅ (doimiy kanallar ~8 → 5, sinov MR) |
+| 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya, network-first, yangilanish toast'i ✅; `Ts` adapteri, vendored supabase ❌ |
 | 7 | Family-grade mustahkamlash | o'rta | 1–2 kun | 2 | 🔶 7.1 ✅, 7.2 limit ✅; 7.7 ❌, 7.8 ✅ |
-| 8 | Hujjat va smoke test | past | 0.5 kun | hammasi | 🔶 qisman (roadmap+AUDIT yozildi; README/SMOKE/migrations qoldi) |
+| 8 | Hujjat va smoke test | past | 0.5 kun | hammasi | ✅ README, SMOKE, archive, migrations (000_schema jonli bazadan qayta yig'ilmagan; Playwright ixtiyoriy) |
 
 Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-biriga yaqin (parol reset), ular parallel ketishi mumkin.
 
