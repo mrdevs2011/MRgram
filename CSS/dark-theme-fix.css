@@ -212,8 +212,6 @@
    ══════════════════════════════════════════ */
 [data-theme="dark"] #authWrap {
   background: #000000;
-  background-image:
-    #16181c;
 }
 
 [data-theme="dark"] .auth-card {

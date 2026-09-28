@@ -866,3 +866,56 @@ nav.bot-nav #createBtn.nav-center-btn *,
 /* soyasiz qolgan ochiladigan kartalar (menyu/typeahead/emoji) — chiziq bilan ajraladi */
 [data-theme] :is(.search-suggestions, .emoji-picker, .chat-emoji-quickpick, #chatContextMenu,
   .settings-more-menu, .sb-acc-menu, .chats-x-menu) { border: 1px solid #2f3336; }
+
+
+/* DIET auth-form fix — login/register maydon va tugma (kesh/kaskaddan mustaqil) */
+#authWrap .field,
+#authWrap input.field,
+#authWrap input:not([type="checkbox"]):not([type="radio"]) {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: #202327 !important;
+  border: 1px solid #2f3336 !important;
+  border-radius: 12px !important;
+  color: #e7e9ea !important;
+  padding: 13px 16px !important;
+  margin-bottom: 10px !important;
+  font-size: 15px !important;
+  font-family: var(--font), system-ui, sans-serif !important;
+  outline: none !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+#authWrap .field::placeholder,
+#authWrap input::placeholder {
+  color: #71767b !important;
+}
+#authWrap .field:focus,
+#authWrap input.field:focus {
+  border-color: #1d9bf0 !important;
+  background: #202327 !important;
+}
+#authWrap .btn-primary,
+#authWrap #authBtn {
+  display: block;
+  width: 100% !important;
+  box-sizing: border-box;
+  padding: 14px 20px !important;
+  margin-top: 8px !important;
+  background: #eff3f4 !important;
+  color: #0f1419 !important;
+  border: none !important;
+  border-radius: 999px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  font-family: var(--font), system-ui, sans-serif !important;
+  cursor: pointer !important;
+  text-align: center !important;
+  -webkit-appearance: none;
+  appearance: none;
+}
+#authWrap .btn-primary:hover,
+#authWrap #authBtn:hover {
+  background: #d7dbdc !important;
+}
