@@ -549,16 +549,12 @@ async function _renderDetailBody() {
     const blockedAt  = u.blockedAt?.toDate  ? u.blockedAt.toDate().toLocaleString('uz-UZ')  : '';
     const lastSeen   = u.lastSeenAt?.toDate ? u.lastSeenAt.toDate().toLocaleString('uz-UZ') : '';
     const lastLogin  = u.lastLoginAt?.toDate? u.lastLoginAt.toDate().toLocaleString('uz-UZ'): '';
-    const followers  = Array.isArray(u.followers) ? u.followers.length : 0;
-    const following  = Array.isArray(u.following) ? u.following.length : 0;
     const devices    = Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0;
     body.innerHTML =
       row('Holat', _statusBadge(u)) +
       row('Elektron pochta', u.email ? _esc(u.email) : '') +
       row('Ruxsat berilgan', approvedAt) +
       row('Bloklangan', blockedAt) +
-      row('Obunachilar', String(followers)) +
-      row('Obunalar', String(following)) +
       row('Qurilmalar (push)', String(devices)) +
       row('Oxirgi faollik', lastSeen) +
       row('Oxirgi login', lastLogin) +
@@ -856,8 +852,6 @@ function _render(wrap, users) {
       ? u.blockedUntil.toDate().toLocaleString('uz-UZ') : '';
     const approvedAt = u.approvedAt?.toDate
       ? u.approvedAt.toDate().toLocaleString('uz-UZ') : '';
-    const followers  = Array.isArray(u.followers) ? u.followers.length : 0;
-    const following  = Array.isArray(u.following) ? u.following.length : 0;
     const devices    = Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0;
     const lastSeen   = u.lastSeenAt?.toDate
       ? u.lastSeenAt.toDate().toLocaleString('uz-UZ') : '';
@@ -890,7 +884,7 @@ function _render(wrap, users) {
         ${approvedAt ? `<div class="ua-date">Ruxsat: ${approvedAt}</div>` : ''}
         ${blockedAt ? `<div class="ua-date ua-date--blocked">Bloklangan: ${blockedAt}</div>` : ''}
         ${blockedUntil ? `<div class="ua-date ua-date--blocked">Blok tugashi: ${blockedUntil}</div>` : ''}
-        <div class="ua-date">${followers} obunachi · ${following} obuna · ${devices} qurilma</div>
+        <div class="ua-date">${devices} qurilma</div>
         ${_statsLoaded ? `<div class="ua-date">${s.posts||0} post (${s.publicPosts||0} ochiq) · ${s.views||0} ko'rish · ${s.likes||0} like</div>` : ''}
         ${_statsLoaded ? `<div class="ua-date">${s.chats||0} suhbat${lastChatAt ? ' · oxirgi yozishma: ' + lastChatAt : ''}</div>` : ''}
         ${lastPostAt ? `<div class="ua-date">Oxirgi post: ${lastPostAt}</div>` : ''}

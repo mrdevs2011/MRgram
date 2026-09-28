@@ -2,24 +2,11 @@ import { sb, state, getMediaUrl, uploadViaController, mapProfile } from './confi
 import { $, esc, fmt, fmtSz, defAvi,
          initVidWrap, openZoom }         from './utils.js';
 import { toast }                         from './toast.js';
-import { follow, unfollow }              from './auth.js';
 
-/** Obunachilar / obunalar soni (follows jadvalidan) */
-async function _followCounts(uid) {
-  const [a, b] = await Promise.all([
-    sb.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', uid),
-    sb.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', uid),
-  ]);
-  return { followersCount: a.count || 0, followingCount: b.count || 0 };
-}
-
-/** profiles qatori + obuna sonlari (eski users/{uid} hujjatiga o'xshash) */
+/** profiles qatori (eski users/{uid} hujjatiga o'xshash) */
 async function _loadProfile(uid) {
-  const [{ data }, counts] = await Promise.all([
-    sb.from('profiles').select('*').eq('id', uid).maybeSingle(),
-    _followCounts(uid),
-  ]);
-  return { ...(mapProfile(data) || {}), ...counts };
+  const { data } = await sb.from('profiles').select('*').eq('id', uid).maybeSingle();
+  return mapProfile(data) || {};
 }
 import { cacheProfile, getCachedProfile } from './local-cache.js';
 
@@ -83,8 +70,6 @@ async function _paintProfile(ud) {
   const myP = state.allPosts.filter(p => p.userId === state.me.uid);
   $('statPosts').textContent     = myP.length;
   $('statLikes').textContent     = myP.reduce((s,p) => s+(p.likes||0), 0);
-  $('statFollowers').textContent = ud.followersCount ?? 0;
-  $('statFollowing').textContent = ud.followingCount ?? 0;
 
   // Avatar click — zoom + quick edit shortcut
   $('profileAvi').onclick = () => {
@@ -294,9 +279,6 @@ export async function renderUserProfileModal(uid) {
   }));
 
   const totalLikes     = userPublicPosts.reduce((s,p) => s + (p.likes||0), 0);
-  const followersCount = ud.followersCount ?? 0;
-  const followingCount = ud.followingCount ?? 0;
-  const isF            = state.myFollowing.has(uid);
 
   const gridHTML = userPublicPosts.length === 0
     ? '<div class="grid-col-span-full p-32px tac c-text3-theme fs-13px">Ommaviy postlar yo\'q</div>'
@@ -335,10 +317,7 @@ export async function renderUserProfileModal(uid) {
       <div class="up-stats">
         <div class="up-stat"><div class="up-stat-val">${userPublicPosts.length}</div><div class="up-stat-lbl">postlar</div></div>
         <div class="up-stat"><div class="up-stat-val">${totalLikes}</div><div class="up-stat-lbl">yoqtirishlar</div></div>
-        <div class="up-stat"><div class="up-stat-val">${followersCount}</div><div class="up-stat-lbl">obunachi</div></div>
-        <div class="up-stat"><div class="up-stat-val">${followingCount}</div><div class="up-stat-lbl">obunalar</div></div>
       </div>
-      <button class="up-follow-btn ${isF?'is-following':'not-following'}" id="upFollowBtn" data-uid="${uid}"><svg class="follow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
       <div class="up-posts-tab">
         <span class="up-posts-tab-item">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
@@ -347,56 +326,6 @@ export async function renderUserProfileModal(uid) {
       </div>
       <div class="up-grid" id="upGrid">${gridHTML}</div>
     </div>`;
-
-  const followBtn = $('upFollowBtn');
-  if (followBtn) {
-    followBtn.onclick = async () => {
-      const currently = state.myFollowing.has(uid);
-      if (currently) {
-        state.myFollowing.delete(uid);
-        followBtn.className   = 'up-follow-btn not-following';
-        unfollow(uid, true).catch(() => {});
-        // Feeddagi o'sha userning postlariga + button qaytarish
-        const feedEl = document.getElementById('feed');
-        if (feedEl) {
-          const svgPlus = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`;
-          feedEl.querySelectorAll('.post').forEach(postEl => {
-            const postHead = postEl.querySelector('.post-meta[data-uid="' + uid + '"]');
-            if (!postHead) return;
-            if (postEl.querySelector('.feed-sub-btn[data-uid="' + uid + '"]')) return;
-            const btn = document.createElement('button');
-            btn.className = 'feed-sub-btn';
-            btn.dataset.uid = uid;
-            btn.innerHTML = svgPlus;
-            postHead.closest('.post-head').appendChild(btn);
-            // click listener
-            btn.addEventListener('click', async e => {
-              e.stopPropagation();
-              if (state.myFollowing.has(uid)) return;
-              state.myFollowing.add(uid);
-              const { follow: followFn } = await import('./auth.js');
-              followFn(uid, true).catch(() => {});
-              feedEl.querySelectorAll('.feed-sub-btn[data-uid="' + uid + '"]').forEach(b => b.remove());
-            });
-          });
-        }
-      } else {
-        state.myFollowing.add(uid);
-        followBtn.className   = 'up-follow-btn is-following';
-        follow(uid, true).catch(() => {});
-        // Feeddagi + buttonlarni o'chirish
-        const feedEl = document.getElementById('feed');
-        if (feedEl) {
-          feedEl.querySelectorAll('.feed-sub-btn[data-uid="' + uid + '"]').forEach(b => b.remove());
-        }
-      }
-      const followersSpan = $('upBody').querySelector('.up-stat:nth-child(3) .up-stat-val');
-      if (followersSpan) {
-        const current = parseInt(followersSpan.textContent) || 0;
-        followersSpan.textContent = currently ? current - 1 : current + 1;
-      }
-    };
-  }
 
   // Avatar rasmini kattalashtirish (boshqa user profili)
   const upAviEl = document.getElementById('upAviImg');
