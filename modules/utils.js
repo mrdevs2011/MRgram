@@ -111,21 +111,32 @@ export const fmtTime = ts => {
 
 export const fmtSz  = b  => b > 1048576 ? (b/1048576).toFixed(1)+' MB' : (b/1024).toFixed(0)+' KB';
 
-/* ── Onlayn holat / oxirgi faollik ────────────────────────────────────
- * Presence uchun alohida "online" maydon ishlatilmaydi — buning o'rniga
- * `lastSeenAt` (heartbeat orqali har ~25s da yangilanadi) asos qilib
- * olinadi. Agar oxirgi yangilanishdan beri ONLINE_THRESHOLD_MS dan kam
- * vaqt o'tgan bo'lsa — foydalanuvchi "onlayn" hisoblanadi.
+/* ── Onlayn holat / oxirgi faollik — DIET F5.1 ────────────────────────
+ * Eski: presence har 25s da profiles.last_seen ga yoziladigan heartbeat
+ * orqali hisoblanardi. Yangi: realtime Presence kanali onlayn uid'lar
+ * to'plamini window._mrOnlineSet da ushlab turadi (DB ga umuman yozilmaydi).
+ * isOnline(uid, lastSeenAt): avval real-time to'plam, keyin eski
+ * last_seen fallback (masalan beacon xabari bilan chiqish vaqti).
  */
-export const ONLINE_THRESHOLD_MS = 70 * 1000; // heartbeat ~25s, shuning uchun bufer sifatida 70s
+export const ONLINE_THRESHOLD_MS = 70 * 1000; // fallback uchun (beacon/analog)
 
-export function isOnline(lastSeenAt) {
+export function isOnline(uidOrLastSeen, maybeLastSeen) {
+  // Orqaga moslik: eski chaqiruvlar isOnline(lastSeenAt) ko'rinishida edi —
+  // UUID o'xshamasa uni lastSeen deb tushunamiz.
+  let uid = null, lastSeenAt = null;
+  if (typeof uidOrLastSeen === 'string' && /^[0-9a-f-]{36}$/i.test(uidOrLastSeen)) {
+    uid = uidOrLastSeen; lastSeenAt = maybeLastSeen;
+  } else {
+    lastSeenAt = uidOrLastSeen;
+  }
+  if (uid && window._mrOnlineSet && window._mrOnlineSet.has(uid)) return true;
   if (!lastSeenAt) return false;
   const d = lastSeenAt.toDate ? lastSeenAt.toDate() : new Date(lastSeenAt);
   return (Date.now() - d.getTime()) < ONLINE_THRESHOLD_MS;
 }
 
-export function formatLastSeen(lastSeenAt) {
+export function formatLastSeen(lastSeenAt, uid) {
+  if (uid && isOnline(uid)) return 'onlayn';
   if (!lastSeenAt) return "faollik ma'lumoti yo'q";
   if (isOnline(lastSeenAt)) return 'onlayn';
 

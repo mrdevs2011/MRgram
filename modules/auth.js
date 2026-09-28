@@ -1,4 +1,4 @@
-import { sb, state, uploadViaController, mapProfile, mapPost, purgeUserMedia } from './config.js';
+import { sb, state, uploadViaController, mapProfile, mapPost, purgeUserMedia, SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 import { $, esc, defAvi, uToEmail, lockScroll, unlockScroll, showConfirm } from './utils.js';
 import { toast }                       from './toast.js';
 import { initPush, removePushToken, areNotificationsEnabled, setNotificationsEnabled, notificationsUserDisabled } from './push.js';
@@ -112,17 +112,8 @@ function _offlineAccessDecision(uid) {
   return { allow: true, reason: 'verified-clean' };
 }
 
-/* ── Kirish tarixi: har bir login/sessiya tiklanganda yangi yozuv ────── */
-async function _logLoginHistory(uid, type) {
-  try {
-    await sb.from('login_history').insert({
-      user_id: uid,
-      type, // 'login' | 'session'
-      user_agent: navigator.userAgent || null,
-      platform: navigator.platform || null,
-    });
-  } catch (_) { /* tarixni yoza olmasak ham ilova ishlashda davom etsin */ }
-}
+/* ── DIET F2.9: login_history yozuvi olib tashlandi (50 kishilik tarmoqda
+ * kirish tarixi kerak emas). last_login faqat oddiy kirishda bir marta. ── */
 
 /* ── Render callbacks injected by script.js ──────────────────────────── */
 let _cb = {};
@@ -256,7 +247,6 @@ if (authBtn) {
             last_user_agent: navigator.userAgent || null,
             last_platform: navigator.platform || null,
           }).eq('id', data.user.id);
-          await _logLoginHistory(data.user.id, 'login');
         } catch (_) { /* profil yo'q bo'lsa ham loginni to'xtatmaymiz */ }
         // onAuthStateChange o'zi ilovani yoki pending ekranni ko'rsatadi
         return;
@@ -610,7 +600,7 @@ async function _onLiveProfile(p, me) {
     if (isInApp) {
       stopChatsWatcher();
       stopCallWatcher();
-      stopPresenceHeartbeat();
+      untrackPresence();
       appEl.classList.remove('show');
     }
     _showOnce('blocked', _blockedUntilMs(p));
@@ -667,7 +657,7 @@ async function _handleSession(session) {
     hidePendingScreen();
     stopChatsWatcher();
     stopCallWatcher();
-    stopPresenceHeartbeat();
+    untrackPresence();
     const app = $('app');
     const authWrap = $('authWrap');
     if (app) app.classList.remove('show');
@@ -758,52 +748,90 @@ async function _enterApp(user) {
     startChatsWatcher();
     startCallWatcher();
 
-    // "Oxirgi faollik" — admin panelida ko'rsatish uchun
-    try {
-      await sb.from('profiles').update({
-        last_seen: new Date().toISOString(),
-        last_user_agent: navigator.userAgent || null,
-        last_platform: navigator.platform || null,
-      }).eq('id', user.uid);
-      await _logLoginHistory(user.uid, 'session');
-    } catch (_) { /* jim o'tkazib yuboramiz */ }
-
-    startPresenceHeartbeat();
+    // DIET F2.9 + F5.1: login_history yozuvi va presence heartbeat (har 25s
+    // DB UPDATE) olib tashlandi. "Oxirgi faollik" endi faqat chiqishda
+    // (pagehide/visibilitychange) bir marta yoziladi.
+    trackPresence(user.uid);
   } finally {
     _entering = false;
   }
 }
 
-/* ── Onlayn holat (presence) heartbeat ─────────────────────────────────
- * profiles.last_seen har ~25s yangilanadi; boshqalar isOnline(lastSeenAt)
- * (utils.js) bilan "onlayn/oxirgi faollik"ni hisoblaydi.
- * Sahifa fonda bo'lsa to'xtaydi (batareya va yozuvlarni tejash).
+/* ── Onlayn holat (presence) — DIET F5.1 ────────────────────────────────
+ * Eski: profiles.last_seen ga har 25s da UPDATE (onlayn userda ~2.4 yozuv/daq).
+ * Yangi:
+ *   - Realtime Presence: bitta `presence-app` kanali, har qurilma
+ *     track({uid}) qiladi; onlaynlar presenceState() orqali (DB YO'Q).
+ *   - last_seen faqat CHIQISHDA bir marta yoziladi (pagehide /
+ *     visibilitychange→hidden, sendBeacon bilan) — "oxirgi faollik" uchun.
+ * Boshqa foydalanuvchilar isOnline(lastSeenAt) o'rniga window._mrOnlineSet
+ * (real vaqtda yangilanadi) ni ishlatadi; fallback eski hisoblab qoladi.
  ─────────────────────────────────────────────────────────────────────── */
-const HEARTBEAT_MS = 25 * 1000;
-let _heartbeatTimer = null;
+let _presenceCh = null;
+const _presenceLeaveTimer = {}; // uid -> timeout (sync debounce)
 
-async function _pingPresence() {
+export function trackPresence(uid) {
+  if (!uid) return untrackPresence();
+  if (_presenceCh) { _presenceCh.track({ uid }); return; }
+  _presenceCh = sb.channel('presence-app', { config: { presence: { key: uid } } });
+  _presenceCh.on('presence', { event: 'sync' }, () => _publishOnlineSet());
+  _presenceCh.on('presence', { event: 'join' },  () => _schedulePublish(300));
+  _presenceCh.on('presence', { event: 'leave' }, () => _schedulePublish(800));
+  _presenceCh.subscribe((status) => {
+    if (status === 'SUBSCRIBED') _presenceCh.track({ uid });
+  });
+}
+
+export function untrackPresence() {
+  if (_presenceCh) { sb.removeChannel(_presenceCh); _presenceCh = null; }
+  window._mrOnlineSet = new Set([state.me?.uid].filter(Boolean));
+}
+
+function _schedulePublish(ms) {
+  clearTimeout(_presenceLeaveTimer.pub);
+  _presenceLeaveTimer.pub = setTimeout(_publishOnlineSet, ms);
+}
+
+function _publishOnlineSet() {
+  if (!_presenceCh) return;
+  const set = new Set();
+  if (state.me?.uid) set.add(state.me.uid); // o'zingiz albatta onlaynsiz
+  const state_ = _presenceCh.presenceState();
+  for (const key of Object.keys(state_)) {
+    (state_[key] || []).forEach(meta => { if (meta?.uid) set.add(meta.uid); });
+  }
+  window._mrOnlineSet = set;
+}
+
+/* ── Chiqishda "oxirgi faollik"ni BIR marta yozish ─────────────────────── */
+let _lastSeenBeaconBound = false;
+function _writeLastSeenOnce() {
   const uid = state.me?.uid;
-  if (!uid || document.visibilityState !== 'visible') return;
+  if (!uid) return;
   try {
-    await sb.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', uid);
-  } catch (_) { /* tarmoq yo'q — keyingi tikda qayta urinadi */ }
+    const iso = new Date().toISOString();
+    const url = `${SUPABASE_URL}/rest/v1/profiles?id=eq.${uid}`;
+    const body = JSON.stringify({ last_seen: iso });
+    if (navigator.sendBeacon &&
+        navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }))) {
+      return;
+    }
+    fetch(url, {
+      method: 'PATCH', keepalive: true, body,
+      headers: {
+        apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json', 'Prefer': 'return=minimal',
+      },
+    }).catch(() => {});
+  } catch (_) { /* jim */ }
 }
 
-function startPresenceHeartbeat() {
-  if (_heartbeatTimer) return;
-  _pingPresence(); // darhol bitta marta
-  _heartbeatTimer = setInterval(_pingPresence, HEARTBEAT_MS);
-  document.addEventListener('visibilitychange', _onVisibilityChangeForPresence);
-}
-
-function stopPresenceHeartbeat() {
-  if (_heartbeatTimer) { clearInterval(_heartbeatTimer); _heartbeatTimer = null; }
-  document.removeEventListener('visibilitychange', _onVisibilityChangeForPresence);
-}
-
-function _onVisibilityChangeForPresence() {
-  if (document.visibilityState === 'visible') _pingPresence();
+if (!_lastSeenBeaconBound) {
+  _lastSeenBeaconBound = true;
+  window.addEventListener('pagehide', _writeLastSeenOnce);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') _writeLastSeenOnce();
+  });
 }
 
 /* ── Live posts listener ─────────────────────────────────────────────────
