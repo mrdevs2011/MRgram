@@ -4,7 +4,7 @@
  * Faqat admin (ADMIN_UID) uchun
  */
 
-import { sb, state, isAdmin, ts } from './config.js';
+import { sb, state, isAdmin, ts, SUPABASE_URL, SUPABASE_ANON_KEY, MEDIA_BUCKET } from './config.js';
 import { toast } from './toast.js';
 import { esc } from './utils.js';
 
@@ -115,9 +115,59 @@ export async function initView() {
   _injectCSS();
 
   _initBroadcast();
+  _initStorageMeter();
   await _initUsers();
 
   _initialized = true;
+}
+
+/* ── Storage kvotasi (DIET F7.2) — media bucket hajmi, admin ko'rsatkichi ── */
+async function _initStorageMeter() {
+  const section = document.getElementById('actionsBroadcastSection');
+  if (!section || document.getElementById('storageMeter')) return;
+  const el = document.createElement('div');
+  el.id = 'storageMeter';
+  el.style.cssText = 'margin:0 16px 8px;font-size:12px;color:var(--text2);background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer;';
+  el.textContent = 'Storage: hisoblanmoqda…';
+  el.title = 'Bosib yangilash';
+  section.parentNode.insertBefore(el, section.nextSibling);
+
+  const refresh = async () => {
+    try {
+      // Anon kalit bilan bucket root ro'yxati (RLS ruxsat bersa ishlaydi)
+      const res = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${MEDIA_BUCKET}`, {
+        method: 'POST',
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prefix: '', limit: 1000, sortBy: { order: 'asc' } }),
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const items = await res.json();
+      let total = 0, files = 0;
+      const walk = async (prefix) => {
+        const r = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${MEDIA_BUCKET}`, {
+          method: 'POST',
+          headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prefix, limit: 1000 }),
+        });
+        if (!r.ok) return;
+        const list = await r.json();
+        for (const it of list) {
+          if (total > 4000) return; // juda sekin ketса to'xtaymiz
+          if (it.id) { total += (it.metadata?.size || 0); files++; }
+          else if ((prefix || '').split('/').length < 2) await walk(`${prefix}${it.name}/`);
+        }
+      };
+      await walk('');
+      const mb = total / 1024 / 1024;
+      const pct = Math.min(100, mb / 1024 * 100); // Free rejada ~1 GB
+      const warn = mb > 800 ? ' ⚠️ Kvota tugayapti! Eski videolarni tozalash kerak.' : '';
+      el.innerHTML = `Storage: <b style="color:${mb > 800 ? 'var(--red,#ef4444)' : 'var(--text)'}">${mb.toFixed(0)} MB / ~1024 MB</b> (${files} fayl, ${pct.toFixed(0)}%)${warn}`;
+    } catch (e) {
+      el.textContent = 'Storage: hisoblab bo\'lmadi (RLS cheklovi yoki xato). Supabase Dashboard → Storage ga qarang.';
+    }
+  };
+  el.addEventListener('click', refresh);
+  refresh();
 }
 
 /* ── Broadcast / Admin Notice ── */

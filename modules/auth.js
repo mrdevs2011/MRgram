@@ -1,6 +1,7 @@
 import { sb, state, uploadViaController, mapProfile, mapPost, purgeUserMedia, SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 import { $, esc, defAvi, uToEmail, lockScroll, unlockScroll, showConfirm } from './utils.js';
 import { toast }                       from './toast.js';
+import { compressImage }               from './compress.js';
 import { initPush, removePushToken, areNotificationsEnabled, setNotificationsEnabled, notificationsUserDisabled } from './push.js';
 import { startChatsWatcher, stopChatsWatcher, repaintNoticeBanner } from './chat.js';
 import { startCallWatcher, stopCallWatcher } from './call.js';
@@ -1010,7 +1011,7 @@ if (editProfileBtn) {
         if (f.size > 5*1024*1024) { toast("Avatar 5 MB dan kam bo'lishi kerak", 'error'); return; }
         toast('Yuklanmoqda...', 'info');
         try {
-          const result = await uploadViaController(f, 'avatars');
+          const result = await uploadViaController(await compressImage(f), 'avatars'); // F7.2: siqish
           _peAviPending = result.url;
           if (peAviImg) peAviImg.innerHTML = `<img src="${result.url}">`;
           toast('Avatar tanlandi', 'success');

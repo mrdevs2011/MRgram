@@ -39,7 +39,7 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 - Ko'rinish: yangi postlar doim barcha tasdiqlangan a'zolarga ko'rinadi
   (Ommaviy/Shaxsiy tanlash olib tashlangan). Eski "shaxsiy" postlar bazada
   (`is_public=false`) faqat egasiga ko'rinishda qolgan.
-- Fayl hajmi cheklovi: maksimum 50 MB.
+- Fayl hajmi cheklovi: maksimum 25 MB.
 
 ## 3. Lenta / postlar bilan o'zaro ta'sir (Feed)
 

@@ -1,6 +1,7 @@
 import { sb, state, MAX_FILE, uploadViaController } from './config.js';
 import { $, esc, fmtSz, lockScroll, unlockScroll, defAvi } from './utils.js';
 import { toast }                                   from './toast.js';
+import { compressImage }                           from './compress.js';
 
 /* ═══════════════════════════════════════════════════════════════════════
    FILE TYPE → SVG icon + label + accent color
@@ -265,8 +266,8 @@ function hideProgress() {
 /* ── File pick ───────────────────────────────────────────────────────── */
 export function pickFile(f) {
   if (f.size > MAX_FILE) {
-    $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 50 MB`;
-    toast('Fayl hajmi 50 MB dan oshmasligi kerak', 'error');
+    $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 25 MB`;
+    toast('Fayl hajmi 25 MB dan oshmasligi kerak', 'error');
     return;
   }
   $('sizeWarn').textContent = '';
@@ -397,7 +398,8 @@ $('uploadBtn').onclick = async () => {
 
     /* ── Private / Public uchun Firestore ── */
     if (hasFile) {
-      const file = state.selFile;
+      const file = await compressImage(state.selFile); // F7.2: rasmni siqish
+      state.selFile = file;
 
       let simPct = 0;
       let lastTick = Date.now();

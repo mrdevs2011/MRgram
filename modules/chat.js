@@ -287,6 +287,7 @@ import {
 } from './config.js';
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLastSeen } from './utils.js';
 import { toast }            from './toast.js';
+import { compressImage }    from './compress.js';
 import {
   startGroupsWatcher, stopGroupsWatcher,
   openGroupThread, closeGroupThread,
@@ -2062,9 +2063,9 @@ $('chatVoiceBtn').addEventListener('click', () => {
 
 // File attach
 $('chatAttachBtn')?.addEventListener('click', () => $('chatFileInput')?.click());
-$('chatFileInput')?.addEventListener('change', e => {
+$('chatFileInput')?.addEventListener('change', async e => {
   const f = e.target.files?.[0];
-  if (f) setChatFile(f);
+  if (f) setChatFile(await compressImage(f)); // F7.2: rasmni siqish
 });
 $('cfpRemove')?.addEventListener('click', clearChatFile);
 
