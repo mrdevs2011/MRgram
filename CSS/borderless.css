@@ -7,15 +7,11 @@
 :root,
 [data-theme="dark"]{
   --specular-top:    none;
-  --specular-edge:   none;
 
   --liquid-shadow-sm: none;
   --liquid-shadow-md: none;
   --liquid-shadow-lg: none;
 
-  --shadow-sm: none;
-  --shadow-md: none;
-  --shadow-lg: none;
 
   --glass-border:      transparent;
   --glass-border-top:  transparent;

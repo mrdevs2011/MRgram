@@ -33,26 +33,14 @@
 :root {
   --font:        -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'DM Sans', system-ui, sans-serif;
   --mono:        'SF Mono', 'DM Mono', ui-monospace, monospace;
-  --r:           16px;
-  --r2:          12px;
-  --r3:          10px;
   --nav:         56px;
   --hdr:         52px;
 
   /* iOS 27 Spring easings */
-  --ease:        cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease-back:   cubic-bezier(0.22, 1, 0.36, 1);   /* calm decelerate, no overshoot */
-  --ease-out:    cubic-bezier(0.33, 1, 0.68, 1);
-  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);   /* calm decelerate, no overshoot */
-  --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   /* Transition shorthands */
-  --transition: none;
-  --transition-spring: all 0.40s var(--ease-spring);
-  --transition-fast:   all 0.12s ease;
 
   /* Content safe zone */
-  --content-top:    var(--hdr);
   --content-bottom: var(--nav);
   --content-left:   0px;
 }

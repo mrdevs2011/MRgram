@@ -2035,8 +2035,6 @@ body:has(.search-overlay.open) .app-hdr {
   --pg-glass-strong: var(--bg5);
   --pg-border-top:   #444449;
   --pg-border-side:  #202327;
-  --pg-blur:         none;
-  --pg-blur-light:   none;
   --pg-hdr-bg:       var(--bg2);
 }
 
@@ -5970,7 +5968,6 @@ a.cfm-name--link:hover {
   --blue3:        #ffffff;
   --blue-glow:    #16181c;
   --blue-glow2:   #16181c;
-  --blue-glow3:   #000000;
   --red:          #ec5e6f;
   --red-glow:     #16181c;
   --green:        #5acb8c;
@@ -5978,14 +5975,7 @@ a.cfm-name--link:hover {
   --amber:        #f0a855;
 
   /* ── Dark — pure black spec, dedicated names ── */
-  --tg-bg:        #000000;   /* Main Page/App Background */
-  --tg-surface:   #16181c;   /* Chat Area/Header/Panels Background */
-  --tg-input:     #16181c;   /* Inputs / Search Fields Background */
   --tg-blue:      #ffffff;   /* Primary Telegram Blue */
-  --tg-out:       #2f3336;   /* Outgoing Message Bubble */
-  --tg-in:        #16181c;   /* Incoming Message Bubble */
-  --tg-text:      #ffffff;   /* Main Text Color */
-  --tg-muted:     #71767b;   /* Muted / Secondary Text Color */
 
   /* ── Icon system aliases ── */
   --tg-text-muted:   #71767b;  /* default icon color */
@@ -5995,10 +5985,6 @@ a.cfm-name--link:hover {
   /* glass/specular/shadow tokenlari → CSS/dark-theme-fix.css */
 
   /* iOS 27 Extended — refraction & tint (glass o'chirildi) */
-  --glass-refract:      var(--bg3);
-  --glass-tint:         var(--bg3);
-  --glass-frost:        var(--bg2);
-  --glass-inner-glow:   none;
 }
 
 /* [data-theme="dark"] body/.app/.bot-nav/.sheet/.modal-content → hammasi
@@ -7428,21 +7414,13 @@ svg { color: inherit; }
   --glass-heavy:       var(--bg5);
   --glass-border:      #16181c;
   --glass-border-top:  #202327;
-  --glass-shine:       var(--bg4);
-  --glass-blur:        none;
-  --glass-blur-heavy:  none;
-  --glass-blur-light:  none;
 
   --specular-top:   inset 0 1px 0 #202327;
-  --specular-edge:  inset 0 0 0 0.5px #16181c;
 
   --liquid-shadow-sm: 0 4px 20px #000000, 0 1px 4px #000000;
   --liquid-shadow-md: 0 8px 36px #000000, 0 2px 10px #000000;
   --liquid-shadow-lg: 0 20px 64px #000000, 0 4px 20px #000000;
 
-  --shadow-sm: var(--liquid-shadow-sm);
-  --shadow-md: var(--liquid-shadow-md);
-  --shadow-lg: var(--liquid-shadow-lg);
 }
 
 /* ══════════════════════════════════════════
@@ -7949,15 +7927,11 @@ svg { color: inherit; }
 :root,
 [data-theme="dark"]{
   --specular-top:    none;
-  --specular-edge:   none;
 
   --liquid-shadow-sm: none;
   --liquid-shadow-md: none;
   --liquid-shadow-lg: none;
 
-  --shadow-sm: none;
-  --shadow-md: none;
-  --shadow-lg: none;
 
   --glass-border:      transparent;
   --glass-border-top:  transparent;
@@ -8568,7 +8542,6 @@ textarea:focus,
   --c-bg-input:    var(--bg4, #16181c);
   --c-bubble-in:   var(--bg4, #16181c);
   --c-bubble-out:  #2f3336;
-  --c-bubble-out2: #2f3336;
   --c-text-1:      #ffffff;
   --c-text-2:      var(--text2, #71767b);
   --c-text-time:   var(--text2, #71767b);
@@ -9495,26 +9468,14 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
 :root {
   --font:        -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'DM Sans', system-ui, sans-serif;
   --mono:        'SF Mono', 'DM Mono', ui-monospace, monospace;
-  --r:           16px;
-  --r2:          12px;
-  --r3:          10px;
   --nav:         56px;
   --hdr:         52px;
 
   /* iOS 27 Spring easings */
-  --ease:        cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  --ease-back:   cubic-bezier(0.22, 1, 0.36, 1);   /* calm decelerate, no overshoot */
-  --ease-out:    cubic-bezier(0.33, 1, 0.68, 1);
-  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);   /* calm decelerate, no overshoot */
-  --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   /* Transition shorthands */
-  --transition: none;
-  --transition-spring: all 0.40s var(--ease-spring);
-  --transition-fast:   all 0.12s ease;
 
   /* Content safe zone */
-  --content-top:    var(--hdr);
   --content-bottom: var(--nav);
   --content-left:   0px;
 }
@@ -10821,14 +10782,11 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
   --ag-border-side:    #2f3336;
   --ag-border-bot:     #16181c;
   --ag-specular:       none;
-  --ag-blur:           none;
-  --ag-blur-light:     none;
   --ag-shadow:         0 8px 32px #000000, 0 32px 80px #000000, 0 0 0 0.5px #16181c;
   --ag-shadow-hover:   0 12px 40px #000000, 0 40px 100px #000000, 0 0 0 0.5px #202327;
   --ag-modal-bg:       var(--bg3);
   --ag-row-bg:         var(--bg2);
   --ag-row-hover:      var(--bg4);
-  --ag-badge-glow:     #202327;
   --ag-overlay:        #000000;
 }
 
@@ -11078,14 +11036,8 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
   --blue3: #d0d0d0;
   --blue-glow:  #16181c;
   --blue-glow2: #16181c;
-  --blue-glow3: #0d0d0d;
 
-  --tg-bg:      #000000;
-  --tg-surface: #000000;
-  --tg-input:   #16181c;
   --tg-blue:    #ffffff;
-  --tg-out:     #2f3336;
-  --tg-in:      #16181c;
   --tg-text-muted:   #71767b;
   --tg-primary-blue: #ffffff;
   --tg-text-main:    #ffffff;
@@ -11209,13 +11161,12 @@ meta[name="theme-color"] { color: #000000; }
   --blue3: #1d9bf0;
   --link:  #1d9bf0;
   --x-blue: #1d9bf0; --x-blue-hover: #1a8cd8;
-  --x-like: #f91880; --x-repost: #00ba7c;
+  --x-like: #f91880; 
   --x-inv-bg: #eff3f4; --x-inv-bg-hover: #d7dbdc; --x-inv-fg: #0f1419; /* oq pill tugma (Next / Follow) */
   --hover:        rgba(231, 233, 234, .03);
   --hover-strong: rgba(231, 233, 234, .10);
   --blue-glow:  rgba(29, 155, 240, .10);
   --blue-glow2: rgba(29, 155, 240, .10);
-  --blue-glow3: #000000;
 
   --line:  #2f3336;
   --line2: #2f3336;
@@ -11226,13 +11177,10 @@ meta[name="theme-color"] { color: #000000; }
   --red:   #f4212e;
   --green: #00ba7c;
 
-  --tg-bg: #000000; --tg-surface: #000000; --tg-input: #202327;
-  --tg-blue: #1d9bf0; --tg-out: #1d9bf0; --tg-in: #2f3336;
-  --tg-text: #e7e9ea; --tg-muted: #71767b;
+  --tg-blue: #1d9bf0; 
   --tg-text-muted: #71767b; --tg-primary-blue: #1d9bf0; --tg-text-main: #e7e9ea;
 
   --font: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --r: 16px; --r2: 12px; --r3: 10px;
 }
 
 html, body, #app { background: var(--bg); color: var(--text); }
@@ -11710,7 +11658,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 [data-theme] #chatThreadModal {
   --c-bg-chat: var(--bg); --c-bg-pattern: var(--bg);
   --c-bg-header: var(--bg); --c-bg-input: var(--bg4);
-  --c-bubble-in: var(--line); --c-bubble-out: var(--x-blue); --c-bubble-out2: var(--x-blue);
+  --c-bubble-in: var(--line); --c-bubble-out: var(--x-blue); 
   --c-text-1: var(--text); --c-text-2: var(--text2); --c-text-time: var(--text2);
   --c-accent: var(--x-blue); --c-accent-2: var(--x-blue-hover); --c-tick-read: var(--x-blue);
   --c-divider: var(--line); --c-danger: var(--red);
@@ -12049,7 +11997,6 @@ html, body, #app, .app {
 
 @media (min-width: 1200px) {
   :root {
-    --right-rail: 300px;
     --center-w: 600px;
   }
 

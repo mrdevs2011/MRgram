@@ -498,14 +498,11 @@
   --ag-border-side:    #2f3336;
   --ag-border-bot:     #16181c;
   --ag-specular:       none;
-  --ag-blur:           none;
-  --ag-blur-light:     none;
   --ag-shadow:         0 8px 32px #000000, 0 32px 80px #000000, 0 0 0 0.5px #16181c;
   --ag-shadow-hover:   0 12px 40px #000000, 0 40px 100px #000000, 0 0 0 0.5px #202327;
   --ag-modal-bg:       var(--bg3);
   --ag-row-bg:         var(--bg2);
   --ag-row-hover:      var(--bg4);
-  --ag-badge-glow:     #202327;
   --ag-overlay:        #000000;
 }
 

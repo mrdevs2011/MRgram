@@ -607,8 +607,6 @@
   --pg-glass-strong: var(--bg5);
   --pg-border-top:   #444449;
   --pg-border-side:  #202327;
-  --pg-blur:         none;
-  --pg-blur-light:   none;
   --pg-hdr-bg:       var(--bg2);
 }
 

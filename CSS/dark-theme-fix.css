@@ -22,21 +22,13 @@
   --glass-heavy:       var(--bg5);
   --glass-border:      #16181c;
   --glass-border-top:  #202327;
-  --glass-shine:       var(--bg4);
-  --glass-blur:        none;
-  --glass-blur-heavy:  none;
-  --glass-blur-light:  none;
 
   --specular-top:   inset 0 1px 0 #202327;
-  --specular-edge:  inset 0 0 0 0.5px #16181c;
 
   --liquid-shadow-sm: 0 4px 20px #000000, 0 1px 4px #000000;
   --liquid-shadow-md: 0 8px 36px #000000, 0 2px 10px #000000;
   --liquid-shadow-lg: 0 20px 64px #000000, 0 4px 20px #000000;
 
-  --shadow-sm: var(--liquid-shadow-sm);
-  --shadow-md: var(--liquid-shadow-md);
-  --shadow-lg: var(--liquid-shadow-lg);
 }
 
 /* ══════════════════════════════════════════

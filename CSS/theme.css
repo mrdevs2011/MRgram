@@ -20,7 +20,6 @@
   --blue3:        #ffffff;
   --blue-glow:    #16181c;
   --blue-glow2:   #16181c;
-  --blue-glow3:   #000000;
   --red:          #ec5e6f;
   --red-glow:     #16181c;
   --green:        #5acb8c;
@@ -28,14 +27,7 @@
   --amber:        #f0a855;
 
   /* ── Dark — pure black spec, dedicated names ── */
-  --tg-bg:        #000000;   /* Main Page/App Background */
-  --tg-surface:   #16181c;   /* Chat Area/Header/Panels Background */
-  --tg-input:     #16181c;   /* Inputs / Search Fields Background */
   --tg-blue:      #ffffff;   /* Primary Telegram Blue */
-  --tg-out:       #2f3336;   /* Outgoing Message Bubble */
-  --tg-in:        #16181c;   /* Incoming Message Bubble */
-  --tg-text:      #ffffff;   /* Main Text Color */
-  --tg-muted:     #71767b;   /* Muted / Secondary Text Color */
 
   /* ── Icon system aliases ── */
   --tg-text-muted:   #71767b;  /* default icon color */
@@ -45,10 +37,6 @@
   /* glass/specular/shadow tokenlari → CSS/dark-theme-fix.css */
 
   /* iOS 27 Extended — refraction & tint (glass o'chirildi) */
-  --glass-refract:      var(--bg3);
-  --glass-tint:         var(--bg3);
-  --glass-frost:        var(--bg2);
-  --glass-inner-glow:   none;
 }
 
 /* [data-theme="dark"] body/.app/.bot-nav/.sheet/.modal-content → hammasi
