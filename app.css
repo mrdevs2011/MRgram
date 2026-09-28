@@ -16233,14 +16233,14 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 .act-btn svg, .act-views svg { border-radius: 0; }
 .act-btn:hover, .act-views:hover { background: none; color: var(--x-blue); }
 .act-btn:hover svg, .act-views:hover svg {
-  background: rgba(29, 155, 240, .10); box-shadow: 0 0 0 8px rgba(29, 155, 240, .10);
+  background: none; box-shadow: none;
 }
 .like-btn:hover,
 .act-btn.liked,
 .act-btn.liked svg { color: var(--x-like); }
 .like-btn:hover svg,
 .act-btn.liked:hover svg {
-  background: rgba(249, 24, 128, .10); box-shadow: 0 0 0 8px rgba(249, 24, 128, .10);
+  background: none; box-shadow: none;
 }
 
 /* O'ng ustun: X kartalari (chegarasiz, #16181c / #f7f9f9) */
@@ -16458,14 +16458,14 @@ nav.bot-nav #createBtn.nav-center-btn *,
 [data-theme] .act-views:hover { background: none; color: var(--x-blue); }
 [data-theme] .act-btn:hover svg,
 [data-theme] .act-views:hover svg {
-  background: rgba(29, 155, 240, .10); box-shadow: 0 0 0 8px rgba(29, 155, 240, .10);
+  background: none; box-shadow: none;
 }
 [data-theme] .like-btn:hover,
 [data-theme] .act-btn.liked,
 [data-theme] .act-btn.liked svg { color: var(--x-like); }
 [data-theme] .like-btn:hover svg,
 [data-theme] .act-btn.liked:hover svg {
-  background: rgba(249, 24, 128, .10); box-shadow: 0 0 0 8px rgba(249, 24, 128, .10);
+  background: none; box-shadow: none;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -16807,4 +16807,318 @@ html, body, #app, .app {
   text-overflow: ellipsis;
   line-height: 1.3;
   margin-top: 1px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COMMENTS — mobile inline under post / desktop right-rail
+   ═══════════════════════════════════════════════════════════ */
+
+/* Mobile: post ostidagi inline panel */
+.post-cmt-panel {
+  margin-top: 4px;
+  padding: 10px 0 4px;
+  border-top: 1px solid #2f3336;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.post-cmt-input-row {
+  border-top: none !important;
+  padding-top: 0 !important;
+}
+
+.post-cmt-list {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 4px 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.post-cmt-list .cmt-empty {
+  padding: 20px 0;
+}
+
+/* Desktop: right-rail comments panel */
+.rr-cmt-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  gap: 0;
+}
+.rr-cmt-panel[hidden] {
+  display: none !important;
+}
+
+.rr-cmt-hdr {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0 12px;
+  border-bottom: 1px solid #2f3336;
+  flex-shrink: 0;
+}
+
+.rr-cmt-back {
+  background: none;
+  border: none;
+  color: var(--text, #e7e9ea);
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.rr-cmt-back:hover {
+  background: rgba(231, 233, 234, 0.08);
+}
+
+.rr-cmt-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text, #e7e9ea);
+}
+
+.rr-cmt-input-row {
+  border-top: none !important;
+  padding: 12px 0 !important;
+  border-bottom: 1px solid #2f3336;
+  flex-shrink: 0;
+}
+
+.rr-cmt-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 0 20px;
+  min-height: 0;
+}
+
+/* Desktop da modal sheet ishlatilmaydi */
+@media (min-width: 1200px) {
+  #cmtModal.show {
+    display: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STORIES BAR + VIEWER
+   ═══════════════════════════════════════════════════════════ */
+.stories-bar {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px 0 8px;
+  border-bottom: 1px solid #2f3336;
+  background: #000;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+@media (min-width: 768px) {
+  .stories-bar {
+    position: relative;
+    top: auto;
+  }
+}
+
+.stories-track {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 4px 14px 6px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.stories-track::-webkit-scrollbar { display: none; }
+
+.story-item {
+  flex: 0 0 auto;
+  width: 72px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  color: #e7e9ea;
+  font: inherit;
+}
+
+.story-ring {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  padding: 3px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.story-ring img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #202327;
+  border: 2px solid #000;
+  display: block;
+}
+
+/* Yangi (ko'rilmagan) — qizil gradient ring */
+.story-ring--new {
+  background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+/* Ko'rilgan */
+.story-ring--seen {
+  background: #2f3336;
+}
+/* O'z story yo'q — qo'shish */
+.story-ring--add {
+  background: #2f3336;
+}
+
+.story-plus {
+  position: absolute;
+  right: 6px;
+  top: 42px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #1d9bf0;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  border: 2px solid #000;
+  pointer-events: auto;
+}
+
+.story-label {
+  font-size: 11px;
+  color: #71767b;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+.story-item:first-child .story-label { color: #e7e9ea; }
+
+.story-item--skel {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: #202327;
+  flex-shrink: 0;
+}
+
+/* Fullscreen viewer */
+.story-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.story-viewer[hidden] { display: none !important; }
+
+.sv-progress {
+  display: flex;
+  gap: 4px;
+  padding: 10px 10px 0;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.sv-seg {
+  flex: 1;
+  height: 2px;
+  background: rgba(255,255,255,.25);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.sv-seg-fill {
+  height: 100%;
+  background: #fff;
+  width: 0;
+}
+
+.sv-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  z-index: 2;
+  flex-shrink: 0;
+}
+.sv-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sv-avi {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #202327;
+}
+.sv-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sv-name { font-size: 14px; font-weight: 600; color: #fff; }
+.sv-time { font-size: 12px; color: rgba(255,255,255,.6); }
+.sv-close {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+}
+
+.sv-media {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  position: relative;
+}
+.sv-media img,
+.sv-media video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  width: auto;
+  height: auto;
+}
+
+.sv-nav {
+  position: absolute;
+  top: 60px;
+  bottom: 0;
+  width: 40%;
+  z-index: 1;
+  cursor: pointer;
+}
+.sv-prev { left: 0; }
+.sv-next { right: 0; }
+
+/* Desktop: homeView allaqachon margin-left oladi — stories ichida qoladi */
+@media (min-width: 1200px) {
+  .stories-bar {
+    max-width: 100%;
+    border-right: none;
+    box-sizing: border-box;
+  }
 }

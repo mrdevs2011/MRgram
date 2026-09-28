@@ -302,10 +302,7 @@ export async function renderFeedTo(feedEl, posts) {
             <span class="post-dot">·</span>
             <span class="post-time">${fmt(p.createdAt)}</span>
           </div>
-        ${canDel ? `<button class="del-btn" data-id="${p.id}">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/>
-          </svg></button>` : ''}
+        
         </div>
         ${buildCaption(p.text, p.id)}
         ${buildMedia(p)}
@@ -527,7 +524,6 @@ export function scrollToPostFromHash() {
 function bindFeedEvents(feedEl) {
   feedEl.querySelectorAll('.vid-wrap').forEach(w => initVidWrap(w));
   feedEl.querySelectorAll('.like-btn').forEach(b => b.addEventListener('click', () => doLike(b.dataset.id, b)));
-  feedEl.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', () => doDelete(b.dataset.id)));
 
   feedEl.querySelectorAll('.cmt-open-btn').forEach(b => b.addEventListener('click', async () => {
     const { openCmtModal } = await import('./comments.js');
@@ -618,17 +614,23 @@ export async function doLike(postId, btn) {
 }
 
 /* ── Delete ──────────────────────────────────────────────────────────── */
-async function doDelete(id) {
-  showConfirm('Bu post butunlay o\'chiriladi.', async () => {
-    const post = state.allPosts?.find(p => p.id === id);
-    const { error } = await sb.from('posts').delete().eq('id', id);
-    if (error) { toast('O\'chirib bo\'lmadi: ' + error.message, 'error'); return; }
-    if (post?.mediaPath) sb.storage.from(MEDIA_BUCKET).remove([post.mediaPath]).catch(() => {});
-    if (post) state.allPosts = state.allPosts.filter(p => p.id !== id);
-    toast('Post o\'chirildi', 'success');
-  }, 'Postni o\'chirasizmi?');
+export async function doDelete(id) {
+  // Confirm card yo'q — to'g'ridan-to'g'ri o'chiradi (faqat profil detail dan)
+  const post = state.allPosts?.find(p => p.id === id);
+  if (!post) return;
+  if (post.userId !== state.me?.uid && !isAdmin()) {
+    toast("Faqat o'z postingizni o'chira olasiz", 'error');
+    return;
+  }
+  const { error } = await sb.from('posts').delete().eq('id', id);
+  if (error) { toast("O'chirib bo'lmadi: " + error.message, 'error'); return; }
+  if (post?.mediaPath) sb.storage.from(MEDIA_BUCKET).remove([post.mediaPath]).catch(() => {});
+  state.allPosts = state.allPosts.filter(p => p.id !== id);
+  document.querySelector(`.post[data-id="${id}"]`)?.remove();
+  document.querySelector(`.grid-cell[data-id="${id}"]`)?.remove();
+  toast("Post o'chirildi", 'success');
+  document.dispatchEvent(new CustomEvent('postsUpdated'));
 }
-
 /* ── Keyboard Controls ───────────────────────────────────────────────── */
 /* ── patchCounts — update numbers without full re-render ─────────────── */
 export function patchCounts(posts) {
@@ -756,6 +758,7 @@ export function setupPullToRefresh() {
     homeView.addEventListener('touchend', async () => {
         if (isPulling && distance > 130) {
             await renderFeed();
+            try { const { loadStories } = await import('./stories.js'); await loadStories(); } catch (_) {}
             toast('Yangilandi', 'success', 1200);
         }
         isPulling = false;

@@ -210,6 +210,11 @@ export async function openDetail(id) {
         <span class="dm-act-count">${cmtCount}</span>
       </button>
       ${p.mediaUrl ? `<button class="dm-act" id="dmShareBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>` : ''}
+      ${isOwn ? `<button class="dm-act dm-del" id="dmDelBtn" title="O'chirish">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/>
+        </svg>
+      </button>` : ''}
     </div>`;
 
   const vw = $('detailContent').querySelector('.vid-wrap');
@@ -232,6 +237,16 @@ export async function openDetail(id) {
   };
   $('dmCmtBtn').onclick = () => { closeDetail(); import('./comments.js').then(({ openCmtModal }) => openCmtModal(id)); };
   $('dmShareBtn')?.addEventListener('click', () => { navigator.clipboard?.writeText(p.mediaUrl); toast('Link nusxalandi','info'); });
+  $('dmDelBtn')?.addEventListener('click', async () => {
+    const { doDelete } = await import('./feed.js');
+    await doDelete(id);
+    closeDetail();
+    // Profil grid ni yangilash
+    try {
+      const myP = (state.allPosts || []).filter(x => x.userId === state.me?.uid);
+      await renderProfileGrid(myP);
+    } catch (_) {}
+  });
   $('detailContent').querySelectorAll('.dm-avi-link,.dm-name-link').forEach(el => {
     el.addEventListener('click', () => { closeDetail(); openUserProfileModal(el.dataset.uid); });
   });

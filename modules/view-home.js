@@ -5,6 +5,7 @@
 
 import { state } from './config.js';
 import { renderFeed, setupPullToRefresh, setupFeedScrollSensitivity } from './feed.js';
+import { initStories, loadStories } from './stories.js';
 
 let _homeReady = false;
 
@@ -20,6 +21,7 @@ export function initView() {
   // Feed har safar yangilanadi (yangi postlar bo'lishi mumkin)
   if (state.me) {
     state.visibleN = 10;
+    initStories();
     renderFeed();
   }
 }

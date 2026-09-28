@@ -233,12 +233,7 @@ function updateLayoutForRoute(routeName) {
   const sbSearchToggle = $('sbSearchToggle');
 
   // Tooltip ni yangilaymiz (DOM strukturasiga tegmaymiz)
-  const searchLabels = {
-    home:    'Feed qidiruvi',
-    profile: 'Postlarni qidirish',
-    chats:   'Foydalanuvchi qidirish',
-  };
-  const label = searchLabels[routeName] || 'Qidiruv';
+  const label = 'Qidiruv';
   if (hdrSearchBtn)   { hdrSearchBtn.setAttribute('aria-label', label); hdrSearchBtn.title = label; }
   if (sbSearchToggle) { sbSearchToggle.setAttribute('data-tip', label); }
 
@@ -248,11 +243,13 @@ function updateLayoutForRoute(routeName) {
     hdrSearchWrap.classList.toggle('search-hidden', hideSearch);
   }
 
-  // Desktop sbSearchToggle — HECH QACHON yashirilmaydi, har doim o'z joyida turadi.
-  // (chats da ham ko'rinadi, bosilganda chat search inputga fokus beradi)
+  // Desktop sbSearchToggle — har doim o'z joyida; bosilganda Explore qidiruv sahifasi ochiladi
 
   // Joriy aktiv route ni saqlаymiz — click handlerlar shu o'zgaruvchidan o'qiydi
-  _activeRoute = routeName;
+    _activeRoute = routeName;
+
+  // Right rail: faqat home/profile da
+  import('./right-rail.js').then(m => m.onRouteChange?.()).catch(() => {});
 }
 
 /** Joriy aktiv tab — search handlerlar shu orqali qaror qiladi */
@@ -265,38 +262,20 @@ function _initSearchHandlers() {
 
   function handleSearchClick(e) {
     e.stopPropagation();
-    const route = _activeRoute;
-
-    if (route === 'chats') {
-      // Agar chatThreadModal ochiq bo'lsa — thread ichidagi qidiruvni ochish
-      const threadModal = document.getElementById('chatThreadModal');
-      if (threadModal && threadModal.classList.contains('show')) {
-        const chatSearchBtn = threadModal.querySelector('#chatSearchBtn');
-        if (chatSearchBtn) { chatSearchBtn.click(); }
-        return;
-      }
-      // Aks holda — foydalanuvchi qidiruv inputiga fokus
-      const inp = document.getElementById('chatSearchInput');
-      if (inp) { inp.focus(); inp.select(); }
-      return;
-    }
-
-    if (route === 'profile') {
-      _toggleProfileSearch();
-      return;
-    }
-
-    // Home va boshqalar: searchOverlay toggle
+    // Leftbar/header qidiruv — HAR DOIM alohida Explore/qidiruv sahifasini ochadi.
+    // Tabga (chats/profile/home) bog'liq emas, suhbat inputini fokuslamaydi.
     const overlay = document.getElementById('searchOverlay');
     if (!overlay) return;
     if (overlay.classList.contains('open')) {
       overlay.classList.remove('open');
       sbSearchToggle?.classList.remove('search-active');
+      hdrSearchBtn?.classList.remove('search-active');
       const si = document.getElementById('searchInput');
       if (si) si.value = '';
     } else {
       overlay.classList.add('open');
       sbSearchToggle?.classList.add('search-active');
+      hdrSearchBtn?.classList.add('search-active');
       setTimeout(() => document.getElementById('searchInput')?.focus(), 60);
     }
   }
