@@ -133,7 +133,6 @@ const PRECACHE_URLS = [
   '/modules/admin-audit.js',
   '/modules/admin-badge.js',
   '/modules/dashboard-summary.js',
-  '/modules/view-actions.js',
   '/modules/view-chats.js',
   '/modules/view-home.js',
   '/modules/view-login.js',
