@@ -1182,14 +1182,26 @@ if (cancelEditBtn) {
   };
 }
 
+export async function logOut() {
+  try { await Promise.race([removePushToken(), new Promise(r => setTimeout(r, 1500))]); } catch (_) {}
+  try { clearAllCache(); } catch (_) {}
+  try { await sb.auth.signOut({ scope: 'local' }); } catch (_) {}
+  try { await sb.auth.signOut({ scope: 'global' }); } catch (_) {}
+  // Qolgan sessiya kalitlarini tozalash
+  try {
+    Object.keys(localStorage).forEach(k => {
+      if (/supabase|mrspace-auth|sb-/i.test(k)) localStorage.removeItem(k);
+    });
+    Object.keys(sessionStorage).forEach(k => {
+      if (/supabase|mrspace|sb-/i.test(k)) sessionStorage.removeItem(k);
+    });
+  } catch (_) {}
+  location.replace('/');
+}
+
 const logoutBtn = $('logoutBtn');
 if (logoutBtn) {
-  logoutBtn.onclick = async () => {
-    await removePushToken();
-    clearAllCache();
-    try { await sb.auth.signOut(); } catch (_) {}
-    location.replace('/');
-  };
+  logoutBtn.onclick = () => { logOut(); };
 }
 
 /* ── Sozlamalar (Settings) sheet — bildirishnoma + hisobni o'chirish ── */

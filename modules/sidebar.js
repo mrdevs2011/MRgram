@@ -55,9 +55,17 @@ function openMenu() {
     _menu.style.left = (r.right + 8) + 'px';
   }
 
-  _menu.querySelector('.sb-acc-logout').addEventListener('click', () => {
+  _menu.querySelector('.sb-acc-logout').addEventListener('click', async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     closeMenu();
-    $('logoutBtn')?.click(); // auth.js dagi to'liq chiqish (push token, kesh, signOut)
+    try {
+      const { logOut } = await import('./auth.js');
+      await logOut();
+    } catch (err) {
+      console.error('[logout]', err);
+      location.replace('/');
+    }
   });
 }
 
