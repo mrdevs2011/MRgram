@@ -11,17 +11,10 @@
   --liquid-shadow-sm: none;
   --liquid-shadow-md: none;
   --liquid-shadow-lg: none;
-
-
-  --glass-border:      transparent;
-  --glass-border-top:  transparent;
 }
 
 /* ── Dark: line tokenlar ham yo'qolsin ── */
 [data-theme="dark"] {
-  --line:  var(--pal-gray-900);
-  --line2: transparent;
-  --line3: transparent;
 }
 
 /* ════════════════════════════════

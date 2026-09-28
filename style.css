@@ -31,10 +31,8 @@
 
 /* ── CSS Variables — struktural, tema-neytral ── */
 :root {
-  --font:        -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'DM Sans', system-ui, sans-serif;
   --mono:        'SF Mono', 'DM Mono', ui-monospace, monospace;
   --nav:         56px;
-  --hdr:         52px;
 
   /* iOS 27 Spring easings */
 

@@ -209,7 +209,7 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
    qattiq yozilgan ranglar bor edi — sahifa palitrasiga zid chiqardi.
    Endi hammasi tokenlardan: modal = sahifa rangi + ingichka chiziq. */
 :root,
-[data-theme="dark"]  { --overlay: rgba(4, 6, 8, .72); }
+[data-theme="dark"]  { }
 
 .overlay,
 [data-theme] .overlay,
@@ -484,7 +484,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 
 /* Oyna / sheet: X overlay va soyasi (chegarasiz) */
 :root,
-[data-theme="dark"]{ --overlay: rgba(91, 112, 131, .40); }
+[data-theme="dark"]{ }
 
 .sheet,
 [data-theme] .sheet,

@@ -47,34 +47,9 @@
 
 /* ── DARK theme — Telegram Dark Palette ── */
 [data-theme="dark"] {
-  --bg:           var(--pal-black);   /* Main App/Page Background (Primary) */
-  --bg2:          var(--pal-black);   /* Primary — chat list rows, frost */
-  --bg3:          var(--pal-gray-900);   /* Surface — headers, panels, sheets */
-  --bg4:          var(--pal-gray-900);   /* Inputs / hover / search fields */
-  --bg5:          var(--pal-gray-800);   /* Elevated hover / heavy surface */
-  /* --line/--line2/--line3 → CSS/borderless.css'da yengiladi (yagona manba) */
-  --text:         var(--pal-white);   /* Main Text */
-  --text2:        var(--pal-gray-500);   /* Muted / Secondary Text */
-  --text3:        var(--pal-gray-500);
-  --text4:        #4a4a4a;
-  --blue:         var(--pal-white);   /* Primary Telegram Blue */
-  --blue2:        var(--pal-white);
-  --blue3:        var(--pal-white);
-  --blue-glow:    var(--pal-gray-900);
-  --blue-glow2:   var(--pal-gray-900);
-  --red:          #ec5e6f;
   --red-glow:     var(--pal-gray-900);
-  --green:        #5acb8c;
   --green-glow:   var(--pal-gray-900);
-  --amber:        #f0a855;
-
-  /* ── Dark — pure black spec, dedicated names ── */
-  --tg-blue:      var(--pal-white);   /* Primary Telegram Blue */
-
-  /* ── Icon system aliases ── */
-  --tg-text-muted:   var(--pal-gray-500);  /* default icon color */
-  --tg-primary-blue: var(--pal-white);  /* active / selected icon color */
-  --tg-text-main:    var(--pal-white);  /* active icon color on filled/dark surfaces */
+  --amber:        #f0a855;  /* active icon color on filled/dark surfaces */
 
   /* glass/specular/shadow tokenlari → CSS/dark-theme-fix.css */
 
