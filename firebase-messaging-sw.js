@@ -183,31 +183,32 @@ self.addEventListener('fetch', (event) => {
   const isNavigation = event.request.mode === 'navigate' ||
     event.request.destination === 'document';
 
-  // ── HTML sahifa (navigatsiya): CACHE-FIRST + fonda yangilash ──
+  // ── HTML sahifa (navigatsiya): DIET F6.2 — NETWORK-FIRST (3s timeout) → kesh fallback ──
+  // Eski xatti-harakat (cache-first + fonda yangilash) tufayli foydalanuvchi
+  // keyingi ochilishgacha eski versiyani ko'rardi. Endi avval tarmoq: deploy
+  // darhol ko'rinadi; internet bo'lmasa yoki 3s da javob bo'lmasa keshdan beriladi.
   if (isNavigation) {
     event.respondWith(
       (async () => {
-        const cached = await caches.match(event.request) || await caches.match('/index.html') || await caches.match('/');
-        const networkFetch = fetch(event.request)
-          .then((response) => {
-            if (response && response.status === 200 && response.type === 'basic') {
-              const cloned = response.clone();
-              caches.open(RUNTIME_CACHE).then((cache) => cache.put(event.request, cloned));
-            }
-            return response;
-          })
-          .catch(() => null);
-
-        if (cached) {
-          return cached;
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 3000);
+          const net = await fetch(event.request, { signal: ctrl.signal });
+          clearTimeout(timer);
+          if (net && net.status === 200 && net.type === 'basic') {
+            const cloned = net.clone();
+            caches.open(RUNTIME_CACHE).then((cache) => cache.put('/index.html', cloned));
+          }
+          return net;
+        } catch (_) {
+          const cached = await caches.match('/index.html') || await caches.match(event.request) || await caches.match('/');
+          if (cached) return cached;
+          return new Response('Offline — internet aloqasi yo\'q', {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+          });
         }
-        const net = await networkFetch;
-        if (net) return net;
-        return new Response('Offline — internet aloqasi yo\'q', {
-          status: 503,
-          statusText: 'Service Unavailable',
-          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-        });
       })()
     );
     return;
