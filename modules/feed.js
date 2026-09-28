@@ -208,14 +208,18 @@ export async function renderFeedTo(feedEl, posts) {
         <div class="empty-search-hint">Boshqa so'z bilan qidirib ko'ring yoki imloni tekshiring</div>
       </div>`;
     } else {
-      const createBtn = state.view === 'home' ? `<button class="empty-cta" onclick="document.querySelector('.nav-center-btn')?.click()">Birinchi videongizni yuklang →</button>` : '';
-      feedEl.innerHTML = `<div class="empty">
+      const createBtn = state.view === 'home'
+        ? `<button class="empty-cta" onclick="document.querySelector('.nav-center-btn')?.click() || document.getElementById('createBtn')?.click()">Birinchi postingizni joylang</button>`
+        : '';
+      feedEl.innerHTML = `<div class="empty empty--home">
+        <div class="empty-glow" aria-hidden="true"></div>
         <div class="empty-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14"/><path d="M5 12h14"/>
           </svg>
         </div>
-        <div>Hozircha postlar yo'q</div>
+        <div class="empty-title">Lenta hali bo'sh</div>
+        <div class="empty-sub">Rasm, video yoki fikr bo'lishing — do'stlaringiz ko'radi.</div>
         ${createBtn}
       </div>`;
     }
