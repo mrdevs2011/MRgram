@@ -200,8 +200,7 @@ function showSuggestions(list) {
         const { openUserProfileModal } = await import('./profile.js');
         openUserProfileModal(chosen.uid);
       } else {
-        if (searchInput) searchInput.value = chosen.value;
-        _doSearch(chosen.value);
+        window.dispatchEvent(new CustomEvent('explore:commit', { detail: chosen.value }));
       }
     });
   });
@@ -211,6 +210,10 @@ function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
+}
+
+function visiblePostsForSearch() {
+  return (state.allPosts || []).filter(p => p.userId === state.me?.uid || p.isPublic === true);
 }
 
 async function fetchSuggestions(rawQuery) {
@@ -244,8 +247,8 @@ async function fetchSuggestions(rawQuery) {
 
   // 2. Hashtag qidirish (postlardan)
   const hashtags = new Set();
-  state.allPosts?.forEach(post => {
-    const matches = post.caption?.match(/#[a-zA-Z0-9_]+/g);
+  visiblePostsForSearch().forEach(post => {
+    const matches = post.text?.match(/#[a-zA-Z0-9_]+/g);
     matches?.forEach(tag => {
       if (tag.toLowerCase().includes(q)) hashtags.add(tag);
     });
@@ -253,10 +256,10 @@ async function fetchSuggestions(rawQuery) {
   hashtags.forEach(tag => results.push({ type: 'hashtag', label: tag, value: tag }));
 
   // 3. Post caption qidirish
-  state.allPosts?.forEach(post => {
-    if (post.caption && post.caption.toLowerCase().includes(q)) {
-      const snippet = post.caption.substring(0, 40) + (post.caption.length > 40 ? '...' : '');
-      results.push({ type: 'post', label: snippet, value: post.caption.split(' ')[0] });
+  visiblePostsForSearch().forEach(post => {
+    if (post.text && post.text.toLowerCase().includes(q)) {
+      const snippet = post.text.substring(0, 40) + (post.text.length > 40 ? '...' : '');
+      results.push({ type: 'post', label: snippet, value: post.text.substring(0, 40).trim() });
     }
   });
 
@@ -271,7 +274,6 @@ function handleSearchInput(val) {
     const suggestions = await fetchSuggestions(val);
     showSuggestions(suggestions);
   }, 200);
-  _doSearch(val);
 }
 
 if (searchInput) {
@@ -297,20 +299,12 @@ if (searchInput) {
           const { openUserProfileModal } = await import('./profile.js');
           openUserProfileModal(chosen.uid);
         } else {
-          if (searchInput) searchInput.value = chosen.value;
-          _doSearch(chosen.value);
+          window.dispatchEvent(new CustomEvent('explore:commit', { detail: chosen.value }));
         }
       } else {
-        // Enter bosildi lekin suggestion tanlanmagan — birinchi user topib profilni oching
-        const firstUser = currentSuggestions.find(s => s.type === 'user');
-        if (firstUser && firstUser.uid) {
-          suggestionsEl?.classList.remove('show');
-          closeSearchOverlay();
-          const { openUserProfileModal } = await import('./profile.js');
-          openUserProfileModal(firstUser.uid);
-        } else {
-          _doSearch(searchInput.value);
-        }
+        // Enter: taklif tanlanmagan — Explore natijalar sahifasi (X kabi)
+        suggestionsEl?.classList.remove('show');
+        window.dispatchEvent(new CustomEvent('explore:commit', { detail: searchInput.value }));
       }
     } else if (e.key === 'Escape') {
       closeSearchOverlay();
