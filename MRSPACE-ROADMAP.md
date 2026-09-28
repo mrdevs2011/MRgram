@@ -3,7 +3,8 @@
 > **Maqsad:** MRspace'ni 50 ta yaqin odam (oila, qarindosh, do'stlar) uchun mos, kichik, tushunarli va uzoq yashaydigan holatga keltirish.
 > **Tamoyil:** 50 kishilik to'yga stadion emas, yaxshi choyxona kerak. Har bir qator kod "bu 50 odamga kerakmi?" degan savoldan o'tishi shart.
 > **Holat:** 2026-09-28 dagi kod audit natijasi asosida. Kod to'liq qatorma-qator o'qilmagan: struktura, schema, README, AUDIT.md va grep asosida. `[TEKSHIR]` belgisi — bajarishdan oldin tasdiqlash kerak bo'lgan taxmin.
-> **Yangilanish (2026-09-28):** bu fayl repoda ilk marta saqlandi va joriy holatga ko'ra belgilandi (`[x]`/`[ ]`, "Holat" ustunlari). Tarix: commitlar `09bce2c` (F1), `db6028d` (link tartibi), `fbbcd8b` (x-design klasteri).
+> **Yangilanish (2026-09-29):** holat kodning o'zidan qayta tekshirildi (git tag'lar, fayllar, grep). Bajarilganlar: F2 parol reset, F3.4 views, F3.5 muqova (cover), F4.5 `app.css` build, F5 presence/typing, F6.2 avto-versiya + network-first, F7.2 limit 25 MB. Supabase/Vercel panel ishlari tekshirilmadi.
+> **Oldingi yangilanish (2026-09-28):** bu fayl repoda ilk marta saqlandi va joriy holatga ko'ra belgilandi (`[x]`/`[ ]`, "Holat" ustunlari). Tarix: commitlar `09bce2c` (F1), `db6028d` (link tartibi), `fbbcd8b` (x-design klasteri).
 
 ---
 
@@ -50,16 +51,16 @@
 
 ## 2. Fazalar xaritasi
 
-| Faza | Nom | Xavf | Taxminiy vaqt | Bog'liqlik | Holat (2026-09-28) |
+| Faza | Nom | Xavf | Taxminiy vaqt | Bog'liqlik | Holat (2026-09-29) |
 |---|---|---|---|---|---|
-| 0 | Xavfsizlik to'ri | past | 1–2 soat | — | ⚠️ qisman (tag/remote/zaxira/preview — MR tashqi ishlari) |
+| 0 | Xavfsizlik to'ri | past | 1–2 soat | — | ⚠️ qisman (tag va remote tayyor; zaxira/preview/smoke — MR ishi) |
 | 1 | Axlat va o'lik kod | past | 2–3 soat | 0 | ✅ deyarli tayyor (`09bce2c`) |
-| 2 | Admin dieta + parol reset | o'rta | 1 kun | 0, 1 | ❌ boshlanmagan |
-| 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | ❌ boshlanmagan |
-| 4 | CSS konsolidatsiya | o'rta–yuqori (vizual) | 2–3 kun | 3 (oldin nima qolishi aniq bo'lsin) | 🔶 davom etmoqda (x-design↔mono klasteri tugadi, vizual test kutilmoqda) |
-| 5 | Realtime va presence | o'rta | 1 kun | 3 | ❌ boshlanmagan |
-| 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | ❌ boshlanmagan |
-| 7 | Family-grade mustahkamlash | o'rta | 1–2 kun | 2 | ❌ boshlanmagan |
+| 2 | Admin dieta + parol reset | o'rta | 1 kun | 0, 1 | 🔶 parol reset ✅, dieta (2.1–2.9) ❌ |
+| 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.4 views ✅, 3.5 cover ✅ (qisman); qolgani ❌ |
+| 4 | CSS konsolidatsiya | o'rta–yuqori (vizual) | 2–3 kun | 3 (oldin nima qolishi aniq bo'lsin) | 🔶 4.4/4.5 ✅ (bitta `app.css`); 23 fayl/~16.7k qator, 351 `!important` |
+| 5 | Realtime va presence | o'rta | 1 kun | 3 | 🔶 5.1/5.2 ✅; 5.3 kanallarni birlashtirish ❌ |
+| 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya + network-first ✅; yangilanish toast'i, `Ts` adapteri ❌ |
+| 7 | Family-grade mustahkamlash | o'rta | 1–2 kun | 2 | 🔶 7.1 ✅, 7.2 limit ✅; 7.3, 7.7, 7.8 ❌ |
 | 8 | Hujjat va smoke test | past | 0.5 kun | hammasi | 🔶 qisman (roadmap+AUDIT yozildi; README/SMOKE/migrations qoldi) |
 
 Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-biriga yaqin (parol reset), ular parallel ketishi mumkin.
@@ -71,8 +72,8 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 **Maqsad:** hech narsani buzmasdan orqaga qaytish imkoniyatini yaratish.
 
 - [x] Ishchi papkadagi tugallanmagan o'zgarishlar hal qilindi: `CSS/x-design.css` (F4 bo'yicha commit `fbbcd8b`), `index.html` (link tartibi, `db6028d`), `.gitignore` (tasodifan bo'shatilgan edi — HEAD'dan tiklandi), `profile.css`/`ui-improvements.css`/`svg/favicon.png`/`CSS/call-modern.css` holati tarixda; working tree toza.
-- [ ] `git tag pre-diet` va `git push origin pre-diet` (qaytish nuqtasi). *Bajarilmadi: bu muhitda remote sozlanmagan — MR terminalida.*
-- [ ] Lokal `origin` ni to'g'rila: `git remote set-url origin https://github.com/mrdevs2011/MRspace.git`. *Bajarilmadi: `git remote -v` bo'sh — MR terminalida.*
+- [x] `git tag pre-diet` (qaytish nuqtasi) yaratilgan.
+- [x] `origin` MRspace repoga qaraydi (`mrdevs2011/MRspace`).
 - [ ] **Supabase zaxira:** Dashboard → Database → Backups yoki `pg_dump` (schema + data). Storage `media` bucket ro'yxati (fayl soni, hajm). *MR dashboard ishi.*
 - [ ] Vercel Preview deploy + preview env (`SUPABASE_URL/ANON_KEY`). *MR Vercel panelida.*
 - [x] **Baseline o'lchov** 6-bo'lim jadvaliga kiritildi (2026-09-28 qayta o'lchangan raqamlar bilan).
@@ -99,7 +100,7 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 
 ---
 
-## FAZA 2 — Admin dieta + parol reset ❌ (boshlanmagan)
+## FAZA 2 — Admin dieta + parol reset 🔶 (parol reset ✅, dieta ❌)
 
 **Muammo:** admin bitta odam, lekin panel korxona darajasida (audit, history, countdown, ms-aniq muddat).
 
@@ -125,8 +126,8 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 
 ### YANGI (yetishmayotgan funksiya): admin parol reset
 README: "parolni tiklash imkoni yo'q, adminga murojaat qilish mumkin". Lekin adminda buni bajaradigan tugma yo'q (`resetPassword`/`updateUserById` grep: 0 natija — `[TEKSHIR]` tasdiqlandi). Buvi parolni unutsa — muammo.
-- [ ] Supabase **Edge Function** `admin-reset-password`: chaqiruvchi `is_admin()` ekanini JWT orqali tekshiradi, `service_role` bilan (faqat funksiya ichida, brauzerda emas) `auth.admin.updateUserById` chaqiradi. *(Hozir `supabase/functions/`da faqat `send-push` bor.)*
-- [ ] Admin panelda "Parolni almashtirish" tugmasi → vaqtinchalik parol generatsiya qilinadi → adminga bir marta ko'rsatiladi.
+- [x] Supabase **Edge Function** `admin-reset-password` (`supabase/functions/admin-reset-password`, kod tomoni `modules/admin-reset-password.js`): chaqiruvchi `is_admin()` ekanini JWT orqali tekshiradi, `service_role` bilan (faqat funksiya ichida, brauzerda emas) `auth.admin.updateUserById` chaqiradi.
+- [x] Admin panelda "Parolni almashtirish" tugmasi → vaqtinchalik parol generatsiya qilinadi → adminga bir marta ko'rsatiladi.
 - [ ] `[QAROR]` foydalanuvchi keyingi kirishda parolni majburan almashtirsinmi? (Tavsiya: yo'q, soddalik uchun.)
 
 ### DB (contract bosqichi, kod deploydan 1 hafta keyin)
@@ -143,15 +144,15 @@ drop table if exists public.login_history;
 
 ---
 
-## FAZA 3 — Mahsulot yuzasini qisqartirish ❌ (boshlanmagan, 2026-09-28 tekshirildi)
+## FAZA 3 — Mahsulot yuzasini qisqartirish 🔶 (2026-09-29 tekshirildi)
 
 **Maqsad:** ijtimoiy tarmoq bezaklarini olib tashlab, oilaviy messenjer + oilaviy lentaga aylantirish.
 
 - **3.1 Explore→filtr:** ❌ `explore.js` (316 q, `script.js:14` import) + typeahead + 5 tab joyida. `[TEKSHIR]` eskirgandi: explore.js'dagi lokal diff masalasi F0'da hal qilindi (working tree toza).
 - **3.2 Kanal→guruh rejimi:** ❌ `type:'channel'` (`groups.js:299`) hali alohida tur; migratsiya SQL (`patch-diet-03`) yozilmagan. Public kanal havolasi (`groups.js:641`) va `invite_code`/`username` (`groups.js:878`) joyida.
 - **3.3 Guruh ochiq/maxfiy [QAROR] (tavsiya B):** ❌ `invite_code`, `join_group_by_code()`, `group_is_private()`, UI (`groups.js:975, 1026, 1582, 1591`) hali faol.
-- **3.4 Post views:** ❌ IntersectionObserver + `increment_post_view()` (`feed.js:51`), `posts.views` ustuni, `auth.js:875` taqqoslash — hammasi joyida.
-- **3.5 Profil [QAROR]:** ❌ `cover-crop.js` (472 q) joyida; `website`/`location` maydonlari tegilmagan.
+- **3.4 Post views:** ✅ kod tomoni tag `diet-progress-03` bilan olib tashlangan (`posts.views` ustunini bazadan drop — contract, keyinroq).
+- **3.5 Profil [QAROR]:** 🔶 muqova (cover) va `cover-crop.js` butunlay olib tashlandi (2026-09-29, `bd3fb42`); `cover_url` ustuni bazada qoldi. `website`/`location` hali qolgan ❌.
 - **3.6 Eski shaxsiy postlar [QAROR]:** ❌ sanov skripti yozilmagan.
 
 ### DB (contract, keyin)
@@ -169,7 +170,7 @@ drop table if exists public.follows;
 
 ---
 
-## FAZA 4 — CSS konsolidatsiya 🔶 (davom etmoqda)
+## FAZA 4 — CSS konsolidatsiya 🔶 (davom etmoqda; hozir 23 fayl / ~16.7k qator)
 
 **Strategiya:** "yana tozalash" emas, **qayta yig'ish.** 3-fazadan keyin qolgan UI uchun yangi, kichik tizim.
 
@@ -180,7 +181,7 @@ drop table if exists public.follows;
 - [ ] **4.2 Tokenlar:** `theme.css` → yagona manba: ranglar, spacing, radius, shrift. Hard-coded ranglar tokenga o'tadi.
 - [ ] **4.3 Tuzilma (maqsad):** `tokens.css / base.css / components.css / features.css / admin.css`. **Hozir: 22 fayl / 17 055 qator.**
 - [ ] **4.4 `no-animations.css`:** `style.css`da hali eng oxirgi qatlam — transition/animation'larni manba faylidan olish. `[QAROR]` splash/loading uchun bitta yengil animatsiya (Q9).
-- [ ] **4.5 `@import` zanjirini yo'q qil:** `style.css`da 18 ta @import hali bor; `scripts/build-css.mjs` (oddiy concat, kutubxonasiz → bitta `app.css`, `index.html`da bitta `<link>`) yozilmagan.
+- [x] **4.5 `@import` zanjiri yo'q:** `scripts/build-css.mjs` CSS'ni bitta `app.css` ga yig'adi (`npm run build`). `app.css` qo'lda tahrirlanmaydi, manba `CSS/*.css`.
 - [ ] **4.6 `!important` audit:** joriy o'lchov quyida; maqsad: kamida 80% qisqarish.
 - [ ] **4.7 Vizual regressiya:** 8 ekran skrinshoti (login, kutish, lenta, post yuklash, chatlar, chat oynasi, guruh, profil, admin) — **hali hech qachon bajarilmagan** (brauzer kerak, MR). Shu qilingach 4.1b va keyingi o'chirishlar bloklanadi.
 - [ ] **4.8 Tartib:** keyingi nomzod klaster — `chat.css` cvm-bloklari ↔ mono; bir fayl → tekshir → keyingisi; har fayl = 1 commit.
@@ -192,11 +193,11 @@ drop table if exists public.follows;
 
 ---
 
-## FAZA 5 — Realtime va presence ❌ (boshlanmagan, 2026-09-28 tekshirildi)
+## FAZA 5 — Realtime va presence 🔶 (5.1/5.2 ✅, 2026-09-29)
 
-- 5.1 Presence DB→Realtime: ❌ `auth.js` `_pingPresence` hali `last_seen` UPDATE, HEARTBEAT_MS = 25 000. Yangi: `presence:app` kanali + `track({uid})`; `last_seen` faqat chiqishda (`pagehide`/`sendBeacon`). Vaqtinchalik yengil variant: 25s → 120s.
-- 5.2 Typing DB→Broadcast: ❌ `chat.js:702` `typing_until` UPDATE joyida. Yangi: chat kanalida broadcast, 3s throttle, 4s taymer. Keyin `typing_until` drop (contract).
-- 5.3 Kanallarni birlashtirish: ❌ `sb.channel(` soni: 18 (roadmap "~20" degan, farq kichina). Maqsad: bitta `me:<uid>` kanali + `incoming-calls-<uid>` + thread kanallari + admin → ~3–4. Xavf: filter chalkashishi — bitta-bitta ko'chir, 2 qurilmada sinab ko'r.
+- 5.1 Presence DB→Realtime: ✅ tag `diet-progress-05` (Realtime Presence kanali, `last_seen` faqat chiqishda `sendBeacon` bilan).
+- 5.2 Typing DB→Broadcast: ✅ broadcast'ga o'tgan. `typing_until` izlari `chat.js`/`config.js`/`auth.js` da hali bor; ustunni drop qilish (`patch-diet-05-contract.sql`) — 1 hafta kuzatuvdan keyin.
+- 5.3 Kanallarni birlashtirish: ❌ `sb.channel(` hali ~18 ta joyda (auth, chat, groups, call, admin fayllari). Maqsad: bitta `me:<uid>` kanali + `incoming-calls-<uid>` + thread kanallari + admin → ~3–4. Xavf: filter chalkashishi — bitta-bitta ko'chir, 2 qurilmada sinab ko'r.
 - 5.4 `bump_post_counters` triggerlari [QAROR Q8]: ❌ tegilmagan (hozircha qolsin).
 
 **Tekshiruv:** 2 ta qurilma: onlayn nuqta, "yozmoqda", xabar darhol keladi, qo'ng'iroq keladi.
@@ -204,16 +205,16 @@ drop table if exists public.follows;
 
 ---
 
-## FAZA 6 — Data qatlami va Service Worker ❌ (boshlanmagan, 2026-09-28 tekshirildi)
+## FAZA 6 — Data qatlami va Service Worker 🔶 (2026-09-29)
 
 ### 6.1 Firestore adapterini olib tashlash — ❌
 - `config.js`: `Ts` klassi (`config.js:32`), `ts()`, `toIso()`, mapperlar — 8 modul ishlatadi (`auth`, `call`, `chat`, `explore`, `groups`, `local-cache`, `view-users`, `config`).
 - Bosqichma-bosqich: avval mapperlar oddiy `number` qaytarsin, keyin modul-modul ko'chir. Ustuvorlik: **past** (foya: soddalik, xavf: yuqori).
 
-### 6.2 Service worker — ❌
+### 6.2 Service worker — 🔶
 - [ ] **Q6 tavsiyasi: nom O'ZGARMASIN** (`firebase-messaging-sw.js`), izoh yoz. *(Push obunalari nomga bog'liq.)*
-- [ ] **Cache versiyasi avtomatik:** hozir `CACHE_VERSION = 'v102'` qo'lda (fayl 76-qatori); `build-env.mjs` ichida git SHA (`VERCEL_GIT_COMMIT_SHA`) yoki vaqt tamg'asi bilan yozilsin.
-- [ ] **HTML strategiyasi:** cache-first → **network-first (3 s timeout) → kesh fallback.** Static (CSS/JS/rasm) cache-first.
+- [x] **Cache versiyasi avtomatik:** `build-env.mjs` build vaqtida `CACHE_VERSION` ga vaqt tamg'asini yozadi (`t-<timestamp>`).
+- [x] **HTML strategiyasi:** network-first (3 s timeout) → kesh fallback (tag `diet-progress-04b`).
 - [ ] **Yangilanish xabari:** yangi SW `waiting` bo'lsa toast "Yangi versiya bor, yangilash".
 - [ ] `PRECACHE_URLS` ni 4-fazadan keyin yangilash (CSS nomlari o'zgaradi!). `sw:170` atrofida `allSettled`-simon himoya bor — baribir tekshir.
 
@@ -224,18 +225,18 @@ drop table if exists public.follows;
 
 ---
 
-## FAZA 7 — Family-grade mustahkamlash ❌ (boshlanmagan)
+## FAZA 7 — Family-grade mustahkamlash 🔶 (2026-09-29)
 
 | # | Vazifa | Nima uchun | Holat |
 |---|---|---|---|
-| 7.1 | Admin parol reset | 2-fazada. Eng katta real og'riq | ❌ |
-| 7.2 | Storage kvotasi | Free ~1 GB; video limit 50→25 MB, klient canvas siqish (~1600px, q0.8), admin sarf-ko'rsatkich `[QAROR]` | ❌ |
+| 7.1 | Admin parol reset | 2-fazada. Eng katta real og'riq | ✅ |
+| 7.2 | Storage kvotasi | video/fayl limiti 25 MB ✅, `compress.js` (klient siqish) bor; admin sarf-ko'rsatkichi `[QAROR]` | 🔶 |
 | 7.3 | Zaxira nusxa | GitHub Actions cron: haftada bir `pg_dump` → shifrlangan artifact/MRdrive | ❌ |
-| 7.4 | TURN | Env quvuri (`build-env.mjs:19-21`) bor, haqiqiy server ulangani `[TEKSHIR]`; Cloudflare Calls/Metered free tier | ❌ |
+| 7.4 | TURN | Env quvuri (`build-env.mjs:19-21`) bor; Vercel'da `TURN_*` env qo'yilganini MR tekshirsin `[TEKSHIR]` | 🔶 |
 | 7.5 | Media maxfiyligi | `[QAROR Q7]` public bucket hozircha qolsin, rasmiy qaror sifatida yozilsin | ❌ |
 | 7.6 | Rate limit | Past ustuvorlik; faqat yuborish tezligi | ❌ |
 | 7.7 | Xatolarni ko'rish | `window.onerror` + ixtiyoriy `client_errors` jadvali. Overengineering'ga qaytma | ❌ |
-| 7.8 | Onboarding matni | Ro'yxatdan o'tishda: "parolni yozib qo'ying, unutsangiz MR ga murojaat qiling" | ❌ |
+| 7.8 | Onboarding matni | `index.html:79` hali "tiklash imkoni yo'q" deydi, aslida admin reset bor → "unutsangiz MR ga murojaat qiling" ga o'zgartirish | ❌ |
 
 ---
 
@@ -372,12 +373,12 @@ main
 
 ---
 
-## 12. Tavsiya etilgan bajarish tartibi (yangilangan, 2026-09-28)
+## 12. Tavsiya etilgan bajarish tartibi (yangilangan, 2026-09-29)
 
 1. ~~F0 → F1~~ **F1 tayyor** (`09bce2c`, −64 q). F0 ning tashqi qismlari (tag, remote, zaxira, preview, smoke) — MR terminal/dashboard/brauzer ishi, ro'yxat yuqorida.
 2. **F4 to'xtash nuqtasi:** MR brauzerda 8 ekran solishtirsin (ayniqsa `.nav-badge`, `.chat-voice-btn.recording`, `.cmt-send`). Tasdiq → 4.1b inventar; rad → `git revert fbbcd8b`.
-3. **F2** (admin dieta + parol reset) — eng katta real foyda; F4 testini kutmaydi, parallel ketaveradi.
-4. **F3** (Explore/kanal/views/crop kesish).
+3. **F2 dietasi** (2.1–2.9; parol reset tayyor) — eng katta real foyda; F4 testini kutmaydi.
+4. **F3** qolgani: Explore→filtr, kanal→guruh, invite/ochiq-maxfiy, `website`/`location` (views va cover tayyor).
 5. **F7.2–7.4** (storage, zaxira, TURN) — bular ilovani omon saqlaydi, F4–F6 dan oldin ham bo'ladi.
 6. **F4** davomi (chat.css ↔ mono → qolgan fayllar), keyin **F5**, **F6**.
 7. **F8** (hujjat).
