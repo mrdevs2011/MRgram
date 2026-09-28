@@ -6,8 +6,8 @@
 | Fayl | Qator | Qoida | hard | maybe | hard qator | `!important` (hard ichida) |
 |---|---|---|---|---|---|---|
 | 00-components.core.css | 173 | 19 | 0 | 0 | 0 | 0 (0) |
-| admin-plain.css | 170 | 54 | 12 | 1 | 36 | 0 (0) |
-| admin.css | 1139 | 189 | 92 | 0 | 602 | 0 (0) |
+| admin-plain.css | 146 | 42 | 0 | 1 | 0 | 0 (0) |
+| admin.css | 591 | 97 | 0 | 0 | 0 | 0 (0) |
 | borderless.css | 719 | 87 | 18 | 1 | 134 | 0 (0) |
 | card-sheets.css | 30 | 3 | 0 | 0 | 0 | 0 (0) |
 | chat-dark-redesign.css | 229 | 79 | 12 | 0 | 30 | 0 (0) |
@@ -26,58 +26,11 @@
 | sidebar-x.css | 330 | 95 | 3 | 0 | 6 | 14 (1) |
 | splash.css | 56 | 6 | 0 | 0 | 0 | 0 (0) |
 | theme.css | 254 | 28 | 8 | 0 | 40 | 0 (0) |
-| ui-improvements.css | 1729 | 217 | 76 | 20 | 675 | 8 (0) |
+| ui-improvements.css | 1130 | 141 | 0 | 20 | 0 | 8 (0) |
 | x-design.css | 1214 | 323 | 34 | 4 | 104 | 116 (20) |
-| **JAMI** | **15007** | **2651** | **575** | **210** | **3380** | **335 (65)** |
+| **JAMI** | **13836** | **2471** | **395** | **210** | **2067** | **335 (65)** |
 
 ## hard-o'lik selektorlar (har fayldan 30 tagacha)
-
-### admin-plain.css (12)
-- `#actionsView .dash-bar`
-- `#actionsView .dash-item b`
-- `#actionsView .dash-item--warn b`
-- `#actionsView .dash-item--ok b`
-- `#actionsView .dash-item--info b`
-- `#actionsView .ua-locked-banner`
-- `#actionsView .ua-locked-banner::before`
-- `#actionsView .audit-item`
-- `#actionsView .audit-item:hover`
-- `#actionsView .audit-title`
-- `#actionsView .audit-empty`
-- `#actionsView .audit-empty::before`
-
-### admin.css (92)
-- `.users-admin-sub`
-- `.ua-avi`
-- `.ua-avi-img`
-- `.ua-avi-placeholder`
-- `.ua-date--blocked`
-- `.ua-locked-banner`
-- `.ua-unlock-banner-btn`
-- `.ua-unlock-banner-btn:hover`
-- `.ua-row--locked`
-- `.ua-row--locked:hover`
-- `.ua-avi-img--blurred`
-- `.ua-pwd-input`
-- `.ua-pwd-input:focus`
-- `.ua-pwd-input::placeholder`
-- `.ua-history-btn`
-- `.ua-history-btn:hover`
-- `.ua-detail-modal`
-- `#uaDetailModal.ua-modal-overlay`
-- `#uaDetailModal .ua-detail-modal`
-- `#uaDetailModal .ua-detail-modal`
-- `#uaDetailModal .ua-detail-modal`
-- `#uaDetailModal.ua-modal-overlay`
-- `#uaDetailModal .ua-detail-modal`
-- `#uaDetailModal .ua-detail-modal`
-- `#uaDetailModal .ua-detail-modal`
-- `#uaDetailModal .ua-modal-title`
-- `#uaDetailModal .ua-modal-title`
-- `.ua-detail-head`
-- `.ua-detail-avi`
-- `.ua-detail-avi img`
-- … yana 62 ta
 
 ### borderless.css (18)
 - `.modal-content, [data-theme="dark"] .modal-content`
@@ -355,39 +308,6 @@
 - `.success-glow`
 - `.card-hover`
 - `.card-hover:hover`
-
-### ui-improvements.css (76)
-- `.theme-toast`
-- `.theme-toast.show`
-- `.theme-toast-icon`
-- `.skeleton-post-video .skel-media`
-- `.skeleton-post-video .skel-media::after`
-- `.skeleton-post-image .skel-media`
-- `.search-recent-section`
-- `.search-recent-header`
-- `.search-clear-all`
-- `.search-clear-all:hover`
-- `.search-trending-section`
-- `.search-trending-header`
-- `.search-trending-carousel`
-- `.search-trending-carousel::-webkit-scrollbar`
-- `.search-trending-tag`
-- `.search-trending-tag:hover`
-- `.search-history-item`
-- `.search-history-item:hover`
-- `.search-history-icon`
-- `.search-history-text`
-- `.search-history-remove`
-- `.search-history-item:hover .search-history-remove`
-- `.search-history-remove:hover`
-- `.reel-progress-track`
-- `.reel-progress-fill`
-- `.reel:hover .reel-side`
-- `.reel-act:hover svg`
-- `.vc-speed`
-- `.vc-speed:hover`
-- `.vc-pip`
-- … yana 46 ta
 
 ### x-design.css (34)
 - `.ua-avi-placeholder, .ua-avi-placeholder *`

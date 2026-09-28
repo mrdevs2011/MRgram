@@ -26,16 +26,6 @@
 }
 #actionsView .actions-divider-label::before { content: none; }
 
-/* Statistika qatori */
-#actionsView .dash-bar {
-  display: flex; flex-wrap: wrap; gap: 8px 18px;
-  padding: 12px 16px; font-size: 13px; color: var(--text2);
-}
-#actionsView .dash-item b { color: var(--text); font-weight: 700; margin-left: 4px; }
-#actionsView .dash-item--warn b { color: var(--red, #ef4444); }
-#actionsView .dash-item--ok b { color: var(--green, #5acb8c); }
-#actionsView .dash-item--info b { color: var(--blue, #60a5fa); }
-
 /* Foydalanuvchilar sarlavhasi va qidiruv */
 #actionsView .users-admin-hdr { padding: 12px 16px; border-bottom: 1px solid var(--line); }
 #actionsView .users-admin-hdr h2 {
@@ -116,13 +106,6 @@
 #actionsView .bc-send-btn svg,
 #actionsView .bc-del-btn svg { display: inline-block; }
 
-/* Yopiq holat */
-#actionsView .ua-locked-banner {
-  border-radius: 10px; margin: 8px 12px; padding: 10px 14px;
-  font-size: 13px; background: var(--bg2); border: 1px solid var(--line);
-}
-#actionsView .ua-locked-banner::before { content: none; }
-
 /* Kutayotganlar */
 #actionsView .pmini-wrap { margin: 0; gap: 0; }
 #actionsView .pmini-card,
@@ -135,13 +118,6 @@
 #actionsView .pmini-sub { font-size: 12px; margin: 0; color: var(--text3); }
 #actionsView .pmini-empty::before,
 #actionsView .pmini-locked::before { content: none; }
-
-/* Audit */
-#actionsView .audit-item { padding: 8px 16px; border-bottom: 1px solid var(--line); }
-#actionsView .audit-item:hover { background: var(--bg2); }
-#actionsView .audit-title { color: var(--text); font-weight: 600; }
-#actionsView .audit-empty { padding: 12px 16px; color: var(--text3); }
-#actionsView .audit-empty::before { content: none; }
 
 /* Broadcast */
 #actionsView .bc-wrap { margin: 0; padding: 12px 16px; }
