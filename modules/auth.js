@@ -687,6 +687,14 @@ async function _handleSession(session) {
   let p = null, fetchErr = null;
   try { p = await _fetchProfile(user.id); } catch (err) { fetchErr = err; }
 
+  // Yangi signup: handle_new_user trigger biroz kechikishi mumkin — 3 marta qayta urin
+  if (!p && !fetchErr && navigator.onLine) {
+    for (let i = 0; i < 3 && !p; i++) {
+      await new Promise(r => setTimeout(r, 400 * (i + 1)));
+      try { p = await _fetchProfile(user.id); } catch (err) { fetchErr = err; break; }
+    }
+  }
+
   const me = _buildMe(user, p);
   state.me = me;
 
@@ -710,7 +718,7 @@ async function _handleSession(session) {
     return;
   }
 
-  // Profil qatori yo'q (o'chirilgan) — hisobdan chiqaramiz
+  // Profil qatori yo'q (o'chirilgan yoki trigger ishlamagan) — hisobdan chiqaramiz
   if (!p) { await _forceSignOut(); return; }
 
   try {
