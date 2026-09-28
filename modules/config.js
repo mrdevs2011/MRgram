@@ -7,10 +7,10 @@
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/+esm';
 
-// Supabase Dashboard → Project Settings → API dan oling.
-// anon key ochiq bo'lishi mumkin (himoya RLS'da), service_role ni BU YERGA YOZMANG.
-export const SUPABASE_URL      = 'https://YOUR-PROJECT.supabase.co';
-export const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+// URL va anon key modules/env.js dan keladi — uni Vercel build (scripts/build-env.mjs)
+// Environment Variables'dan yozadi. service_role ni BU YERGA YOZMANG.
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env.js';
+export { SUPABASE_URL, SUPABASE_ANON_KEY };
 export const MEDIA_BUCKET      = 'media';
 
 export const SB_CONFIGURED = !/YOUR-/.test(SUPABASE_URL + SUPABASE_ANON_KEY);
