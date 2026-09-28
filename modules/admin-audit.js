@@ -11,13 +11,13 @@ const MAX_ITEMS = 30;
 
 /* ── Amal turlari uchun label/icon ── */
 const ACTION_META = {
-  userBlock:        { label: 'Foydalanuvchi bloklandi',        icon: '🔒', color: 'var(--red,#ef4444)' },
-  userUnblock:      { label: 'Foydalanuvchi blokdan chiqarildi', icon: '🔓', color: 'var(--green,#22c55e)' },
-  userDelete:       { label: 'Foydalanuvchi o\'chirildi',       icon: '🗑️', color: 'var(--red,#ef4444)' },
-  userApprove:      { label: 'Foydalanuvchi tasdiqlandi',       icon: '✅', color: 'var(--green,#22c55e)' },
-  userReject:       { label: 'Foydalanuvchi rad etildi',        icon: '⛔', color: 'var(--red,#ef4444)' },
-  broadcastSend:    { label: 'E\'lon chop etildi',               icon: '📢', color: 'var(--blue,#ffffff)' },
-  broadcastDelete:  { label: 'E\'lon o\'chirildi',                icon: '🗑️', color: 'var(--text2)' },
+  userBlock:        'Bloklandi',
+  userUnblock:      'Blokdan chiqarildi',
+  userDelete:       "O'chirildi",
+  userApprove:      'Tasdiqlandi',
+  userReject:       'Rad etildi',
+  broadcastSend:    "E'lon chop etildi",
+  broadcastDelete:  "E'lon o'chirildi",
 };
 
 /* ── Yozish ──
@@ -48,33 +48,12 @@ function _injectCSS() {
   const s = document.createElement('style');
   s.id = 'admin-audit-css';
   s.textContent = `
-.audit-wrap {
-  margin: 0 16px 8px;
-  display: flex; flex-direction: column; gap: 8px;
-  max-height: 360px;
-  overflow-y: auto;
-}
-.audit-empty {
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 16px;
-  text-align: center;
-  color: var(--text3);
-  font-size: 13px;
-}
-.audit-item {
-  display: flex; align-items: flex-start; gap: 10px;
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px 12px;
-}
-.audit-icon { font-size: 16px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
-.audit-body { flex: 1; min-width: 0; }
-.audit-title { font-size: 12.5px; font-weight: 700; }
-.audit-sub { font-size: 12px; color: var(--text2); margin-top: 2px; word-break: break-word; }
-.audit-meta { font-size: 11px; color: var(--text3); margin-top: 3px; }
+.audit-wrap { max-height: 300px; overflow-y: auto; }
+.audit-empty { padding: 12px; color: var(--text3); font-size: 13px; }
+.audit-item { display: flex; flex-wrap: wrap; gap: 2px 10px; padding: 6px 12px; border-bottom: 1px solid var(--line); font-size: 12.5px; }
+.audit-title { font-weight: 700; color: var(--text); }
+.audit-sub { color: var(--text2); word-break: break-word; }
+.audit-meta { color: var(--text3); font-family: var(--mono); font-size: 11.5px; }
 `;
   document.head.appendChild(s);
 }
@@ -107,17 +86,16 @@ export function initAuditLog(containerId) {
     }
 
     wrap.innerHTML = rows.map(r => {
-      const a = { action: r.action, targetName: r.target_name, details: r.details, adminName: r.admin_name, createdAt: ts(r.created_at) };
-      const meta = ACTION_META[a.action] || { label: a.action || 'Amal', icon: '•', color: 'var(--text2)' };
-      const dt = a.createdAt?.toDate ? a.createdAt.toDate().toLocaleString('uz-UZ') : 'hozir';
+      const label = ACTION_META[r.action] || r.action || 'Amal';
+      const ta = ts(r.created_at);
+      const dt = ta?.toDate ? ta.toDate().toLocaleString('uz-UZ') : 'hozir';
+      const what = [r.target_name, r.details].filter(Boolean).join(' — ');
       return `
         <div class="audit-item">
-          <div class="audit-icon">${meta.icon}</div>
-          <div class="audit-body">
-            <div class="audit-title" style="color:${meta.color}">${esc(meta.label)}</div>
-            ${a.targetName ? `<div class="audit-sub">${esc(a.targetName)}${a.details ? ' — ' + esc(a.details) : ''}</div>` : (a.details ? `<div class="audit-sub">${esc(a.details)}</div>` : '')}
-            <div class="audit-meta">${esc(a.adminName || 'Admin')} · ${dt}</div>
-          </div>
+          <span class="audit-meta">[${dt}]</span>
+          <span class="audit-title">${esc(label)}</span>
+          ${what ? `<span class="audit-sub">${esc(what)}</span>` : ''}
+          <span class="audit-meta">${esc(r.admin_name || 'Admin')}</span>
         </div>`;
     }).join('');
   };

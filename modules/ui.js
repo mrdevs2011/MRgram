@@ -200,27 +200,10 @@ function showSuggestions(list) {
         const { openUserProfileModal } = await import('./profile.js');
         openUserProfileModal(chosen.uid);
       } else {
-        // DIET F3: Explore sahifasi yo'q — oddiy lentani filtrlash
-        if (searchInput) searchInput.value = chosen.value;
-        _doSearch(chosen.value);
-        closeSearchOverlayKeepQuery(chosen.value);
+        window.dispatchEvent(new CustomEvent('explore:commit', { detail: chosen.value }));
       }
     });
   });
-}
-
-/* Overlay yopiladi, lekin so'rov saqlanadi (feed filtri ishlashi uchun) */
-function closeSearchOverlayKeepQuery(val) {
-  searchOverlay?.classList.remove('open');
-  sbSearchToggle?.classList.remove('search-active');
-  state.search = val;
-  clearTimeout(window._sT);
-  window._sT = setTimeout(async () => {
-    state.visibleN = 10;
-    const { renderFeed } = await import('./feed.js');
-    if (state.view !== 'home') switchView('home');
-    else renderFeed();
-  }, 50);
 }
 
 function escapeHtml(str) {
@@ -316,13 +299,12 @@ if (searchInput) {
           const { openUserProfileModal } = await import('./profile.js');
           openUserProfileModal(chosen.uid);
         } else {
-          // DIET F3: Explore yo'q — lentani filtrlash
-          closeSearchOverlayKeepQuery(chosen.value);
+          window.dispatchEvent(new CustomEvent('explore:commit', { detail: chosen.value }));
         }
       } else {
-        // Enter: taklif tanlanmagan — oddiy filtr (DIET F3: Explore sahifasi olib tashlandi)
+        // Enter: taklif tanlanmagan — Explore natijalar sahifasi (X kabi)
         suggestionsEl?.classList.remove('show');
-        closeSearchOverlayKeepQuery(searchInput.value.trim());
+        window.dispatchEvent(new CustomEvent('explore:commit', { detail: searchInput.value }));
       }
     } else if (e.key === 'Escape') {
       closeSearchOverlay();

@@ -872,6 +872,7 @@ export function listenPosts() {
       const newP = newPosts.find(p => p.id === oldP.id);
       return newP && (
         newP.likes !== oldP.likes ||
+        newP.views !== oldP.views ||
         newP.commentCount !== oldP.commentCount
       );
     });

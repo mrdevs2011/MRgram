@@ -3,10 +3,10 @@
  * Faqat admin (profiles.is_admin) uchun
  */
 
-import { sb, state, isAdmin, fetchAllRows, mapProfile, purgeUserMedia } from './config.js';
-import { $, esc as _esc } from './utils.js';
+import { sb, state, isAdmin, fetchAllRows, mapProfile, mapPost, ts, purgeUserMedia, verifyPassword } from './config.js';
+import { $ } from './utils.js';
 import { toast } from './toast.js';
-import { adminResetPassword } from './admin-reset-password.js';
+import { logAdminAction } from './admin-audit.js';
 
 async function _updateProfile(uid, patch) {
   const { error } = await sb.from('profiles').update(patch).eq('id', uid);
@@ -34,13 +34,21 @@ async function _invalidateAndRefreshFeed(uid) {
 let _unsubUsers = null;
 let _initialized = false;
 
+/* ── Parol bilan ochish (har gal panel ochilganda qayta yopiq holatda
+ * boshlanadi — admin hisobiga kirgan boshqa kishi parolni bilmasa
+ * hech narsa ko'ra olmaydi, hatto username ham) ───────────────────────── */
+let _unlocked = false;
 let _lastUsers = [];
 let _searchQuery = '';
 let _statusFilter = 'all';
+let _stats = {}; // uid -> { posts, views, likes, publicPosts, lastPostAt, chats, lastChatAt }
+let _statsLoaded = false;
 
 /* ── Modal state ────────────────────────────────────────────────────── */
 let _pendingAction = null; // { type: 'delete'|'block'|'unblock', uid, name }
-let _blockDurH = null;   // tanlangan blok muddati (soat; 0 = doimiy)
+
+/* ── Admin panel blok countdown ─────────────────────────────────────── */
+let _adminBlockTimers = {}; // uid -> intervalId
 
 /* ── initView ───────────────────────────────────────────────────────── */
 export function initView() {
@@ -49,7 +57,9 @@ export function initView() {
     if (wrap) wrap.innerHTML = '<p style="padding:24px;color:var(--text2)">Ruxsat yo\'q.</p>';
     return;
   }
+  _unlocked = false; // panelga har kirishda qaytadan parol so'raladi
   _ensureModal();
+  _ensurePasswordModal();
   _ensureSearchFilter();
   // Har doim yangi onSnapshot ulaymiz — destroyView() uni to'xtatgan bo'lishi mumkin
   _initialized = true;
@@ -182,21 +192,17 @@ function _openBlockModal(uid, name, isBlocked) {
     $('uaModalIcon').innerHTML    = _svgLock();
     $('uaModalTitle').textContent  = "Bloklaymizmi?";
 
-    $('uaModalBody').innerHTML = `<strong>${_esc(name)}</strong> ni qanchalik bloklaysizmi?` +
-      `<div id="uaBlockUntilWrap" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-         <button class="ua-dur-btn" data-h="1"   style="flex:1">1 soat</button>
-         <button class="ua-dur-btn" data-h="24"  style="flex:1">1 kun</button>
-         <button class="ua-dur-btn" data-h="168" style="flex:1">7 kun</button>
-         <button class="ua-dur-btn ua-dur-btn--perm" data-h="0" style="flex:1">Doimiy</button>
-       </div>`;
-    _blockDurH = null;
-    document.querySelectorAll('.ua-dur-btn').forEach(b => {
-      b.addEventListener('click', () => {
-        _blockDurH = Number(b.dataset.h);
-        document.querySelectorAll('.ua-dur-btn').forEach(x => x.classList.remove('ua-dur-btn--on'));
-        b.classList.add('ua-dur-btn--on');
-      });
+    $('uaModalBody').innerHTML = `<strong>${_esc(name)}</strong> bloklansinmi?<br>
+      <span class="ua-modal-warn">Muddatni belgilang (millisoniyagacha aniqlik bilan):</span>
+      <div id="uaBlockUntilWrap" style="margin-top:12px;"></div>`;
+
+    import('./duration-picker.js').then(({ createDurationPicker }) => {
+      const wrap = document.getElementById('uaBlockUntilWrap');
+      if (!wrap) return;
+      const picker = createDurationPicker(wrap, { allowPermanent: true });
+      wrap._picker = picker;
     });
+
     $('uaModalConfirmTxt').textContent = "Bloklash";
     $('uaModalConfirm').className  = 'ua-modal-confirm ua-modal-confirm--warn';
   }
@@ -225,24 +231,31 @@ async function _confirmAction() {
       const { error: delErr } = await sb.rpc('admin_delete_user', { p_uid: uid });
       if (delErr) throw delErr;
       toast(`${name} butunlay o'chirildi`, 'success');
+      logAdminAction({ action: 'userDelete', targetUid: uid, targetName: name });
       await _invalidateAndRefreshFeed(uid);
 
     } else if (type === 'block') {
-      // DIET F2: ms-aniq picker o'rniga 4 tugma (1 soat / 1 kun / 7 kun / doimiy)
+      // Advanced Duration Picker'dan aniq muddatni (ms) olamiz
+      const untilWrap = document.getElementById('uaBlockUntilWrap');
+      const picker = untilWrap?._picker;
+      const selectedMs = picker ? picker.getMs() : 0;
       let untilDate = null;
-      if (_blockDurH !== null && _blockDurH > 0) untilDate = new Date(Date.now() + _blockDurH * 3600 * 1000);
+      if (selectedMs > 0) untilDate = picker.getUntilDate();
       await _updateProfile(uid, {
         blocked: true,
         approval: 'pending',
         blocked_until: untilDate ? untilDate.toISOString() : null,
       });
-      const untilMsg = untilDate ? ` (${untilDate.toLocaleString('uz-UZ')} gacha)` : ' (doimiy)';
+      const untilMsg = untilDate
+        ? ` (${untilDate.toLocaleString('uz-UZ')} gacha)` : ' (doimiy)';
       toast(`${name} bloklandi${untilMsg}`, 'info');
+      logAdminAction({ action: 'userBlock', targetUid: uid, targetName: name, details: untilMsg.trim() });
       await _invalidateAndRefreshFeed(uid);
 
     } else if (type === 'unblock') {
       await _updateProfile(uid, { blocked: false, blocked_until: null, approval: 'approved' });
       toast(`${name} blokdan chiqarildi `, 'success');
+      logAdminAction({ action: 'userUnblock', targetUid: uid, targetName: name });
       await _invalidateAndRefreshFeed(uid);
     }
     _closeModal();
@@ -282,11 +295,183 @@ function _loadUsers() {
   load();
 }
 
+/* ── Parol modal (admin o'zining joriy parolini qayta kiritadi) ──────── */
+function _ensurePasswordModal() {
+  if ($('uaPwdModal')) return;
+
+  const modal = document.createElement('div');
+  modal.id = 'uaPwdModal';
+  modal.className = 'ua-modal-overlay';
+  modal.innerHTML = `
+    <div class="ua-modal">
+      <div class="ua-modal-icon">${_svgKey()}</div>
+      <div class="ua-modal-title">Maxfiy ma'lumotlar</div>
+      <div class="ua-modal-body">
+        Foydalanuvchilar ro'yxatini to'liq ko'rish va boshqarish uchun
+        admin parolini qayta tasdiqlang.
+        <input type="password" id="uaPwdInput" placeholder="Admin paroli"
+          class="ua-pwd-input" autocomplete="current-password">
+        <div id="uaPwdErr" class="ua-modal-warn" style="display:none"></div>
+      </div>
+      <div class="ua-modal-btns">
+        <button class="ua-modal-cancel" id="uaPwdCancel">Bekor qilish</button>
+        <button class="ua-modal-confirm" id="uaPwdConfirm">
+          <span id="uaPwdConfirmTxt">Mayli</span>
+        </button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+
+  const close = () => {
+    modal.classList.remove('show');
+    $('uaPwdInput').value = '';
+    $('uaPwdErr').style.display = 'none';
+    _pendingOpenUid  = null;
+    _pendingOpenName = null;
+  };
+
+  $('uaPwdCancel').addEventListener('click', close);
+  modal.addEventListener('click', e => { if (e.target === modal) close(); });
+
+  const submit = async () => {
+    const pwd = $('uaPwdInput').value;
+    const errEl = $('uaPwdErr');
+    const btn = $('uaPwdConfirm');
+    const txt = $('uaPwdConfirmTxt');
+    errEl.style.display = 'none';
+
+    if (!pwd) {
+      errEl.textContent = "Parolni kiriting";
+      errEl.style.display = 'block';
+      return;
+    }
+    const _email = state.me?.email;
+    if (!_email) {
+      errEl.textContent = "Sessiya topilmadi, qayta kiring";
+      errEl.style.display = 'block';
+      return;
+    }
+
+    btn.disabled = true;
+    txt.textContent = '...';
+    try {
+      await verifyPassword(_email, pwd);
+      _unlocked = true;
+      close();
+      if (_pendingOpenUid) {
+        const _uid = _pendingOpenUid;
+        const _name = _pendingOpenName;
+        _pendingOpenUid = null;
+        _pendingOpenName = null;
+        _renderList();
+        _loadExtraStats();
+        _ensureDetailModal();
+        _openDetailModal(_uid, _name);
+      } else {
+        _renderList();
+        _loadExtraStats();
+        toast("Ma'lumotlar ochildi", 'success');
+      }
+    } catch (err) {
+      errEl.textContent = (err.code === 'wrong-password')
+        ? "Parol noto'g'ri"
+        : "Xatolik: " + err.message;
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      txt.textContent = 'Mayli';
+    }
+  };
+
+  $('uaPwdConfirm').addEventListener('click', submit);
+  $('uaPwdInput')
+}
+
+function _openPasswordModal() {
+  const modal = $('uaPwdModal');
+  if (!modal) return;
+  modal.classList.add('show');
+  setTimeout(() => $('uaPwdInput')?.focus(), 50);
+}
+
+/* ── Postlar va chatlar bo'yicha qo'shimcha statistika ─────────────────
+ * Faqat parol tasdiqlangandan keyin, bir martagina yuklanadi
+ * (ko'p o'qishdan saqlanish uchun keshlanadi). ──────────────────────── */
+async function _loadExtraStats() {
+  if (_statsLoaded) { _renderList(); return; }
+
+  const wrap = $('usersAdminList');
+  try {
+    const [postRows, chatRows] = await Promise.all([
+      fetchAllRows('posts', 'id,user_id,text,media_path,is_public,views,likes_count,created_at'),
+      fetchAllRows('chats', 'id,user_a,user_b,last_message,last_sender_id,last_message_at', 'last_message_at'),
+    ]);
+
+    const stats = {};
+    const ensure = uid => (stats[uid] ||= {
+      posts: 0, views: 0, likes: 0, publicPosts: 0, lastPostAt: 0, chats: 0, lastChatAt: 0,
+      postList: [], chatList: []
+    });
+
+    postRows.forEach(r => {
+      const d = { id: r.id };
+      const p = mapPost(r);
+      const uid = p.userId;
+      if (!uid) return;
+      const s = ensure(uid);
+      s.posts++;
+      s.views += p.views || 0;
+      s.likes += p.likes || 0;
+      if (p.isPublic) s.publicPosts++;
+      const t = p.createdAt?.toMillis?.() || 0;
+      if (t > s.lastPostAt) s.lastPostAt = t;
+      s.postList.push({
+        id: d.id, url: p.mediaUrl || '', text: p.text || '',
+        isPublic: !!p.isPublic, views: p.views || 0, likes: p.likes || 0, at: t
+      });
+    });
+
+    chatRows.forEach(r => {
+      const d = { id: r.id };
+      const c = { lastMessageAt: ts(r.last_message_at), participants: [r.user_a, r.user_b], lastMessage: r.last_message, lastSenderId: r.last_sender_id };
+      const t = c.lastMessageAt?.toMillis?.() || 0;
+      const parts = c.participants || [];
+      parts.forEach(uid => {
+        const s = ensure(uid);
+        s.chats++;
+        if (t > s.lastChatAt) s.lastChatAt = t;
+        const otherUid = parts.find(p => p !== uid) || '';
+        s.chatList.push({
+          chatId: d.id, otherUid,
+          lastMessage: c.lastMessage || '',
+          lastSenderId: c.lastSenderId || '',
+          at: t
+        });
+      });
+    });
+
+    Object.values(stats).forEach(s => {
+      s.postList.sort((a,b) => b.at - a.at);
+      s.chatList.sort((a,b) => b.at - a.at);
+    });
+
+    _stats = stats;
+    _statsLoaded = true;
+  } catch (err) {
+    console.warn('[Admin] Stats yuklashda xato:', err.message);
+  }
+  _renderList();
+}
+
 /* ── Foydalanuvchi bo'yicha "USER MALUMOTLARI" panel (3 tab) ──────────
  * Tablar: Ochiq malumotlar / Statuslar va yopiq malumotlar / Tarixlar.
  * Suhbatlar bo'limida faqat metama'lumot (oxirgi xabar preview'i) —
  * to'liq yozishma tarixi emas. ────────────────────────────────────── */
 let _detailUid = null;
+let _detailTab = 'info';
+let _pendingOpenUid = null;
+let _pendingOpenName = null;
+let _loginHistoryCache = {}; // uid -> array | 'loading'
 
 function _ensureDetailModal() {
   if ($('uaDetailModal')) return;
@@ -299,6 +484,11 @@ function _ensureDetailModal() {
         <div class="ua-modal-title" style="margin:0">User malumotlari</div>
         <div class="ua-detail-avi" id="uaDetailAvi"></div>
       </div>
+      <div class="ua-detail-tabs">
+        <button class="ua-detail-tab" data-tab="info">Ochiq malumotlar</button>
+        <button class="ua-detail-tab" data-tab="status">Statuslar va yopiq malumotlar</button>
+        <button class="ua-detail-tab" data-tab="tarix">Tarixlar</button>
+      </div>
       <div class="ua-detail-body" id="uaDetailBody"></div>
       <div class="ua-modal-btns">
         <button class="ua-modal-cancel" id="uaDetailClose">Yopish</button>
@@ -309,10 +499,17 @@ function _ensureDetailModal() {
   $('uaDetailClose').addEventListener('click', () => modal.classList.remove('show'));
   modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
 
+  modal.querySelectorAll('.ua-detail-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      _detailTab = btn.dataset.tab;
+      _renderDetailBody();
+    });
+  });
 }
 
 function _openDetailModal(uid, name) {
   _detailUid = uid;
+  _detailTab = 'info';
   const u = _lastUsers.find(x => (x.uid || x.id) === uid) || {};
   const initials = (name || 'U').trim()[0]?.toUpperCase() || 'U';
   $('uaDetailAvi').innerHTML = u.avatar
@@ -322,27 +519,111 @@ function _openDetailModal(uid, name) {
   _renderDetailBody();
 }
 
-function _renderDetailBody() {
+async function _renderDetailBody() {
   const body = $('uaDetailBody');
   if (!body || !_detailUid) return;
 
+  document.querySelectorAll('.ua-detail-tab').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === _detailTab));
+
   const u = _lastUsers.find(x => (x.uid || x.id) === _detailUid) || {};
+  const s = _stats[_detailUid] || { postList: [], chatList: [] };
   const row = (label, value) => `
     <div class="ua-field-row">
       <span class="ua-field-label">${_esc(label)}</span>
       <span class="ua-field-value">${value || '—'}</span>
     </div>`;
-  const fmt = (v) => v?.toDate ? v.toDate().toLocaleString('uz-UZ') : '';
 
-  /* DIET F2: 3 tab + post/chat tarixi o'rniga bitta kartochka */
-  body.innerHTML =
-    row('Ism', _esc(u.fullName || '')) +
-    row('Foydalanuvchi nomi', u.username ? '@' + _esc(u.username) : '') +
-    row('Elektron pochta', u.email ? _esc(u.email) : '') +
-    row('Holat', _statusBadge(u)) +
-    row('Bio', u.bio ? _esc(u.bio) : '') +
-    row('Ro\'yxatdan', fmt(u.createdAt)) +
-    row('Oxirgi faollik', fmt(u.lastSeenAt) || fmt(u.lastLoginAt));
+  /* ── Tab 1: Ochiq malumotlar ── */
+  if (_detailTab === 'info') {
+    body.innerHTML =
+      row('Ism', _esc(u.fullName || u.username || '')) +
+      row('Foydalanuvchi nomi', u.username ? '@' + _esc(u.username) : '') +
+      row('To\'liq ism', _esc(u.fullName || '')) +
+      row('UID', `<span style="font-size:12px;opacity:.7">${_esc(_detailUid)}</span>`) +
+      row('Bio (tavsif)', u.bio ? _esc(u.bio) : '');
+
+  /* ── Tab 2: Statuslar va yopiq malumotlar ── */
+  } else if (_detailTab === 'status') {
+    const approvedAt = u.approvedAt?.toDate ? u.approvedAt.toDate().toLocaleString('uz-UZ') : '';
+    const blockedAt  = u.blockedAt?.toDate  ? u.blockedAt.toDate().toLocaleString('uz-UZ')  : '';
+    const lastSeen   = u.lastSeenAt?.toDate ? u.lastSeenAt.toDate().toLocaleString('uz-UZ') : '';
+    const lastLogin  = u.lastLoginAt?.toDate? u.lastLoginAt.toDate().toLocaleString('uz-UZ'): '';
+    const devices    = Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0;
+    body.innerHTML =
+      row('Holat', _statusBadge(u)) +
+      row('Elektron pochta', u.email ? _esc(u.email) : '') +
+      row('Ruxsat berilgan', approvedAt) +
+      row('Bloklangan', blockedAt) +
+      row('Qurilmalar (push)', String(devices)) +
+      row('Oxirgi faollik', lastSeen) +
+      row('Oxirgi login', lastLogin) +
+      row('Platforma', u.lastPlatform ? _esc(u.lastPlatform) : '') +
+      (u.lastUserAgent ? `<div class="ua-field-row"><span class="ua-field-label">User agent</span>
+        <span class="ua-field-value" style="font-size:11px;word-break:break-all;opacity:.75">${_esc(u.lastUserAgent)}</span></div>` : '');
+
+  /* ── Tab 3: Tarixlar (login tarixi + postlar + suhbatlar) ── */
+  } else if (_detailTab === 'tarix') {
+    body.innerHTML = '<div class="spin-wrap"><div class="spinner"></div></div>';
+
+    let entries = _loginHistoryCache[_detailUid];
+    if (!entries || entries === 'loading') {
+      _loginHistoryCache[_detailUid] = 'loading';
+      try {
+        const { data, error } = await sb.from('login_history').select('*')
+          .eq('user_id', _detailUid).order('at', { ascending: false });
+        if (error) throw error;
+        entries = (data || []).map(r => ({ type: r.type, at: ts(r.at), platform: r.platform, userAgent: r.user_agent }));
+        _loginHistoryCache[_detailUid] = entries;
+      } catch (err) {
+        entries = [];
+      }
+    }
+    if (_detailTab !== 'tarix') return; // tab almashtirilgan bo'lsa eski natijani chizmaymiz
+
+    const pub  = s.postList.filter(p => p.isPublic);
+    const priv = s.postList.filter(p => !p.isPublic);
+    const postRow = p => `
+      <a class="ua-post-link" href="${p.url || '#'}" target="_blank" rel="noopener">
+        ${p.url ? 'Media' : 'Link yo\'q'}${p.text ? ' — ' + _esc(p.text.slice(0,40)) : ''}
+        <span class="ua-date" style="display:block">
+          ${p.views} ko'rish · ${p.likes} like ${p.at ? '· ' + new Date(p.at).toLocaleString('uz-UZ') : ''}
+        </span>
+      </a>`;
+    const chatRows = (s.chatList || []).map(c => {
+      const other = _lastUsers.find(x => (x.uid || x.id) === c.otherUid);
+      const otherName = other ? (other.fullName || other.username || c.otherUid) : (c.otherUid || 'Noma\'lum');
+      return `
+      <div class="ua-detail-row">
+        <div><strong>${_esc(otherName)}</strong> bilan suhbat</div>
+        <div class="ua-date">${_esc((c.lastMessage||'').slice(0,80) || '(media/bo\'sh)')}
+          ${c.at ? '· ' + new Date(c.at).toLocaleString('uz-UZ') : ''}</div>
+      </div>`;
+    }).join('');
+
+    body.innerHTML = `
+      <div class="ua-detail-section">
+        <div class="ua-detail-section-title">Kirish tarixi (${entries.length})</div>
+        ${entries.length ? entries.map(h => `
+          <div class="ua-detail-row">
+            <div>${h.type === 'login' ? 'Login (parol bilan)' : 'Sessiya tiklandi'}
+              — ${h.at?.toDate ? h.at.toDate().toLocaleString('uz-UZ') : ''}</div>
+            ${h.platform ? `<div class="ua-date">${_esc(h.platform)}</div>` : ''}
+          </div>`).join('') : '<p class="ua-empty">Tarix yo\'q (eski foydalanuvchi)</p>'}
+      </div>
+      <div class="ua-detail-section">
+        <div class="ua-detail-section-title">Ochiq postlar (${pub.length})</div>
+        ${pub.length ? pub.map(postRow).join('') : '<p class="ua-empty">Yo\'q</p>'}
+      </div>
+      <div class="ua-detail-section">
+        <div class="ua-detail-section-title">Yopiq (private) postlar (${priv.length})</div>
+        ${priv.length ? priv.map(postRow).join('') : '<p class="ua-empty">Yo\'q</p>'}
+      </div>
+      <div class="ua-detail-section">
+        <div class="ua-detail-section-title">Suhbatlar (${(s.chatList||[]).length})</div>
+        ${chatRows || '<p class="ua-empty">Suhbat yo\'q</p>'}
+      </div>`;
+  }
 }
 
 /* ── Helpers ────────────────────────────────────────────────────────── */
@@ -377,6 +658,7 @@ async function _doApprove(btn, uid, name) {
   try {
     await _updateProfile(uid, { approval: 'approved' });
     toast('Ruxsat berildi ', 'success');
+    logAdminAction({ action: 'userApprove', targetUid: uid, targetName: name });
     await _invalidateAndRefreshFeed(uid);
   } catch (err) {
     toast('Xatolik: ' + err.message, 'error');
@@ -389,6 +671,7 @@ async function _doReject(btn, uid, name) {
   try {
     await _updateProfile(uid, { approval: 'rejected' });
     toast('Rad etildi', 'info');
+    logAdminAction({ action: 'userReject', targetUid: uid, targetName: name });
     await _invalidateAndRefreshFeed(uid);
   } catch (err) {
     toast('Xatolik: ' + err.message, 'error');
@@ -398,7 +681,8 @@ async function _doReject(btn, uid, name) {
 
 /* ── "Kutayotgan foydalanuvchilar" tezkor mini-bo'lim ──
  * actionsView boshida — scroll qilmasdan tasdiqlash/rad etish uchun.
- ── */
+ * Umumiy ro'yxat kabi parol bilan qulflangan (_unlocked=false bo'lsa
+ * faqat son ko'rsatiladi, ismlar yashirin). ── */
 function _ensurePendingMiniCSS() {
   if (document.getElementById('pending-mini-css')) return;
   const s = document.createElement('style');
@@ -448,6 +732,26 @@ function _renderPendingMini(users) {
 
   const pending = (users || []).filter(u => u.approved === false && !u.blocked);
 
+  if (!_unlocked) {
+    if (!pending.length) {
+      section.innerHTML = `<div class="pmini-wrap"><div class="pmini-empty">Kutayotgan foydalanuvchilar yo'q</div></div>`;
+      return;
+    }
+    section.innerHTML = `
+      <div class="pmini-wrap">
+        <div class="pmini-locked" id="pminiUnlockBar">
+          <span class="pmini-locked-count">${pending.length} ta kutayotgan foydalanuvchi</span>
+          <span class="pmini-locked-hint">Parol bilan ochish →</span>
+        </div>
+      </div>`;
+    document.getElementById('pminiUnlockBar')?.addEventListener('click', () => {
+      _pendingOpenUid = null;
+      _pendingOpenName = null;
+      _openPasswordModal();
+    });
+    return;
+  }
+
   if (!pending.length) {
     section.innerHTML = `<div class="pmini-wrap"><div class="pmini-empty">Kutayotgan foydalanuvchilar yo'q</div></div>`;
     return;
@@ -486,6 +790,45 @@ function _render(wrap, users) {
     return;
   }
 
+  if (!_unlocked) {
+    /* ── Yopiq holat: ism + pending badge ko'rinadi, boshqa ma'lumot yashirin ── */
+    wrap.innerHTML = `
+      <div class="ua-locked-banner">
+        To'liq ma'lumot va boshqaruv tugmalari berkitilgan.
+        <button id="uaUnlockBtn" class="ua-unlock-banner-btn">Parol bilan ochish</button>
+      </div>` + users.map(u => {
+        const name = u.fullName || u.username || u.uid || u.id;
+        const isPending = u.approved === false;
+        const isRejected = u.approved === 'rejected';
+        const badgeHtml = isPending
+          ? `<span class="ua-badge ua-badge--pending" style="margin-left:8px">Kutilmoqda</span>`
+          : isRejected
+          ? `<span class="ua-badge ua-badge--rejected" style="margin-left:8px">Rad etildi</span>`
+          : '';
+        return `
+        <div class="ua-row ua-row--locked" data-uid="${u.uid || u.id}">
+          <div class="ua-info">
+            <div class="ua-name">${_esc(name)}${badgeHtml}</div>
+          </div>
+        </div>`;
+      }).join('');
+
+    wrap.querySelectorAll('.ua-row--locked').forEach(row => {
+      row.addEventListener('click', () => {
+        _pendingOpenUid  = row.dataset.uid;
+        _pendingOpenName = (row.querySelector('.ua-name')?.textContent || '').trim();
+        _openPasswordModal();
+      });
+    });
+    $('uaUnlockBtn')?.addEventListener('click', e => {
+      e.stopPropagation();
+      _pendingOpenUid  = null;
+      _pendingOpenName = null;
+      _openPasswordModal();
+    });
+    return;
+  }
+
   wrap.innerHTML = users.map(u => {
     const name      = u.fullName || u.username || u.uid || u.id;
     const uname     = u.username ? `@${u.username}` : '';
@@ -509,7 +852,6 @@ function _render(wrap, users) {
         ${_approveBtn(u)}
         ${_rejectBtn(u)}
         <button class="ua-history-btn" data-uid="${uid}" data-name="${_esc(name)}">Ma'lumot</button>
-        <button class="ua-resetpwd-btn" data-uid="${uid}" data-name="${_esc(name)}">Parolni almashtirish</button>
         <button class="${blockBtnClass}" data-uid="${uid}" data-name="${_esc(name)}" data-blocked="${isBlocked}" data-blocked-until-ms="${blockedUntilMs}">${blockBtnLabel}</button>
         <button class="ua-delete-btn" data-uid="${uid}" data-name="${_esc(name)}">O'chirish</button>
       </div>
@@ -543,15 +885,16 @@ function _render(wrap, users) {
     });
   });
 
-  /* Parolni almashtirish (DIET F2 — admin parol reset) */
-  wrap.querySelectorAll('.ua-resetpwd-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      adminResetPassword(btn.dataset.uid, btn.dataset.name);
-    });
+  /* Admin panel — vaqtli blok countdownlari */
+  _clearAllAdminTimers();
+  wrap.querySelectorAll('.ua-unblock-btn[data-blocked-until-ms]').forEach(btn => {
+    const uid = btn.dataset.uid;
+    const untilMs = Number(btn.dataset.blockedUntilMs);
+    if (!untilMs || untilMs <= 0) return;
+    _startAdminBlockCountdown(btn, uid, untilMs);
   });
 
-  /* User kartochkasi */
+  /* To'liq tarix */
   wrap.querySelectorAll('.ua-history-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
@@ -567,6 +910,51 @@ function _render(wrap, users) {
       _openDeleteModal(btn.dataset.uid, btn.dataset.name);
     });
   });
+}
+
+/* ── Admin panel blok countdown yordamchilari ───────────────────────── */
+function _clearAllAdminTimers() {
+  Object.values(_adminBlockTimers).forEach(id => clearInterval(id));
+  _adminBlockTimers = {};
+}
+
+function _fmtCountdown(ms) {
+  if (ms <= 0) return '0s';
+  const totalSec = Math.floor(ms / 1000);
+  const d = Math.floor(totalSec / 86400);
+  const h = Math.floor((totalSec % 86400) / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  if (d > 0) return `${d}k ${h}s ${m}m`;
+  if (h > 0) return `${h}s ${m}m ${s}sec`;
+  if (m > 0) return `${m}m ${s}sec`;
+  return `${s}sec`;
+}
+
+function _startAdminBlockCountdown(btn, uid, untilMs) {
+  // Darhol ko'rsatamiz
+  const update = () => {
+    const remaining = untilMs - Date.now();
+    if (remaining <= 0) {
+      // Vaqt tugadi — Firestore da unblock, tugmani qizilga o'zgartir
+      clearInterval(_adminBlockTimers[uid]);
+      delete _adminBlockTimers[uid];
+      // Firestore ni yangilaymiz
+      _updateProfile(uid, { blocked: false, blocked_until: null, approval: 'approved' }).catch(() => {});
+      // Tugmani darhol o'zgartiramiz
+      btn.className = 'ua-block-btn';
+      btn.textContent = 'Bloklash';
+      btn.dataset.blocked = 'false';
+      btn.dataset.blockedUntilMs = '0';
+      // Row dan blocked klassini olamiz
+      const row = btn.closest('.ua-row');
+      if (row) row.classList.remove('ua-row--blocked');
+      return;
+    }
+    btn.textContent = _fmtCountdown(remaining);
+  };
+  update();
+  _adminBlockTimers[uid] = setInterval(update, 1000);
 }
 
 function _svgTrash() {
@@ -591,8 +979,17 @@ function _svgKey() {
   </svg>`;
 }
 
+function _esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
 export function destroyView() {
   if (_unsubUsers) { _unsubUsers(); _unsubUsers = null; }
+  _clearAllAdminTimers();
   _initialized = false;
+  _unlocked = false;
+  _statsLoaded = false;
+  _stats = {};
 }

@@ -1,11 +1,50 @@
 {
-  "buildCommand": "node scripts/build-env.mjs && node scripts/build-css.mjs",
+  "buildCommand": "node scripts/build-env.mjs",
   "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/.well-known/assetlinks.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
-      "source": "/((?!modules/|CSS/|svg/|icons/|app.css).*)",
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/modules/:path*",
+      "destination": "/modules/:path*"
+    },
+    {
+      "source": "/CSS/:path*",
+      "destination": "/CSS/:path*"
+    },
+    {
+      "source": "/svg/:path*",
+      "destination": "/svg/:path*"
+    },
+    {
+      "source": "/icons/:path*",
+      "destination": "/icons/:path*"
+    },
+    {
+      "source": "/img/:path*",
+      "destination": "/img/:path*"
+    },
+    {
+      "source": "/.well-known/:path*",
+      "destination": "/.well-known/:path*"
+    },
+    {
+      "source": "/((?!api/|modules/|CSS/|svg/|icons/|img/|\\.well-known/).*)",
       "destination": "/index.html"
     }
   ]
