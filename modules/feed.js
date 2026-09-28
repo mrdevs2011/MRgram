@@ -66,31 +66,31 @@ function getFileIcon(name, mime) {
   const ext = (name.split('.').pop() || '').toLowerCase();
   const m   = (mime || '').toLowerCase();
   if (m.startsWith('audio') || ['mp3','wav','ogg','aac','flac','m4a','wma','opus','aiff','mid','midi'].includes(ext))
-    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(168,85,247,0.12)"/><path d="M18 34V18l16-4v16" stroke="#a855f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="34" r="3" fill="#a855f7"/><circle cx="31" cy="30" r="3" fill="#a855f7"/><path d="M20 22l12-3" stroke="#a855f7" stroke-width="1.6" stroke-linecap="round" opacity=".5"/></svg>`;
+    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/><path d="M18 34V18l16-4v16" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="34" r="3" fill="#ffffff"/><circle cx="31" cy="30" r="3" fill="#ffffff"/><path d="M20 22l12-3" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity=".5"/></svg>`;
   if (['html','htm'].includes(ext) || m === 'text/html')
     return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(249,115,22,0.12)"/><path d="M14 18l-5 6 5 6" stroke="#f97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 18l5 6-5 6" stroke="#f97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><line x1="28" y1="14" x2="20" y2="34" stroke="#f97316" stroke-width="2" stroke-linecap="round" opacity=".6"/></svg>`;
   if (['ts','tsx'].includes(ext))
-    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(59,130,246,0.12)"/><rect x="10" y="10" width="28" height="28" rx="5" fill="#3b82f6"/><text x="24" y="30" text-anchor="middle" font-family="monospace" font-weight="800" font-size="14" fill="white">TS</text></svg>`;
+    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/><rect x="10" y="10" width="28" height="28" rx="5" fill="#ffffff"/><text x="24" y="30" text-anchor="middle" font-family="monospace" font-weight="800" font-size="14" fill="white">TS</text></svg>`;
   if (['js','mjs','cjs','jsx'].includes(ext) || m.includes('javascript'))
     return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(234,179,8,0.12)"/><rect x="10" y="10" width="28" height="28" rx="5" fill="#eab308"/><text x="24" y="30" text-anchor="middle" font-family="monospace" font-weight="800" font-size="14" fill="#111">${ext==='jsx'?'JSX':'JS'}</text></svg>`;
   if (ext === 'pdf' || m === 'application/pdf')
     return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(239,68,68,0.12)"/><path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#ef4444" stroke-width="2"/><path d="M29 8v8h8" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><text x="24" y="34" text-anchor="middle" font-family="monospace" font-weight="700" font-size="9" fill="#ef4444">PDF</text></svg>`;
   if (['zip','rar','7z','tar','gz','bz2','xz'].includes(ext))
-    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(139,92,246,0.12)"/><rect x="12" y="16" width="24" height="20" rx="3" stroke="#8b5cf6" stroke-width="2"/><path d="M12 22h24" stroke="#8b5cf6" stroke-width="2"/><rect x="20" y="8" width="8" height="8" rx="2" stroke="#8b5cf6" stroke-width="2"/><line x1="24" y1="8" x2="24" y2="16" stroke="#8b5cf6" stroke-width="2"/></svg>`;
+    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/><rect x="12" y="16" width="24" height="20" rx="3" stroke="#ffffff" stroke-width="2"/><path d="M12 22h24" stroke="#ffffff" stroke-width="2"/><rect x="20" y="8" width="8" height="8" rx="2" stroke="#ffffff" stroke-width="2"/><line x1="24" y1="8" x2="24" y2="16" stroke="#ffffff" stroke-width="2"/></svg>`;
   if (['doc','docx'].includes(ext) || m.includes('msword') || m.includes('wordprocessingml'))
-    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(37,99,235,0.12)"/><path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#2563eb" stroke-width="2"/><line x1="16" y1="26" x2="32" y2="26" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="31" x2="28" y2="31" stroke="#2563eb" stroke-width="2" stroke-linecap="round" opacity=".6"/><text x="24" y="23" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="8" fill="#2563eb">W</text></svg>`;
+    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/><path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#ffffff" stroke-width="2"/><line x1="16" y1="26" x2="32" y2="26" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="31" x2="28" y2="31" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".6"/><text x="24" y="23" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="8" fill="#ffffff">W</text></svg>`;
   if (['xls','xlsx','csv','ods'].includes(ext) || m.includes('spreadsheet') || m.includes('excel') || m === 'text/csv')
     return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(22,163,74,0.12)"/><rect x="9" y="14" width="30" height="22" rx="3" stroke="#16a34a" stroke-width="2"/><line x1="9" y1="22" x2="39" y2="22" stroke="#16a34a" stroke-width="1.5"/><line x1="9" y1="29" x2="39" y2="29" stroke="#16a34a" stroke-width="1.5" opacity=".6"/><line x1="21" y1="14" x2="21" y2="36" stroke="#16a34a" stroke-width="1.5" opacity=".7"/></svg>`;
   if (ext === 'py')
-    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(59,130,246,0.10)"/><path d="M18 10h8a4 4 0 0 1 4 4v4H18a4 4 0 0 1-4-4v-2a2 2 0 0 1 2-2z" fill="#3b82f6"/><path d="M18 38h8a4 4 0 0 0 4-4v-4H18a4 4 0 0 0-4 4v2a2 2 0 0 0 2 2z" fill="#eab308"/><circle cx="22" cy="16" r="1.5" fill="white"/><circle cx="26" cy="32" r="1.5" fill="white"/></svg>`;
+    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.10)"/><path d="M18 10h8a4 4 0 0 1 4 4v4H18a4 4 0 0 1-4-4v-2a2 2 0 0 1 2-2z" fill="#ffffff"/><path d="M18 38h8a4 4 0 0 0 4-4v-4H18a4 4 0 0 0-4 4v2a2 2 0 0 0 2 2z" fill="#eab308"/><circle cx="22" cy="16" r="1.5" fill="white"/><circle cx="26" cy="32" r="1.5" fill="white"/></svg>`;
   if (ext === 'json')
     return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(245,158,11,0.12)"/><text x="10" y="30" font-family="monospace" font-weight="700" font-size="18" fill="#f59e0b">{}</text><text x="10" y="20" font-family="monospace" font-size="9" fill="#f59e0b" opacity=".7">"key":</text></svg>`;
   if (['css','scss','sass','less'].includes(ext))
-    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(6,182,212,0.12)"/><rect x="10" y="10" width="28" height="28" rx="5" fill="#06b6d4"/><text x="24" y="30" text-anchor="middle" font-family="monospace" font-weight="800" font-size="11" fill="white">CSS</text></svg>`;
+    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/><rect x="10" y="10" width="28" height="28" rx="5" fill="#ffffff"/><text x="24" y="30" text-anchor="middle" font-family="monospace" font-weight="800" font-size="11" fill="white">CSS</text></svg>`;
   if (['md','mdx'].includes(ext))
-    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(107,114,128,0.12)"/><path d="M8 14h32v20H8z" stroke="#6b7280" stroke-width="2" rx="3"/><text x="24" y="29" text-anchor="middle" font-family="monospace" font-weight="700" font-size="11" fill="#6b7280">M↓</text></svg>`;
+    return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(118, 118, 118,0.12)"/><path d="M8 14h32v20H8z" stroke="#767676" stroke-width="2" rx="3"/><text x="24" y="29" text-anchor="middle" font-family="monospace" font-weight="700" font-size="11" fill="#767676">M↓</text></svg>`;
   // default
-  return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(91,142,245,0.10)"/><path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#5b8ef5" stroke-width="2"/><path d="M29 8v8h8" stroke="#5b8ef5" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="24" x2="32" y2="24" stroke="#5b8ef5" stroke-width="1.8" stroke-linecap="round" opacity=".6"/></svg>`;
+  return `<svg viewBox="0 0 48 48" fill="none"><rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.10)"/><path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#ffffff" stroke-width="2"/><path d="M29 8v8h8" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="24" x2="32" y2="24" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity=".6"/></svg>`;
 }
 
 
@@ -374,12 +374,12 @@ function _injectShareCSS() {
 }
 .share-popup {
   position: fixed; z-index: 9991;
-  background: var(--bg2, #1a1a2e);
-  border: 1px solid color-mix(in srgb, var(--blue, #3b82f6) 25%, transparent);
+  background: var(--bg2, #242424);
+  border: 1px solid color-mix(in srgb, var(--blue, #ffffff) 25%, transparent);
   border-radius: 16px;
   padding: 6px;
   min-width: 210px;
-  box-shadow: 0 8px 32px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.04);
+  box-shadow: 0 8px 32px rgba(0, 0, 0,.45), 0 0 0 1px rgba(255,255,255,.04);
   transform-origin: top center;
 }
 .share-popup-row {
@@ -393,9 +393,9 @@ function _injectShareCSS() {
   transition: background .12s;
   user-select: none;
 }
-.share-popup-row:hover { background: color-mix(in srgb, var(--blue, #3b82f6) 14%, transparent); }
-.share-popup-row:active { background: color-mix(in srgb, var(--blue, #3b82f6) 22%, transparent); }
-.share-popup-icon { color: var(--blue, #3b82f6); flex-shrink: 0; display: flex; align-items: center; }
+.share-popup-row:hover { background: color-mix(in srgb, var(--blue, #ffffff) 14%, transparent); }
+.share-popup-row:active { background: color-mix(in srgb, var(--blue, #ffffff) 22%, transparent); }
+.share-popup-icon { color: var(--blue, #ffffff); flex-shrink: 0; display: flex; align-items: center; }
 .share-popup-divider { height: 1px; margin: 2px 10px; background: color-mix(in srgb, var(--border, #fff) 12%, transparent); }
 
 /* ── Post highlight glow ── */

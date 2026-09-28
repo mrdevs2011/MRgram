@@ -174,7 +174,7 @@ function _renderChannelActionBar(groupId, groupData) {
   bar.style.cssText = [
     'display:flex', 'align-items:center', 'justify-content:center',
     'padding:10px 16px 10px',
-    'background:var(--bg,#0f172a)',
+    'background:var(--bg,#1c1c1c)',
     'border-top:1px solid var(--line,rgba(255,255,255,0.08))',
     'flex-shrink:0',
   ].join(';');
@@ -207,10 +207,10 @@ function _renderChannelActionBar(groupId, groupData) {
     bar.innerHTML = `
       <button id="channelJoinBtn" style="
         width:100%; padding:13px 0; border-radius:14px; border:none;
-        background:#2563eb; color:#fff;
+        background:#ffffff; color:#fff;
         font-size:15px; font-weight:600; cursor:pointer;
         transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px;
-        box-shadow:0 4px 16px rgba(59,130,246,0.35);
+        box-shadow:0 4px 16px rgba(255, 255, 255,0.35);
       ">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
@@ -220,11 +220,11 @@ function _renderChannelActionBar(groupId, groupData) {
 
     bar.querySelector('#channelJoinBtn').addEventListener('mouseenter', function() {
       this.style.transform = 'scale(1.02)';
-      this.style.boxShadow = '0 6px 24px rgba(59,130,246,0.5)';
+      this.style.boxShadow = '0 6px 24px rgba(255, 255, 255,0.5)';
     });
     bar.querySelector('#channelJoinBtn').addEventListener('mouseleave', function() {
       this.style.transform = '';
-      this.style.boxShadow = '0 4px 16px rgba(59,130,246,0.35)';
+      this.style.boxShadow = '0 4px 16px rgba(255, 255, 255,0.35)';
     });
 
     bar.querySelector('#channelJoinBtn').addEventListener('click', async () => {

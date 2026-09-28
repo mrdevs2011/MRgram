@@ -12,13 +12,13 @@ function getFileTypeInfo(name = '', mime = '') {
   /* ── Audio / Music ── */
   if (m.startsWith('audio') || ['mp3','wav','ogg','aac','flac','m4a','wma','opus','aiff','mid','midi'].includes(ext))
     return {
-      label: ext.toUpperCase() || 'AUDIO', color: '#a855f7',
+      label: ext.toUpperCase() || 'AUDIO', color: '#ffffff',
       svg: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="48" height="48" rx="10" fill="rgba(168,85,247,0.12)"/>
-        <path d="M18 34V18l16-4v16" stroke="#a855f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="15" cy="34" r="3" fill="#a855f7"/>
-        <circle cx="31" cy="30" r="3" fill="#a855f7"/>
-        <path d="M20 22l12-3" stroke="#a855f7" stroke-width="1.6" stroke-linecap="round" opacity=".5"/>
+        <rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/>
+        <path d="M18 34V18l16-4v16" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="15" cy="34" r="3" fill="#ffffff"/>
+        <circle cx="31" cy="30" r="3" fill="#ffffff"/>
+        <path d="M20 22l12-3" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" opacity=".5"/>
       </svg>`
     };
 
@@ -38,10 +38,10 @@ function getFileTypeInfo(name = '', mime = '') {
   /* ── TypeScript ── */
   if (['ts','tsx'].includes(ext))
     return {
-      label: 'TS', color: '#3b82f6',
+      label: 'TS', color: '#ffffff',
       svg: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="48" height="48" rx="10" fill="rgba(59,130,246,0.12)"/>
-        <rect x="10" y="10" width="28" height="28" rx="5" fill="#3b82f6"/>
+        <rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/>
+        <rect x="10" y="10" width="28" height="28" rx="5" fill="#ffffff"/>
         <text x="24" y="30" text-anchor="middle" font-family="monospace" font-weight="800" font-size="14" fill="white">TS</text>
       </svg>`
     };
@@ -72,30 +72,30 @@ function getFileTypeInfo(name = '', mime = '') {
   /* ── ZIP / Archive ── */
   if (['zip','rar','7z','tar','gz','bz2','xz','lz','lzma'].includes(ext))
     return {
-      label: ext.toUpperCase(), color: '#8b5cf6',
+      label: ext.toUpperCase(), color: '#ffffff',
       svg: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="48" height="48" rx="10" fill="rgba(139,92,246,0.12)"/>
-        <rect x="12" y="16" width="24" height="20" rx="3" stroke="#8b5cf6" stroke-width="2"/>
-        <path d="M12 22h24" stroke="#8b5cf6" stroke-width="2"/>
-        <path d="M12 28h24" stroke="#8b5cf6" stroke-width="1.4" opacity=".5"/>
-        <rect x="20" y="8" width="8" height="8" rx="2" stroke="#8b5cf6" stroke-width="2"/>
-        <line x1="24" y1="8" x2="24" y2="16" stroke="#8b5cf6" stroke-width="2"/>
-        <line x1="21" y1="11" x2="27" y2="11" stroke="#8b5cf6" stroke-width="1.5" opacity=".6"/>
-        <line x1="21" y1="13" x2="27" y2="13" stroke="#8b5cf6" stroke-width="1.5" opacity=".6"/>
+        <rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/>
+        <rect x="12" y="16" width="24" height="20" rx="3" stroke="#ffffff" stroke-width="2"/>
+        <path d="M12 22h24" stroke="#ffffff" stroke-width="2"/>
+        <path d="M12 28h24" stroke="#ffffff" stroke-width="1.4" opacity=".5"/>
+        <rect x="20" y="8" width="8" height="8" rx="2" stroke="#ffffff" stroke-width="2"/>
+        <line x1="24" y1="8" x2="24" y2="16" stroke="#ffffff" stroke-width="2"/>
+        <line x1="21" y1="11" x2="27" y2="11" stroke="#ffffff" stroke-width="1.5" opacity=".6"/>
+        <line x1="21" y1="13" x2="27" y2="13" stroke="#ffffff" stroke-width="1.5" opacity=".6"/>
       </svg>`
     };
 
   /* ── Word / DOC ── */
   if (['doc','docx'].includes(ext) || m.includes('msword') || m.includes('wordprocessingml'))
     return {
-      label: 'DOCX', color: '#2563eb',
+      label: 'DOCX', color: '#ffffff',
       svg: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="48" height="48" rx="10" fill="rgba(37,99,235,0.12)"/>
-        <path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#2563eb" stroke-width="2"/>
-        <path d="M29 8v8h8" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
-        <line x1="16" y1="26" x2="32" y2="26" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/>
-        <line x1="16" y1="31" x2="28" y2="31" stroke="#2563eb" stroke-width="2" stroke-linecap="round" opacity=".6"/>
-        <text x="24" y="23" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="8" fill="#2563eb">W</text>
+        <rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/>
+        <path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#ffffff" stroke-width="2"/>
+        <path d="M29 8v8h8" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <line x1="16" y1="26" x2="32" y2="26" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <line x1="16" y1="31" x2="28" y2="31" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+        <text x="24" y="23" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="8" fill="#ffffff">W</text>
       </svg>`
     };
 
@@ -116,10 +116,10 @@ function getFileTypeInfo(name = '', mime = '') {
   /* ── Python ── */
   if (ext === 'py' || m === 'text/x-python')
     return {
-      label: 'PY', color: '#3b82f6',
+      label: 'PY', color: '#ffffff',
       svg: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="48" height="48" rx="10" fill="rgba(59,130,246,0.10)"/>
-        <path d="M18 10h8a4 4 0 0 1 4 4v4H18a4 4 0 0 1-4-4v-2a2 2 0 0 1 2-2z" fill="#3b82f6"/>
+        <rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.10)"/>
+        <path d="M18 10h8a4 4 0 0 1 4 4v4H18a4 4 0 0 1-4-4v-2a2 2 0 0 1 2-2z" fill="#ffffff"/>
         <path d="M18 38h8a4 4 0 0 0 4-4v-4H18a4 4 0 0 0-4 4v2a2 2 0 0 0 2 2z" fill="#eab308"/>
         <circle cx="22" cy="16" r="1.5" fill="white"/>
         <circle cx="26" cy="32" r="1.5" fill="white"/>
@@ -140,10 +140,10 @@ function getFileTypeInfo(name = '', mime = '') {
   /* ── CSS / SCSS ── */
   if (['css','scss','sass','less'].includes(ext))
     return {
-      label: ext.toUpperCase(), color: '#06b6d4',
+      label: ext.toUpperCase(), color: '#ffffff',
       svg: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="48" height="48" rx="10" fill="rgba(6,182,212,0.12)"/>
-        <rect x="10" y="10" width="28" height="28" rx="5" fill="#06b6d4"/>
+        <rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/>
+        <rect x="10" y="10" width="28" height="28" rx="5" fill="#ffffff"/>
         <text x="24" y="30" text-anchor="middle" font-family="monospace" font-weight="800" font-size="11" fill="white">CSS</text>
       </svg>`
     };
@@ -151,37 +151,37 @@ function getFileTypeInfo(name = '', mime = '') {
   /* ── Markdown ── */
   if (['md','mdx','markdown'].includes(ext))
     return {
-      label: 'MD', color: '#6b7280',
+      label: 'MD', color: '#767676',
       svg: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="48" height="48" rx="10" fill="rgba(107,114,128,0.12)"/>
-        <path d="M8 14h32v20H8z" stroke="#6b7280" stroke-width="2" rx="3"/>
-        <text x="24" y="29" text-anchor="middle" font-family="monospace" font-weight="700" font-size="11" fill="#6b7280">M↓</text>
+        <rect width="48" height="48" rx="10" fill="rgba(118, 118, 118,0.12)"/>
+        <path d="M8 14h32v20H8z" stroke="#767676" stroke-width="2" rx="3"/>
+        <text x="24" y="29" text-anchor="middle" font-family="monospace" font-weight="700" font-size="11" fill="#767676">M↓</text>
       </svg>`
     };
 
   /* ── Plain Text / TXT / LOG ── */
   if (['txt','log','ini','cfg','conf'].includes(ext) || m === 'text/plain')
     return {
-      label: ext.toUpperCase() || 'TXT', color: '#9ca3af',
+      label: ext.toUpperCase() || 'TXT', color: '#a6a6a6',
       svg: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="48" height="48" rx="10" fill="rgba(156,163,175,0.10)"/>
-        <path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#9ca3af" stroke-width="2"/>
-        <path d="M29 8v8h8" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/>
-        <line x1="16" y1="22" x2="32" y2="22" stroke="#9ca3af" stroke-width="1.8" stroke-linecap="round"/>
-        <line x1="16" y1="27" x2="32" y2="27" stroke="#9ca3af" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
-        <line x1="16" y1="32" x2="26" y2="32" stroke="#9ca3af" stroke-width="1.8" stroke-linecap="round" opacity=".5"/>
+        <rect width="48" height="48" rx="10" fill="rgba(166, 166, 166,0.10)"/>
+        <path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#a6a6a6" stroke-width="2"/>
+        <path d="M29 8v8h8" stroke="#a6a6a6" stroke-width="2" stroke-linecap="round"/>
+        <line x1="16" y1="22" x2="32" y2="22" stroke="#a6a6a6" stroke-width="1.8" stroke-linecap="round"/>
+        <line x1="16" y1="27" x2="32" y2="27" stroke="#a6a6a6" stroke-width="1.8" stroke-linecap="round" opacity=".7"/>
+        <line x1="16" y1="32" x2="26" y2="32" stroke="#a6a6a6" stroke-width="1.8" stroke-linecap="round" opacity=".5"/>
       </svg>`
     };
 
   /* ── Default / unknown ── */
   return {
-    label: (ext || 'FILE').toUpperCase(), color: '#5b8ef5',
+    label: (ext || 'FILE').toUpperCase(), color: '#ffffff',
     svg: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="48" height="48" rx="10" fill="rgba(91,142,245,0.10)"/>
-      <path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#5b8ef5" stroke-width="2"/>
-      <path d="M29 8v8h8" stroke="#5b8ef5" stroke-width="2" stroke-linecap="round"/>
-      <line x1="16" y1="24" x2="32" y2="24" stroke="#5b8ef5" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
-      <line x1="16" y1="30" x2="28" y2="30" stroke="#5b8ef5" stroke-width="1.8" stroke-linecap="round" opacity=".4"/>
+      <rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.10)"/>
+      <path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#ffffff" stroke-width="2"/>
+      <path d="M29 8v8h8" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+      <line x1="16" y1="24" x2="32" y2="24" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+      <line x1="16" y1="30" x2="28" y2="30" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" opacity=".4"/>
     </svg>`
   };
 }

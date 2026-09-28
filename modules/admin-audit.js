@@ -16,7 +16,7 @@ const ACTION_META = {
   userDelete:       { label: 'Foydalanuvchi o\'chirildi',       icon: '🗑️', color: 'var(--red,#ef4444)' },
   userApprove:      { label: 'Foydalanuvchi tasdiqlandi',       icon: '✅', color: 'var(--green,#22c55e)' },
   userReject:       { label: 'Foydalanuvchi rad etildi',        icon: '⛔', color: 'var(--red,#ef4444)' },
-  broadcastSend:    { label: 'E\'lon chop etildi',               icon: '📢', color: 'var(--blue,#3b82f6)' },
+  broadcastSend:    { label: 'E\'lon chop etildi',               icon: '📢', color: 'var(--blue,#ffffff)' },
   broadcastDelete:  { label: 'E\'lon o\'chirildi',                icon: '🗑️', color: 'var(--text2)' },
 };
 

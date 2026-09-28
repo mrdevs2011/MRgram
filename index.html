@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#050508">
+<meta name="theme-color" content="#000000">
 <title>MRgram by MRspace</title>
 <script>
   /* Faqat dark theme — light theme o'chirilgan */
@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="./style.css">
 <link rel="stylesheet" href="./CSS/devs-utility.css">
 <link rel="stylesheet" href="./CSS/admin.css">
+<link rel="stylesheet" href="./CSS/mono.css">
 </head>
 <body>
 
@@ -282,7 +283,7 @@
 
 
 <div id="pendingApprovalScreen" style="display:none; position:fixed; inset:0; z-index:9999; background:var(--bg,#1E1E1D); display:none; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:32px; text-align:center;">
-  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--tg-primary-blue,#5288c1)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--tg-primary-blue,#ffffff)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="12" cy="12" r="10"/>
     <polyline points="12 6 12 12 16 14"/>
   </svg>
@@ -292,8 +293,8 @@
     <strong style="color:var(--text,#fff);">Administrator ruxsatini kuting.</strong><br>
     Ruxsat berilgandan so'ng avtomatik kirasiz.
   </p>
-  <div id="blockedCountdownWrap" style="display:none; max-width:320px; width:100%; background:#200E15; border:1px solid #4E1A1F; border-radius:14px; padding:16px 20px; text-align:center;"></div>
-  <div id="pendingNoticeWrap" style="display:none; align-items:flex-start; gap:10px; max-width:300px; width:100%; background:#0F172B; border:1px solid #182D55; border-radius:12px; padding:11px 14px; font-size:13px; color:var(--text,#fff); line-height:1.45; text-align:left;"></div>
+  <div id="blockedCountdownWrap" style="display:none; max-width:320px; width:100%; background:#171717; border:1px solid #4E1A1F; border-radius:14px; padding:16px 20px; text-align:center;"></div>
+  <div id="pendingNoticeWrap" style="display:none; align-items:flex-start; gap:10px; max-width:300px; width:100%; background:#1d1d1d; border:1px solid #2e2e2e; border-radius:12px; padding:11px 14px; font-size:13px; color:var(--text,#fff); line-height:1.45; text-align:left;"></div>
   <button id="pendingSignOutBtn" style="margin-top:8px; padding:12px 28px; border-radius:12px; background:var(--red,#ef4444); color:#fff; border:none; font-size:0.95rem; font-weight:600; cursor:pointer;">
     Chiqish
   </button>

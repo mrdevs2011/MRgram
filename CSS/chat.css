@@ -92,7 +92,7 @@
   min-width: 22px;
   height: 22px;
   padding: 0 6px;
-  background: var(--tg-blue, #5288c1);
+  background: var(--tg-blue, #ffffff);
   border-radius: 11px;
   font-size: 11.5px;
   font-weight: 700;
@@ -219,12 +219,12 @@
   display: inline-block;
 }
 .chat-msg.mine   .chat-bubble {
-  background: #2b5278;
+  background: #454545;
   color: #fff;
   border-bottom-right-radius: 5px;
 }
 .chat-msg.theirs .chat-bubble {
-  background: #182533;
+  background: #262626;
   color: var(--text);
   border-bottom-left-radius: 5px;
 }
@@ -301,7 +301,7 @@
   color: #909093;
 }
 /* read = 2 chek, ko'k-moviy */
-.msg-ticks.read { color: #5bb8f5; }
+.msg-ticks.read { color: #ffffff; }
 
 .chat-thread-input-row {
   display: flex;
@@ -363,7 +363,7 @@
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 8px;
-  box-shadow: 0 6px 24px #07070D;
+  box-shadow: 0 6px 24px #000000;
   z-index: 50;
 }
 .chat-emoji-quickpick.show { display: flex; }
@@ -460,7 +460,7 @@
   cursor: pointer;
   flex-shrink: 0;
   transition: var(--transition);
-  box-shadow: 0 2px 10px #1D396C;
+  box-shadow: 0 2px 10px #3a3a3a;
 }
 /* .chat-voice-btn.recording lives in the "VOICE BTN — amplitude-based
  * smooth pulse" section below, which is the only recording style that
@@ -521,7 +521,7 @@
   flex-shrink: 0;
   transition: background 0.2s;
 }
-.cfp-remove:hover { background: #2B1117; color: #ef4444; }
+.cfp-remove:hover { background: #1e1e1e; color: #ef4444; }
 
 /* ── Voice message bubble ── */
 
@@ -572,9 +572,9 @@
   text-decoration: none;
   transition: background 0.15s;
 }
-.chat-msg.theirs .cfm-dl { background: var(--bg5, #e0e0e6); color: var(--text); }
+.chat-msg.theirs .cfm-dl { background: var(--bg5, #e3e3e3); color: var(--text); }
 .cfm-dl:hover { background: rgba(255,255,255,0.35); }
-.chat-msg.theirs .cfm-dl:hover { background: var(--bg4, #d0d0d8); }
+.chat-msg.theirs .cfm-dl:hover { background: var(--bg4, #d4d4d4); }
 
 /* ═══════════════════════════════════════════
    NEW FEATURES: Image, Video, Reply, Reactions,
@@ -609,7 +609,7 @@
 .chat-video-msg video {
   display: block;
   border-radius: 10px;
-  background: #000;
+  background: #000000;
 }
 
 /* ── Reply preview inside bubble ── */
@@ -624,10 +624,10 @@
 }
 .chat-msg.theirs .chat-reply-preview {
   border-left-color: var(--blue);
-  background: #0D1222;
+  background: #181818;
 }
 .chat-reply-preview:hover { background: #3A3A3F; }
-.chat-msg.theirs .chat-reply-preview:hover { background: #101930; }
+.chat-msg.theirs .chat-reply-preview:hover { background: #202020; }
 
 .crp-name {
   font-size: 11.5px;
@@ -719,8 +719,8 @@
 }
 .reaction-pill:hover { background: var(--bg5);}
 .reaction-pill.mine  {
-  background: #0F172B;
-  border-color: #1A3360;
+  background: #1d1d1d;
+  border-color: #343434;
   color: var(--blue);
 }
 
@@ -733,7 +733,7 @@
   border-radius: 14px;
   padding: 6px 8px;
   gap: 4px;
-  box-shadow: 0 4px 20px #07070D;
+  box-shadow: 0 4px 20px #000000;
   z-index: 400;
   flex-wrap: nowrap;
 }
@@ -760,7 +760,7 @@
   border-radius: 14px;
   padding: 6px;
   min-width: 170px;
-  box-shadow: 0 8px 30px #07070D;
+  box-shadow: 0 8px 30px #000000;
   z-index: 500;
   overflow: hidden;
 }
@@ -794,7 +794,7 @@
 #chatLightbox {
   position: fixed;
   inset: 0;
-  background: #000001;
+  background: #000000;
   z-index: 600;
   display: none;
   align-items: center;
@@ -934,7 +934,7 @@
   transition: background 0.2s, color 0.2s;
 }
 .chat-search-btn:hover { background: var(--bg5); color: var(--text); }
-.chat-search-btn.active { background: #101B32; color: var(--blue); }
+.chat-search-btn.active { background: #212121; color: var(--blue); }
 
 /* ════════════════════════════════════════════════════════════════════
    FEATURE 3: Chat ichida qidiruv (Search Bar)
@@ -1040,7 +1040,7 @@
   flex-shrink: 0;
   transition: background 0.2s, color 0.2s;
 }
-.chat-call-btn:hover { background: #0C251B; color: #22c55e; }
+.chat-call-btn:hover { background: #181818; color: #22c55e; }
 
 /* ════════════════════════════════════════════════════════════════════
    INCOMING CALL MODAL
@@ -1050,8 +1050,8 @@
   inset: 0;
   z-index: 1000000;
   background:
-    radial-gradient(circle at 50% 0%, #1a3a2e 0%, #05060F 55%),
-    #05060F;
+    radial-gradient(circle at 50% 0%, #2a2a2a 0%, #000000 55%),
+    #000000;
   display: none;
   /* Telegram-style: haqiqiy full-screen, hech qanday "karta" chegarasi yo'q */
 }
@@ -1164,7 +1164,7 @@
 }
 .inc-call-btn.reject  { background: #ef4444; color: #fff; }
 .inc-call-btn.accept  { background: #22c55e; color: #fff; }
-.inc-call-btn:hover   { box-shadow: 0 4px 20px #06060B; }
+.inc-call-btn:hover   { box-shadow: 0 4px 20px #000000; }
 .inc-call-label {
   font-size: 13px;
   font-weight: 500;
@@ -1178,7 +1178,7 @@
   position: fixed;
   inset: 0;
   z-index: 999999;
-  /* background → pastroqda (~1783-qator) '#040811 !important' bilan
+  /* background → pastroqda (~1783-qator) '#000000 !important' bilan
      yengiladi, o'lik */
   display: none;
   flex-direction: column;
@@ -1188,7 +1188,7 @@
   transition: background 0.4s ease, padding 0.4s ease;
 }
 #callActiveModal.show { display: flex; }
-#callActiveModal.video-mode { padding: 0; background: #000; }
+#callActiveModal.video-mode { padding: 0; background: #000000; }
 
 /* Stage — voice va video qatlamlari bir joyda ustma-ust turadi,
    shu sababli ular orasida smooth crossfade qilish mumkin (display:none
@@ -1248,7 +1248,7 @@
 
 /* Video mode */
 .call-video-wrap {
-  background: #000;
+  background: #000000;
   border-radius: inherit;
   overflow: hidden;
 }
@@ -1345,7 +1345,7 @@
   transform: translateX(-50%);
   z-index: 3;
   gap: 10px;
-  background: rgba(4, 4, 8, 0.55);
+  background: rgba(0, 0, 0, 0.55);
   padding: 7px 10px;
   border-radius: 50px;
   max-width: calc(100vw - 24px);
@@ -1354,7 +1354,7 @@
 .call-ctrl-btn {
   width: 54px; height: 54px;
   border-radius: 50%;
-  background: #212127;
+  background: #242424;
   border: 0.5px solid #35353B;
   display: flex; align-items: center; justify-content: center;
   color: #fff;
@@ -1367,14 +1367,14 @@
   box-shadow: inset 0 1px 0 #48484E;
 }
 .call-ctrl-btn.muted   {
-  background: #49191E;
+  background: #313131;
   border-color: #591D22;
   color: #ef4444;
 }
 .call-ctrl-btn.active  {
-  background: #172A50;
-  border-color: #1A3360;
-  color: #60a5fa;
+  background: #2c2c2c;
+  border-color: #343434;
+  color: #ffffff;
 }
 .call-ctrl-btn.end-btn {
   background: #dc2626;
@@ -1504,7 +1504,7 @@ a.cfm-name--link:hover {
 }
 .chat-msg.theirs a.cfm-name--link {
   color: var(--blue);
-  text-decoration-color: #2D4477;
+  text-decoration-color: #464646;
 }
 .chat-msg.theirs a.cfm-name--link:hover {
   text-decoration-color: var(--blue);
@@ -1534,7 +1534,7 @@ a.cfm-name--link:hover {
   max-height: 320px;
   object-fit: cover;
   border-radius: 14px;
-  background: #17171E;
+  background: #1a1a1a;
 }
 
 .cfm-video-preview {
@@ -1543,7 +1543,7 @@ a.cfm-name--link:hover {
   max-width: 260px;
   max-height: 300px;
   border-radius: 14px;
-  background: #000;
+  background: #000000;
   outline: none;
 }
 
@@ -1571,16 +1571,16 @@ a.cfm-name--link:hover {
    VOICE BTN — amplitude-based smooth pulse (no modal)
    ═══════════════════════════════════════════════════════════════════════ */
 .chat-voice-btn.recording {
-  background: #0ea5e9 !important;
+  background: #ffffff !important;
   border: 0.5px solid #5F5F63 !important;
   animation: none !important;
   /* scale va glow CSS variable orqali JS dan boshqariladi */
   transform: scale(var(--rec-scale, 1.0)) !important;
   box-shadow:
     inset 0 1px 0 #525257,
-    0 0 0 calc((var(--rec-scale, 1.0) - 1) * 28px) #0A283B,
-    0 0 calc(var(--rec-glow, 0) * 0.4px) #1B516C,
-    0 4px 16px #0A4462 !important;
+    0 0 0 calc((var(--rec-scale, 1.0) - 1) * 28px) #232323,
+    0 0 calc(var(--rec-glow, 0) * 0.4px) #393939,
+    0 4px 16px #2e2e2e !important;
   transition: transform 0.08s ease-out, box-shadow 0.08s ease-out !important;
 }
 
@@ -1668,8 +1668,8 @@ a.cfm-name--link:hover {
 /* Incoming call — true edge-to-edge fullscreen (Telegram-style), no card box */
 #incomingCallModal {
   background:
-    radial-gradient(circle at 50% 0%, #16362a 0%, #05060F 55%),
-    #05060F !important;
+    radial-gradient(circle at 50% 0%, #262626 0%, #000000 55%),
+    #000000 !important;
 }
 
 /* .incoming-call-inner intentionally left un-boxed — it already spans
@@ -1679,7 +1679,7 @@ a.cfm-name--link:hover {
 /* Ring animation — green glass rings */
 .incoming-call-ring-anim span {
   border: 1.5px solid #145D33 !important;
-  box-shadow: 0 0 12px #0E2E1F !important;
+  box-shadow: 0 0 12px #1e1e1e !important;
 }
 
 /* Avatar glass border */
@@ -1687,15 +1687,15 @@ a.cfm-name--link:hover {
   border: 2.5px solid #1A8C46 !important;
   box-shadow:
     inset 0 1px 0 #3A3A3F,
-    0 0 0 4px #0C1F19,
-    0 0 32px #0E3221,
-    0 8px 24px #06060A !important;
+    0 0 0 4px #161616,
+    0 0 32px #202020,
+    0 8px 24px #000000 !important;
 }
 
 /* Buttons — glass */
 .inc-call-btn {
   border: 0.5px solid #3F3F44 !important;
-  box-shadow: inset 0 1px 0 #4D4D52, 0 6px 24px #05050A !important;
+  box-shadow: inset 0 1px 0 #4D4D52, 0 6px 24px #000000 !important;
   transition: transform 0.2s, box-shadow 0.2s, filter 0.2s !important;
 }
 .inc-call-btn.reject {
@@ -1709,15 +1709,15 @@ a.cfm-name--link:hover {
 
 /* Active call modal — deep space glass */
 #callActiveModal {
-  background: #040811 !important;
+  background: #000000 !important;
 }
 #callActiveModal::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    #111626,
-    #0A1213;
+    #1c1c1c,
+    #000000;
   pointer-events: none;
   z-index: 0;
 }
@@ -1727,21 +1727,21 @@ a.cfm-name--link:hover {
   border: 2px solid #35353B !important;
   box-shadow:
     inset 0 2px 0 #35353B,
-    0 0 0 8px #0F1322,
-    0 0 60px #172039,
-    0 16px 48px #040408 !important;
-  background: #17171E !important;
+    0 0 0 8px #181818,
+    0 0 60px #282828,
+    0 16px 48px #000000 !important;
+  background: #1a1a1a !important;
 }
 
 /* ── Control buttons — consolidated into single definition above ── */
 
 /* Video mode — controls glass bar */
 #callActiveModal.video-mode .call-active-btns {
-  background: #050509 !important;
+  background: #000000 !important;
   border: 0.5px solid #26262C !important;
   box-shadow:
     inset 0 1px 0 #2B2B31,
-    0 4px 24px #050509 !important;
+    0 4px 24px #000000 !important;
   border-radius: 60px !important;
 }
 
@@ -1757,7 +1757,7 @@ a.cfm-name--link:hover {
   margin-top: auto;           /* pinned to bottom of message row */
   border: none;
   padding: 0;
-  background: var(--bg3, #2a2a3a);
+  background: var(--bg3, #323232);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
   position: relative;
@@ -1771,7 +1771,7 @@ a.cfm-name--link:hover {
   border-radius: 50%;
 }
 .msg-avi-btn:hover {
-  box-shadow: 0 2px 12px #1F3F77;
+  box-shadow: 0 2px 12px #404040;
   opacity: 1;
 }
 
@@ -1843,7 +1843,7 @@ a.cfm-name--link:hover {
   display: inline-block;
   width: 7px; height: 7px;
   border-radius: 50%;
-  background: var(--blue, #3b82f6);
+  background: var(--blue, #ffffff);
   animation: typingDot 1.2s ease-in-out infinite;
   margin: 0 2px;
 }
@@ -1872,7 +1872,7 @@ a.cfm-name--link:hover {
   transition: background 0.2s, transform 0.2s, color 0.2s !important;
 }
 
-.ctx-item.danger:hover { background: #200E15 !important; }
+.ctx-item.danger:hover { background: #171717 !important; }
 
 /* ── 2. Message swipe-to-reply hint ── */
 
@@ -1892,7 +1892,7 @@ a.cfm-name--link:hover {
   100% { background-position: 400px 0; }
 }
 .cfm-skeleton {
-  background: var(--bg3, #17171E);
+  background: var(--bg3, #1a1a1a);
   background-size: 400px 100%;
   animation: shimmerSlide 1.4s infinite linear;
   border-radius: 12px;
@@ -1913,16 +1913,16 @@ a.cfm-name--link:hover {
   bottom: 72px; right: 14px;
   width: 38px; height: 38px;
   border-radius: 50%;
-  background: var(--blue, #3b82f6);
+  background: var(--blue, #ffffff);
   border: none; cursor: pointer;
   display: none;
   align-items: center; justify-content: center;
   color: #fff;
-  box-shadow: 0 4px 16px #224583;
+  box-shadow: 0 4px 16px #464646;
   z-index: 100;
 }
 #chatScrollDownBtn.visible { display: flex; }
-#chatScrollDownBtn:hover  {box-shadow: 0 6px 24px #2957A5; transition: all 0.2s; }
+#chatScrollDownBtn:hover  {box-shadow: 0 6px 24px #ffffff; transition: all 0.2s; }
 
 /* ── 11. Emoji picker — bounce in ── */
 
@@ -1931,8 +1931,8 @@ a.cfm-name--link:hover {
   transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
 }
 #chatThreadInput:focus {
-  box-shadow: 0 0 0 3px #142342 !important;
-  border-color: #244B8E !important;
+  box-shadow: 0 0 0 3px #2b2b2b !important;
+  border-color: #4c4c4c !important;
   outline: none;
 }
 
@@ -1944,12 +1944,12 @@ a.cfm-name--link:hover {
   font-size: 16px;
   padding: 2px 6px;
   border-radius: 999px;
-  background: #212127;
+  background: #242424;
   cursor: pointer;
   transition: transform 0.2s var(--ease-back), background 0.2s;
   display: inline-flex; align-items: center; gap: 3px;
   font-size: 14px;
-  border: 1px solid #1C1C23;
+  border: 1px solid #202020;
 }
 .msg-reaction:hover  {background: #35353B; }
 
@@ -2082,7 +2082,7 @@ a.cfm-name--link:hover {
 .chat-attach-btn:hover { background: transparent; color: var(--text); }
 
 .chat-voice-btn {
-  background: #2563eb;
+  background: #ffffff;
   border: none;
   box-shadow: none;
   width: 36px; height: 36px;
@@ -2097,7 +2097,7 @@ a.cfm-name--link:hover {
   padding: 4px 8px !important;
 }
 .chat-msg.theirs .chat-reply-preview {
-  background: rgba(0,0,0,0.1) !important;
+  background: rgba(0, 0, 0,0.1) !important;
 }
 
 /* ── msg-avi-btn — completely hidden in 1v1 ── */
@@ -2170,11 +2170,11 @@ a.cfm-name--link:hover {
   cursor: pointer;
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  background: #2563eb !important;
+  background: #ffffff !important;
   color: #fff !important;
 }
 .chat-msg.theirs .cvm-play:hover {
-  background: #1d4ed8 !important;
+  background: #ffffff !important;
 }
 .chat-msg.theirs .cvm-waveform {
   flex: 1;
@@ -2191,10 +2191,10 @@ a.cfm-name--link:hover {
   opacity: 0.5;
   transition: height 0.25s ease, background 0.2s linear, opacity 0.2s linear;
 }
-/* Eshitilgan qism — Telegram Primary Blue (#5288c1) bilan to'liq
+/* Eshitilgan qism — Telegram Primary Blue (#ffffff) bilan to'liq
  * to'ldiriladi, eshitilmagan qism muted kulrang holida qoladi. */
 .chat-msg.theirs .cvm-bar.played {
-  background: var(--blue) !important; /* #5288c1 — Telegram Primary Blue */
+  background: var(--blue) !important; /* #ffffff — Telegram Primary Blue */
   opacity: 1;
 }
 .chat-msg.theirs .cvm-dur {
@@ -2219,9 +2219,9 @@ a.cfm-name--link:hover {
   gap: 10px;
   padding: 8px 12px;
   padding-top: calc(8px + env(safe-area-inset-top, 0px));
-  background: var(--bg3, #12141A);
+  background: var(--bg3, #161616);
   border-bottom: 1px solid var(--line, #232428);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 10px rgba(0, 0, 0,0.25);
   cursor: pointer;
 }
 .voice-mini-player.show { display: flex; }
@@ -2231,7 +2231,7 @@ a.cfm-name--link:hover {
   border-radius: 50%;
   border: none;
   flex-shrink: 0;
-  background: #2563eb;
+  background: #ffffff;
   color: #fff;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
@@ -2256,7 +2256,7 @@ a.cfm-name--link:hover {
 .vmp-progress-fill {
   height: 100%;
   width: 0%;
-  background: #2563eb;
+  background: #ffffff;
   border-radius: 2px;
 }
 

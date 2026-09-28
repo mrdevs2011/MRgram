@@ -15,31 +15,31 @@
   --text2:        #8a8a8a;   /* Muted / Secondary Text */
   --text3:        #6b6b6b;
   --text4:        #4a4a4a;
-  --blue:         #5288c1;   /* Primary Telegram Blue */
-  --blue2:        #6fa0d3;
-  --blue3:        #3f6f96;
-  --blue-glow:    #101820;
-  --blue-glow2:   #0c141c;
-  --blue-glow3:   #080f16;
+  --blue:         #ffffff;   /* Primary Telegram Blue */
+  --blue2:        #ffffff;
+  --blue3:        #ffffff;
+  --blue-glow:    #181818;
+  --blue-glow2:   #141414;
+  --blue-glow3:   #000000;
   --red:          #ec5e6f;
-  --red-glow:     #2a1017;
+  --red-glow:     #1d1d1d;
   --green:        #5acb8c;
-  --green-glow:   #0f1e19;
+  --green-glow:   #161616;
   --amber:        #f0a855;
 
   /* ── Dark — pure black spec, dedicated names ── */
   --tg-bg:        #000000;   /* Main Page/App Background */
   --tg-surface:   #121212;   /* Chat Area/Header/Panels Background */
   --tg-input:     #1c1c1e;   /* Inputs / Search Fields Background */
-  --tg-blue:      #5288c1;   /* Primary Telegram Blue */
-  --tg-out:       #1c3a52;   /* Outgoing Message Bubble */
+  --tg-blue:      #ffffff;   /* Primary Telegram Blue */
+  --tg-out:       #2f2f2f;   /* Outgoing Message Bubble */
   --tg-in:        #1c1c1e;   /* Incoming Message Bubble */
   --tg-text:      #ffffff;   /* Main Text Color */
   --tg-muted:     #8a8a8a;   /* Muted / Secondary Text Color */
 
   /* ── Icon system aliases ── */
-  --tg-text-muted:   #7f91a4;  /* default icon color */
-  --tg-primary-blue: #5288c1;  /* active / selected icon color */
+  --tg-text-muted:   #929292;  /* default icon color */
+  --tg-primary-blue: #ffffff;  /* active / selected icon color */
   --tg-text-main:    #ffffff;  /* active icon color on filled/dark surfaces */
 
   /* --glass/--glass-mid/--glass-heavy/--glass-border/--glass-border-top/
@@ -66,8 +66,8 @@
 
 /* Dark — glass element overrides */
 [data-theme="dark"] .post {
-  background: #17212b;
-  border: 0.5px solid #24303f;
+  background: #212121;
+  border: 0.5px solid #323232;
   box-shadow: var(--specular-top), var(--liquid-shadow-sm);
 }
 

@@ -10,13 +10,13 @@ function _injectPresenceCSS() {
   right: -1px; bottom: -1px;
   width: 11px; height: 11px;
   background: #3ecf8e;
-  border: 2px solid var(--bg1, #17181c);
+  border: 2px solid var(--bg1, #1a1a1a);
   border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0,0.15);
 }
 #chatTypingStatus {
   font-size: 12.5px;
-  color: var(--text3, #6b7280);
+  color: var(--text3, #767676);
   margin-top: 1px;
 }
 #chatTypingStatus.online { color: #3ecf8e; font-weight: 500; }
@@ -42,20 +42,20 @@ function _injectSearchCSS() {
   transition: border-color .18s, box-shadow .18s;
 }
 .ulist-search-wrap:focus-within {
-  border-color: var(--blue, #3b82f6);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue, #3b82f6) 18%, transparent);
+  border-color: var(--blue, #ffffff);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue, #ffffff) 18%, transparent);
 }
 .ulist-search-icon {
-  color: var(--text3, #6b7280); flex-shrink: 0; cursor: pointer;
+  color: var(--text3, #767676); flex-shrink: 0; cursor: pointer;
   display: flex; align-items: center; transition: color .15s;
 }
-.ulist-search-icon:hover { color: var(--blue, #3b82f6); }
+.ulist-search-icon:hover { color: var(--blue, #ffffff); }
 .ulist-search-input {
   flex: 1; min-width: 0; background: transparent; border: none; outline: none;
   color: var(--text, #fff); font-size: 14.5px; line-height: 1.4;
 }
-.ulist-search-input::placeholder { color: var(--text3, #6b7280); }
-.ulist-search-result { margin: 0 18px 10px; font-size: 12.5px; font-weight: 500; color: var(--text3, #6b7280); }
+.ulist-search-input::placeholder { color: var(--text3, #767676); }
+.ulist-search-result { margin: 0 18px 10px; font-size: 12.5px; font-weight: 500; color: var(--text3, #767676); }
 .ulist-search-result.not-found { color: var(--red, #ef4444); }
 
 /* ── Skeleton ── */
@@ -72,14 +72,14 @@ function _injectSearchCSS() {
 @keyframes skelFadeIn { to { opacity: 1; } }
 .skel-avi {
   width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
-  background: var(--bg2,#1e1e2e);
+  background: var(--bg2,#262626);
   background-size: 400px 100%;
   animation: skelShimmer 1.3s infinite linear;
 }
 .skel-body { flex: 1; display: flex; flex-direction: column; gap: 7px; }
 .skel-name, .skel-preview {
   height: 11px; border-radius: 7px;
-  background: var(--bg2,#1e1e2e);
+  background: var(--bg2,#262626);
   background-size: 400px 100%;
   animation: skelShimmer 1.3s infinite linear;
 }
@@ -1411,7 +1411,7 @@ function getChatFileIcon(name = '', mime = '') {
     return `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="rgba(34,197,94,0.12)"/><rect x="8" y="12" width="32" height="24" rx="4" stroke="#22c55e" stroke-width="2"/><circle cx="17" cy="20" r="3" stroke="#22c55e" stroke-width="1.8"/><path d="M8 30l8-7 7 6 5-4 12 9" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
   if (m.startsWith('audio') || ['mp3','wav','ogg','aac','opus','m4a'].includes(ext))
-    return `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="rgba(168,85,247,0.12)"/><path d="M18 34V18l16-4v16" stroke="#a855f7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="34" r="3" fill="#a855f7"/><circle cx="31" cy="30" r="3" fill="#a855f7"/></svg>`;
+    return `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/><path d="M18 34V18l16-4v16" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="34" r="3" fill="#ffffff"/><circle cx="31" cy="30" r="3" fill="#ffffff"/></svg>`;
 
   if (m.startsWith('video') || ['mp4','mov','avi','mkv','webm'].includes(ext))
     return `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="rgba(239,68,68,0.12)"/><rect x="6" y="12" width="28" height="24" rx="4" stroke="#ef4444" stroke-width="2"/><path d="M34 18l8-4v20l-8-4V18z" stroke="#ef4444" stroke-width="2" stroke-linejoin="round"/><polygon points="18 19 18 29 26 24" fill="#ef4444"/></svg>`;
@@ -1419,7 +1419,7 @@ function getChatFileIcon(name = '', mime = '') {
   if (ext === 'pdf' || m === 'application/pdf')
     return `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="rgba(239,68,68,0.12)"/><path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#ef4444" stroke-width="2"/><path d="M29 8v8h8" stroke="#ef4444" stroke-width="2"/><text x="24" y="34" text-anchor="middle" font-family="monospace" font-weight="700" font-size="9" fill="#ef4444">PDF</text></svg>`;
 
-  return `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="rgba(107,114,128,0.12)"/><path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#9ca3af" stroke-width="2"/><path d="M29 8v8h8" stroke="#9ca3af" stroke-width="2"/><line x1="16" y1="24" x2="32" y2="24" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="30" x2="26" y2="30" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/></svg>`;
+  return `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="rgba(118, 118, 118,0.12)"/><path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#a6a6a6" stroke-width="2"/><path d="M29 8v8h8" stroke="#a6a6a6" stroke-width="2"/><line x1="16" y1="24" x2="32" y2="24" stroke="#a6a6a6" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="30" x2="26" y2="30" stroke="#a6a6a6" stroke-width="2" stroke-linecap="round"/></svg>`;
 }
 
 /* ── Voice player (global handler for onclick in innerHTML) ─────────── */

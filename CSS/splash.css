@@ -10,7 +10,7 @@
   justify-content: center;
   z-index: 9999;
   transition: opacity 0.35s var(--ease);
-  background-color: #0e1621;
+  background-color: #181818;
 }
 
 #splash.out {
@@ -47,7 +47,7 @@
 
 [data-theme="dark"] #splash {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  background-color: #101f2e;
+  background-color: #1f1f1f;
 }
 
 /* [data-theme="dark"] .splash-wordmark → CSS/dark-theme-fix.css'da qayta
@@ -55,7 +55,7 @@
 
 [data-theme="light"] #splash {
   background: #F5F4EF;
-  background-color: #DBDFEB;
+  background-color: #ffffff;
 }
 
 [data-theme="light"] .splash-wordmark {

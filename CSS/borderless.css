@@ -24,13 +24,13 @@
 
 /* ── Dark: line tokenlar ham yo'qolsin ── */
 [data-theme="dark"] {
-  --line:  #17171E;
+  --line:  #1a1a1a;
   --line2: transparent;
   --line3: transparent;
 }
 
 [data-theme="light"] {
-  --line:  #E2E2E8;
+  --line:  #e5e5e5;
   --line2: transparent;
   --line3: transparent;
 }
@@ -66,10 +66,10 @@
   .app-hdr,
   [data-theme="dark"] .app-hdr,
   [data-theme="light"] .app-hdr {
-    background: rgba(14, 14, 18, 0.72);
+    background: rgba(16, 16, 16, 0.72);
   }
   [data-theme="light"] .app-hdr {
-    background: rgba(242, 242, 247, 0.78);
+    background: rgba(244, 244, 244, 0.78);
   }
 }
 
@@ -103,7 +103,7 @@
     background: #000000;
   }
   [data-theme="light"] .bot-nav {
-    background: rgba(242, 242, 247, 0.78);
+    background: rgba(244, 244, 244, 0.78);
   }
 }
 
@@ -803,7 +803,7 @@ textarea:focus,
 
 /* Chat photo viewer */
 [data-theme="light"] .chat-photo-viewer {
-  background: rgba(240,240,245,0.95);
+  background: rgba(242, 242, 242,0.95);
 }
 
 /* ── FEED ── */
@@ -846,7 +846,7 @@ textarea:focus,
 /* Post gradient overlay (media) */
 [data-theme="light"] .post-media-overlay,
 [data-theme="light"] .reel-gradient-bot {
-  background: rgba(200,200,210,0.85);
+  background: rgba(205, 205, 205,0.85);
 }
 
 /* ── PROFILE ── */
@@ -901,7 +901,7 @@ textarea:focus,
 
 /* Search overlay */
 [data-theme="light"] .search-overlay {
-  background: rgba(220,220,228,0.95);
+  background: rgba(224, 224, 224,0.95);
 }
 [data-theme="light"] .search-overlay-box {
   background: var(--bg2);

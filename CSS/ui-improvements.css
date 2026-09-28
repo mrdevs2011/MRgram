@@ -38,7 +38,7 @@
   opacity: 0;
   pointer-events: none;
   transition: all 0.3s var(--ease-back);
-  box-shadow: 0 8px 32px #07070C;
+  box-shadow: 0 8px 32px #000000;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -121,7 +121,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #212127;
+  background: #242424;
   animation: avatarShimmer 2s infinite;
 }
 
@@ -500,7 +500,7 @@
 }
 
 .empty-cta:hover {
-  box-shadow: 0 6px 20px #213054;
+  box-shadow: 0 6px 20px #323232;
 }
 
 
@@ -543,7 +543,7 @@
 .up-grid-cell-overlay {
   position: absolute;
   inset: 0;
-  background: #020204;
+  background: #000000;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -566,14 +566,14 @@
   color: #fff;
   font-size: 12px;
   font-weight: 600;
-  text-shadow: 0 1px 3px #050509;
+  text-shadow: 0 1px 3px #000000;
 }
 
 .grid-play-badge {
   position: absolute;
   top: 6px;
   right: 6px;
-  background: #030306;
+  background: #000000;
   border-radius: 50%;
   width: 24px;
   height: 24px;
@@ -613,7 +613,7 @@
 
   .reel-progress-fill {
     background: var(--blue2);
-    box-shadow: 0 0 8px #293E6B;
+    box-shadow: 0 0 8px #3f3f3f;
   }
 
   /* Reel hover overlay */
@@ -621,7 +621,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: #06060B;
+    background: #000000;
     opacity: 0;
     transition: opacity 0.2s;
     pointer-events: none;
@@ -639,7 +639,7 @@
 
 /* Reel action buttons hover */
 .reel-act:hover svg {
-  filter: drop-shadow(0 2px 6px #06060B);
+  filter: drop-shadow(0 2px 6px #000000);
 }
 
 
@@ -652,7 +652,7 @@
 
 /* Playback speed button */
 .vc-speed {
-  background: #212127;
+  background: #242424;
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -675,7 +675,7 @@
 
 /* Picture-in-Picture button */
 .vc-pip {
-  background: #212127;
+  background: #242424;
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -707,7 +707,7 @@
   border: 1px solid var(--line2);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 16px #06060B;
+  box-shadow: 0 4px 16px #000000;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s;
@@ -819,7 +819,7 @@
 .avatar-crop-modal {
   position: fixed;
   inset: 0;
-  background: #000001;
+  background: #000000;
   z-index: 1000;
   display: none;
   align-items: center;
@@ -838,7 +838,7 @@
   border-radius: 50%;
   overflow: hidden;
   border: 3px solid var(--blue);
-  box-shadow: 0 0 30px #213054;
+  box-shadow: 0 0 30px #323232;
 }
 
 .avatar-crop-container img {
@@ -929,7 +929,7 @@
 }
 
 .upload-file-icon.video { background: #ee5a5a; }
-.upload-file-icon.image { background: #4a7bd4; }
+.upload-file-icon.image { background: #ffffff; }
 .upload-file-icon.audio { background: #5ab869; }
 .upload-file-icon.pdf { background: #e8831f; }
 .upload-file-icon.zip { background: #b84dd4; }
@@ -958,8 +958,8 @@
 /* Warning toast */
 #toast.toast-warning {
   border-color: var(--amber);
-  box-shadow: 0 8px 32px #463118;
-  background: #151111;
+  box-shadow: 0 8px 32px #2f2f2f;
+  background: #131313;
 }
 
 /* Toast with icon */
@@ -1135,7 +1135,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #15151B;
+  background: #181818;
   animation: cachedShimmer 1.5s infinite;
 }
 
@@ -1157,7 +1157,7 @@
   z-index: 10000;
   width: 0%;
   transition: width 0.1s linear;
-  box-shadow: 0 0 10px #324B82;
+  box-shadow: 0 0 10px #ffffff;
 }
 
 /* ═══════════════════════════════════════════
@@ -1183,7 +1183,7 @@
 .vc-play,
 .vc-mute,
 .vc-fs {
-  background: #212127;
+  background: #242424;
   border-radius: 50%;
   width: 32px;
   height: 32px;
@@ -1249,7 +1249,7 @@
   padding: 8px;
   max-height: 320px;
   overflow-y: auto;
-  box-shadow: 0 8px 32px #06060C;
+  box-shadow: 0 8px 32px #000000;
   z-index: 501;
   display: none;
 }
@@ -1319,17 +1319,17 @@
 
 #toast.toast-success {
   border-color: var(--green);
-  box-shadow: 0 8px 32px #103026;
+  box-shadow: 0 8px 32px #202020;
 }
 
 #toast.toast-error {
   border-color: var(--red);
-  box-shadow: 0 8px 32px #371420;
+  box-shadow: 0 8px 32px #262626;
 }
 
 #toast.toast-info {
   border-color: var(--blue);
-  box-shadow: 0 8px 32px #19233D;
+  box-shadow: 0 8px 32px #2b2b2b;
 }
 
 /* ═══════════════════════════════════════════
@@ -1343,7 +1343,7 @@
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  background: var(--tg-blue, #5288c1);
+  background: var(--tg-blue, #ffffff);
   border-radius: 9px;
   font-size: 10px;
   font-weight: 700;
@@ -1351,7 +1351,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px var(--blue-glow, #1c2f42);
+  box-shadow: 0 2px 8px var(--blue-glow, #2f2f2f);
 }
 
 
@@ -1455,7 +1455,7 @@
   z-index: 9999;
   width: 0%;
   transition: width 0.1s linear;
-  box-shadow: 0 0 8px #324B82;
+  box-shadow: 0 0 8px #ffffff;
 }
 
 /* ═══════════════════════════════════════════
@@ -1565,7 +1565,7 @@
 
   body {
     background: #fff !important;
-    color: #000 !important;
+    color: #000000 !important;
   }
 
   .post {

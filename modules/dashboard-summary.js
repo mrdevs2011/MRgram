@@ -45,7 +45,7 @@ function _injectCSS() {
   line-height: 1.25;
 }
 .dash-card--warn  .dash-card-value { color: var(--red,#ef4444); }
-.dash-card--info  .dash-card-value { color: var(--blue,#3b82f6); }
+.dash-card--info  .dash-card-value { color: var(--blue,#ffffff); }
 .dash-card--ok    .dash-card-value { color: var(--green,#22c55e); }
 .dash-card-loading { opacity: 0.5; }
 `;

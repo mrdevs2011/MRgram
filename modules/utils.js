@@ -150,7 +150,7 @@ export function formatLastSeen(lastSeenAt) {
 export const initL  = n  => (n && n[0] ? n[0].toUpperCase() : 'U');
 export const uToEmail = u => `${u.toLowerCase().replace(/[^a-z0-9_]/g,'')}@mrgram.uz`;
 export const clr    = n  => {
-  const c = ['#4f8ef7','#3ecf8e','#e84057','#f5a623','#9b59b6','#1abc9c'];
+  const c = ['#2a2a2a','#333333','#3d3d3d','#474747','#525252','#5c5c5c'];
   return c[Math.abs((n||'').length) % c.length];
 };
 export const defAvi = n => {

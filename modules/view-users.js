@@ -703,7 +703,7 @@ function _ensurePendingMiniCSS() {
   gap: 10px; cursor: pointer;
 }
 .pmini-locked-count { font-size: 13px; font-weight: 700; color: var(--text); }
-.pmini-locked-hint { font-size: 12px; color: var(--blue,#3b82f6); font-weight: 600; white-space: nowrap; }
+.pmini-locked-hint { font-size: 12px; color: var(--blue,#ffffff); font-weight: 600; white-space: nowrap; }
 .pmini-card {
   background: var(--bg2); border: 1px solid var(--line); border-radius: 12px;
   padding: 12px; display: flex; align-items: center; gap: 10px;

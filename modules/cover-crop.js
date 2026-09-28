@@ -34,7 +34,7 @@ function _injectCSS() {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0, 0, 0,0.85);
   display: none;
   align-items: center;
   justify-content: center;
@@ -52,7 +52,7 @@ function _injectCSS() {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+  box-shadow: 0 24px 64px rgba(0, 0, 0,0.6);
   user-select: none;
 }
 
@@ -86,7 +86,7 @@ function _injectCSS() {
   position: relative;
   width: 100%;
   aspect-ratio: 16/9;
-  background: #000;
+  background: #000000;
   overflow: hidden;
   cursor: grab;
   touch-action: none;
@@ -152,7 +152,7 @@ function _injectCSS() {
   width: 20px; height: 20px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0,0.4);
   cursor: grab;
 }
 .cc-zoom-slider::-moz-range-thumb {
@@ -160,7 +160,7 @@ function _injectCSS() {
   border-radius: 50%;
   background: #fff;
   border: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0,0.4);
   cursor: grab;
 }
 .cc-zoom-label {
@@ -201,7 +201,7 @@ function _injectCSS() {
 }
 .cc-btn--cancel:hover { background: rgba(255,255,255,0.12); }
 .cc-btn--apply {
-  background: #6366f1;
+  background: #ffffff;
   color: #fff;
 }
 .cc-btn--apply:hover { opacity: 0.9; }

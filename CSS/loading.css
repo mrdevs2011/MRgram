@@ -64,7 +64,7 @@
   padding: 20px;
   z-index: 100;
   background: var(--bg);
-  background-color: #0e1621;
+  background-color: #181818;
 }
 
 #authWrap.show {
@@ -81,7 +81,7 @@
   padding: 36px 30px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 20px 50px #040408;
+  box-shadow: 0 20px 50px #000000;
 }
 
 /* Flat X-style — no top highlight line, no gradient blob */
@@ -199,7 +199,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: #17212b;
+  background: #212121;
   animation: shimmer 0.9s infinite;
 }
 
@@ -247,7 +247,7 @@
   transition: all 0.25s var(--ease);
   white-space: nowrap;
   pointer-events: none;
-  box-shadow: 0 8px 32px #06060B;
+  box-shadow: 0 8px 32px #000000;
   letter-spacing: -0.1px;
 }
 
@@ -264,7 +264,7 @@
 /* Dark mode auth */
 [data-theme="dark"] #authWrap {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  background-color: #0e1621;
+  background-color: #181818;
 }
 
 /* [data-theme="dark"] .auth-card, .auth-brand → to'liq CSS/dark-theme-fix.css'da
@@ -273,7 +273,7 @@
 /* Light mode auth */
 [data-theme="light"] #authWrap {
   background: #ffffff;
-  background-color: #D9DDEE;
+  background-color: #ffffff;
 }
 
 [data-theme="light"] .auth-card {
@@ -297,18 +297,18 @@
 }
 
 [data-theme="dark"] #toast.toast-success {
-  background: #0E261E;
+  background: #1a1a1a;
   border-color: #155234;
 }
 
 [data-theme="dark"] #toast.toast-error {
-  background: #260E1A;
+  background: #1a1a1a;
   border-color: #521529;
 }
 
 [data-theme="dark"] #toast.toast-info {
-  background: #16283a;
-  border-color: #253760;
+  background: #282828;
+  border-color: #393939;
 }
 
 [data-theme="light"] #toast.toast-success {
@@ -322,14 +322,14 @@
 }
 
 [data-theme="light"] #toast.toast-info {
-  background: #CCD4EF;
-  border-color: #A8BAF3;
+  background: #ffffff;
+  border-color: #ffffff;
 }
 
 /* Empty state theme aware */
 [data-theme="dark"] .empty-search-icon {
-  background: #0e1621;
-  border: 1px solid #1C1C23;
+  background: #181818;
+  border: 1px solid #202020;
 }
 
 [data-theme="light"] .empty-search-icon {
@@ -392,21 +392,21 @@
   content: '';
   position: fixed;
   inset: 0;
-  background: #040407;
+  background: #000000;
   z-index: -1;
 }
 
 .pwd-warn-bubble {
-  background: #1a0608;
+  background: #101010;
   border: 1.5px solid #7C2438;
   border-radius: 20px;
   padding: 28px 26px 22px;
   max-width: 320px;
   width: 100%;
   box-shadow:
-    0 0 0 1px #1B0D16,
-    0 8px 40px #32121E,
-    0 2px 8px #040408;
+    0 0 0 1px #141414,
+    0 8px 40px #222222,
+    0 2px 8px #000000;
   transform: scale(0.88) translateY(12px);
   transition: transform 0.3s var(--ease-back);
   position: relative;
@@ -421,7 +421,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: #1D0D17;
+  background: #151515;
   pointer-events: none;
 }
 
@@ -432,8 +432,8 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: #2B111C;
-  border: 1px solid #421624;
+  background: #1e1e1e;
+  border: 1px solid #2c2c2c;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -467,7 +467,7 @@
   padding: 11px;
   border: none;
   border-radius: 12px;
-  background: #32121E;
+  background: #222222;
   border: 1px solid #4E1928;
   color: #f04060;
   font-size: 14px;
@@ -479,6 +479,6 @@
 }
 
 .pwd-warn-btn:hover {
-  background: #451724;
+  background: #2e2e2e;
 }
 

@@ -346,7 +346,7 @@ function _injectCSS() {
   color: var(--text);
   pointer-events: none;
   z-index: 9999;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0,0.25);
   white-space: nowrap;
   opacity: 0;
   transition: opacity 0.1s;
@@ -558,10 +558,10 @@ function _renderBody(body, d) {
         <div class="stats-legend-panel">
           <div class="stats-legend-item ${_visibility.users?'':'stats-legend-item--off'}" data-series="users">
             <div class="stats-legend-top">
-              ${_checkIcon('#5b8ef5')}
+              ${_checkIcon('#ffffff')}
               <span class="stats-legend-name">Yangi users</span>
             </div>
-            <div class="stats-legend-val" style="color:#5b8ef5">${_fmtK(totalUsersInPeriod)}</div>
+            <div class="stats-legend-val" style="color:#ffffff">${_fmtK(totalUsersInPeriod)}</div>
             <div class="stats-legend-sub">jami ro'yxat</div>
           </div>
           <div class="stats-legend-item ${_visibility.posts?'':'stats-legend-item--off'}" data-series="posts">
@@ -624,7 +624,7 @@ function _renderBody(body, d) {
         <div class="stats-chart2-inner">
           <div class="stats-legend2">
             <div class="stats-legend2-item">
-              <div class="stats-legend2-name"><span class="stats-legend2-dot" style="background:#5b8ef5"></span>Foydalanuvchilar</div>
+              <div class="stats-legend2-name"><span class="stats-legend2-dot" style="background:#ffffff"></span>Foydalanuvchilar</div>
               <div class="stats-legend2-val">${_fmtK(totalUsersInPeriod)}</div>
               <div class="stats-legend2-sub">+${_period} kunda</div>
             </div>
@@ -718,7 +718,7 @@ function _renderBody(body, d) {
           ${[
             { label:'Jami likelar',       val: _fmtK(totalLikes),  color:'#f06090' },
             { label:'Post boshiga',        val: totalPosts>0?(totalLikes/totalPosts).toFixed(1):'—',  color:'#f0a855' },
-            { label:'Ko\'rish boshiga',   val: totalViews>0?(totalLikes/totalViews*100).toFixed(1)+'%':'—', color:'#5b8ef5' },
+            { label:'Ko\'rish boshiga',   val: totalViews>0?(totalLikes/totalViews*100).toFixed(1)+'%':'—', color:'#ffffff' },
           ].map(it => `
             <div>
               <div style="font-size:10px;color:var(--text3);margin-bottom:4px">${it.label}</div>
@@ -816,7 +816,7 @@ function _renderMainChart(keys, users, posts, likes) {
   const cursor = `<line id="chartCursor" x1="0" y1="${PT}" x2="0" y2="${PT+iH}" stroke="var(--line3)" stroke-width="1" stroke-dasharray="3,3" opacity="0"/>`;
 
   // Dot indicators
-  const dotU = `<circle id="dotU" cx="0" cy="0" r="3.5" fill="#5b8ef5" stroke="var(--bg2)" stroke-width="2" opacity="0"/>`;
+  const dotU = `<circle id="dotU" cx="0" cy="0" r="3.5" fill="#ffffff" stroke="var(--bg2)" stroke-width="2" opacity="0"/>`;
   const dotP = `<circle id="dotP" cx="0" cy="0" r="3.5" fill="#f0a855" stroke="var(--bg2)" stroke-width="2" opacity="0"/>`;
   const dotL = `<circle id="dotL" cx="0" cy="0" r="3.5" fill="#f06090" stroke="var(--bg2)" stroke-width="2" opacity="0"/>`;
 
@@ -825,8 +825,8 @@ function _renderMainChart(keys, users, posts, likes) {
          style="height:170px">
       <defs>
         <linearGradient id="gU" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#5b8ef5" stop-opacity="0.22"/>
-          <stop offset="100%" stop-color="#5b8ef5" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
         </linearGradient>
         <linearGradient id="gP" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#f0a855" stop-opacity="0.18"/>
@@ -851,7 +851,7 @@ function _renderMainChart(keys, users, posts, likes) {
         ${_visibility.users ? `<polygon points="${areaU}" fill="url(#gU)" opacity="0.9"/>` : ''}
         ${_visibility.likes ? `<polyline points="${lineL}" fill="none" stroke="#f06090" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
         ${_visibility.posts ? `<polyline points="${lineP}" fill="none" stroke="#f0a855" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
-        ${_visibility.users ? `<polyline points="${lineU}" fill="none" stroke="#5b8ef5" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
+        ${_visibility.users ? `<polyline points="${lineU}" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>` : ''}
       </g>
 
       <!-- Axes -->
@@ -903,7 +903,7 @@ function _attachChartEvents(panel, keys, users, posts, likes) {
       const d = new Date(keys[i]);
       const dateStr = `${d.getDate()} ${_monthShort(d.getMonth())} ${d.getFullYear()}`;
       let lines = '';
-      if (_visibility.users) lines += `<div class="stats-tooltip-line"><div class="stats-tooltip-dot" style="background:#5b8ef5"></div>Users: <b>${users[i]}</b></div>`;
+      if (_visibility.users) lines += `<div class="stats-tooltip-line"><div class="stats-tooltip-dot" style="background:#ffffff"></div>Users: <b>${users[i]}</b></div>`;
       if (_visibility.posts) lines += `<div class="stats-tooltip-line"><div class="stats-tooltip-dot" style="background:#f0a855"></div>Postlar: <b>${posts[i]}</b></div>`;
       if (_visibility.likes) lines += `<div class="stats-tooltip-line"><div class="stats-tooltip-dot" style="background:#f06090"></div>Likelar: <b>${likes[i]}</b></div>`;
 
@@ -950,7 +950,7 @@ function _renderBarChart(keys, users, posts) {
     return `
       <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0">
         <div style="display:flex;gap:1px;align-items:flex-end;height:${H}px;width:100%;justify-content:center">
-          <div style="flex:1;max-width:9px;height:${hu}px;border-radius:2px 2px 0 0;background:#3a6bd4;opacity:${users[i]>0?1:0.2}" title="${k}: ${users[i]} user"></div>
+          <div style="flex:1;max-width:9px;height:${hu}px;border-radius:2px 2px 0 0;background:#ffffff;opacity:${users[i]>0?1:0.2}" title="${k}: ${users[i]} user"></div>
           <div style="flex:1;max-width:9px;height:${hp}px;border-radius:2px 2px 0 0;background:#e67e22;opacity:${posts[i]>0?1:0.2}" title="${k}: ${posts[i]} post"></div>
         </div>
         <div style="font-size:8.5px;color:var(--text3);text-align:center;overflow:hidden;width:100%;white-space:nowrap">${lbl}</div>

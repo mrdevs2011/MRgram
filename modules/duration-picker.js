@@ -38,8 +38,8 @@ function _injectStyles() {
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      background: var(--bg3, #1c1f26);
-      border: 1px solid var(--line2, #2a2e38);
+      background: var(--bg3, #212121);
+      border: 1px solid var(--line2, #313131);
       border-radius: 10px;
       padding: 8px 4px 10px;
     }
@@ -58,8 +58,8 @@ function _injectStyles() {
       width: 22px;
       height: 22px;
       border-radius: 6px;
-      border: 1px solid var(--line2, #2a2e38);
-      background: var(--bg4, #20242c);
+      border: 1px solid var(--line2, #313131);
+      background: var(--bg4, #262626);
       color: var(--text, #fff);
       font-size: 14px;
       line-height: 1;
@@ -70,7 +70,7 @@ function _injectStyles() {
       user-select: none;
       flex-shrink: 0;
     }
-    .dp-stepper-btn:hover { background: var(--bg5, #2a2f3a); }
+    .dp-stepper-btn:hover { background: var(--bg5, #323232); }
     .dp-stepper-btn:active {}
     .dp-unit-input {
       width: 44px;
@@ -97,21 +97,21 @@ function _injectStyles() {
     .dp-preset-btn {
       padding: 5px 10px;
       border-radius: 14px;
-      border: 1px solid var(--line2, #2a2e38);
-      background: var(--bg3, #1c1f26);
-      color: var(--text2, #c5c8ce);
+      border: 1px solid var(--line2, #313131);
+      background: var(--bg3, #212121);
+      color: var(--text2, #cacaca);
       font-size: 11px;
       cursor: pointer;
       font-family: var(--font, system-ui, sans-serif);
     }
-    .dp-preset-btn:hover { background: var(--bg4, #20242c); color: var(--text, #fff); }
+    .dp-preset-btn:hover { background: var(--bg4, #262626); color: var(--text, #fff); }
     .dp-summary {
-      background: var(--bg3, #1c1f26);
-      border: 1px solid var(--line2, #2a2e38);
+      background: var(--bg3, #212121);
+      border: 1px solid var(--line2, #313131);
       border-radius: 10px;
       padding: 10px 12px;
       font-size: 12px;
-      color: var(--text2, #c5c8ce);
+      color: var(--text2, #cacaca);
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -126,7 +126,7 @@ function _injectStyles() {
       align-items: center;
       gap: 8px;
       font-size: 12px;
-      color: var(--text2, #c5c8ce);
+      color: var(--text2, #cacaca);
       cursor: pointer;
       user-select: none;
     }
