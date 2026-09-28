@@ -6,6 +6,26 @@
 > **Yangilanish (2026-09-29):** holat kodning o'zidan qayta tekshirildi (git tag'lar, fayllar, grep). Bajarilganlar: F2 parol reset, F3.4 views, F3.5 muqova (cover), F4.5 `app.css` build, F5 presence/typing, F6.2 avto-versiya + network-first, F7.2 limit 25 MB. Supabase/Vercel panel ishlari tekshirilmadi.
 > **Oldingi yangilanish (2026-09-28):** bu fayl repoda ilk marta saqlandi va joriy holatga ko'ra belgilandi (`[x]`/`[ ]`, "Holat" ustunlari). Tarix: commitlar `09bce2c` (F1), `db6028d` (link tartibi), `fbbcd8b` (x-design klasteri).
 
+
+## Progress (2026-09-29, MR qarori bilan)
+
+| Faza | Holat |
+|---|---|
+| F1 Axlat kod | 100% |
+| F2 Admin + parol reset | 100% |
+| F3 Mahsulot yuzasi | 100% |
+| F4 CSS | ~50% (CSS 17.4k -> 11.8k qator, maqsad <=5k) |
+| F5 Realtime | 100% |
+| F6 Data qatlami / SW | ~55% |
+| F7 Family-grade | ~60% |
+| F8 Hujjat | 100% |
+
+**100% deb belgilangan fazalardan ko'chgan qoldiqlar (yo'qolmasin):**
+- DB contract: `supabase/unfulfilled/` dagi patchlar (007-013), eng erta 2026-10-06, oldin `supabase db dump`. F1, F2, F3, F5.
+- 3.6 SQL natijasi + Explore filtr brauzer sinovi (F3).
+- 5.3 kanallar 5 -> 3 (`sb.channel()` 12 ta chaqiruv), 2 telefonda sinov (F5).
+- Qo'lda smoke: login, 25 MB yuklash, chat/push, "yozmoqda", qo'ng'iroq, parol reset (docs/SMOKE.md).
+
 ---
 
 ## 0. Boshlang'ich holat (baseline)
