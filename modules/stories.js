@@ -2,9 +2,8 @@
  * Stories — Instagram uslubida 24 soatlik hikoyalar.
  * Feed yuqorisida horizontal strip (mobile + desktop).
  */
-import { sb, state, mapProfile, mediaPublicUrl, uploadViaController } from './config.js';
+import { sb, state, mapProfile, mediaPublicUrl } from './config.js';
 import { $, esc, defAvi } from './utils.js';
-import { toast } from './toast.js';
 
 const STORY_MS = 5000; // har bir story ko'rsatish muddati
 
@@ -252,17 +251,6 @@ function ensureDom() {
     document.body.appendChild(v);
   }
 
-  // Hidden file input for creating story
-  if (!$('storyFileInput')) {
-    const inp = document.createElement('input');
-    inp.type = 'file';
-    inp.id = 'storyFileInput';
-    inp.accept = 'image/*,video/*';
-    inp.hidden = true;
-    document.body.appendChild(inp);
-    inp.addEventListener('change', onStoryFilePicked);
-  }
-
   if (!_bound) {
     _bound = true;
     $('svClose')?.addEventListener('click', closeViewer);
@@ -420,7 +408,7 @@ function renderBar() {
       const g = _groups[idx];
       if (!g) return;
       if (g.isMe && !g.items.length) {
-        $('storyFileInput')?.click();
+        openStoryAdd();
         return;
       }
       if (g.isMe && g.items.length) {
@@ -438,41 +426,14 @@ function renderBar() {
   if (meBtn && _groups[0]?.items?.length) {
     meBtn.querySelector('.story-plus')?.addEventListener('click', e => {
       e.stopPropagation();
-      $('storyFileInput')?.click();
+      openStoryAdd();
     });
   }
 }
 
-async function onStoryFilePicked(e) {
-  const file = e.target.files?.[0];
-  e.target.value = '';
-  if (!file || !state.me) return;
-  if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
-    toast('Faqat rasm yoki video', 'error');
-    return;
-  }
-  if (file.size > 30 * 1024 * 1024) {
-    toast('Fayl juda katta (max 30MB)', 'error');
-    return;
-  }
-  try {
-    toast('Yuklanmoqda...', 'info');
-    const { path } = await uploadViaController(file, 'stories');
-    const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
-    const expires = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
-    const { error } = await sb.from('stories').insert({
-      user_id: state.me.uid,
-      media_path: path,
-      media_type: mediaType,
-      expires_at: expires,
-    });
-    if (error) throw error;
-    toast('Story qo\'shildi', 'success');
-    await loadStories();
-  } catch (err) {
-    console.error(err);
-    toast('Story yuklanmadi: ' + (err.message || err), 'error');
-  }
+/* Story qo'shish: fayl menejeri emas, post kabi composer kartasi ochiladi (modules/upload.js) */
+function openStoryAdd() {
+  import('./upload.js').then(m => m.openStoryComposer()).catch(e => console.error(e));
 }
 
 function openViewer(groupIdx, itemIdx) {

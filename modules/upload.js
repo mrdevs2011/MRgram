@@ -223,15 +223,34 @@ function _measureSelectedMedia(file, objUrl) {
   }
 }
 
+/* ── Composer rejimi: 'post' (odatiy) yoki 'story' (24 soatlik hikoya) ──
+   Story ham xuddi shu composer kartasida ochiladi — faqat matn maydoni o'rniga
+   qisqa izoh, faqat rasm/video, tugma "Story". */
+const STORY_MAX = 30 * 1024 * 1024;
+const _POST_ACCEPT = $('fileInput').accept;
+let _composerMode = 'post';
+
+function _setComposerMode(mode) {
+  _composerMode = mode;
+  const story = mode === 'story';
+  $('captionInput').style.display = story ? 'none' : '';
+  const hint = $('composerHint');
+  if (hint) hint.style.display = story ? '' : 'none';
+  $('fileInput').accept = story ? 'image/*,video/*' : _POST_ACCEPT;
+  $('uploadDrop').setAttribute('aria-label', story ? 'Story uchun rasm yoki video tanlash' : "Rasm yoki video qo'shish");
+}
+
 /* ── Button enable/disable check ────────────────────────────────────── */
 function refreshPostBtn() {
-  const hasText = !!($('captionInput').value.trim());
   const hasFile = !!state.selFile;
+  if (_composerMode === 'story') { $('uploadBtn').disabled = !hasFile; return; }
+  const hasText = !!($('captionInput').value.trim());
   $('uploadBtn').disabled = !(hasText || hasFile);
 }
 
 /* ── Reset ───────────────────────────────────────────────────────────── */
 export function resetUpload() {
+  _setComposerMode('post');
   revokeObjUrl();
   state.selFile = null;
   $('fileInput').value = '';
@@ -264,6 +283,17 @@ function hideProgress() {
 
 /* ── File pick ───────────────────────────────────────────────────────── */
 export function pickFile(f) {
+  if (_composerMode === 'story') {
+    if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) {
+      toast('Faqat rasm yoki video', 'error');
+      return;
+    }
+    if (f.size > STORY_MAX) {
+      $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 30 MB`;
+      toast('Fayl juda katta (max 30MB)', 'error');
+      return;
+    }
+  }
   if (f.size > MAX_FILE) {
     $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 50 MB`;
     toast('Fayl hajmi 50 MB dan oshmasligi kerak', 'error');
@@ -367,7 +397,53 @@ function floatBarDone(success) {
 }
 
 /* ── Yuklash / Post ───────────────────────────────────────────────────── */
+/* ── Story yuklash (composer 'story' rejimida) ─────────────────────── */
+async function submitStory() {
+  const file = state.selFile;
+  if (!file || !state.me) return;
+
+  $('uploadBtn').disabled    = true;
+  $('uploadBtn').textContent = 'Yuklanmoqda…';
+  $('uploadOverlay').classList.remove('show');
+  unlockScroll();
+  floatBarShow(file.name.length > 28 ? file.name.slice(0, 26) + '…' : file.name);
+
+  let simInterval;
+  try {
+    let simPct = 0;
+    simInterval = setInterval(() => {
+      const step = Math.max(0.3, (3 - (file.size / (10 * 1024 * 1024))) * Math.random());
+      simPct = Math.min(simPct + step, 88);
+      floatBarUpdate(simPct);
+    }, 200);
+
+    const { path } = await uploadViaController(file, 'stories');
+    clearInterval(simInterval);
+    floatBarUpdate(100);
+
+    const { error } = await sb.from('stories').insert({
+      user_id:    state.me.uid,
+      media_path: path,
+      media_type: file.type.startsWith('video/') ? 'video' : 'image',
+      expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
+    });
+    if (error) throw error;
+
+    revokeObjUrl();
+    floatBarDone(true);
+    toast('Story qo\'shildi', 'success');
+    import('./stories.js').then(m => m.loadStories()).catch(() => {});
+  } catch (err) {
+    clearInterval(simInterval);
+    floatBarDone(false);
+    toast('Story yuklanmadi: ' + (err.message || 'Noma\'lum xatolik'), 'error');
+  } finally {
+    resetUpload();
+  }
+}
+
 $('uploadBtn').onclick = async () => {
+  if (_composerMode === 'story') return submitStory();
   const caption      = $('captionInput').value.trim();
   const isPublic     = true; // yopiq tarmoq: yangi postlar hamma tasdiqlangan a'zoga ko'rinadi
   if (!state.me) return;
@@ -478,6 +554,16 @@ function openComposer() {
   $('uploadOverlay').classList.add('show');
   lockScroll();
   resetUpload();
+  loadComposerAvi();
+}
+/* Story "+" bosilganda: fayl menejerini darhol ochmaymiz — post kabi composer kartasi ochiladi */
+export function openStoryComposer() {
+  if (!state.me) return;
+  $('uploadOverlay').classList.add('show');
+  lockScroll();
+  resetUpload();
+  _setComposerMode('story');
+  $('uploadBtn').textContent = 'Story';
   loadComposerAvi();
 }
 $('createBtn').onclick     = openComposer;
