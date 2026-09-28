@@ -56,7 +56,7 @@
 | 0 | Xavfsizlik to'ri | past | 1–2 soat | — | ⚠️ qisman (tag va remote tayyor; preview/smoke — MR ishi) |
 | 1 | Axlat va o'lik kod | past | 2–3 soat | 0 | ✅ deyarli tayyor (`09bce2c`) |
 | 2 | Admin dieta + parol reset | o'rta | 1 kun | 0, 1 | ✅ kod tayyor (branch `diet/02-admin`, Preview sinovi + 1 hafta kuzatuv → `patch-diet-02-admin.sql` kutilmoqda) |
-| 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.2, 3.3, 3.4 ✅, 3.5 deyarli ✅; 3.1 Explore→filtr, 3.6 ❌ |
+| 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.1 (branch `diet/03-explore`), 3.2, 3.3, 3.4 ✅, 3.5 deyarli ✅; 3.6 ❌ |
 | 4 | CSS konsolidatsiya | o'rta–yuqori (vizual) | 2–3 kun | 3 (oldin nima qolishi aniq bo'lsin) | 🔶 4.4/4.5 ✅ (bitta `app.css`); 23 fayl/~16.7k qator, 351 `!important` |
 | 5 | Realtime va presence | o'rta | 1 kun | 3 | 🔶 5.1/5.2 ✅; 5.3 deyarli ✅ (doimiy kanallar ~8 → 5, sinov MR) |
 | 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya, network-first, yangilanish toast'i ✅; `Ts` adapteri, vendored supabase ❌ |
@@ -148,7 +148,7 @@ drop table if exists public.login_history;
 
 **Maqsad:** ijtimoiy tarmoq bezaklarini olib tashlab, oilaviy messenjer + oilaviy lentaga aylantirish.
 
-- **3.1 Explore→filtr:** ❌ `explore.js` (316 q, `script.js:14` import) + typeahead + 5 tab joyida. `[TEKSHIR]` eskirgandi: explore.js'dagi lokal diff masalasi F0'da hal qilindi (working tree toza).
+- **3.1 Explore→filtr:** ✅ kod tomoni (branch `diet/03-explore`): `explore.js` 281 → 179 qator. Tablar (Kashf/Postlar/Odamlar/Media), trend/hashtaglar va media setkasi olib tashlandi; bitta ro'yxat — Odamlar + Postlar, Enter/typeahead bilan filtrlanadi. `expTabs` elementi olib tashlandi. `ui.js` typeahead tegilmadi. `.exp-tab*`/`.exp-media`/trend CSS qoidalari endi o'lik → F4 da tozalanadi. ⚠️ Brauzerda sinalmagan (qoida 8: `exp-head` ko'rinishi).
 - **3.2 Kanal→guruh rejimi:** ✅ (2026-09-29) SQL patch bazada ishlagan (MR), kodda `'channel'` shoxlari va `_renderChannelActionBar` olib tashlandi (`diet/03-channel-cleanup`, ⚠️ brauzerda sinalmagan; CSS `--channel` klasslari F4 ga qoldi; `groups.type` check-cheklovini qisqartirish — keyingi SQL). Oldingi holat: 🔶 kod tomoni (branch `diet/03-channel-group`): "+" to'g'ridan-to'g'ri guruh formasini ochadi, "Yangi kanal" tanlovi yo'q; yaratishda "Xabar yuborish: faqat adminlar" tanlovi (`msg_permission='admins'`). Eski `type:'channel'` yozuvlari bazada qoladi va ishlayveradi (render shoxlari saqlangan). DB: `supabase/unfulfilled/patch-diet-03-channels.sql` (channel→group+admins) yozildi, ISHGA TUSHIRILMAGAN; patchdan keyin kodda `'channel'` shoxlari olib tashlanadi. ⚠️ Brauzerda sinalmagan.
 - **3.3 Guruh ochiq/maxfiy [QAROR Q1 = B, 2026-09-29]:** ✅ kod tomoni (branch `diet/03-groups-b`): yaratishda faqat yopiq (`is_private:true`, `invite_code` yo'q), maxfiylik/havola/username UI, "havola orqali qo'shilish" oynasi va chat qidiruvidagi kod-join olib tashlandi (`groups.js` −264 qator). DB: `supabase/unfulfilled/patch-diet-03-groups.sql` yozildi, ISHGA TUSHIRILMAGAN (1 hafta kuzatuvdan keyin). RLS/`group_is_private()` tegilmadi. ⚠️ Brauzerda sinalmagan.
 - **3.4 Post views:** ✅ kod tomoni tag `diet-progress-03` bilan olib tashlangan (`posts.views` ustunini bazadan drop — contract, keyinroq).
@@ -177,6 +177,13 @@ drop table if exists public.follows;
 - [x] **4.0 Yuklanish tartibi tuzatildi** (`db6028d`): `index.html` endi `style.css → devs-utility → admin → x-design → mono`. Mono haqiqatan OXIRIDA (fayl izohidagi maqsadga mos). C11/C12 sababi: eski buzilgan tartibda x-design mono ustidan hukm qilardi.
 - [x] **4.1a x-design ↔ mono klasteri tugadi** (`fbbcd8b`): property-darajasidagi skript tekshiruvi — 52/52 selectorning mono'da AYNAN bir xil `color:#000 !important` egizi bor va mono endi g'olib → 52 o'lik qoida o'chirildi. Tasodifan o'chirilgan `::selection { color: inherit !important; }` tiklandi. `{}` balansi 226/226 ✅. **x-design: 76 → 26 `!important`.**
   - ⚠️ **To'xtash nuqtasi (qoida 8):** natijaviy vizual o'zgarish — accent fonlarda matn `#fff` → `#000` (bu mono palitraning MAQSADI: oq fon + qora matn; tokenlar `--blue/--tg-blue: #ffffff`). Lekin `.chat-voice-btn.recording` (qizil fonda qora matn) va `.nav-badge` kabi juftliklar **MR brauzer-ko'z tekshiruvini kutmoqda**. Rad etilsa: `git revert fbbcd8b`.
+- ⚠️ **Repo bilan solishtirish (2026-09-29 kech, `main` @ `ac66409`)** — yuqoridagi 4.0/4.1a "✅" belgilari hozirgi repoda tasdiqlanmadi:
+  - `db6028d` (4.0), `fbbcd8b` (4.1a) va `09bce2c` (F1) hashlari bu klonda **yo'q** (`git cat-file` → not a valid object). Ish boshqa klonda/branchda qolib ketgan yoki qaytarilgan bo'lishi mumkin.
+  - `scripts/build-css.mjs` tartibi: `... admin-plain → mono → x-design` — ya'ni **x-design mono'dan KEYIN** (4.0 ta'rifidagi "mono oxirida" teskarisi; C11/C12 sababi aynan shu edi). `app.css` da ham shunday (mono 15560-qator, x-design 15720-qator).
+  - `x-design.css`: **116** `!important` (tag'larda 82; "76 → 26" natijasi repoda yo'q). `x-design.css` da `color:#000 !important` = 0 ta, `mono.css` da 55 ta.
+  - F1.2: `vercel.json` da `/api`, `/img`, `/.well-known` rewrite/header'lari topildi → **o'chirildi** (2026-09-29, branch `diet/01-vercel-cleanup`; papkalar yo'q, kodda ishlatilmaydi — grep). Catch-all faqat `modules/ CSS/ svg/ icons/` ni istisno qiladi. ⚠️ Preview'da ochilishi sinalmagan.
+  - F1.8 (Eruda) tasdiqlandi: `index.html` da 0 ta.
+  - **Qaror kerak (MR):** (a) tartibni `x-design → mono` ga o'zgartirish vizual natija beradi (qoida 8 — avval brauzerda ko'z bilan), (b) yoki mavjud tartib rasmiy qabul qilinadi. Shu qarorgacha CSS'da o'chirish/ko'chirish qilinmaydi.
 - [ ] **4.1b Inventar (to'liq):** Chrome DevTools Coverage yoki `purgecss --content index.html modules/*.js` bilan ishlatilmaydigan selektorlar ro'yxati. Taqqoslash **property darajasida** (AUDIT.md sabog'i).
 - [ ] **4.2 Tokenlar:** `theme.css` → yagona manba: ranglar, spacing, radius, shrift. Hard-coded ranglar tokenga o'tadi.
 - [ ] **4.3 Tuzilma (maqsad):** `tokens.css / base.css / components.css / features.css / admin.css`. **Hozir: 22 fayl / 17 055 qator.**
@@ -187,6 +194,8 @@ drop table if exists public.follows;
 - [ ] **4.8 Tartib:** keyingi nomzod klaster — `chat.css` cvm-bloklari ↔ mono; bir fayl → tekshir → keyingisi; har fayl = 1 commit.
 
 **Joriy `!important` o'lchovi (2026-09-28, `grep -c`):** x-design **26**, mono 58, chat 74, chat-dark-redesign ~130, ui-improvements ~56… (AUDIT.md C6/C9 jadvallari eskirgan — har sessiya boshida qayta o'lchanadi.)
+
+**Qayta o'lchov (2026-09-29 kech, `CSS/*.css`, 23 fayl):** jami **353**; x-design **116**, chat 74, mono 58, nav 21, feed 16, sidebar-x 14, profile 13, ui-improvements 9, no-animations 8, local-utility 8, groups 5, dark-theme-fix 3.
 
 **Xavf:** o'rta–yuqori (vizual buzilish, dark theme). **Yumshatish:** skrinshotlar + Preview + kichik commitlar.
 **Kutilgan natija:** 24 fayl → ≤ 6, ~17k → ≤ 5k qator, bitta CSS so'rov.
@@ -266,6 +275,16 @@ drop table if exists public.follows;
 
 *\*Hisob chegaralari farqi (SW/index.html hisobga kirgan); tendensiya muhim. CSS fayllar 22, chunki `auth-ig-style.css` allaqachon o'chirilgan (AUDIT C9).*
 
+**Qayta o'lchov (2026-09-29 kech, `main`):**
+
+| Ko'rsatkich | Qiymat |
+|---|---|
+| `modules/*.js` | 33 fayl, **12 624** qator |
+| `CSS/*.css` | 23 fayl, **16 737** qator (manba); `app.css` — yig'ma |
+| `sb.channel(` chaqiruvlari | 14 ta joyda: chat 5, auth 3, call 2, admin-badge 1, groups 1, view-actions 1, view-users 1 |
+| `explore.js` | 281 qator (`main`); `diet/03-explore` da 179 |
+
+
 ---
 
 ## 7. Smoke test ro'yxati (har faza oxirida)
@@ -343,16 +362,16 @@ drop table if exists public.follows;
 ## 10. Git va deploy tartibi
 
 ```
-main
- ├─ diet/00-safety      (tag: pre-diet)        ← qismiy (working tree toza; tag/remote MR ishi)
- ├─ diet/01-junk        ← 09bce2c              ✅
- ├─ diet/02-admin                              ❌
- ├─ diet/03-product                            ❌
- ├─ diet/04-css         ← db6028d, fbbcd8b     🔶 davom etmoqda
- ├─ diet/05-realtime                           ❌
- ├─ diet/06-data-sw                            ❌
- ├─ diet/07-family                             ❌
- └─ diet/08-docs        ← MRSPACE-ROADMAP.md    🔶 qisman
+main  (ac66409)
+ ├─ diet/00-safety      (tag: pre-diet)        ← qismiy (tag/remote bor; preview/smoke MR ishi)
+ ├─ diet/02-admin       ✅ main'ga qo'shilgan
+ ├─ diet/03-channel-*, 03-groups-b, 03-product-profile   ✅ main'ga qo'shilgan
+ ├─ diet/03-explore     🔶 main'dan 1 commit oldinda (f35b021) — 3.1 Explore→filtr; brauzer sinovini kutmoqda
+ ├─ diet/04-css*        ✅ main'ga qo'shilgan (4.4/4.5); qolgani 4-fazada
+ ├─ diet/05-realtime, 05-realtime-2   ✅ main'ga qo'shilgan
+ ├─ diet/06-sw-update-toast           ✅ main'ga qo'shilgan
+ ├─ diet/07-family      ✅ main'ga qo'shilgan
+ └─ diet/08-docs, 08-migrations       ✅ main'ga qo'shilgan
 ```
 
 1. Branch → push → Vercel Preview → smoke test (7-bo'lim) → `main` ga merge.
@@ -377,7 +396,7 @@ main
 1. ~~F0 → F1~~ **F1 tayyor** (`09bce2c`, −64 q). F0 ning tashqi qismlari (tag, remote, preview, smoke) — MR terminal/dashboard/brauzer ishi, ro'yxat yuqorida.
 2. **F4 to'xtash nuqtasi:** MR brauzerda 8 ekran solishtirsin (ayniqsa `.nav-badge`, `.chat-voice-btn.recording`, `.cmt-send`). Tasdiq → 4.1b inventar; rad → `git revert fbbcd8b`.
 3. **F2 dietasi** (2.1–2.9; parol reset tayyor) — eng katta real foyda; F4 testini kutmaydi.
-4. **F3** qolgani: Explore→filtr, kanal→guruh, invite/ochiq-maxfiy, `website`/`location` (views va cover tayyor).
+4. **F3** qolgani: 3.1 Explore→filtr kod tayyor (`diet/03-explore`, brauzer sinovi + merge); kanal→guruh, invite/ochiq-maxfiy, `website`/`location`, views, cover tayyor. Faqat 3.6 ochiq.
 5. **F7.2–7.4** (storage, TURN) — bular ilovani omon saqlaydi, F4–F6 dan oldin ham bo'ladi.
 6. **F4** davomi (chat.css ↔ mono → qolgan fayllar), keyin **F5**, **F6**.
 7. **F8** (hujjat).
