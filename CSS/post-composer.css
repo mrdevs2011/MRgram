@@ -111,22 +111,6 @@
 #uploadOverlay .preview-wrap { margin-bottom: 0; }
 
 /* ── Visibility: bitta matnli toggle (x.com "Everyone can reply" kabi) ── */
-#uploadOverlay .composer-vis { margin-top: 4px; }
-#uploadOverlay .vis-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 0;
-  border: none;
-  background: transparent;
-  color: var(--blue3, var(--blue));
-  font-family: var(--font);
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-#uploadOverlay .vis-toggle:hover { opacity: .8; }
-#uploadOverlay .vis-toggle svg { display: block; }
 
 /* ── Divider above toolbar (x.com'dagi kabi) ── */
 #uploadOverlay .composer-toolbar {
