@@ -156,8 +156,7 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 
 **Muhim overlay/oynalar:**
 
-- Yuklash oynasi: fayl tanlash, tavsif matni, fayl va tavsif
-  tugmalari, "Yuklash" tugmasi.
+- Yuklash oynasi: fayl tanlash, tavsif matni va "Yuklash" tugmasi.
 - Izohlar oynasi: pastdan chiqadigan ro'yxat + izoh yozish maydoni.
 - Rasm/video kattalashtirish oynasi: to'liq ekran, yopish tugmasi
   yuqori burchakda.
