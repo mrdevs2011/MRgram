@@ -119,7 +119,6 @@ export async function initView() {
   _initDashboardSummary();
   _initAuditLog();
   _initBroadcast();
-  await _initStats();
   await _initUsers();
 
   _initialized = true;
@@ -368,19 +367,6 @@ function _initBroadcast() {
   bodyEl
 }
 
-/* ── Stats ── */
-async function _initStats() {
-  const section = document.getElementById('actionsStatsSection');
-  if (!section) return;
-  try {
-    const mod = await import('./view-stats.js');
-    if (mod.destroyView) mod.destroyView();
-    await mod.initView(section);
-  } catch (err) {
-    console.error('[Actions] Stats init error:', err);
-  }
-}
-
 /* ── Users ── */
 async function _initUsers() {
   try {
@@ -399,5 +385,4 @@ export function destroyView() {
   destroyDashboardSummary();
   if (_noticeUnsub) { _noticeUnsub(); _noticeUnsub = null; }
   if (_bcHistoryUnsub) { _bcHistoryUnsub(); _bcHistoryUnsub = null; }
-  import('./view-stats.js').then(m => m.destroyView && m.destroyView()).catch(() => {});
 }

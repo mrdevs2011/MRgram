@@ -42,7 +42,6 @@ initNavigation();
 import('./upload.js');
 import('./shortcuts.js');
 import('./sidebar.js');
-import('./right-col.js');
 import('./chats-x.js');
 
 /* ── Global mute buttons ─────────────────────────────────────────────── */

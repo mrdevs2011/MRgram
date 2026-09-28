@@ -73,7 +73,7 @@ self.addEventListener('notificationclick', (event) => {
 /* ── Cache versiyasi ── */
 // Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
 // bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 'v99';
+const CACHE_VERSION  = 'v100';
 const STATIC_CACHE   = `mrgram-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
 
@@ -137,7 +137,6 @@ const PRECACHE_URLS = [
   '/modules/view-home.js',
   '/modules/view-login.js',
   '/modules/view-profile.js',
-  '/modules/view-stats.js',
   '/modules/view-users.js',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
