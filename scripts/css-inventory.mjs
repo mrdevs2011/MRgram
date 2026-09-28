@@ -4,13 +4,15 @@
    matnida uchraydimi? Token-darajasida (property darajasida emas!) — taxminiy.
    hard  = token hech qayerda yo'q (na to'liq, na dinamik prefiks) → o'lik nomzod
    maybe = token yo'q, lekin JS'da "prefiks-" + o'zgaruvchi ko'rinishida yig'ilishi mumkin
-   Ishlatish: node scripts/css-inventory.mjs  → docs/CSS-INVENTORY.md */
+   Ishlatish: node scripts/css-inventory.mjs  → docs/CSS-INVENTORY.md
+   Tozalash (faqat hard): node scripts/css-inventory.mjs --prune=CSS/fayl.css */
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const rd = p => readFileSync(join(ROOT, p), 'utf8');
-const content = [rd('index.html'),
+const PRUNE = (process.argv.find(a => a.startsWith('--prune=')) || '').slice(8);
+const content = [rd('index.html'), rd('404.html'),
   ...readdirSync(join(ROOT, 'modules')).filter(f => f.endsWith('.js')).map(f => rd('modules/' + f))].join('\n');
 const cssFiles = readdirSync(join(ROOT, 'CSS')).filter(f => f.endsWith('.css')).sort();
 
@@ -31,9 +33,9 @@ function status(tok) { // 'used' | 'dyn' | 'none'
 const rows = []; const details = {};
 let T = { rules: 0, hard: 0, maybe: 0, lines: 0, hardLines: 0, imp: 0, hardImp: 0 };
 for (const f of cssFiles) {
-  const txt = rd('CSS/' + f).replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ''));
+  const txt = rd('CSS/' + f).replace(/\/\*[\s\S]*?\*\//g, m => m.replace(/[^\n]/g, ' '));
   const RULE = /([^{}]+)\{([^{}]*)\}/g; let m;
-  const s = { rules: 0, hard: 0, maybe: 0, hardLines: 0, imp: 0, hardImp: 0 }; const list = [];
+  const s = { rules: 0, hard: 0, maybe: 0, hardLines: 0, imp: 0, hardImp: 0 }; const list = []; const ranges = [];
   while ((m = RULE.exec(txt))) {
     const sel = m[1].trim();
     if (!sel || sel.startsWith('@') || /^(from|to|\d+%)/.test(sel)) continue;
@@ -50,8 +52,17 @@ for (const f of cssFiles) {
       if (!sts.includes('none')) allHard = false;
     }
     if (!allDead) continue;
-    if (allHard) { s.hard++; s.hardLines += lines; s.hardImp += imp; list.push(sel.replace(/\s+/g, ' ').slice(0, 90)); }
+    if (allHard) { s.hard++; s.hardLines += lines; s.hardImp += imp; list.push(sel.replace(/\s+/g, ' ').slice(0, 90)); ranges.push([m.index, m.index + m[0].length]); }
     else s.maybe++;
+  }
+  if (PRUNE === 'CSS/' + f) {
+    let orig = rd('CSS/' + f);
+    for (const [a, b] of ranges.reverse()) orig = orig.slice(0, a) + orig.slice(b);
+    let prev;
+    do { prev = orig; orig = orig.replace(/@media[^{}]*\{\s*\}/g, ''); } while (orig !== prev);
+    orig = orig.replace(/\n{3,}/g, '\n\n');
+    writeFileSync(join(ROOT, 'CSS/' + f), orig);
+    console.log(`PRUNE ${f}: ${ranges.length} hard-o'lik qoida olib tashlandi`);
   }
   const total = txt.split('\n').length;
   rows.push([f, total, s]); details[f] = list;

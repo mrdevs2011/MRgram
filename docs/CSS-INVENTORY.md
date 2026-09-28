@@ -13,11 +13,11 @@
 | chat-dark-redesign.css | 229 | 79 | 12 | 0 | 30 | 0 (0) |
 | chat.css | 2182 | 332 | 51 | 0 | 374 | 72 (9) |
 | dark-theme-fix.css | 650 | 98 | 18 | 1 | 132 | 0 (0) |
-| devs-utility.css | 2450 | 612 | 438 | 159 | 2191 | 0 (0) |
+| devs-utility.css | 697 | 174 | 0 | 159 | 0 | 0 (0) |
 | feed.css | 1417 | 183 | 57 | 4 | 483 | 16 (7) |
 | groups.css | 569 | 131 | 34 | 3 | 135 | 5 (0) |
 | loading.css | 431 | 53 | 7 | 3 | 56 | 2 (1) |
-| local-utility.css | 214 | 124 | 90 | 7 | 204 | 8 (0) |
+| local-utility.css | 214 | 124 | 89 | 7 | 202 | 8 (0) |
 | mono.css | 159 | 62 | 20 | 4 | 60 | 58 (20) |
 | nav.css | 1348 | 219 | 34 | 0 | 212 | 21 (7) |
 | no-animations.css | 14 | 2 | 0 | 0 | 0 | 8 (0) |
@@ -25,10 +25,10 @@
 | profile.css | 1113 | 151 | 10 | 3 | 99 | 5 (0) |
 | sidebar-x.css | 330 | 95 | 3 | 0 | 6 | 14 (1) |
 | splash.css | 56 | 6 | 0 | 0 | 0 | 0 (0) |
-| theme.css | 254 | 28 | 9 | 0 | 47 | 0 (0) |
+| theme.css | 254 | 28 | 8 | 0 | 40 | 0 (0) |
 | ui-improvements.css | 1729 | 217 | 76 | 20 | 675 | 8 (0) |
-| x-design.css | 1214 | 323 | 20 | 4 | 62 | 116 (20) |
-| **JAMI** | **16760** | **3089** | **1001** | **210** | **5538** | **335 (65)** |
+| x-design.css | 1214 | 323 | 34 | 4 | 104 | 116 (20) |
+| **JAMI** | **15007** | **2651** | **575** | **210** | **3380** | **335 (65)** |
 
 ## hard-o'lik selektorlar (har fayldan 30 tagacha)
 
@@ -166,39 +166,6 @@
 - `[data-theme="dark"] .feed-empty-title`
 - `[data-theme="dark"] .feed-empty-text`
 
-### devs-utility.css (438)
-- `.ff-arial`
-- `.fs-5px`
-- `.fs-10px`
-- `.fs-15px`
-- `.fs-20px`
-- `.fs-25px`
-- `.fs-30px`
-- `.fs-35px`
-- `.fs-40px`
-- `.fs-45px`
-- `.fs-50px`
-- `.fs-55px`
-- `.fs-60px`
-- `.fs-65px`
-- `.fs-70px`
-- `.fs-75px`
-- `.fs-80px`
-- `.fs-85px`
-- `.fs-90px`
-- `.fs-95px`
-- `.fs-100px`
-- `.fsn`
-- `.fso`
-- `.fw-100`
-- `.fw-200`
-- `.fw-300`
-- `.fw-400`
-- `.fw-700`
-- `.fw-800`
-- `.fw-900`
-- … yana 408 ta
-
 ### feed.css (57)
 - `.hdr-search-expand`
 - `#reelsView.on`
@@ -274,7 +241,7 @@
 - `.strength-bar.medium`
 - `.strength-bar.strong`
 
-### local-utility.css (90)
+### local-utility.css (89)
 - `.pos-sticky`
 - `.pos-fixed`
 - `.pos-absolute`
@@ -305,7 +272,7 @@
 - `.aspect-3-4`
 - `.aspect-2-1`
 - `.aspect-3-2`
-- … yana 60 ta
+- … yana 59 ta
 
 ### mono.css (20)
 - `.ua-avi-placeholder, .ua-avi-placeholder *`
@@ -379,13 +346,12 @@
 - `#reelsView`
 - `nav.bot-nav .sb-logo-tip`
 
-### theme.css (9)
+### theme.css (8)
 - `.theme-transition-overlay`
 - `.theme-transition-overlay.active`
 - `.theme-btn .icon-sun`
 - `.theme-btn .icon-moon`
 - `[data-theme="dark"] .theme-btn:hover .icon-sun`
-- `.glass-heavy`
 - `.success-glow`
 - `.card-hover`
 - `.card-hover:hover`
@@ -423,7 +389,7 @@
 - `.vc-pip`
 - … yana 46 ta
 
-### x-design.css (20)
+### x-design.css (34)
 - `.ua-avi-placeholder, .ua-avi-placeholder *`
 - `.ua-unlock-banner-btn, .ua-unlock-banner-btn *`
 - `.ua-detail-tab.active, .ua-detail-tab.active *`
@@ -444,3 +410,14 @@
 - `.upload-file-icon.image, .upload-file-icon.image *`
 - `.scroll-progress-bar, .scroll-progress-bar *`
 - `.scroll-progress, .scroll-progress *`
+- `.exp-tabs`
+- `.exp-tabs::-webkit-scrollbar`
+- `.exp-tab`
+- `.exp-tab:hover`
+- `.exp-tab span`
+- `.exp-tab.on`
+- `.exp-tab.on span::after`
+- `.exp-more`
+- `.exp-more:hover`
+- `.exp-show-more`
+- … yana 4 ta
