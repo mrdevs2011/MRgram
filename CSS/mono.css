@@ -146,12 +146,6 @@ meta[name="theme-color"] { color: #000000; }
 .cc-btn--apply * { color: #000 !important; }
 .bc-send-btn,
 .bc-send-btn * { color: #000 !important; }
-.stats-ptab.active,
-.stats-ptab.active * { color: #000 !important; }
-.stats-top-avi,
-.stats-top-avi * { color: #000 !important; }
-.stats-top-bar-fill,
-.stats-top-bar-fill * { color: #000 !important; }
 
 /* ── Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan ── */
 [data-theme="dark"] .post,

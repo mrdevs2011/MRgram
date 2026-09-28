@@ -36,9 +36,9 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
   bosilganda yuklash oynasi (overlay) ochiladi.
 - Fayl tanlash (rasm, video yoki istalgan boshqa fayl turi: hujjat, zip
   va h.k.), ixtiyoriy tavsif (caption) matni yozish mumkin.
-- Ko'rinish darajasi — 2 ta variant (post yaratishda albatta tanlanadi):
-  - **Shaxsiy** (standart) — faqat post egasining o'zi ko'radi.
-  - **Ommaviy** — barcha foydalanuvchilar lentada ko'radi.
+- Ko'rinish: yangi postlar doim barcha tasdiqlangan a'zolarga ko'rinadi
+  (Ommaviy/Shaxsiy tanlash olib tashlangan). Eski "shaxsiy" postlar bazada
+  (`is_public=false`) faqat egasiga ko'rinishda qolgan.
 - Fayl hajmi cheklovi: maksimum 50 MB.
 
 ## 3. Lenta / postlar bilan o'zaro ta'sir (Feed)
@@ -87,14 +87,14 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 - Ism, username, avatar, muqova rasmi, bio, veb-sayt va joylashuvni
   "Profilni sozlash" orqali tahrirlash mumkin.
 - Rasmlarni kesish (crop) imkoniyati bor.
-- Profilda postlar, yoqtirishlar, obunachilar va obunalar soni ko'rinadi.
+- Profilda postlar va yoqtirishlar soni ko'rinadi (follow/obuna tizimi olib tashlangan).
 
 ## 8. Admin panel (faqat administratorlarga ko'rinadi)
 
 - Foydalanuvchilarni boshqarish: arizalarni tasdiqlash/rad etish,
   bloklash/blokdan chiqarish, o'chirish.
 - Ommaviy xabar (broadcast) yuborish.
-- Statistika: foydalanuvchilar soni, faollik va boshqa ko'rsatkichlar.
+- Foydalanuvchilar soni bo'yicha qisqa xulosa (dashboard-summary). Alohida Statistika sahifasi olib tashlangan.
 
 ## 9. Texnik asos
 
@@ -146,19 +146,17 @@ zamonaviy ijtimoiy tarmoq / messenjer PWA (Progressive Web App) ilovasi.
 - **Bosh sahifa / Lenta** — header ostida darhol boshlanadigan, to'liq
   ekranli vertikal skroll qilinadigan postlar oqimi.
 - **Profil** — tepada muqova rasmi, uning ustiga chiqib turgan avatar,
-  yonida statistikalar (postlar/yoqtirishlar/obunachilar/obunalar),
+  yonida statistikalar (postlar/yoqtirishlar),
   pastda ism/username/bio/"Profilni sozlash" tugmasi, eng pastda postlar
   panjarasi (3 ustunli). "Profilni sozlash" bosilsa alohida oyna ochiladi.
 - **Suhbatlar** — yuqorida sarlavha + "+" (yangi guruh/kanal), pastida
   ro'yxat. Suhbat bosilsa to'liq ekranli
   chat oynasi ochiladi.
-- **Boshqaruv/Admin panel** — "Foydalanuvchilar" → "Broadcast" →
-  "Statistika" tartibida.
+- **Boshqaruv/Admin panel** — "Foydalanuvchilar" → "Broadcast" tartibida.
 
 **Muhim overlay/oynalar:**
 
-- Yuklash oynasi: fayl tanlash, tavsif matni, ko'rinish darajasi
-  tugmalari, "Yuklash" tugmasi.
+- Yuklash oynasi: fayl tanlash, tavsif matni va "Yuklash" tugmasi.
 - Izohlar oynasi: pastdan chiqadigan ro'yxat + izoh yozish maydoni.
 - Rasm/video kattalashtirish oynasi: to'liq ekran, yopish tugmasi
   yuqori burchakda.

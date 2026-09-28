@@ -484,7 +484,6 @@ body:has(.search-overlay.open) .app-hdr {
   pointer-events: none;
 }
 
-
 .vid-wrap {
   position: relative;
   width: 100%;
@@ -684,7 +683,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 .act-btn:active {transition: none; }
 .act-btn.liked { color: var(--red); }
-
 
 .reel-act span {
   font-size: 12px;
@@ -908,7 +906,6 @@ body:has(.search-overlay.open) .app-hdr {
   flex-shrink: 0;
 }
 
-
 .rcap-follow.following {
   background: var(--bg3);
   border: 1px solid var(--line2);
@@ -934,7 +931,6 @@ body:has(.search-overlay.open) .app-hdr {
   transform: translate(-50%, -50%);
 }
 
-
 .heart-burst svg {
   width: 100%;
   height: 100%;
@@ -944,7 +940,6 @@ body:has(.search-overlay.open) .app-hdr {
 /* ═══════════════════════
    LIKE POP ANIMATION
    ═══════════════════════ */
-
 
 /* Hide header completely in reels on mobile */
 .app-hdr.force-hide { display: none !important; }
@@ -998,40 +993,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 /* ── Feed Subscribe Button ── */
-.feed-sub-btn {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: none;
-  color: var(--blue);
-  cursor: pointer;
-  flex-shrink: 0;
-  padding: 0;
-}
-.feed-sub-btn svg {
-  display: block;
-}
-.feed-sub-btn:hover {
-  color: var(--text2);
-}
-.feed-sub-btn.subscribed {
-  color: var(--text3);
-}
-.feed-sub-btn.subscribed svg {
-  transform: rotate(45deg);
-}
-.feed-sub-btn.subscribed:hover {
-  color: var(--red);
-}
-.feed-sub-btn.subscribed:hover svg {
-  transform: rotate(0deg);
-}
-
 
 /* ═══════════════════════════════════════════════
    FLOATING UPLOAD PROGRESS BAR
@@ -1055,7 +1016,6 @@ body:has(.search-overlay.open) .app-hdr {
   max-width: calc(100vw - 32px);
 }
 
-
 .ufb-icon {
   width: 28px; height: 28px;
   border-radius: 50%;
@@ -1064,7 +1024,6 @@ body:has(.search-overlay.open) .app-hdr {
   flex-shrink: 0;
   color: #fff;
 }
-
 
 .ufb-icon.done {
   animation: none;
@@ -1108,8 +1067,6 @@ body:has(.search-overlay.open) .app-hdr {
   width: 40% !important;
   animation: none;
 }
-
-
 
 .ufb-pct {
   font-size: 11px;
@@ -1202,8 +1159,6 @@ body:has(.search-overlay.open) .app-hdr {
   animation: none;
 }
 
-
-
 .skel-avi {
   width: 38px;
   height: 38px;
@@ -1244,8 +1199,6 @@ body:has(.search-overlay.open) .app-hdr {
   border-radius: 6px;
 }
 
-
-
 [data-theme="dark"] .skeleton-post {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
   border-color: #202327;
@@ -1255,7 +1208,6 @@ body:has(.search-overlay.open) .app-hdr {
   background: var(--bg3);
   border-color: #D5D5DA;
 }
-
 
 /* ═══════════════════════════════════════════════════════════
    SHORTS / REELS — YOUTUBE STYLE FIXES
@@ -1362,7 +1314,6 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* Post badge animation */
 
-
 /* Action button ripple effect */
 .act-btn {
   position: relative;
@@ -1377,14 +1328,9 @@ body:has(.search-overlay.open) .app-hdr {
   pointer-events: none;
 }
 
-
 /* Like button heart fill animation */
 
-
 /* Subscribe button */
-.feed-sub-btn {
-  position: relative;
-}
 
 /* ═══════════════════════════════════════════
    SKELETON LOADING VARIANTS
@@ -1454,8 +1400,6 @@ body:has(.search-overlay.open) .app-hdr {
   animation: none;
 }
 
-
-
 /* ═══════════════════════════════════════════
    FEED EMPTY STATE
    ═══════════════════════════════════════════ */
@@ -1477,7 +1421,6 @@ body:has(.search-overlay.open) .app-hdr {
   align-items: center;
   justify-content: center;
 }
-
 
 .feed-empty-title {
   font-size: 15px;
