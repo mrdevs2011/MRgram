@@ -389,12 +389,7 @@ function _injectShareCSS() {
   padding: 6px;
   min-width: 210px;
   box-shadow: 0 8px 32px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.04);
-  animation: sharePopIn .18s cubic-bezier(.22,.68,0,1.2) both;
   transform-origin: top center;
-}
-@keyframes sharePopIn {
-  from { opacity: 0; transform: scale(.88) translateY(-6px); }
-  to   { opacity: 1; transform: scale(1)   translateY(0); }
 }
 .share-popup-row {
   display: flex; align-items: center; gap: 10px;
@@ -413,14 +408,7 @@ function _injectShareCSS() {
 .share-popup-divider { height: 1px; margin: 2px 10px; background: color-mix(in srgb, var(--border, #fff) 12%, transparent); }
 
 /* ── Post highlight glow ── */
-@keyframes postGlow {
-  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--blue,#3b82f6) 0%, transparent); background: transparent; }
-  20%  { box-shadow: 0 0 0 4px color-mix(in srgb, var(--blue,#3b82f6) 30%, transparent); background: color-mix(in srgb, var(--blue,#3b82f6) 7%, transparent); }
-  60%  { box-shadow: 0 0 0 6px color-mix(in srgb, var(--blue,#3b82f6) 18%, transparent); background: color-mix(in srgb, var(--blue,#3b82f6) 5%, transparent); }
-  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--blue,#3b82f6) 0%, transparent); background: transparent; }
-}
 .post-highlight {
-  animation: postGlow 2.2s cubic-bezier(.4,0,.2,1) forwards;
   border-radius: 18px;
   transition: background .3s;
 }
@@ -433,8 +421,7 @@ let _shareOverlayEl = null;
 
 function _closeSharePopup() {
   if (_sharePopupEl) {
-    _sharePopupEl.style.animation = 'sharePopIn .13s cubic-bezier(.4,0,1,1) reverse both';
-    setTimeout(() => { _sharePopupEl?.remove(); _sharePopupEl = null; }, 130);
+    _sharePopupEl.remove(); _sharePopupEl = null;
   }
   if (_shareOverlayEl) { _shareOverlayEl.remove(); _shareOverlayEl = null; }
 }

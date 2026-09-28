@@ -3,48 +3,13 @@
    ═══════════════════════ */
 
 /* Auth card entrance animation */
-#authWrap.show .auth-card {
-  animation: authCardEntrance 0.5s var(--ease-back);
-}
 
-@keyframes authCardEntrance {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
 
 /* Auth card floating effect */
-.auth-card {
-  animation: authCardFloat 6s ease-in-out infinite;
-}
 
-@keyframes authCardFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
 
 /* Field focus animation */
-.field:focus {
-  animation: fieldGlow 0.5s ease;
-}
 
-@keyframes fieldGlow {
-  0%, 100% {
-    box-shadow: 0 0 0 3px #0e1621;
-  }
-  50% {
-    box-shadow: 0 0 0 6px #0B0C16;
-  }
-}
 
 /* Auth button loading state */
 .auth-btn-loading {
@@ -104,13 +69,8 @@
 
 #authWrap.show {
   display: flex;
-  animation: fadeIn 0.35s var(--ease);
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 
 .auth-card {
   width: 100%;
@@ -521,6 +481,3 @@
   background: #451724;
 }
 
-.pwd-warn-btn:active {
-  transform: scale(0.97);
-}

@@ -71,7 +71,7 @@ function _injectStyles() {
       flex-shrink: 0;
     }
     .dp-stepper-btn:hover { background: var(--bg5, #2a2f3a); }
-    .dp-stepper-btn:active { transform: scale(0.92); }
+    .dp-stepper-btn:active {}
     .dp-unit-input {
       width: 44px;
       text-align: center;

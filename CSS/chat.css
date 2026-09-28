@@ -37,7 +37,6 @@
 }
 .chat-row:active {
   background: var(--glass-mid);
-  transform: scale(0.99);
 }
 
 .chat-avi {
@@ -118,7 +117,7 @@
   flex-direction: column;
   overscroll-behavior: contain;
 }
-#chatThreadModal.show { display: flex; animation: slideUp 0.28s var(--ease); }
+#chatThreadModal.show { display: flex;}
 
 .chat-thread-hdr {
   display: flex;
@@ -349,7 +348,6 @@
   transition: color 0.15s, background 0.15s, transform 0.15s;
 }
 .chat-emoji-btn:hover  { color: var(--text2); background: var(--bg4); }
-.chat-emoji-btn:active { transform: scale(0.88); }
 
 .chat-emoji-quickpick {
   display: none;
@@ -380,8 +378,7 @@
   cursor: pointer;
   transition: transform 0.15s, background 0.15s;
 }
-.chat-emoji-quickpick button:hover  { background: var(--bg4); transform: scale(1.15); }
-.chat-emoji-quickpick button:active { transform: scale(0.9); }
+.chat-emoji-quickpick button:hover  { background: var(--bg4);}
 
 .chat-thread-send {
   width: 36px; height: 36px;
@@ -427,7 +424,6 @@
   transition: background 0.2s, color 0.2s;
 }
 .chat-attach-btn:hover { background: var(--bg5); color: var(--text); }
-.chat-attach-btn:active { transform: scale(0.93); }
 
 /* Voice / Send button */
 .chat-voice-wrap {
@@ -466,8 +462,6 @@
   transition: var(--transition);
   box-shadow: 0 2px 10px #1D396C;
 }
-.chat-voice-btn:hover { }
-.chat-voice-btn:active { transform: scale(0.92); }
 /* .chat-voice-btn.recording lives in the "VOICE BTN — amplitude-based
  * smooth pulse" section below, which is the only recording style that
  * actually runs (it's JS-driven and disables any CSS keyframe pulse). */
@@ -723,7 +717,7 @@
   transition: background 0.2s, transform 0.2s;
   color: var(--text);
 }
-.reaction-pill:hover { background: var(--bg5); transform: scale(1.08); }
+.reaction-pill:hover { background: var(--bg5);}
 .reaction-pill.mine  {
   background: #0F172B;
   border-color: #1A3360;
@@ -755,7 +749,7 @@
   transition: transform 0.2s, background 0.2s;
   line-height: 1;
 }
-.emoji-pick-btn:hover { transform: scale(1.3); background: var(--bg4); }
+.emoji-pick-btn:hover {background: var(--bg4); }
 
 /* ── Context menu ── */
 #chatContextMenu {
@@ -842,13 +836,6 @@
 .chat-msg.theirs .msg-edited { color: var(--text3); }
 
 /* ── Highlight (reply scroll) ── */
-@keyframes msgHighlight {
-  0%, 100% { opacity: 1; }
-  30% { opacity: 0.4; }
-}
-.chat-msg-highlight .chat-bubble {
-  animation: msgHighlight 1.2s ease;
-}
 
 /* ════════════════════════════════════════════════════════════════════
    FEATURE 1: Typing Indicator — "Ivan yozmoqda..."
@@ -1109,7 +1096,6 @@
     radial-gradient(circle at 50% 0%, #1a3a2e 0%, #05060F 55%),
     #05060F;
   display: none;
-  animation: fadeIn 0.25s ease;
   /* Telegram-style: haqiqiy full-screen, hech qanday "karta" chegarasi yo'q */
 }
 #incomingCallModal.show { display: flex; }
@@ -1219,7 +1205,6 @@
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
-.inc-call-btn:active { transform: scale(0.92); }
 .inc-call-btn.reject  { background: #ef4444; color: #fff; }
 .inc-call-btn.accept  { background: #22c55e; color: #fff; }
 .inc-call-btn:hover   { box-shadow: 0 4px 20px #06060B; }
@@ -1422,10 +1407,8 @@
 }
 .call-ctrl-btn:hover   {
   background: #35353B;
-  transform: scale(1.07);
   box-shadow: inset 0 1px 0 #48484E;
 }
-.call-ctrl-btn:active  { transform: scale(0.91); }
 .call-ctrl-btn.muted   {
   background: #49191E;
   border-color: #591D22;
@@ -1454,10 +1437,6 @@
 }
 #callActiveModal.video-mode .call-ctrl-btn.end-btn svg { width: 19px; height: 19px; }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
 
 /* ═══════════════════════════════════════════════════════════════════════
    CHAT — SOLID UI
@@ -1477,9 +1456,6 @@
 /* ── Back button — background/color owned by chat-dark-redesign.css; transition/hover-scale kept here ── */
 .chat-thread-back {
   transition: background 0.2s, transform 0.2s;
-}
-.chat-thread-back:hover {
-  transform: scale(1.05);
 }
 
 /* ── Messages — bubble background/color/border owned by chat-dark-redesign.css.
@@ -1513,10 +1489,6 @@
  * contradicted that section's borderless intent) those same rules. */
 
 /* ── Voice button — hover/press feedback ── */
-.chat-voice-btn:hover {
-  transform: scale(1.04);
-}
-.chat-voice-btn:active { transform: scale(0.94); }
 /* .chat-voice-btn base look + .recording pulse now live only in the
  * "VOICE BTN — amplitude-based smooth pulse" section further down. */
 
@@ -1777,8 +1749,6 @@ a.cfm-name--link:hover {
   background: #1EA852 !important;
   box-shadow: inset 0 1px 0 #3F3F44, 0 6px 24px #13542F !important;
 }
-.inc-call-btn:hover { transform: scale(1.06) !important; }
-.inc-call-btn:active { transform: scale(0.93) !important; }
 
 /* Active call modal — deep space glass */
 #callActiveModal {
@@ -1844,12 +1814,8 @@ a.cfm-name--link:hover {
   border-radius: 50%;
 }
 .msg-avi-btn:hover {
-  transform: scale(1.10);
   box-shadow: 0 2px 12px #1F3F77;
   opacity: 1;
-}
-.msg-avi-btn:active {
-  transform: scale(0.96);
 }
 
 /* "theirs" bubble — avatar yo'q, to'g'ridan boshlanadi */
@@ -1866,63 +1832,23 @@ a.cfm-name--link:hover {
    ════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. Xabar bubble — spring pop-in ── */
-@keyframes msgBubbleIn {
-  0%   { opacity:0; transform: scale(0.72) translateY(12px); }
-  60%  { opacity:1; transform: scale(1.04) translateY(-2px); }
-  80%  { transform: scale(0.97) translateY(1px); }
-  100% { transform: scale(1)   translateY(0); }
-}
-.chat-msg.anim-in {
-  animation: msgBubbleIn 0.38s var(--ease-back) both;
-}
 /* Mine xabarlari o'ngdan, theirs chapdan */
 .chat-msg.mine.anim-in  { transform-origin: bottom right; }
 .chat-msg.theirs.anim-in{ transform-origin: bottom left;  }
 
 /* ── 2. Yangi xabar yuborilganda send-btn bounce ── */
-@keyframes sendBounce {
-  0%   { transform: scale(1); }
-  35%  { transform: scale(0.78) rotate(-8deg); }
-  65%  { transform: scale(1.22) rotate(4deg);  }
-  85%  { transform: scale(0.94); }
-  100% { transform: scale(1); }
-}
-.send-bounce { animation: sendBounce 0.42s var(--ease-back) both; }
 
 /* ── 3. Emoji / reaksiya — heart fly up ── */
-@keyframes heartFly {
-  0%   { opacity: 1; transform: scale(0.9) translateY(0); }
-  100% { opacity: 0; transform: scale(1) translateY(-56px); }
-}
 .emoji-fly {
   position: fixed;
   pointer-events: none;
   font-size: 22px;
   z-index: 9999999;
-  animation: heartFly 0.6s ease-out forwards;
 }
 
 /* ── 4. Call modal — scale+blur in ── */
-@keyframes callModalIn {
-  0%   { opacity:0; transform: scale(0.88); }
-  60%  { opacity:1; }
-  80%  { transform: scale(1.02); }
-  100% { transform: scale(1); }
-}
-#callActiveModal.show {
-  animation: callModalIn 0.42s var(--ease-back) both;
-}
 
 /* ── 5. Incoming call modal — slide up ── */
-@keyframes incomingSlideUp {
-  0%   { opacity:0; transform: translateY(40px) scale(0.92); }
-  70%  { opacity:1; }
-  85%  { transform: translateY(-4px) scale(1.01); }
-  100% { transform: translateY(0) scale(1); }
-}
-#incomingCallModal.show .incoming-call-inner {
-  animation: incomingSlideUp 0.46s var(--ease-back) both;
-}
 
 /* ── 6. Incoming call — avatar pulsing rings (kattaroq, ko'proq) ── */
 @keyframes incRingPulse {
@@ -1937,35 +1863,16 @@ a.cfm-name--link:hover {
 .incoming-call-ring-anim span:nth-child(3) { animation-delay: 1.3s  !important; }
 
 /* ── 7. Online dot pulse ── */
-@keyframes onlinePulse {
-  0%,100% { transform: scale(1);   box-shadow: 0 0 0 0 #156737; }
-  50%      { transform: scale(1.2); box-shadow: 0 0 0 4px #0e1621; }
-}
-.online-dot, .status-dot.online, [class*="online-indicator"] {
-  animation: onlinePulse 2.4s ease-in-out infinite;
-}
 
 /* ── 8. Tab switch — view fade+slide ── */
-@keyframes viewSlideIn {
-  0%   { opacity:0; transform: translateY(14px) scale(0.98); }
-  100% { opacity:1; transform: translateY(0)    scale(1); }
-}
-.view.on { animation: viewSlideIn 0.32s cubic-bezier(0.22,1,0.36,1) both; }
 
 /* ── 9. Rasm lazy-load blur → clear ── */
 .cfm-img-preview {
   transition: filter 0.2s ease;
 }
-.cfm-img-preview.loaded { }
 
 /* ── 10. Xabar o'chirilganda collapse ── */
-@keyframes msgCollapse {
-  0%   { opacity:1; transform: scaleY(1);   max-height: 200px; }
-  40%  { opacity:0; transform: scaleY(0.6); }
-  100% { opacity:0; transform: scaleY(0);   max-height: 0; padding:0; margin:0; }
-}
 .chat-msg.removing {
-  animation: msgCollapse 0.35s cubic-bezier(0.4,0,0.6,1) forwards;
   overflow: hidden;
   transform-origin: top;
 }
@@ -2000,76 +1907,27 @@ a.cfm-name--link:hover {
    ════════════════════════════════════════════════════════════════════ */
 
 /* ── 1. Context menu — spring scale-in ── */
-@keyframes ctxMenuIn {
-  0%   { opacity:0; transform: scale(0.82) translateY(-8px); }
-  65%  { opacity:1; }
-  80%  { transform: scale(1.03) translateY(1px); }
-  100% { transform: scale(1) translateY(0); }
-}
 #chatContextMenu.show {
   display: block;
-  animation: ctxMenuIn 0.28s var(--ease-back) both;
   transform-origin: top left;
 }
 .ctx-item {
   transition: background 0.2s, transform 0.2s, color 0.2s !important;
 }
-.ctx-item:hover  { transform: translateX(3px) !important; }
-.ctx-item:active { transform: scale(0.95) !important; }
+
 .ctx-item.danger:hover { background: #200E15 !important; }
 
 /* ── 2. Message swipe-to-reply hint ── */
-@keyframes swipeHint {
-  0%   { transform: translateX(0);    opacity:1; }
-  40%  { transform: translateX(18px); opacity:0.6; }
-  70%  { transform: translateX(-4px); opacity:1; }
-  100% { transform: translateX(0);    opacity:1; }
-}
-.chat-msg.swipe-hint { animation: swipeHint 0.45s var(--ease-back) both; }
 
 /* ── 3. Reply bar slide-down ── */
-@keyframes replyBarIn {
-  0%   { opacity:0; transform: translateY(-10px); max-height:0; }
-  100% { opacity:1; transform: translateY(0);     max-height:80px; }
-}
-.chat-reply-bar.active {
-  animation: replyBarIn 0.28s var(--ease-back) both;
-}
 
 /* ── 4. Xabar highlight — pulse glow (reply ga bosganda) ── */
-@keyframes msgGlowPulse {
-  0%   { box-shadow: 0 0 0 0 #224583; background: #101B32; }
-  40%  { box-shadow: 0 0 0 8px #0e1621; }
-  100% { box-shadow: 0 0 0 0 #0e1621;   background: transparent; }
-}
-.chat-msg.reply-highlight .chat-bubble {
-  animation: msgGlowPulse 1.0s ease-out both !important;
-}
 
 /* ── 5. Send tugmasi — morphing mic↔send ── */
-@keyframes iconMorph {
-  0%   { transform: scale(1) rotate(0deg);   opacity:1; }
-  45%  { transform: scale(0) rotate(-90deg); opacity:0; }
-  55%  { transform: scale(0) rotate(90deg);  opacity:0; }
-  100% { transform: scale(1) rotate(0deg);   opacity:1; }
-}
-.voice-btn-morph svg { animation: iconMorph 0.3s var(--ease-back) both; }
 
 /* ── 6. Attach button ripple ── */
-@keyframes attachRipple {
-  0%   { box-shadow: 0 0 0 0 #313275; }
-  100% { box-shadow: 0 0 0 14px #0e1621; }
-}
-.attach-ripple { animation: attachRipple 0.45s ease-out forwards; }
 
 /* ── 7. Yangi xabar notification badge bounce ── */
-@keyframes badgePop {
-  0%   { transform: scale(0) rotate(-15deg); }
-  55%  { transform: scale(1.3) rotate(5deg); }
-  75%  { transform: scale(0.9); }
-  100% { transform: scale(1); }
-}
-.chat-unread-badge { animation: badgePop 0.4s var(--ease-back) both; }
 
 /* ── 8. File preview — shimmer loading skeleton ── */
 @keyframes shimmerSlide {
@@ -2085,23 +1943,14 @@ a.cfm-name--link:hover {
 }
 
 /* ── 9. Long-press ripple on bubble ── */
-@keyframes bubbleRipple {
-  0%   { transform: scale(0.3); opacity:0.6; }
-  100% { transform: scale(2.5); opacity:0; }
-}
 .bubble-ripple-dot {
   position:absolute; width:40px; height:40px;
   border-radius:50%; background:#35353B;
   pointer-events:none; z-index:10;
   transform-origin:center;
-  animation: bubbleRipple 0.55s ease-out forwards;
 }
 
 /* ── 10. Scroll-to-bottom glow button ── */
-@keyframes scrollBtnIn {
-  0%   { opacity:0; transform: translateY(12px) scale(0.8); }
-  100% { opacity:1; transform: translateY(0)    scale(1);   }
-}
 #chatScrollDownBtn {
   position: absolute;
   bottom: 72px; right: 14px;
@@ -2114,22 +1963,11 @@ a.cfm-name--link:hover {
   color: #fff;
   box-shadow: 0 4px 16px #224583;
   z-index: 100;
-  animation: scrollBtnIn 0.3s var(--ease-back) both;
 }
 #chatScrollDownBtn.visible { display: flex; }
-#chatScrollDownBtn:hover  { transform: scale(1.1); box-shadow: 0 6px 24px #2957A5; transition: all 0.2s; }
-#chatScrollDownBtn:active { transform: scale(0.92); }
+#chatScrollDownBtn:hover  {box-shadow: 0 6px 24px #2957A5; transition: all 0.2s; }
 
 /* ── 11. Emoji picker — bounce in ── */
-@keyframes emojiPickerIn {
-  0%   { opacity:0; transform: scale(0.75) translateY(20px); }
-  65%  { }
-  80%  { transform: scale(1.03) translateY(-3px); }
-  100% { opacity:1; transform: scale(1) translateY(0); }
-}
-.emoji-picker.show {
-  animation: emojiPickerIn 0.35s var(--ease-back) both !important;
-}
 
 /* ── 12. Input area focus glow ── */
 #chatThreadInput {
@@ -2156,15 +1994,7 @@ a.cfm-name--link:hover {
   font-size: 14px;
   border: 1px solid #1C1C23;
 }
-.msg-reaction:hover  { transform: scale(1.25); background: #35353B; }
-.msg-reaction:active { transform: scale(0.9); }
-@keyframes reactionPop {
-  0%   { transform: scale(0) rotate(-20deg); opacity:0; }
-  60%  { transform: scale(1.3) rotate(5deg); opacity:1; }
-  80%  { transform: scale(0.92); }
-  100% { transform: scale(1); }
-}
-.msg-reaction.new { animation: reactionPop 0.38s var(--ease-back) both; }
+.msg-reaction:hover  {background: #35353B; }
 
 /* ═══════════════════════════════════════════
    CLEAN CHAT REDESIGN — Telegram/Instagram style

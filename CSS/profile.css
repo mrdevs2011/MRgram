@@ -150,9 +150,6 @@
   color: var(--text);
 }
 
-.settings-icon-btn:active {
-  transform: scale(0.94);
-}
 
 .settings-section-label {
   font-size: 11px;
@@ -405,13 +402,8 @@
 
 #userProfileModal.show {
   display: block;
-  animation: slideUp 0.28s var(--ease);
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(32px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 
 .up-back {
   position: fixed;
@@ -431,7 +423,6 @@
 
 .up-back:hover {
   background: #040407;
-  transform: scale(1.05);
 }
 
 .up-body { padding-bottom: 60px; }
@@ -776,20 +767,7 @@
   display: inline-block;
 }
 
-.stat-val.animate {
-  animation: statSlideIn 0.5s var(--ease-back) both;
-}
 
-@keyframes statSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 /* Stagger animation for each stat */
 .stat:nth-child(1) .stat-val.animate { animation-delay: 0.1s; }
@@ -868,38 +846,14 @@
 }
 
 /* Cover animation on load */
-.up-cover {
-  animation: coverFadeIn 0.5s var(--ease);
-}
 
-@keyframes coverFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 
 /* User stats animation */
 .up-stat-val {
   display: inline-block;
 }
 
-.up-stat-val.animate {
-  animation: statCountUp 0.6s var(--ease-back) both;
-}
 
-@keyframes statCountUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 .up-stat:nth-child(1) .up-stat-val.animate { animation-delay: 0.1s; }
 .up-stat:nth-child(2) .up-stat-val.animate { animation-delay: 0.2s; }
@@ -1050,7 +1004,6 @@
   transition: box-shadow 0.25s, transform 0.25s;
 }
 #upAviImg:hover {
-  transform: scale(1.06);
   box-shadow: 0 0 0 4px #253760, 0 6px 24px #050509;
 }
 
@@ -1268,7 +1221,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
 
 #settingsOverlay.show {
   display: flex;
-  animation: slideUp 0.28s var(--ease);
 }
 
 .settings-hdr {
@@ -1295,7 +1247,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
   transition: var(--transition);
 }
 .settings-back:hover { background: var(--bg5); }
-.settings-back:active { transform: scale(0.94); }
 
 .settings-hdr-title {
   font-size: 16px;
@@ -1330,7 +1281,6 @@ a.profile-meta-link:hover { text-decoration: underline; }
   border-radius: 12px;
 }
 .settings-profile-card:hover { background: #121219; }
-.settings-profile-card:active { transform: scale(0.99); }
 
 .settings-profile-avi {
   width: 56px;

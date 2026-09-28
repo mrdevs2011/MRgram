@@ -16,7 +16,6 @@
 @import url('./CSS/dark-theme-fix.css');
 @import url('./CSS/borderless.css');
 @import url('./CSS/chat-dark-redesign.css');
-@import url('./CSS/auth-ig-style.css');
 @import url('./CSS/00-components.core.css'); /* Yagona manba: btn/bot-nav/app-hdr/field/post — eski takrorlarni asta-sekin pastdagi AUDIT.md bo'yicha o'chiring */
 
 /* ── Global Reset ── */
@@ -97,7 +96,6 @@ body {
   gap: 8px;
   border: 0.5px solid var(--glass-border);
   box-shadow: var(--specular-top), var(--liquid-shadow-md);
-  animation: slideUpLiquid 0.45s var(--ease-spring) both;
 }
 
 #offlineIndicator::before {
@@ -106,30 +104,11 @@ body {
   height: 8px;
   background: #f59e0b;
   border-radius: 50%;
-  animation: pulse-dot 1.5s ease infinite;
   box-shadow: 0 0 8px #96620D;
 }
 
-@keyframes slideUpLiquid {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(24px) scale(0.94);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
-}
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-}
 
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.5; transform: scale(0.8); }
-}
 
 /* ── Cached Badge — liquid glass ── */
 .cached-badge {
@@ -158,24 +137,12 @@ body {
 /* ── Global interactive tap feedback ── */
 button:active,
 [role="button"]:active {
-  transform: scale(0.94);
   transition: transform 0.08s ease;
 }
 
 /* ── iOS 27 Haptic Flash — visual touch confirmation ── */
-@keyframes hapticFlash {
-  0%   { }
-  40%  { }
-  100% { }
-}
-.haptic-flash { animation: hapticFlash 0.14s ease; }
 
 /* ── iOS 27 Rubber-band pull-to-refresh hint ── */
-@keyframes pullBounce {
-  0%   { transform: translateY(0); }
-  50%  { transform: translateY(6px); }
-  100% { transform: translateY(0); }
-}
 
 /* ── SF Pro letter-spacing — iOS native feel ── */
 body, button, input, textarea {

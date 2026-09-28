@@ -393,8 +393,6 @@ export const haptic = {
 export function addHapticTouch(el, type = 'light') {
   el.addEventListener('pointerdown', () => {
     haptic[type]?.();
-    el.classList.add('haptic-flash');
-    el.addEventListener('animationend', () => el.classList.remove('haptic-flash'), { once: true });
   });
 }
 

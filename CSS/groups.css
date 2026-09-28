@@ -20,7 +20,6 @@
   flex-shrink: 0;
 }
 .chats-add-btn:hover { background: color-mix(in srgb, var(--blue) 18%, var(--bg4)); }
-.chats-add-btn:active { transform: scale(0.88); }
 
 /* ── Group row badge (type icon on avi) ── */
 .grp-avi-badge {
@@ -346,7 +345,6 @@
 #grpInfoOverlay::-webkit-scrollbar { display: none; }
 #grpInfoOverlay.show {
   display: block;
-  animation: slideUp 0.28s var(--ease);
 }
 
 /* Back button (top-left, like userProfileModal .up-back) */
@@ -409,7 +407,7 @@
   transition: transform .18s, box-shadow .18s;
   cursor: pointer;
 }
-.gi-avi:hover { transform: scale(1.06); box-shadow: 0 6px 32px #1A3360; }
+.gi-avi:hover {box-shadow: 0 6px 32px #1A3360; }
 .gi-avi img  { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* Info section below cover */

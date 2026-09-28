@@ -40,23 +40,12 @@
   letter-spacing: 0.1px;
 }
 
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  15%     { transform: translateX(-7px); }
-  30%     { transform: translateX(7px); }
-  45%     { transform: translateX(-5px); }
-  60%     { transform: translateX(5px); }
-  75%     { transform: translateX(-3px); }
-  90%     { transform: translateX(3px); }
-}
 
-.shake { animation: shake 0.42s cubic-bezier(.36,.07,.19,.97); }
 
 .field.input-error {
   border-color: var(--red) !important;
   background: #190C15 !important;
   box-shadow: var(--specular-top), 0 0 0 3px #29101B !important;
-  animation: shake 0.42s cubic-bezier(.36,.07,.19,.97);
 }
 
 .field.input-error:focus {
@@ -116,7 +105,6 @@
    g'olib chiqadi, shu yerdagi qoida hech qachon ko'rinmagan */
 
 .nav-btn:active {
-  transform: scale(0.88);
   transition: transform 0.08s ease;
 }
 
@@ -187,13 +175,11 @@
 }
 
 .nav-center-btn:hover {
-  transform: scale(1.08) translateY(-3px);
   box-shadow:
     inset 0 1px 0 #525257;
 }
 
 .nav-center-btn:active {
-  transform: scale(0.90);
   transition: transform 0.08s ease;
 }
 
@@ -216,15 +202,10 @@
   z-index: 200;
   display: none;
   align-items: flex-end;
-  animation: overlayIn 0.25s ease both;
 }
 
 .overlay.show { display: flex; }
 
-@keyframes overlayIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
 
 /* ═══════════════════════
    SHEET — Solid UI
@@ -267,17 +248,6 @@
   opacity: 1;
 }
 
-@keyframes sheetUp {
-  from {
-    transform: translateY(100%) scale(0.96);
-    opacity: 0;
-  }
-  60% { }
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
 
 .sheet-title {
   font-size: 16px;
@@ -297,19 +267,8 @@
   margin: 0;
   max-width: 500px;
   border-radius: 28px;
-  animation: sheetCenter 0.45s var(--ease-spring) both;
 }
 
-@keyframes sheetCenter {
-  from {
-    transform: scale(0.88);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
 
 /* ── Upload Drop Zone ── */
 .upload-drop {
@@ -326,7 +285,6 @@
 .upload-drop:hover {
   border-color: #324B82;
   background: #0D101D;
-  transform: scale(1.01);
   box-shadow: var(--specular-top);
 }
 
@@ -398,12 +356,10 @@
 .file-card:hover {
   background: var(--glass-mid);
   border-color: var(--glass-border-top);
-  transform: translateY(-2px) scale(1.005);
   box-shadow: var(--specular-top), var(--liquid-shadow-sm);
 }
 
 .file-card:active {
-  transform: scale(0.96);
   transition: transform 0.08s ease;
 }
 
@@ -455,10 +411,8 @@
 
 .preview-clear:hover {
   background: #B6324C;
-  transform: scale(1.08);
 }
 .preview-clear:active {
-  transform: scale(0.90);
   transition: transform 0.08s ease;
 }
 
@@ -612,10 +566,8 @@
 .cmt-modal-close:hover {
   background: var(--glass-mid);
   color: var(--text);
-  transform: scale(1.08);
 }
 .cmt-modal-close:active {
-  transform: scale(0.88);
   transition: transform 0.08s ease;
 }
 
@@ -688,7 +640,7 @@
   flex-shrink: 0;
 }
 .cmt-del:hover { color: var(--red); background: #200E18; }
-.cmt-del:active { transform: scale(0.88); transition: transform 0.08s ease; }
+.cmt-del:active {transition: transform 0.08s ease; }
 
 .cmt-input-row {
   display: flex;
@@ -760,10 +712,9 @@
 }
 
 .cmt-send:hover {
-  transform: translateY(-2px) scale(1.02);
   box-shadow: 0 8px 24px var(--blue-glow), inset 0 1px 0 #46464B;
 }
-.cmt-send:active { transform: scale(0.92); transition: transform 0.08s ease; }
+.cmt-send:active {transition: transform 0.08s ease; }
 
 .cmt-empty {
   padding: 32px 0;
@@ -787,20 +738,14 @@
 
 #zoomModal.show {
   display: flex;
-  animation: zoomModalIn 0.35s var(--ease-spring) both;
 }
 
-@keyframes zoomModalIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to   { opacity: 1; transform: scale(1);   }
-}
 
 #zoomImg {
   max-width: 96%;
   max-height: 96dvh;
   object-fit: contain;
   border-radius: 12px;
-  animation: zoomImgIn 0.40s var(--ease-spring) both;
 }
 
 #zoomVideo {
@@ -809,10 +754,6 @@
   border-radius: 12px;
 }
 
-@keyframes zoomImgIn {
-  from { transform: scale(0.88); opacity: 0; }
-  to   { transform: scale(1);    opacity: 1;   }
-}
 
 .zoom-x {
   position: absolute;
@@ -829,8 +770,8 @@
   box-shadow: var(--specular-top), var(--liquid-shadow-sm);
 }
 
-.zoom-x:hover { background: var(--glass-heavy); transform: scale(1.10); }
-.zoom-x:active { transform: scale(0.90); transition: transform 0.08s ease; }
+.zoom-x:hover { background: var(--glass-heavy);}
+.zoom-x:active {transition: transform 0.08s ease; }
 
 /* ═══════════════════════
    DETAIL MODAL
@@ -847,15 +788,10 @@
 
 #detailModal.show {
   display: flex;
-  animation: detailFadeIn 0.30s var(--ease) both;
 }
 
 #detailModal { z-index: 550 !important; }
 
-@keyframes detailFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
 
 #detailContent {
   width: 100%;
@@ -870,21 +806,9 @@
   box-shadow:
     inset 0 1px 0 var(--glass-border-top),
     0 -8px 48px #07070C;
-  animation: detailSlideUp 0.45s var(--ease-spring) both;
   position: relative;
 }
 
-@keyframes detailSlideUp {
-  from {
-    transform: translateY(100%) scale(0.96);
-    opacity: 0;
-  }
-  60% { }
-  to  {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
 
 .detail-back { display: none; }
 
@@ -946,8 +870,8 @@
   box-shadow: var(--specular-top);
 }
 
-.dm-close:hover { background: var(--glass-mid); color: var(--text); transform: scale(1.08); }
-.dm-close:active { transform: scale(0.88); transition: transform 0.08s ease; }
+.dm-close:hover { background: var(--glass-mid); color: var(--text);}
+.dm-close:active {transition: transform 0.08s ease; }
 
 .dm-media {
   width: 100%;
@@ -1000,7 +924,7 @@
 
 .dm-act:last-child { border-right: none; }
 .dm-act:hover { background: var(--glass); color: var(--text); }
-.dm-act:active { transform: scale(0.92); transition: transform 0.08s ease; }
+.dm-act:active {transition: transform 0.08s ease; }
 .dm-act.liked { color: var(--red); }
 .dm-act .dm-act-count { font-size: 13px; font-weight: 500; }
 
@@ -1100,7 +1024,6 @@
     cursor: pointer;
     flex-shrink: 0;
     -webkit-tap-highlight-color: transparent;
-    animation: sbLogoIntro 0.7s var(--ease-spring) both;
   }
 
   /* static glow behind the glass capsule — only on hover now (see :hover rule below) */
@@ -1153,23 +1076,16 @@
   .sb-logo-row:hover .sb-logo-glass {
     border-color: var(--glass-border-top);
     box-shadow: var(--specular-top), 0 8px 26px var(--blue-glow), var(--liquid-shadow-md);
-    transform: translateY(-1px) scale(1.07);
   }
   .sb-logo-row:hover .sb-logo-glass::after { left: 170%; }
-  .sb-logo-row:hover .sb-logo-img { transform: scale(1.08) rotate(-5deg); }
+  .sb-logo-row:hover .sb-logo-img {rotate(-5deg); }
   .sb-logo-row:hover::before { opacity: 1; }
 
   .sb-logo-row:active .sb-logo-glass {
-    transform: scale(0.90);
     transition: transform 0.08s ease;
   }
 
-  @keyframes sbLogoIntro {
-    0%   { opacity: 0; transform: scale(0.6) rotate(-12deg); }
-    60%  { transform: scale(1.08) rotate(3deg); }
-    100% { opacity: 1; transform: scale(1) rotate(0deg); }
-  }
-
+  
   .sb-logo-tip {
     position: absolute;
     left: calc(100% + 12px);
@@ -1257,7 +1173,7 @@
     color: var(--text);
     box-shadow: var(--specular-top);
   }
-  .sb-mute-btn:active { transform: scale(0.88); transition: transform 0.08s ease; }
+  .sb-mute-btn:active {transition: transform 0.08s ease; }
   .sb-mute-btn.is-unmuted {
     color: var(--blue);
     background: #12182B;
@@ -1362,21 +1278,10 @@
   z-index: 500;
   display: none;
   box-shadow: var(--specular-top), var(--liquid-shadow-lg);
-  animation: panelFadeIn 0.30s var(--ease-spring);
 }
 
 #sbSearchPanel.show { display: block; }
 
-@keyframes panelFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
 
 /* ── Theme-aware overrides ── */
 [data-theme="dark"] .nav-btn.on {
@@ -1426,9 +1331,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.vis-btn:active {
-  transform: scale(0.96);
-}
 
 /* Private active */
 .vis-btn--active[data-mode="private"] {

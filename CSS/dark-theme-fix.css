@@ -303,7 +303,6 @@
 [data-theme="dark"] .file-card:hover {
   background: #121212;
   border-color: #2D2D33;
-  transform: translateY(-2px) scale(1.005);
   /* box-shadow → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
 }
 

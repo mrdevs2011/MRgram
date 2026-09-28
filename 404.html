@@ -103,7 +103,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  animation: up 0.55s cubic-bezier(0.33,1,0.68,1) both;
 }
 
 /* ── Glass card ── */
@@ -128,14 +127,9 @@ body {
   width: 70%; height: 220%;
   background: rgba(255,255,255,0.30);
   transform: rotate(22deg);
-  animation: errSheen 4.5s ease-in-out infinite;
   pointer-events: none;
 }
 
-@keyframes errSheen {
-  0%, 40%   { left: -160%; }
-  70%, 100% { left: 170%; }
-}
 
 /* top-left specular glow inside the glass */
 .err-card::before {
@@ -193,10 +187,6 @@ body {
 }
 
 /* ── Animation ── */
-@keyframes up {
-  from { opacity: 0; transform: translateY(20px) scale(0.97); filter: blur(6px); }
-  to   { opacity: 1; transform: translateY(0) scale(1);       filter: blur(0); }
-}
 </style>
 </head>
 <body>

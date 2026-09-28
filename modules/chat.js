@@ -86,10 +86,6 @@ function _injectSearchCSS() {
 .skel-name { height: 13px; }
 
 /* ── Row slide-in animation ── */
-@keyframes chatRowSlideIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.97); filter: blur(3px); }
-  to   { opacity: 1; transform: translateY(0)   scale(1);    filter: blur(0); }
-}
 `;
   document.head.appendChild(s);
 }
@@ -238,7 +234,7 @@ function _paintUserRows(users, animate = false) {
     const time   = c?.lastMessageAt ? fmt(c.lastMessageAt) : '';
     const unread = c?.unreadCount?.[state.me.uid] || 0;
     const badgeTxt = unread > 99 ? '+99' : '+' + unread;
-    const animStyle = animate ? `style="animation: chatRowSlideIn .32s cubic-bezier(.22,.68,0,1.2) ${idx*0.06}s both"` : '';
+    const animStyle = '';
     return `<div class="chat-row${unread ? ' unread' : ''}${animate ? ' chat-row-anim' : ''}" data-uid="${u.uid}" ${animStyle}>
       <div class="chat-avi">
         <img src="${av}" onerror="this.style.display='none'">

@@ -19,14 +19,7 @@
 }
 
 /* Theme toggle glow effect */
-.theme-btn.theme-changing {
-  animation: themeGlow 0.5s ease;
-}
 
-@keyframes themeGlow {
-  0%, 100% { box-shadow: 0 0 0 transparent; }
-  50% { box-shadow: 0 0 20px #324B82; }
-}
 
 /* Theme change toast notification */
 .theme-toast {
@@ -143,14 +136,7 @@
 
 /* Nav button icon bounce on tap */
 .nav-btn:active,
-.theme-btn:active {
-  animation: navBounce 0.3s var(--ease-back);
-}
 
-@keyframes navBounce {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(0.85); }
-}
 
 /* Glow effect under active button */
 .nav-btn.on {
@@ -179,14 +165,7 @@
 }
 
 /* Haptic visual cue */
-.nav-btn.haptic {
-  animation: hapticFlash 0.15s ease;
-}
 
-@keyframes hapticFlash {
-  0%, 100% { background: transparent; }
-  50% { background: #151C32; }
-}
 
 /* ═══════════════════════════════════════════
    4. SEARCH EXPERIENCE — Recent & Trending
@@ -270,7 +249,6 @@
 .search-trending-tag:hover {
   background: var(--blue-glow2);
   border-color: var(--blue);
-  transform: translateY(-1px);
 }
 
 /* Search history item */
@@ -433,20 +411,11 @@
    bilan yengilar edi, ya'ni hech qachon render bo'lmagan (o'lik) */
 
 /* Like button hover animation */
-.like-btn:hover svg {
-  animation: likeHover 0.4s ease-in-out;
-}
 
-@keyframes likeHover {
-  0%, 100% { transform: scale(1) rotate(0); }
-  25% { transform: scale(1.15) rotate(-5deg); }
-  75% { transform: scale(1.15) rotate(5deg); }
-}
 
 /* Delete button hover */
 .del-btn:hover {
   background: var(--red-glow);
-  transform: scale(1.05);
 }
 
 /* Subscribe button pulse */
@@ -463,13 +432,8 @@
   width: 100%;
   height: 100%;
   background: #3A3A3F;
-  animation: subShine 3s ease-in-out infinite;
 }
 
-@keyframes subShine {
-  0%, 100% { left: -100%; }
-  50% { left: 100%; }
-}
 
 /* ═══════════════════════════════════════════
    BUTTONS — Ripple Effect & Tactile Feedback
@@ -483,18 +447,11 @@
 }
 
 /* Ghost button hover */
-.btn-ghost:hover {
-  transform: translateY(-1px);
-}
 
-.btn-ghost:active {
-  transform: scale(0.98);
-}
 
 /* Danger button glow on hover */
 .btn-danger:hover {
   /* box-shadow → CSS/borderless.css'da 'none' bilan yengiladi */
-  transform: translateY(-1px);
 }
 
 /* ═══════════════════════════════════════════
@@ -519,13 +476,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: floatIcon 3s ease-in-out infinite;
 }
 
-@keyframes floatIcon {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-8px) scale(1.05); }
-}
 
 .empty-search-hint {
   font-size: 12px;
@@ -548,13 +500,9 @@
 }
 
 .empty-cta:hover {
-  transform: scale(1.05) translateY(-1px);
   box-shadow: 0 6px 20px #213054;
 }
 
-.empty-cta:active {
-  transform: scale(0.98);
-}
 
 /* ═══════════════════════════════════════════
    PROFILE GRID — Hover Effects
@@ -590,9 +538,6 @@
 .grid-cell:hover img,
 .grid-cell:hover video,
 .up-grid-cell:hover img,
-.up-grid-cell:hover video {
-  transform: scale(1.08);
-}
 
 .grid-cell-overlay,
 .up-grid-cell-overlay {
@@ -694,23 +639,12 @@
 
 /* Reel action buttons hover */
 .reel-act:hover svg {
-  transform: scale(1.1);
   filter: drop-shadow(0 2px 6px #06060B);
 }
 
-.reel-act:active {
-  transform: scale(0.9);
-}
 
 /* Volume button floating */
-.reel-vol-top {
-  animation: volFloat 4s ease-in-out infinite;
-}
 
-@keyframes volFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
 
 /* ═══════════════════════════════════════════
    5. VIDEO PLAYER — Enhanced Controls
@@ -736,12 +670,8 @@
 
 .vc-speed:hover {
   background: #3A3A3F;
-  transform: scale(1.1);
 }
 
-.vc-speed:active {
-  transform: scale(0.95);
-}
 
 /* Picture-in-Picture button */
 .vc-pip {
@@ -766,12 +696,8 @@
 
 .vc-pip:hover {
   background: #3A3A3F;
-  transform: scale(1.1);
 }
 
-.vc-pip:active {
-  transform: scale(0.95);
-}
 
 /* Thumbnail preview on scrubber hover (desktop) */
 .vc-thumbnail-preview {
@@ -836,13 +762,8 @@
   width: 20px;
   height: 20px;
   color: var(--blue);
-  animation: swipePulse 0.5s ease infinite;
 }
 
-@keyframes swipePulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
 
 /* Long-press copy indicator */
 .cmt-copy-hint {
@@ -985,14 +906,7 @@
 }
 
 /* Animated stat numbers */
-.stat-val.animating {
-  animation: statCountUp 0.5s ease;
-}
 
-@keyframes statCountUp {
-  0% { transform: translateY(10px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
 
 /* ═══════════════════════════════════════════
    8. UPLOAD FLOW — Enhanced
@@ -1162,11 +1076,7 @@
   transition: filter 0.3s ease;
 }
 
-.lazy-image.loading {
-}
 
-.lazy-image.loaded {
-}
 
 /* Progressive video thumbnail */
 .video-thumbnail {
@@ -1287,14 +1197,10 @@
 .vc-mute:hover,
 .vc-fs:hover {
   background: #3A3A3F;
-  transform: scale(1.1);
 }
 
 .vc-play:active,
 .vc-mute:active,
-.vc-fs:active {
-  transform: scale(0.95);
-}
 
 /* Progress bar hover interaction */
 .vc-bar {
@@ -1350,19 +1256,8 @@
 
 .search-suggestions.show {
   display: block;
-  animation: suggestionsIn 0.2s var(--ease);
 }
 
-@keyframes suggestionsIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 .search-suggestion-item {
   padding: 10px 12px;
@@ -1457,19 +1352,8 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 8px var(--blue-glow, #1c2f42);
-  animation: badgePulse 2.4s ease-in-out infinite;
 }
 
-@keyframes badgePulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 2px 8px var(--blue-glow, #1c2f42);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 3px 10px var(--blue-glow2, #16283a);
-  }
-}
 
 /* Nav icon no longer shakes continuously while unread — a badge with a
  * gentle pulse is enough of a cue without reading as an alarm. */
@@ -1480,90 +1364,21 @@
    ═══════════════════════════════════════════ */
 
 /* Sheet modal bounce */
-.sheet {
-  animation: sheetUpBounce 0.32s var(--ease-back) both;
-}
 
-@keyframes sheetUpBounce {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  80% {
-    transform: translateY(-4px);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
 /* Detail modal fade */
-#detailModal.show {
-  animation: detailFadeInEnhanced 0.28s var(--ease);
-}
 
-@keyframes detailFadeInEnhanced {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 
-#detailContent {
-  animation: detailSlideUpEnhanced 0.32s var(--ease-back);
-}
 
-@keyframes detailSlideUpEnhanced {
-  from {
-    transform: translateY(100%);
-    opacity: 0.6;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
 /* Zoom modal */
-#zoomModal.show {
-  animation: zoomIn 0.25s var(--ease-back);
-}
 
-@keyframes zoomIn {
-  from {
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
 
 /* ═══════════════════════════════════════════
    COMMENTS — Enhanced
    ═══════════════════════════════════════════ */
 
-.cmt-row {
-  animation: cmtIn 0.3s var(--ease) both;
-}
 
-@keyframes cmtIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 .cmt-row:nth-child(1) { animation-delay: 0.05s; }
 .cmt-row:nth-child(2) { animation-delay: 0.1s; }
@@ -1578,49 +1393,19 @@
 }
 
 /* Send button pulse */
-.cmt-send:active {
-  transform: scale(0.95);
-}
 
 /* ═══════════════════════════════════════════
    USER PROFILE MODAL — Enhanced
    ═══════════════════════════════════════════ */
 
-#userProfileModal {
-  animation: modalFadeIn 0.25s var(--ease);
-}
 
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 
-.up-back {
-  animation: backBtnIn 0.3s var(--ease-back) 0.1s both;
-}
 
-@keyframes backBtnIn {
-  from {
-    transform: translateX(-20px) scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0) scale(1);
-    opacity: 1;
-  }
-}
 
 .up-avi {
   transition: transform 0.3s var(--ease-back);
 }
 
-.up-avi:hover {
-  transform: scale(1.05);
-}
 
 /* .up-follow-btn { position/overflow } → yuqorida (510-qator) aynan nusxa, o'chirildi */
 
@@ -1632,33 +1417,15 @@
   width: 100%;
   height: 100%;
   background: #3A3A3F;
-  animation: followShine 2s ease-in-out infinite;
 }
 
-@keyframes followShine {
-  0%, 100% { left: -100%; }
-  50% { left: 100%; }
-}
 
 /* ═══════════════════════════════════════════
    FLOAT UPLOAD BAR — Enhanced
    ═══════════════════════════════════════════ */
 
 .upload-float-bar,
-#uploadFloatBar {
-  animation: floatInEnhanced 0.3s var(--ease-back);
-}
 
-@keyframes floatInEnhanced {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
-}
 
 .ufb-fill.indeterminate {
   background: var(--blue3);
@@ -1766,9 +1533,6 @@
   }
 
   /* Desktop hover effects */
-  .post:hover .post-media img {
-    transform: scale(1.02);
-  }
 
   /* Detail modal centered */
   #detailModal {
@@ -1896,13 +1660,6 @@
 
 /* ── 10. Zoom modal — oddiy fade, "liquid" animatsiya nomi va
    spring-easing olib tashlandi ── */
-#zoomModal.show {
-  animation: zoomFadeIn 0.2s ease both;
-}
-@keyframes zoomFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
 
 /* ── 11. File card — flat hover, lift/scale olib tashlandi ── */
 .file-card {

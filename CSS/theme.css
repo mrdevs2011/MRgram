@@ -145,12 +145,10 @@ body,
 .theme-btn:hover {
   background: var(--glass-mid);
   color: var(--text);
-  transform: scale(1.08);
   box-shadow: var(--specular-top), var(--liquid-shadow-sm);
 }
 
 .theme-btn:active {
-  transform: scale(0.92);
   transition: transform 0.08s ease;
 }
 
@@ -217,7 +215,6 @@ body,
 /* Card hover — liquid lift */
 .card-hover { transition: all 0.40s var(--ease-back); }
 .card-hover:hover {
-  transform: translateY(-5px) scale(1.005);
   box-shadow: var(--liquid-shadow-lg);
 }
 
