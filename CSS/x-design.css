@@ -956,3 +956,33 @@ body:has(.search-overlay.open) .rc-search { display: none; }
 .exp-media { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 2px; }
 .exp-media button { position: relative; aspect-ratio: 1; overflow: hidden; padding: 0; border: none; background: var(--bg4); cursor: pointer; }
 .exp-media img, .exp-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CARD SOYALARI YO'Q — umuman.
+   Card / sheet / modal / popup / dropdown / toast / post kartalarida
+   box-shadow (glow ham) butunlay o'chirilgan; ajratib turish uchun faqat
+   1px chiziq. (X'dagi hover doira, fokus halqa va toggle ichki soyalari
+   card emas — ularga tegilmagan.)
+   ═══════════════════════════════════════════════════════════════════════ */
+[data-theme] :is(
+  .sheet, .composer-sheet, #uploadOverlay .composer-sheet, .modal-content,
+  #grpCreateChoiceOverlay .sheet, #grpAddUserOverlay .sheet, #grpCreateFormOverlay .sheet,
+  #detailContent, .auth-card, .onb-card, .admin-card, .verify-card,
+  .ua-modal, .ua-row, .ua-field-row, .ua-detail-row, .ua-post-link,
+  #toast, #toast.toast-error, #toast.toast-info, #toast.toast-success, #toast.toast-warning, .theme-toast,
+  .upload-float-bar, .post, .file-card, .rc-card, .glass, .glass-heavy, .card-hover,
+  #sbSearchPanel, .search-overlay-box, .voice-mini-player, .vc-thumbnail-preview, .avatar-crop-container,
+  .search-suggestions, .emoji-picker, .chat-emoji-quickpick, #chatContextMenu,
+  .settings-more-menu, .sb-acc-menu, .chats-x-menu, .pwd-warn-bubble,
+  .shadow, .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl
+),
+[data-theme] :is(.post, .file-card, .card-hover, .ua-row, .ua-field-row, .ua-detail-row, .ua-post-link):hover {
+  box-shadow: none !important;
+}
+
+/* soyasiz qolgan ochiladigan kartalar (menyu/typeahead/emoji) — chiziq bilan ajraladi */
+[data-theme] :is(.search-suggestions, .emoji-picker, .chat-emoji-quickpick, #chatContextMenu,
+  .settings-more-menu, .sb-acc-menu, .chats-x-menu) { border: 1px solid #2f3336; }
+[data-theme="light"] :is(.search-suggestions, .emoji-picker, .chat-emoji-quickpick, #chatContextMenu,
+  .settings-more-menu, .sb-acc-menu, .chats-x-menu) { border-color: #cfd9de; }
