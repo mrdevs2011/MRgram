@@ -24,6 +24,7 @@
 <link rel="stylesheet" href="./style.css">
 <link rel="stylesheet" href="./CSS/devs-utility.css">
 <link rel="stylesheet" href="./CSS/admin.css">
+<link rel="stylesheet" href="./CSS/admin-plain.css">
 <link rel="stylesheet" href="./CSS/mono.css">
 <link rel="stylesheet" href="./CSS/x-design.css">
 </head>
@@ -192,11 +193,6 @@
   <!-- LOGIN VIEW — auth UI authWrap orqali ko'rsatiladi -->
   <div class="view" id="loginView"></div>
 
-  <!-- STATISTICS VIEW — saqlanib qoldi (actions ichida ishlatiladi) -->
-
-  <!-- USERS VIEW — saqlanib qoldi (actions ichida ishlatiladi) -->
-  <div class="view" id="usersView" style="display:none!important"></div>
-
   <!-- ACTIONS VIEW — admin uchun: statistika + users birlashtirilgan -->
   <div class="view" id="actionsView">
     <!-- Tezkor umumiy ko'rinish (Dashboard summary) -->
@@ -214,8 +210,7 @@
     <!-- Users qismi (avval) -->
     <div class="users-admin-hdr">
       <h2>Foydalanuvchilar</h2>
-      <p class="users-admin-sub">Barcha ro'yxatdan o'tgan foydalanuvchilar</p>
-      <div class="ua-search-row">
+            <div class="ua-search-row">
         <input type="text" id="uaSearchInput" class="ua-search-input" placeholder="Ism, username yoki email bo'yicha qidirish…" autocomplete="off">
         <select id="uaStatusFilter" class="ua-status-filter">
           <option value="all">Barchasi</option>

@@ -4,7 +4,7 @@
  * Faqat admin (ADMIN_UID) uchun
  */
 
-import { sb, state, getMediaUrl, isAdmin, ts } from './config.js';
+import { sb, state, isAdmin, ts } from './config.js';
 import { toast } from './toast.js';
 import { esc } from './utils.js';
 import { initAuditLog, destroyAuditLog, logAdminAction } from './admin-audit.js';
@@ -363,8 +363,6 @@ function _initBroadcast() {
     }
   });
 
-  // Ctrl+Enter → yuborish
-  bodyEl
 }
 
 /* ── Users ── */

@@ -740,7 +740,7 @@ function _renderPendingMini(users) {
     section.innerHTML = `
       <div class="pmini-wrap">
         <div class="pmini-locked" id="pminiUnlockBar">
-          <span class="pmini-locked-count">⏳ ${pending.length} ta kutayotgan foydalanuvchi</span>
+          <span class="pmini-locked-count">${pending.length} ta kutayotgan foydalanuvchi</span>
           <span class="pmini-locked-hint">Parol bilan ochish →</span>
         </div>
       </div>`;
@@ -753,7 +753,7 @@ function _renderPendingMini(users) {
   }
 
   if (!pending.length) {
-    section.innerHTML = `<div class="pmini-wrap"><div class="pmini-empty">Kutayotgan foydalanuvchilar yo'q 🎉</div></div>`;
+    section.innerHTML = `<div class="pmini-wrap"><div class="pmini-empty">Kutayotgan foydalanuvchilar yo'q</div></div>`;
     return;
   }
 
@@ -764,9 +764,6 @@ function _renderPendingMini(users) {
     const created = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleString('uz-UZ') : '';
     return `
       <div class="pmini-card" data-uid="${uid}">
-        ${u.avatar
-          ? `<img class="pmini-avi" src="${u.avatar}" onerror="this.style.display='none'">`
-          : `<div class="pmini-avi-placeholder">${(name[0]||'U').toUpperCase()}</div>`}
         <div class="pmini-info">
           <div class="pmini-name">${_esc(name)}</div>
           <div class="pmini-sub">${_esc(uname)}${created ? ' · ' + created : ''}</div>
@@ -804,17 +801,12 @@ function _render(wrap, users) {
         const isPending = u.approved === false;
         const isRejected = u.approved === 'rejected';
         const badgeHtml = isPending
-          ? `<span class="ua-badge ua-badge--pending" style="margin-left:8px">⏳ Kutilmoqda</span>`
+          ? `<span class="ua-badge ua-badge--pending" style="margin-left:8px">Kutilmoqda</span>`
           : isRejected
-          ? `<span class="ua-badge ua-badge--rejected" style="margin-left:8px">❌ Rad etildi</span>`
+          ? `<span class="ua-badge ua-badge--rejected" style="margin-left:8px">Rad etildi</span>`
           : '';
         return `
         <div class="ua-row ua-row--locked" data-uid="${u.uid || u.id}">
-          <div class="ua-avi">
-            ${u.avatar
-              ? `<img src="${u.avatar}" alt="" class="ua-avi-img ua-avi-img--blurred">`
-              : `<div class="ua-avi-placeholder">${(name[0]||'U').toUpperCase()}</div>`}
-          </div>
           <div class="ua-info">
             <div class="ua-name">${_esc(name)}${badgeHtml}</div>
           </div>
@@ -837,78 +829,32 @@ function _render(wrap, users) {
     return;
   }
 
-  wrap.innerHTML = (!_statsLoaded
-    ? `<div class="ua-locked-banner">Postlar/chatlar statistikasi yuklanmoqda...</div>`
-    : '') + users.map(u => {
+  wrap.innerHTML = users.map(u => {
     const name      = u.fullName || u.username || u.uid || u.id;
     const uname     = u.username ? `@${u.username}` : '';
     const uid       = u.uid || u.id;
     const isBlocked = u.blocked === true;
-    const created   = u.createdAt?.toDate
-      ? u.createdAt.toDate().toLocaleString('uz-UZ') : '';
-    const blockedAt = u.blockedAt?.toDate
-      ? u.blockedAt.toDate().toLocaleString('uz-UZ') : '';
-    const blockedUntil = u.blockedUntil?.toDate
-      ? u.blockedUntil.toDate().toLocaleString('uz-UZ') : '';
-    const approvedAt = u.approvedAt?.toDate
-      ? u.approvedAt.toDate().toLocaleString('uz-UZ') : '';
-    const devices    = Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0;
-    const lastSeen   = u.lastSeenAt?.toDate
-      ? u.lastSeenAt.toDate().toLocaleString('uz-UZ') : '';
-    const lastLogin  = u.lastLoginAt?.toDate
-      ? u.lastLoginAt.toDate().toLocaleString('uz-UZ') : '';
-    const ua         = u.lastUserAgent || '';
-    const platform   = u.lastPlatform || '';
-    const s          = _stats[uid] || {};
-    const lastPostAt  = s.lastPostAt  ? new Date(s.lastPostAt).toLocaleString('uz-UZ')  : '';
-    const lastChatAt  = s.lastChatAt  ? new Date(s.lastChatAt).toLocaleString('uz-UZ')  : '';
-
+    const created   = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('uz-UZ') : '';
+    const blockedUntil = u.blockedUntil?.toDate ? u.blockedUntil.toDate().toLocaleString('uz-UZ') : '';
     const blockBtnLabel = isBlocked ? 'Blokdan chiqarish' : 'Bloklash';
     const blockBtnClass = isBlocked ? 'ua-unblock-btn' : 'ua-block-btn';
     const blockedUntilMs = u.blockedUntil?.toMillis ? u.blockedUntil.toMillis() : (u.blockedUntil ? Number(u.blockedUntil) : 0);
 
     return `
     <div class="ua-row${isBlocked ? ' ua-row--blocked' : ''}" data-uid="${uid}">
-      <div class="ua-avi">
-        ${u.avatar
-          ? `<img src="${u.avatar}" alt="" class="ua-avi-img">`
-          : `<div class="ua-avi-placeholder">${(name[0]||'U').toUpperCase()}</div>`}
-        
-      </div>
       <div class="ua-info">
-        <div class="ua-name">${_esc(name)}</div>
-        ${uname   ? `<div class="ua-uname">${_esc(uname)}</div>` : ''}
-        ${u.email ? `<div class="ua-uname">${_esc(u.email)}</div>` : ''}
-        <div class="ua-uname">${_esc(uid)}</div>
-        ${created ? `<div class="ua-date">Ro'yxat: ${created}</div>` : ''}
-        ${approvedAt ? `<div class="ua-date">Ruxsat: ${approvedAt}</div>` : ''}
-        ${blockedAt ? `<div class="ua-date ua-date--blocked">Bloklangan: ${blockedAt}</div>` : ''}
-        ${blockedUntil ? `<div class="ua-date ua-date--blocked">Blok tugashi: ${blockedUntil}</div>` : ''}
-        <div class="ua-date">${devices} qurilma</div>
-        ${_statsLoaded ? `<div class="ua-date">${s.posts||0} post (${s.publicPosts||0} ochiq) · ${s.views||0} ko'rish · ${s.likes||0} like</div>` : ''}
-        ${_statsLoaded ? `<div class="ua-date">${s.chats||0} suhbat${lastChatAt ? ' · oxirgi yozishma: ' + lastChatAt : ''}</div>` : ''}
-        ${lastPostAt ? `<div class="ua-date">Oxirgi post: ${lastPostAt}</div>` : ''}
-        ${lastSeen ? `<div class="ua-date">Oxirgi faollik: ${lastSeen}</div>` : ''}
-        ${lastLogin ? `<div class="ua-date">Oxirgi login: ${lastLogin}</div>` : ''}
-        ${platform ? `<div class="ua-date">Platforma: ${_esc(platform)}</div>` : ''}
-        ${ua ? `<div class="ua-date" style="word-break:break-all;font-size:11px;opacity:.75">${_esc(ua)}</div>` : ''}
-        ${u.bio ? `<div class="ua-date">${_esc(u.bio)}</div>` : ''}
-        <div class="ua-status">${_statusBadge(u)}</div>
+        <span class="ua-name">${_esc(name)}</span>
+        ${uname ? `<span class="ua-uname">${_esc(uname)}</span>` : ''}
+        <span class="ua-date">${created}${blockedUntil ? ' · blok tugashi: ' + blockedUntil : ''}</span>
       </div>
+      <div class="ua-status">${_statusBadge(u)}</div>
       <div class="ua-actions">
         ${_approveBtn(u)}
         ${_rejectBtn(u)}
-        <button class="ua-history-btn" data-uid="${uid}" data-name="${_esc(name)}">Malumotlar</button>
-        <button class="${blockBtnClass}" data-uid="${uid}" data-name="${_esc(name)}" data-blocked="${isBlocked}" data-blocked-until-ms="${blockedUntilMs}">
-          ${blockBtnLabel}
-        </button>
+        <button class="ua-history-btn" data-uid="${uid}" data-name="${_esc(name)}">Ma'lumot</button>
+        <button class="${blockBtnClass}" data-uid="${uid}" data-name="${_esc(name)}" data-blocked="${isBlocked}" data-blocked-until-ms="${blockedUntilMs}">${blockBtnLabel}</button>
+        <button class="ua-delete-btn" data-uid="${uid}" data-name="${_esc(name)}">O'chirish</button>
       </div>
-      <button class="ua-delete-btn" data-uid="${uid}" data-name="${_esc(name)}" title="O'chirish">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-          <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-        </svg>
-      </button>
     </div>`;
   }).join('');
 

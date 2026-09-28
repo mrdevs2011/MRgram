@@ -1,6 +1,6 @@
 /**
  * MRgram — Dashboard Summary (tezkor umumiy ko'rinish)
- * actionsView boshida — barcha bo'limlardan oldin — kichik "stat card"lar:
+ * actionsView boshida — bitta qatorli statistika:
  * jami foydalanuvchilar, bugungi yangilar, kutayotganlar, bloklanganlar. Scroll qilmasdan holatni darhol ko'rsatadi.
  */
 
@@ -16,37 +16,9 @@ function _injectCSS() {
   const s = document.createElement('style');
   s.id = 'dash-summary-css';
   s.textContent = `
-.dash-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
-  gap: 8px;
-  margin: 12px 16px 4px;
-}
-.dash-card {
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 12px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-.dash-card-value {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--text);
-  line-height: 1.1;
-}
-.dash-card-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text3);
-  line-height: 1.25;
-}
-.dash-card--warn  .dash-card-value { color: var(--red,#ef4444); }
-.dash-card--info  .dash-card-value { color: var(--blue,#ffffff); }
-.dash-card--ok    .dash-card-value { color: var(--green,#22c55e); }
+.dash-bar { display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 10px 12px; font-size: 13px; color: var(--text2); }
+.dash-item b { color: var(--text); font-weight: 700; }
+.dash-item--warn b { color: var(--red,#ef4444); }
 .dash-card-loading { opacity: 0.5; }
 `;
   document.head.appendChild(s);
@@ -75,20 +47,15 @@ function _render(containerId) {
   const blocked = users.filter(u => u.blocked === true).length;
 
   const cards = [
-    { label: "Jami foydalanuvchilar", value: total, cls: '' },
-    { label: "Bugungi yangilar", value: newToday, cls: 'info' },
-    { label: "Kutayotganlar", value: pending, cls: pending > 0 ? 'warn' : 'ok' },
-    { label: "Bloklanganlar", value: blocked, cls: blocked > 0 ? 'warn' : '' },
+    { label: "Jami", value: total, cls: '' },
+    { label: "Bugun yangi", value: newToday, cls: 'info' },
+    { label: "Kutayotgan", value: pending, cls: pending > 0 ? 'warn' : 'ok' },
+    { label: "Bloklangan", value: blocked, cls: blocked > 0 ? 'warn' : '' },
   ];
 
   section.innerHTML = `
-    <div class="dash-grid${loading ? ' dash-card-loading' : ''}">
-      ${cards.map(c => `
-        <div class="dash-card${c.cls ? ' dash-card--' + c.cls : ''}">
-          <div class="dash-card-value">${loading ? '…' : c.value}</div>
-          <div class="dash-card-label">${c.label}</div>
-        </div>
-      `).join('')}
+    <div class="dash-bar${loading ? ' dash-card-loading' : ''}">
+      ${cards.map(c => `<span class="dash-item${c.cls ? ' dash-item--' + c.cls : ''}">${c.label.toLowerCase().replace(/ /g, '_')}=<b>${loading ? '…' : c.value}</b></span>`).join('')}
     </div>
   `;
 }
