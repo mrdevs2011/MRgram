@@ -47,7 +47,7 @@
 
 [data-theme="dark"] #splash {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  background-color: #16181c;
+  background-color: var(--pal-gray-900);
 }
 
 /* [data-theme="dark"] .splash-wordmark → CSS/dark-theme-fix.css'da qayta

@@ -127,7 +127,7 @@
   gap: 10px;
   padding: 10px 14px;
   background: var(--c-bg-header, var(--bg3, var(--pal-gray-900)));
-  border-bottom: 1px solid var(--c-divider, rgba(255,255,255,0.06));
+  border-bottom: 1px solid var(--c-divider, var(--pal-white-06));
   flex-shrink: 0;
   position: relative;
 }
@@ -178,7 +178,7 @@
   margin: 10px 0 8px;
 }
 .chat-date-sep span {
-  background: rgba(255,255,255,0.06);
+  background: var(--pal-white-06);
   color: var(--text2);
   font-size: 12.5px;
   font-weight: 600;
@@ -300,7 +300,7 @@
   display: inline-block;
   vertical-align: middle;
   /* sent = 1 chek, xira oq */
-  color: #909093;
+  color: var(--pal-legacy-909093);
 }
 /* read = 2 chek, ko'k-moviy */
 .msg-ticks.read { color: var(--pal-white); }
@@ -510,7 +510,7 @@
   flex-shrink: 0;
   transition: none;
 }
-.cfp-remove:hover { background: var(--pal-gray-900); color: #ef4444; }
+.cfp-remove:hover { background: var(--pal-gray-900); color: var(--pal-red); }
 
 /* ── Voice message bubble ── */
 
@@ -544,7 +544,7 @@
 
 .cfm-size {
   font-size: 11px;
-  color: #B5B5B7;
+  color: var(--pal-legacy-b5b5b7);
   margin-top: 1px;
 }
 .chat-msg.theirs .cfm-size { color: var(--text3); }
@@ -642,7 +642,7 @@
   transition: none;
 }
 .ctx-item:hover { background: var(--bg4); }
-.ctx-item.danger { color: #ef4444; }
+.ctx-item.danger { color: var(--pal-red); }
 .ctx-item svg { flex-shrink: 0; }
 
 .ctx-divider {
@@ -677,7 +677,7 @@
   right: 16px;
   width: 38px; height: 38px;
   border-radius: 50%;
-  background: #2D2D33;
+  background: var(--pal-legacy-2d2d33);
   border: none;
   display: flex; align-items: center; justify-content: center;
   color: var(--pal-white);
@@ -685,7 +685,7 @@
   font-size: 20px;
   transition: none;
 }
-#chatLightboxClose:hover { background: #46464B; }
+#chatLightboxClose:hover { background: var(--pal-legacy-46464b); }
 
 /* ── Highlight (reply scroll) ── */
 
@@ -833,7 +833,7 @@
   flex-shrink: 0;
   transition: none;
 }
-.chat-call-btn:hover { background: var(--pal-gray-900); color: #22c55e; }
+.chat-call-btn:hover { background: var(--pal-gray-900); color: var(--pal-green); }
 
 /* ════════════════════════════════════════════════════════════════════
    INCOMING CALL MODAL
@@ -918,7 +918,7 @@
   border-radius: 50%;
   overflow: hidden;
   background: var(--bg4);
-  border: 3px solid #22c55e;
+  border: 3px solid var(--pal-green);
   flex-shrink: 0;
   position: relative;
   z-index: 1;
@@ -933,7 +933,7 @@
 }
 .incoming-call-type {
   font-size: 15px;
-  color: #B5B5B7;
+  color: var(--pal-legacy-b5b5b7);
 }
 
 .inc-call-col {
@@ -950,8 +950,8 @@
   cursor: pointer;
   transition: none;
 }
-.inc-call-btn.reject  { background: #ef4444; color: var(--pal-white); }
-.inc-call-btn.accept  { background: #22c55e; color: var(--pal-white); }
+.inc-call-btn.reject  { background: var(--pal-red); color: var(--pal-white); }
+.inc-call-btn.accept  { background: var(--pal-green); color: var(--pal-white); }
 .inc-call-btn:hover   { box-shadow: 0 4px 20px var(--pal-black); }
 .inc-call-label {
   font-size: 13px;
@@ -1016,7 +1016,7 @@
   border-radius: 50%;
   overflow: hidden;
   background: var(--bg4);
-  border: 3px solid #2D2D33;
+  border: 3px solid var(--pal-legacy-2d2d33);
 }
 .call-voice-avi img { width: 100%; height: 100%; object-fit: cover; }
 .call-avi-initial {
@@ -1025,7 +1025,7 @@
   font-size: 42px;
   font-weight: 700;
   color: var(--pal-white);
-  background: #22c55e;
+  background: var(--pal-green);
 }
 .incoming-call-avi .call-avi-initial { font-size: 52px; }
 .call-voice-name {
@@ -1053,7 +1053,7 @@
   height: 128px;
   border-radius: 12px;
   object-fit: cover;
-  border: 2px solid #525257;
+  border: 2px solid var(--pal-legacy-525257);
   z-index: 2;
   opacity: 0;
   transform: scale(0.85);
@@ -1066,7 +1066,7 @@
 
 .call-status {
   font-size: 14px;
-  color: #9C9C9F;
+  color: var(--pal-legacy-9c9c9f);
   text-align: center;
   transition: none;
 }
@@ -1132,7 +1132,7 @@
   transform: translateX(-50%);
   z-index: 3;
   gap: 10px;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--pal-black-55);
   padding: 7px 10px;
   border-radius: 50px;
   max-width: calc(100vw - 24px);
@@ -1142,21 +1142,21 @@
   width: 54px; height: 54px;
   border-radius: 50%;
   background: var(--pal-gray-800);
-  border: 0.5px solid #35353B;
+  border: 0.5px solid var(--pal-legacy-35353b);
   display: flex; align-items: center; justify-content: center;
   color: var(--pal-white);
   cursor: pointer;
-  box-shadow: inset 0 1px 0 #3A3A3F;
+  box-shadow: inset 0 1px 0 var(--pal-legacy-3a3a3f);
   transition: none;
 }
 .call-ctrl-btn:hover   {
-  background: #35353B;
+  background: var(--pal-legacy-35353b);
   box-shadow: inset 0 1px 0 #48484E;
 }
 .call-ctrl-btn.muted   {
   background: #313131;
   border-color: #591D22;
-  color: #ef4444;
+  color: var(--pal-red);
 }
 .call-ctrl-btn.active  {
   background: #2c2c2c;
@@ -1165,10 +1165,10 @@
 }
 .call-ctrl-btn.end-btn {
   background: #dc2626;
-  border-color: #3A3A3F;
+  border-color: var(--pal-legacy-3a3a3f);
   width: 62px; height: 62px;
 }
-.call-ctrl-btn.end-btn:hover { background: #ef4444; }
+.call-ctrl-btn.end-btn:hover { background: var(--pal-red); }
 .call-ctrl-btn.end-btn svg { transform: rotate(135deg); } /* qabul svg'ini burab — "tugatish" belgisi */
 
 /* Video rejimida — tugmalar kichikroq, kam joy egallaydi */
@@ -1217,7 +1217,7 @@
 .chat-bubble .md-codeblock,
 .chat-bubble .md-code {
   background: rgba(0, 0, 0, .22);
-  border-color: rgba(255, 255, 255, .14);
+  border-color: var(--pal-white-14);
 }
 .chat-msg.mine .chat-bubble .md-codeblock,
 .chat-msg.mine .chat-bubble .md-code {
@@ -1262,7 +1262,7 @@ a.cfm-name--link:hover {
 }
 .chat-msg.theirs a.cfm-name--link {
   color: var(--blue);
-  text-decoration-color: #464646;
+  text-decoration-color: var(--pal-legacy-464646);
 }
 .chat-msg.theirs a.cfm-name--link:hover {
   text-decoration-color: var(--blue);
@@ -1307,7 +1307,7 @@ a.cfm-name--link:hover {
 
 .cfm-media-meta {
   font-size: 10.5px;
-  color: #909093;
+  color: var(--pal-legacy-909093);
   padding: 0 2px;
   white-space: nowrap;
   overflow: hidden;
@@ -1335,10 +1335,10 @@ a.cfm-name--link:hover {
   /* scale va glow CSS variable orqali JS dan boshqariladi */
   transform: scale(var(--rec-scale, 1.0)) !important;
   box-shadow:
-    inset 0 1px 0 #525257,
+    inset 0 1px 0 var(--pal-legacy-525257),
     0 0 0 calc((var(--rec-scale, 1.0) - 1) * 28px) #232323,
     0 0 calc(var(--rec-glow, 0) * 0.4px) var(--pal-gray-700),
-    0 4px 16px #2e2e2e !important;
+    0 4px 16px var(--pal-legacy-2e2e2e) !important;
   transition: none !important;
 }
 
@@ -1364,11 +1364,11 @@ a.cfm-name--link:hover {
 .cpb-mic-icon {
   width: 36px; height: 36px;
   border-radius: 50%;
-  background: #35353B;
+  background: var(--pal-legacy-35353b);
   display: flex; align-items: center; justify-content: center;
   color: var(--pal-white);
   flex-shrink: 0;
-  border: 0.5px solid #4D4D52;
+  border: 0.5px solid var(--pal-legacy-4d4d52);
 }
 
 .cpb-file-icon svg {
@@ -1388,14 +1388,14 @@ a.cfm-name--link:hover {
 
 .cpb-size {
   font-size: 11px;
-  color: #9C9C9F;
+  color: var(--pal-legacy-9c9c9f);
   margin-top: 1px;
 }
 
 /* Progress bar */
 .cpb-progress-bar {
   height: 4px;
-  background: #35353B;
+  background: var(--pal-legacy-35353b);
   border-radius: 4px;
   overflow: hidden;
   margin-bottom: 5px;
@@ -1443,7 +1443,7 @@ a.cfm-name--link:hover {
 .incoming-call-avi {
   border: 2.5px solid #1A8C46 !important;
   box-shadow:
-    inset 0 1px 0 #3A3A3F,
+    inset 0 1px 0 var(--pal-legacy-3a3a3f),
     0 0 0 4px var(--pal-gray-900),
     0 0 32px var(--pal-gray-800),
     0 8px 24px var(--pal-black) !important;
@@ -1451,17 +1451,17 @@ a.cfm-name--link:hover {
 
 /* Buttons — glass */
 .inc-call-btn {
-  border: 0.5px solid #3F3F44 !important;
-  box-shadow: inset 0 1px 0 #4D4D52, 0 6px 24px var(--pal-black) !important;
+  border: 0.5px solid var(--pal-legacy-3f3f44) !important;
+  box-shadow: inset 0 1px 0 var(--pal-legacy-4d4d52), 0 6px 24px var(--pal-black) !important;
   transition: none !important;
 }
 .inc-call-btn.reject {
   background: #CC3B3C !important;
-  box-shadow: inset 0 1px 0 #3F3F44, 0 6px 24px #652024 !important;
+  box-shadow: inset 0 1px 0 var(--pal-legacy-3f3f44), 0 6px 24px #652024 !important;
 }
 .inc-call-btn.accept {
   background: #1EA852 !important;
-  box-shadow: inset 0 1px 0 #3F3F44, 0 6px 24px #13542F !important;
+  box-shadow: inset 0 1px 0 var(--pal-legacy-3f3f44), 0 6px 24px #13542F !important;
 }
 
 /* Active call modal — deep space glass */
@@ -1481,9 +1481,9 @@ a.cfm-name--link:hover {
 
 /* Voice avatar — glass sphere */
 .call-voice-avi {
-  border: 2px solid #35353B !important;
+  border: 2px solid var(--pal-legacy-35353b) !important;
   box-shadow:
-    inset 0 2px 0 #35353B,
+    inset 0 2px 0 var(--pal-legacy-35353b),
     0 0 0 8px var(--pal-gray-900),
     0 0 60px var(--pal-gray-700),
     0 16px 48px var(--pal-black) !important;
@@ -1495,7 +1495,7 @@ a.cfm-name--link:hover {
 /* Video mode — controls glass bar */
 #callActiveModal.video-mode .call-active-btns {
   background: var(--pal-black) !important;
-  border: 0.5px solid #26262C !important;
+  border: 0.5px solid var(--pal-legacy-26262c) !important;
   box-shadow:
     inset 0 1px 0 #2B2B31,
     0 4px 24px var(--pal-black) !important;
@@ -1592,7 +1592,7 @@ a.cfm-name--link:hover {
   transition: none !important;
 }
 
-.ctx-item.danger:hover { background: #171717 !important; }
+.ctx-item.danger:hover { background: var(--pal-legacy-171717) !important; }
 
 /* ── 11. Emoji picker — bounce in ── */
 
@@ -1726,7 +1726,7 @@ a.cfm-name--link:hover {
   color: var(--pal-white) !important;
 }
 .chat-msg.mine .cvm-play:hover {
-  background: rgba(255,255,255,0.42) !important;
+  background: var(--pal-white-42) !important;
 }
 .chat-msg.mine .cvm-waveform {
   flex: 1;
@@ -1739,7 +1739,7 @@ a.cfm-name--link:hover {
 .chat-msg.mine .cvm-bar {
   display: block;
   width: 1.5px; border-radius: 10px;
-  background: rgba(255,255,255,0.42) !important;
+  background: var(--pal-white-42) !important;
   transition: none;
 }
 /* Eshitilmagan qism — muted (past intensivlik); eshitilgan qism —
@@ -1806,7 +1806,7 @@ a.cfm-name--link:hover {
   padding-top: calc(8px + env(safe-area-inset-top, 0px));
   background: var(--bg3, var(--pal-gray-900));
   border-bottom: 1px solid var(--line, #232428);
-  box-shadow: 0 2px 10px rgba(0, 0, 0,0.25);
+  box-shadow: 0 2px 10px var(--pal-black-25);
   cursor: pointer;
 }
 .voice-mini-player.show { display: flex; }
@@ -1835,7 +1835,7 @@ a.cfm-name--link:hover {
   margin-top: 4px;
   height: 3px;
   border-radius: 2px;
-  background: rgba(255,255,255,0.12);
+  background: var(--pal-white-12);
   overflow: hidden;
 }
 .vmp-progress-fill {
@@ -1855,4 +1855,4 @@ a.cfm-name--link:hover {
   flex-shrink: 0;
   cursor: pointer;
 }
-.vmp-close:hover { background: rgba(255,255,255,0.08); }
+.vmp-close:hover { background: var(--pal-white-08); }

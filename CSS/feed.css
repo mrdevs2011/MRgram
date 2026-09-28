@@ -99,7 +99,7 @@
   justify-content: flex-start;
   padding-top: 16px;
   /* Backdrop — no blur, just semi-transparent */
-  background: #000000;
+  background: var(--pal-black);
   opacity: 0;
   pointer-events: none;
   transition: none;
@@ -353,7 +353,7 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .avi:hover {
-  border-color: #464646;
+  border-color: var(--pal-legacy-464646);
   box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-800);
 }
 .avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -445,7 +445,7 @@ body:has(.search-overlay.open) .app-hdr {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  border: 2.5px solid rgba(255,255,255,0.25);
+  border: 2.5px solid var(--pal-white-25);
   border-top-color: rgba(255,255,255,0.85);
   animation: none;
   pointer-events: none;
@@ -504,7 +504,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 .vc-bar {
   height: 3px;
-  background: #525257;
+  background: var(--pal-legacy-525257);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -687,7 +687,7 @@ body:has(.search-overlay.open) .app-hdr {
 .heart-burst svg {
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0,0.35));
+  filter: drop-shadow(0 2px 8px var(--pal-black-35));
 }
 
 /* ═══════════════════════
@@ -917,7 +917,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 [data-theme="dark"] .skeleton-post {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  border-color: #202327;
+  border-color: var(--pal-gray-800);
 }
 
 /* ── Like button pop animation ── */

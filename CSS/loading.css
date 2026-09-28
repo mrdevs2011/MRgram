@@ -201,7 +201,7 @@
 /* Dark mode auth */
 [data-theme="dark"] #authWrap {
   /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  background-color: #16181c;
+  background-color: var(--pal-gray-900);
 }
 
 /* [data-theme="dark"] .auth-card, .auth-brand → to'liq CSS/dark-theme-fix.css'da
@@ -350,7 +350,7 @@
 .pwd-warn-text {
   font-size: 13.5px;
   line-height: 1.65;
-  color: #909093;
+  color: var(--pal-legacy-909093);
   margin-bottom: 22px;
 }
 
@@ -376,6 +376,6 @@
 }
 
 .pwd-warn-btn:hover {
-  background: #2e2e2e;
+  background: var(--pal-legacy-2e2e2e);
 }
 

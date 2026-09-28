@@ -252,7 +252,7 @@
   margin: 24px 12px;
   padding: 56px 28px 48px;
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid var(--pal-white-06);
   background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
   overflow: hidden;
 }
@@ -275,7 +275,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid var(--pal-white-08);
   color: var(--text2);
   position: relative;
   z-index: 1;
@@ -306,8 +306,8 @@
   padding: 11px 22px;
   border: none;
   border-radius: 999px;
-  background: #e7e9ea;
-  color: #0f1419;
+  background: var(--pal-gray-100);
+  color: var(--pal-ink);
   font-family: var(--font);
   font-size: 14px;
   font-weight: 700;
@@ -378,7 +378,7 @@
 .up-grid-cell-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,.12) 100%);
+  background: linear-gradient(to top, var(--pal-black-55) 0%, var(--pal-black-25) 45%, rgba(0,0,0,.12) 100%);
   display: flex;
   flex-direction: row;
   align-items: flex-end;
@@ -590,9 +590,9 @@
 
 /* High contrast mode */
 [data-contrast="high"] {
-  --line: #525257;
+  --line: var(--pal-legacy-525257);
   --line2: #848487;
-  --line3: #B5B5B7;
+  --line3: var(--pal-legacy-b5b5b7);
   --text: var(--pal-white);
   --text2: #e0e0e0;
   --text3: #b0b0b0;
@@ -638,7 +638,7 @@
 .vc-play:hover,
 .vc-mute:hover,
 .vc-fs:hover {
-  background: #3A3A3F;
+  background: var(--pal-legacy-3a3a3f);
 }
 
 .vc-play:active,
@@ -1019,7 +1019,7 @@
 
 /* ── 5. Sheet — inner glow olib tashlandi, flat shadow ── */
 .sheet {
-  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 -2px 16px var(--pal-black-35);
 }
 
 /* .post glow/tilt bloki o'chirildi — CSS/00-components.core.css'da
@@ -1089,7 +1089,7 @@
 
 /* ── 17. Detail modal — flat shadow, glass depth olib tashlandi ── */
 #detailContent {
-  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 -4px 24px var(--pal-black-35);
 }
 
 /* ── 18. Create button — pulse animatsiya butunlay o'chirildi (flat) ── */

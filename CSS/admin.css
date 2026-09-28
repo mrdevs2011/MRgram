@@ -80,7 +80,7 @@
   height: 32px;
   border-radius: 8px;
   border: none;
-  background: #171717;
+  background: var(--pal-legacy-171717);
   color: var(--red);
   display: flex;
   align-items: center;
@@ -494,7 +494,7 @@
   --ag-glass:          var(--bg3);
   --ag-glass-mid:      var(--bg4);
   --ag-glass-strong:   var(--bg5);
-  --ag-border-top:     #3F3F44;
+  --ag-border-top:     var(--pal-legacy-3f3f44);
   --ag-border-side:    var(--pal-gray-700);
   --ag-border-bot:     var(--pal-gray-900);
   --ag-specular:       none;

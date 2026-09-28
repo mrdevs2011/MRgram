@@ -205,7 +205,7 @@
   height: 26px;
   padding: 0;
   border-radius: 14px;
-  background: #2e2e2e;
+  background: var(--pal-legacy-2e2e2e);
   border: 1px solid var(--line2);
   position: relative;
   cursor: pointer;
@@ -220,7 +220,7 @@
   height: 20px;
   border-radius: 50%;
   background: var(--pal-white);
-  box-shadow: 0 1px 3px rgba(0, 0, 0,0.35);
+  box-shadow: 0 1px 3px var(--pal-black-35);
   transition: none;
 }
 
@@ -375,8 +375,8 @@
 .up-back {
   position: fixed;
   top: 14px; left: 14px; /* modal fullscreen - app header ko'rinmaydi */
-  background: #000000;
-  border: 1px solid #26262C;
+  background: var(--pal-black);
+  border: 1px solid var(--pal-legacy-26262c);
   border-radius: 50%;
   width: 38px; height: 38px;
   display: flex;
@@ -538,7 +538,7 @@
 
 [data-theme="dark"] .profile-stat:hover {
   background: var(--pal-gray-800);
-  border-color: #2D2D33;
+  border-color: var(--pal-legacy-2d2d33);
 }
 
 /* Light mode profile */
@@ -549,13 +549,13 @@
 
 [data-theme="dark"] .profile-grid-tab.active {
   /* color, border-bottom-color → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  background: #16181c;
+  background: var(--pal-gray-900);
 }
 
 /* User profile modal */
 [data-theme="dark"] .up-back {
   background: var(--pal-black);
-  border: 1px solid #2D2D33;
+  border: 1px solid var(--pal-legacy-2d2d33);
 }
 
 [data-theme="dark"] .up-back:hover {
@@ -565,7 +565,7 @@
 /* Grid cell overlay — engil qorayish, to'liq qora emas */
 [data-theme="dark"] .grid-cell-overlay,
 [data-theme="dark"] .up-grid-cell-overlay {
-  background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,.12) 100%);
+  background: linear-gradient(to top, var(--pal-black-55) 0%, var(--pal-black-25) 45%, rgba(0,0,0,.12) 100%);
 }
 
 /* ═══════════════════════════════════════════
@@ -634,7 +634,7 @@
   background: var(--pg-glass-mid);
 }
 .profile-avi:hover {
-  border-color: #464646;
+  border-color: var(--pal-legacy-464646);
 }
 
 /* Stat blocks — flat chips */
@@ -680,7 +680,7 @@
 /* Avi edit badge — flat */
 .avi-edit-badge {
   background: var(--pal-white);
-  border: 1px solid #525257;
+  border: 1px solid var(--pal-legacy-525257);
 }
 
 /* ── Avatar Zoom Modal ichidagi Tahrirlash tugmasi ───────────────────── */
@@ -694,8 +694,8 @@
   gap: 8px;
   padding: 11px 24px;
   border-radius: 100px;
-  background: #26262C;
-  border: 1px solid #3F3F44;
+  background: var(--pal-legacy-26262c);
+  border: 1px solid var(--pal-legacy-3f3f44);
   color: var(--pal-white);
   font-size: 14px;
   font-weight: 600;
@@ -1000,18 +1000,18 @@
   padding: 48px 20px;
   text-align: center;
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid var(--pal-white-06);
   background: rgba(255,255,255,0.02);
   margin: 8px 0 16px;
 }
 .up-grid-empty-title {
   font-size: 15px;
   font-weight: 600;
-  color: var(--text, #e7e9ea);
+  color: var(--text, var(--pal-gray-100));
 }
 .up-grid-empty-sub {
   font-size: 13px;
-  color: var(--text3, #71767b);
+  color: var(--text3, var(--pal-gray-500));
   max-width: 260px;
   line-height: 1.4;
 }

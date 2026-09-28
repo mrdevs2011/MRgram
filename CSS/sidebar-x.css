@@ -137,7 +137,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
     border-radius: 999px;
     background: none; border: none; box-shadow: none;
   }
-  nav.bot-nav .nav-btn:hover { background: rgba(128, 128, 128, .16); border: none; box-shadow: none; }
+  nav.bot-nav .nav-btn:hover { background: var(--pal-mid-16); border: none; box-shadow: none; }
   nav.bot-nav .nav-btn.on,
   nav.bot-nav #sbSearchToggle.search-active { background: none; border: none; box-shadow: none; }
   nav.bot-nav .nav-btn svg { width: 26px; height: 26px; stroke: var(--text); flex-shrink: 0; }
@@ -177,7 +177,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
     display: flex; flex-direction: column; align-items: stretch;
     margin-top: auto; padding: 12px 0 0; border: none;
   }
-  nav.bot-nav .sb-account:hover { background: rgba(128, 128, 128, .16); }
+  nav.bot-nav .sb-account:hover { background: var(--pal-mid-16); }
 }
 
 /* Post tugma hover: ui-improvements.css dagi #createBtn:hover (transparent) ni bosib o'tadi */
@@ -191,7 +191,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
   background: var(--bg, var(--pal-black));
   border: 0.5px solid var(--glass-border, var(--pal-gray-700));
   border-radius: 16px; padding: 6px 0;
-  box-shadow: 0 0 12px rgba(255, 255, 255, .12), 0 0 3px rgba(255, 255, 255, .1);
+  box-shadow: 0 0 12px var(--pal-white-12), 0 0 3px rgba(255, 255, 255, .1);
 }
 .sb-acc-item {
   display: block; width: 100%; padding: 12px 18px;
@@ -199,11 +199,11 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
   font-family: var(--font); font-size: 15px; font-weight: 600;
   color: var(--text); cursor: pointer;
 }
-.sb-acc-item:hover { background: rgba(128, 128, 128, .16); }
+.sb-acc-item:hover { background: var(--pal-mid-16); }
 .sb-acc-logout { color: #f4212e; font-weight: 700; }
 .sb-acc-sep {
   height: 1px; margin: 4px 12px;
-  background: rgba(255,255,255,0.08);
+  background: var(--pal-white-08);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -217,7 +217,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
   background: var(--bg, var(--pal-black));
   border: 0.5px solid var(--glass-border, var(--pal-gray-700));
   border-radius: 14px;
-  box-shadow: 0 0 12px rgba(255, 255, 255, .12), 0 0 3px rgba(255, 255, 255, .1);
+  box-shadow: 0 0 12px var(--pal-white-12), 0 0 3px rgba(255, 255, 255, .1);
 }
 .chats-x-item {
   display: block; width: 100%; padding: 12px 18px; text-align: left;
@@ -225,7 +225,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
   font-family: var(--font); font-size: 15px; font-weight: 500; color: var(--text);
 }
 .chats-x-item.on { font-weight: 700; }
-.chats-x-item:hover { background: rgba(128, 128, 128, .16); }
+.chats-x-item:hover { background: var(--pal-mid-16); }
 
 @media (min-width: 768px) {
   :root { --chats-w: clamp(300px, 32vw, 400px); }
@@ -258,7 +258,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
     border-radius: 999px; cursor: pointer;
     font-family: var(--font); font-size: 14px; font-weight: 700; color: var(--text);
   }
-  .chats-filter-btn:hover { background: rgba(128, 128, 128, .16); }
+  .chats-filter-btn:hover { background: var(--pal-mid-16); }
 
   /* qidiruv — Explore "Qidiruv" input bilan bir xil */
   #chatsView .ulist-search-wrap {
@@ -266,7 +266,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
     border: 1px solid var(--pal-gray-700); border-radius: 999px;
     background: transparent;
   }
-  #chatsView .ulist-search-wrap:focus-within { border-color: var(--x-blue, #1d9bf0); box-shadow: none; }
+  #chatsView .ulist-search-wrap:focus-within { border-color: var(--x-blue, var(--pal-blue)); box-shadow: none; }
 
   /* filtr: Shaxsiy / Guruhlar */
   #chatsListWrap[data-filter="dm"] .grp-rows-section { display: none; }

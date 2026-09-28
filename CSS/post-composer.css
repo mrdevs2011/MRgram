@@ -16,7 +16,7 @@
   background: var(--pal-gray-900);
   border: 1px solid var(--pal-gray-700);
   border-radius: 16px;
-  box-shadow: 0 8px 40px rgba(0,0,0,.55);
+  box-shadow: 0 8px 40px var(--pal-black-55);
   padding: 10px 16px max(14px, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
@@ -160,7 +160,7 @@
 body.file-dragging::after {
   content: '';
   position: fixed; inset: 8px;
-  border: 2px dashed var(--x-blue, #1d9bf0);
+  border: 2px dashed var(--x-blue, var(--pal-blue));
   border-radius: 16px;
   background: rgba(29, 155, 240, .06);
   pointer-events: none;

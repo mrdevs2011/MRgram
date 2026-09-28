@@ -56,7 +56,7 @@
 .grp-form-avi {
   width: 80px; height: 80px; border-radius: 50%;
   background: var(--bg4, var(--pal-gray-900));
-  border: 1.5px dashed var(--line2, #2D2D33);
+  border: 1.5px dashed var(--line2, var(--pal-legacy-2d2d33));
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; position: relative;
   transition: none;
@@ -123,7 +123,7 @@
 
 .grp-picker-check {
   width: 22px; height: 22px; border-radius: 50%;
-  border: 2px solid var(--line2, #35353B);
+  border: 2px solid var(--line2, var(--pal-legacy-35353b));
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; transition: none;
   color: transparent;
@@ -160,12 +160,12 @@
 .grp-member-kick {
   width: 28px; height: 28px; border-radius: 50%; border: none;
   background: color-mix(in srgb, var(--red) 14%, transparent);
-  color: var(--red, #ef4444);
+  color: var(--red, var(--pal-red));
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; transition: none;
 }
 .grp-member-kick:hover { background: color-mix(in srgb, var(--red) 24%, transparent); }
-.c-red { color: var(--red, #ef4444) !important; }
+.c-red { color: var(--red, var(--pal-red)) !important; }
 
 /* ── Sender name in group messages ── */
 .grp-sender-name {
@@ -384,10 +384,10 @@
   background: var(--bg4, var(--pal-gray-800));
   color: var(--blue, var(--pal-white));
 }
-.gi-action-btn.gi-action-danger .gi-action-icon { color: var(--red, #ef4444); }
-.gi-action-btn.gi-action-delete .gi-action-icon { color: var(--red, #ef4444); }
-.gi-action-btn.gi-action-danger { color: var(--red, #ef4444); }
-.gi-action-btn.gi-action-delete { color: var(--red, #ef4444); }
+.gi-action-btn.gi-action-danger .gi-action-icon { color: var(--red, var(--pal-red)); }
+.gi-action-btn.gi-action-delete .gi-action-icon { color: var(--red, var(--pal-red)); }
+.gi-action-btn.gi-action-danger { color: var(--red, var(--pal-red)); }
+.gi-action-btn.gi-action-delete { color: var(--red, var(--pal-red)); }
 
 /* ── Sections (media, members) ── */
 .gi-section {

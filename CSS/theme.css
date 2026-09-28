@@ -10,22 +10,55 @@
   --pal-gray-900: #16181c;   /* surface */
   --pal-gray-800: #202327;   /* surface-2 / hover */
   --pal-gray-700: #2f3336;   /* line / elevated */
+
+  /* ── 2-to'lqin: takrorlanadigan ranglar (qiymatlar aynan asl) ── */
+  --pal-gray-500:         #71767b;
+  --pal-gray-100:         #e7e9ea;
+  --pal-ink:              #0f1419;
+  --pal-red:              #ef4444;
+  --pal-green:            #22c55e;
+  --pal-blue:             #1d9bf0;
+  --pal-white-06:         rgba(255,255,255,.06);
+  --pal-white-08:         rgba(255,255,255,.08);
+  --pal-white-12:         rgba(255,255,255,.12);
+  --pal-white-14:         rgba(255,255,255,.14);
+  --pal-white-25:         rgba(255,255,255,.25);
+  --pal-white-42:         rgba(255,255,255,.42);
+  --pal-black-55:         rgba(0,0,0,.55);
+  --pal-black-35:         rgba(0,0,0,.35);
+  --pal-black-25:         rgba(0,0,0,.25);
+  --pal-mid-16:           rgba(128,128,128,.16);
+  --pal-slate-20:         rgba(101,119,134,.2);
+  --pal-legacy-2d2d33:    #2d2d33;
+  --pal-legacy-35353b:    #35353b;
+  --pal-legacy-3a3a3f:    #3a3a3f;
+  --pal-legacy-3f3f44:    #3f3f44;
+  --pal-legacy-46464b:    #46464b;
+  --pal-legacy-464646:    #464646;
+  --pal-legacy-4d4d52:    #4d4d52;
+  --pal-legacy-525257:    #525257;
+  --pal-legacy-26262c:    #26262c;
+  --pal-legacy-171717:    #171717;
+  --pal-legacy-2e2e2e:    #2e2e2e;
+  --pal-legacy-909093:    #909093;
+  --pal-legacy-b5b5b7:    #b5b5b7;
+  --pal-legacy-9c9c9f:    #9c9c9f;
 }
 
 /* ── DARK theme — Telegram Dark Palette ── */
 [data-theme="dark"] {
   --bg:           var(--pal-black);   /* Main App/Page Background (Primary) */
-  --bg2:          #000000;   /* Primary — chat list rows, frost */
-  --bg3:          #16181c;   /* Surface — headers, panels, sheets */
-  --bg4:          #16181c;   /* Inputs / hover / search fields */
-  --bg5:          #202327;   /* Elevated hover / heavy surface */
+  --bg2:          var(--pal-black);   /* Primary — chat list rows, frost */
+  --bg3:          var(--pal-gray-900);   /* Surface — headers, panels, sheets */
+  --bg4:          var(--pal-gray-900);   /* Inputs / hover / search fields */
+  --bg5:          var(--pal-gray-800);   /* Elevated hover / heavy surface */
   /* --line/--line2/--line3 → CSS/borderless.css'da yengiladi (yagona manba) */
-  --text:         #ffffff;   /* Main Text */
-  --text2:        #71767b;   /* Muted / Secondary Text */
-  --text3:        #71767b;
+  --text:         var(--pal-white);   /* Main Text */
+  --text2:        var(--pal-gray-500);   /* Muted / Secondary Text */
+  --text3:        var(--pal-gray-500);
   --text4:        #4a4a4a;
   --blue:         var(--pal-white);   /* Primary Telegram Blue */
-  --blue2:        #ffffff;
+  --blue2:        var(--pal-white);
   --blue3:        var(--pal-white);
   --blue-glow:    var(--pal-gray-900);
   --blue-glow2:   var(--pal-gray-900);
@@ -36,12 +69,12 @@
   --amber:        #f0a855;
 
   /* ── Dark — pure black spec, dedicated names ── */
-  --tg-blue:      #ffffff;   /* Primary Telegram Blue */
+  --tg-blue:      var(--pal-white);   /* Primary Telegram Blue */
 
   /* ── Icon system aliases ── */
-  --tg-text-muted:   #71767b;  /* default icon color */
-  --tg-primary-blue: #ffffff;  /* active / selected icon color */
-  --tg-text-main:    #ffffff;  /* active icon color on filled/dark surfaces */
+  --tg-text-muted:   var(--pal-gray-500);  /* default icon color */
+  --tg-primary-blue: var(--pal-white);  /* active / selected icon color */
+  --tg-text-main:    var(--pal-white);  /* active icon color on filled/dark surfaces */
 
   /* glass/specular/shadow tokenlari → CSS/dark-theme-fix.css */
 

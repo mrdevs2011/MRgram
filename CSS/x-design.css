@@ -13,23 +13,23 @@
 :root,
 [data-theme="dark"] {
   --bg:   var(--pal-black);  /* sahifa */
-  --bg2:  #000000;
+  --bg2:  var(--pal-black);
   --bg3:  var(--pal-gray-900);  /* karta / panel (Trends, Who to follow) */
-  --bg4:  #202327;  /* qidiruv maydoni, hover */
-  --bg5:  #2f3336;  /* ko'tarilgan hover */
+  --bg4:  var(--pal-gray-800);  /* qidiruv maydoni, hover */
+  --bg5:  var(--pal-gray-700);  /* ko'tarilgan hover */
 
-  --text:  #e7e9ea;
-  --text2: #71767b;
-  --text3: #71767b;
+  --text:  var(--pal-gray-100);
+  --text2: var(--pal-gray-500);
+  --text3: var(--pal-gray-500);
   --text4: #536471;
 
-  --blue:  #1d9bf0; /* X ko'ki: Post, faol holat, toggle, badge */
+  --blue:  var(--pal-blue); /* X ko'ki: Post, faol holat, toggle, badge */
   --blue2: #1a8cd8; /* hover */
-  --blue3: #1d9bf0;
-  --link:  #1d9bf0;
-  --x-blue: #1d9bf0; --x-blue-hover: #1a8cd8;
+  --blue3: var(--pal-blue);
+  --link:  var(--pal-blue);
+  --x-blue: var(--pal-blue); --x-blue-hover: #1a8cd8;
   --x-like: #f91880; 
-  --x-inv-bg: #eff3f4; --x-inv-bg-hover: #d7dbdc; --x-inv-fg: #0f1419; /* oq pill tugma (Next / Follow) */
+  --x-inv-bg: #eff3f4; --x-inv-bg-hover: #d7dbdc; --x-inv-fg: var(--pal-ink); /* oq pill tugma (Next / Follow) */
   --hover:        rgba(231, 233, 234, .03);
   --hover-strong: rgba(231, 233, 234, .10);
   --blue-glow:  rgba(29, 155, 240, .10);
@@ -44,8 +44,8 @@
   --red:   #f4212e;
   --green: #00ba7c;
 
-  --tg-blue: #1d9bf0; 
-  --tg-text-muted: #71767b; --tg-primary-blue: #1d9bf0; --tg-text-main: #e7e9ea;
+  --tg-blue: var(--pal-blue); 
+  --tg-text-muted: var(--pal-gray-500); --tg-primary-blue: var(--pal-blue); --tg-text-main: var(--pal-gray-100);
 
   --font: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
@@ -491,7 +491,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 #uploadOverlay .composer-sheet,
 :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet {
   border: none;
-  box-shadow: rgba(101, 119, 134, .20) 0 0 15px, rgba(101, 119, 134, .15) 0 0 3px 1px;
+  box-shadow: var(--pal-slate-20) 0 0 15px, rgba(101, 119, 134, .15) 0 0 3px 1px;
 }
 #uploadOverlay .composer-close:hover { background: var(--hover-strong); }
 
@@ -538,7 +538,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
   background: var(--line); color: var(--text); border-radius: 22px 22px 22px 4px;
 }
 #chatThreadModal .chat-msg.mine .chat-bubble a { color: var(--pal-white); text-decoration: underline; }
-#chatThreadModal .chat-msg.mine .cvm-play { background: rgba(255,255,255,.25) !important; }
+#chatThreadModal .chat-msg.mine .cvm-play { background: var(--pal-white-25) !important; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    X 1:1 — tuzatish (haqiqiy X bilan solishtirilgach)
@@ -631,7 +631,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
   position: absolute; top: 100%; left: 16px; right: 16px; margin-top: -5px;
   padding: 0; max-height: min(70vh, 480px); overflow-y: auto;
   background: var(--bg); border: none; border-radius: 0 0 16px 16px;
-  box-shadow: rgba(101, 119, 134, .20) 0 0 15px, rgba(101, 119, 134, .15) 0 0 3px 1px;
+  box-shadow: var(--pal-slate-20) 0 0 15px, rgba(101, 119, 134, .15) 0 0 3px 1px;
 }
 [data-theme] .search-suggestion-item { padding: 12px 16px; gap: 12px; border-radius: 0; }
 [data-theme] .search-suggestion-item:hover { background: var(--hover-strong); }
@@ -723,13 +723,13 @@ nav.bot-nav #createBtn.nav-center-btn *,
   background: transparent; color: var(--text); outline: none; box-shadow: none;
   border: 1px solid var(--pal-gray-700); border-radius: 999px; font-size: 15px;
 }
-[data-theme] .search-overlay .exp-pill input:focus { border-color: var(--x-blue, #1d9bf0); background: transparent; }
+[data-theme] .search-overlay .exp-pill input:focus { border-color: var(--x-blue, var(--pal-blue)); background: transparent; }
 [data-theme] .search-overlay .exp-pill input::placeholder { color: var(--text3); }
 [data-theme] .search-overlay .exp-pill .search-overlay-icon {
   position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
   width: 18px; height: 18px; color: var(--text3); pointer-events: none;
 }
-[data-theme] .search-overlay .exp-pill:focus-within .search-overlay-icon { color: var(--x-blue, #1d9bf0); }
+[data-theme] .search-overlay .exp-pill:focus-within .search-overlay-icon { color: var(--x-blue, var(--pal-blue)); }
 
 /* Yopish tugmasi — X'dagi sozlama (gear) o'rnida */
 [data-theme] .search-overlay .search-overlay-box .search-overlay-close {
@@ -745,7 +745,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
   top: calc(100% + 4px); left: 0; right: 0; margin: 0; padding: 0;
   max-height: min(70vh, 480px); overflow-y: auto;
   background: var(--bg); border: none; border-radius: 16px;
-  box-shadow: rgba(101, 119, 134, .30) 0 0 15px, rgba(101, 119, 134, .20) 0 0 3px 1px;
+  box-shadow: rgba(101, 119, 134, .30) 0 0 15px, var(--pal-slate-20) 0 0 3px 1px;
 }
 
 /* Tarkib */
@@ -799,7 +799,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
   background: var(--pal-gray-800) !important;
   border: 1px solid var(--pal-gray-700) !important;
   border-radius: 12px !important;
-  color: #e7e9ea !important;
+  color: var(--pal-gray-100) !important;
   padding: 13px 16px !important;
   margin-bottom: 10px !important;
   font-size: 15px !important;
@@ -810,11 +810,11 @@ nav.bot-nav #createBtn.nav-center-btn *,
 }
 #authWrap .field::placeholder,
 #authWrap input::placeholder {
-  color: #71767b !important;
+  color: var(--pal-gray-500) !important;
 }
 #authWrap .field:focus,
 #authWrap input.field:focus {
-  border-color: #1d9bf0 !important;
+  border-color: var(--pal-blue) !important;
   background: var(--pal-gray-800) !important;
 }
 #authWrap .btn-primary,
@@ -825,7 +825,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
   padding: 14px 20px !important;
   margin-top: 8px !important;
   background: #eff3f4 !important;
-  color: #0f1419 !important;
+  color: var(--pal-ink) !important;
   border: none !important;
   border-radius: 999px !important;
   font-size: 15px !important;
@@ -845,7 +845,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 html, body, #app, .app {
   background: var(--pal-black) !important;
   background-color: var(--pal-black) !important;
-  color: #e7e9ea !important;
+  color: var(--pal-gray-100) !important;
 }
 .view.on,
 .feed,
@@ -938,7 +938,7 @@ html, body, #app, .app {
   margin: 0 0 6px 4px;
   font-size: 13px;
   font-weight: 600;
-  color: #71767b;
+  color: var(--pal-gray-500);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -960,7 +960,7 @@ html, body, #app, .app {
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: #e7e9ea;
+  color: var(--pal-gray-100);
   cursor: pointer;
   text-align: left;
   width: 100%;
@@ -1003,7 +1003,7 @@ html, body, #app, .app {
 .rr-name {
   font-size: 14px;
   font-weight: 600;
-  color: #e7e9ea;
+  color: var(--pal-gray-100);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1011,7 +1011,7 @@ html, body, #app, .app {
 }
 .rr-sub {
   font-size: 13px;
-  color: #71767b;
+  color: var(--pal-gray-500);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

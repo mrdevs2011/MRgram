@@ -13,13 +13,13 @@
   --bg5: var(--pal-gray-800);
 
   --blue:  var(--pal-white);
-  --blue2: #e7e9ea;
+  --blue2: var(--pal-gray-100);
   --blue3: #d0d0d0;
   --blue-glow:  var(--pal-gray-900);
   --blue-glow2: var(--pal-gray-900);
 
   --tg-blue:    var(--pal-white);
-  --tg-text-muted:   #71767b;
+  --tg-text-muted:   var(--pal-gray-500);
   --tg-primary-blue: var(--pal-white);
   --tg-text-main:    var(--pal-white);
 }
