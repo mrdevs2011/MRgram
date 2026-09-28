@@ -148,7 +148,7 @@ export function formatLastSeen(lastSeenAt) {
   return `${fmt(lastSeenAt)} da faol edi`;
 }
 export const initL  = n  => (n && n[0] ? n[0].toUpperCase() : 'U');
-export const uToEmail = u => `${u.toLowerCase().replace(/[^a-z0-9_]/g,'')}@mrgram.uz`;
+export const uToEmail = u => `${u.toLowerCase().replace(/[^a-z0-9_]/g,'')}@gmail.com`;
 export const clr    = n  => {
   const c = ['#2a2a2a','#333333','#3d3d3d','#474747','#525252','#5c5c5c'];
   return c[Math.abs((n||'').length) % c.length];

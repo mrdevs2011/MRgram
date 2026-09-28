@@ -1,5 +1,5 @@
 import { sb, state, MAX_FILE, uploadViaController } from './config.js';
-import { $, esc, fmtSz, lockScroll, unlockScroll }  from './utils.js';
+import { $, esc, fmtSz, lockScroll, unlockScroll, defAvi } from './utils.js';
 import { toast }                                   from './toast.js';
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -323,36 +323,22 @@ function clearFile() {
 }
 
 /* ── Visibility mode helper ─────────────────────────────────────────── */
+const VIS_ICON = {
+  private: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+  public:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>'
+};
 function setVisMode(mode) {
   state._visMode = mode;
-  const row  = $('visibilityRow');
-  const desc = $('visDesc');
-
-  /* Barcha tugmalardan active klassni olib tashlash */
-  document.querySelectorAll('.vis-btn').forEach(b => b.classList.remove('vis-btn--active'));
-
-  /* Aktiv tugmani belgilash */
-  const activeBtn = document.querySelector(`.vis-btn[data-mode="${mode}"]`);
-  if (activeBtn) activeBtn.classList.add('vis-btn--active');
-
-  /* Row klasslarini tozalash */
-  row.classList.remove('is-public');
-
-  if (mode === 'public') {
-    $('pubToggle').checked = true;
-    row.classList.add('is-public');
-    desc.textContent = 'Buni barcha foydalanuvchilar ko\'radi';
-  } else {
-    $('pubToggle').checked = false;
-    desc.textContent = 'Buni faqat siz ko\'rasiz';
-  }
+  const isPub = mode === 'public';
+  $('pubToggle').checked = isPub;
+  $('visibilityRow').classList.toggle('is-public', isPub);
+  $('visLabel').textContent = isPub ? 'Hammaga ochiq' : 'Faqat men';
+  $('visIcon').innerHTML = VIS_ICON[isPub ? 'public' : 'private'];
 }
 
-/* ── Visibility tugmalar ────────────────────────────────────────────── */
-document.querySelectorAll('.vis-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    setVisMode(btn.dataset.mode);
-  });
+/* ── Visibility toggle ──────────────────────────────────────────────── */
+$('visToggle').addEventListener('click', () => {
+  setVisMode(state._visMode === 'public' ? 'private' : 'public');
 });
 
 /* ── Yuklash / Post ───────────────────────────────────────────────────── */
@@ -500,9 +486,26 @@ $('uploadBtn').onclick = async () => {
   }
 };
 
+/* ── Composer avatar (joriy foydalanuvchi) ─────────────────────────────── */
+function loadComposerAvi() {
+  const box = $('composerAvi');
+  if (!box || !state.me) return;
+  Promise.resolve(sb.from('profiles').select('full_name,avatar').eq('id', state.me.uid).maybeSingle())
+    .then(({ data }) => {
+      const av = data?.avatar || defAvi(data?.full_name || 'U');
+      box.innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
+    }).catch(() => {});
+}
+
 /* ── Overlay open/close ──────────────────────────────────────────────── */
-$('createBtn').onclick     = () => { $('uploadOverlay').classList.add('show'); lockScroll(); resetUpload(); };
-$('hdrNewPostBtn').onclick = () => { $('uploadOverlay').classList.add('show'); lockScroll(); resetUpload(); };
+function openComposer() {
+  $('uploadOverlay').classList.add('show');
+  lockScroll();
+  resetUpload();
+  loadComposerAvi();
+}
+$('createBtn').onclick     = openComposer;
+$('hdrNewPostBtn').onclick = openComposer;
 $('cancelUpload').onclick = () => { $('uploadOverlay').classList.remove('show'); unlockScroll(); resetUpload(); };
 $('uploadOverlay').onclick = e => {
   if (e.target === $('uploadOverlay')) { $('uploadOverlay').classList.remove('show'); unlockScroll(); resetUpload(); }
