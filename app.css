@@ -16506,18 +16506,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
 /* Harakat qatori butun kenglikka yoyiladi (X kabi) */
 .post-actions { max-width: none; margin-right: 0; }
 
-/* Lenta sarlavhasi: yopishqoq, xira shaffof, 53px */
-#homeView .feed::before {
-  content: "Bosh sahifa";
-  display: flex; align-items: center;
-  position: sticky; top: 0; z-index: 5;
-  height: 53px; padding: 0 16px;
-  font-size: 20px; font-weight: 800; color: var(--text);
-  background: color-mix(in srgb, var(--bg) 65%, transparent);
-  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line);
-}
-
 /* ═══════════════════════════════════════════════════════════════════════
    QIDIRUV — X "Explore" uslubi (faqat CSS; mantiq/markup o'zgarmagan)
    Oldin: butun ekranni qoplaydigan qora overlay + markazda quti.
