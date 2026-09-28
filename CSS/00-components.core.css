@@ -40,7 +40,7 @@
   cursor: pointer;
   margin-top: 4px;
   letter-spacing: -0.1px;
-  transition: background 0.15s ease, opacity 0.15s ease;
+  transition: none;
 }
 
 .btn-primary:hover  { background: var(--blue2, var(--blue)); }
@@ -57,7 +57,7 @@
   font-family: var(--font);
   cursor: pointer;
   margin-top: 8px;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: none;
 }
 
 .btn-ghost:hover  { background: var(--glass); color: var(--text); }
@@ -74,7 +74,7 @@
   font-family: var(--font);
   cursor: pointer;
   margin-top: 8px;
-  transition: background 0.15s ease;
+  transition: none;
 }
 
 .btn-danger:hover  { background: #141414; }
@@ -138,7 +138,7 @@ textarea {
   border: 0.5px solid var(--glass-border);
   border-radius: 10px;
   color: var(--text);
-  transition: border-color 0.15s ease;
+  transition: none;
 }
 
 .field:focus,
@@ -162,7 +162,7 @@ textarea::placeholder,
   border: 0.5px solid var(--glass-border);
   border-radius: 14px;
   box-shadow: none;
-  transition: border-color 0.15s ease;
+  transition: none;
 }
 
 .post:hover {

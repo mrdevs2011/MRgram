@@ -16,7 +16,7 @@
   color: var(--text);
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  transition: background .18s, transform .14s var(--ease-back);
+  transition: none;
   flex-shrink: 0;
 }
 .chats-add-btn:hover { background: color-mix(in srgb, var(--blue) 18%, var(--bg4)); }
@@ -62,7 +62,7 @@
   background: transparent; border: none;
   color: var(--text); cursor: pointer;
   border-radius: 12px;
-  transition: background .16s;
+  transition: none;
   text-align: left;
 }
 .grp-choice-btn:hover { background: var(--bg4, #181818); }
@@ -95,7 +95,7 @@
   border: 1.5px dashed var(--line2, #2D2D33);
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; position: relative;
-  transition: border-color .18s, background .18s;
+  transition: none;
 }
 .grp-form-avi:hover { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 8%, var(--bg4)); }
 .grp-form-avi-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
@@ -141,7 +141,7 @@
   display: flex; align-items: center; gap: 10px;
   padding: 10px 12px; cursor: pointer;
   border-bottom: 0.5px solid var(--line, #181818);
-  transition: background .14s;
+  transition: none;
 }
 .grp-picker-row:last-child { border-bottom: none; }
 .grp-picker-row:hover { background: var(--bg4, #161616); }
@@ -161,7 +161,7 @@
   width: 22px; height: 22px; border-radius: 50%;
   border: 2px solid var(--line2, #35353B);
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: background .16s, border-color .16s;
+  flex-shrink: 0; transition: none;
   color: transparent;
 }
 .grp-picker-check.on {
@@ -219,7 +219,7 @@
   background: color-mix(in srgb, var(--red) 14%, transparent);
   color: var(--red, #ef4444);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: background .15s;
+  cursor: pointer; transition: none;
 }
 .grp-member-kick:hover { background: color-mix(in srgb, var(--red) 24%, transparent); }
 
@@ -256,7 +256,7 @@
 .grp-privacy-opt {
   flex: 1; padding: 9px 0; border: none; border-radius: 9px;
   background: transparent; color: var(--text2); font-size: 13.5px; font-weight: 600;
-  cursor: pointer; transition: background .16s, color .16s;
+  cursor: pointer; transition: none;
 }
 .grp-privacy-opt.active { background: var(--blue, #ffffff); color: #fff; }
 
@@ -271,7 +271,7 @@
   width: 38px; height: 38px; border-radius: 10px; border: none; flex-shrink: 0;
   background: var(--bg4, #1d1d1d); color: var(--text2);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: background .15s;
+  cursor: pointer; transition: none;
 }
 .grp-invite-btn:hover { background: color-mix(in srgb, var(--blue) 18%, var(--bg4)); color: var(--blue); }
 .grp-add-link-btn { width: 100%; }
@@ -279,7 +279,7 @@
 /* ── Join-by-link icon next to chats search ── */
 .ulist-link-icon {
   color: var(--text3, #767676); flex-shrink: 0; cursor: pointer;
-  display: flex; align-items: center; transition: color .15s;
+  display: flex; align-items: center; transition: none;
   margin-left: 4px;
 }
 .ulist-link-icon:hover { color: var(--blue, #ffffff); }
@@ -360,7 +360,7 @@
   color: #fff;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  transition: background .15s;
+  transition: none;
 }
 .gi-back-btn:hover { background: #000000; }
 
@@ -404,7 +404,7 @@
   background: var(--bg3);
   box-shadow: 0 4px 24px #000000;
   border: 3.5px solid var(--bg, #121212);
-  transition: transform .18s, box-shadow .18s;
+  transition: none;
   cursor: pointer;
 }
 .gi-avi:hover {box-shadow: 0 6px 32px #343434; }
@@ -442,7 +442,7 @@
   font-size: 13px; color: var(--blue, #ffffff);
   margin-bottom: 8px;
   cursor: pointer;
-  transition: opacity .15s;
+  transition: none;
 }
 .gi-link-row:hover { opacity: .75; }
 
@@ -487,7 +487,7 @@
   color: var(--text2);
   font-size: 11.5px; font-weight: 500;
   cursor: pointer;
-  transition: background .15s, color .15s;
+  transition: none;
   min-width: 64px;
 }
 .gi-action-btn:hover { background: var(--bg4); color: var(--text); }
@@ -531,7 +531,7 @@
   background: var(--bg3);
   cursor: pointer;
   position: relative;
-  transition: opacity .15s;
+  transition: none;
 }
 .gi-media-cell:hover { opacity: .82; }
 .gi-media-cell img,

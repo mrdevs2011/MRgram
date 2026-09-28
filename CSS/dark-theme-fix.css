@@ -87,7 +87,7 @@
 /* Post gradient border on hover — more subtle */
 [data-theme="dark"] .post::before {
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: none;
 }
 
 [data-theme="dark"] .post:hover::before {
@@ -104,7 +104,7 @@
 [data-theme="dark"] .act-btn {
   color: var(--text2);
   border-right: 0.5px solid #121212;
-  transition: all 0.2s var(--ease);
+  transition: none;
 }
 
 [data-theme="dark"] .act-btn:hover {

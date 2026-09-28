@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  transition: opacity 0.35s var(--ease);
+  transition: none;
   background-color: #181818;
 }
 

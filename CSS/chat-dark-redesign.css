@@ -176,7 +176,7 @@
   border-radius: 0;
   color: var(--c-text-1);
   padding: 9px 4px;
-  transition: opacity 0.15s ease;
+  transition: none;
 }
 #chatThreadModal .chat-thread-input::placeholder { color: var(--c-text-2); }
 #chatThreadModal .chat-emoji-btn {
@@ -187,7 +187,7 @@
 #chatThreadModal .chat-attach-btn {
   background: transparent;
   color: var(--c-text-2);
-  transition: opacity 0.15s ease, color 0.2s;
+  transition: none;
 }
 #chatThreadModal .chat-attach-btn:hover { background: transparent; color: var(--c-text-1); }
 
@@ -201,7 +201,7 @@
 /* Mikrofon tugmasi bosib turilganda — oddiy scale animatsiya. */
 #chatThreadModal .chat-voice-btn.active {
   transform: scale(1.2);
-  transition: transform 0.2s ease;
+  transition: none;
 }
 
 /* Reply bar above input */

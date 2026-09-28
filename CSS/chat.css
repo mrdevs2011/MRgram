@@ -29,7 +29,7 @@
   box-shadow: none;
   margin: 0;
   position: relative;
-  transition: background 0.15s var(--ease), transform 0.15s var(--ease);
+  transition: none;
 }
 .chat-row:hover {
   background: var(--glass);
@@ -345,7 +345,7 @@
   padding: 0;
   border-radius: 50%;
   flex-shrink: 0;
-  transition: color 0.15s, background 0.15s, transform 0.15s;
+  transition: none;
 }
 .chat-emoji-btn:hover  { color: var(--text2); background: var(--bg4); }
 
@@ -376,7 +376,7 @@
   line-height: 1;
   border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.15s, background 0.15s;
+  transition: none;
 }
 .chat-emoji-quickpick button:hover  { background: var(--bg4);}
 
@@ -389,7 +389,7 @@
   color: #fff;
   cursor: pointer;
   flex-shrink: 0;
-  transition: var(--transition);
+  transition: none;
 }
 .chat-thread-send:hover { background: var(--blue3); }
 
@@ -421,7 +421,7 @@
   color: var(--text2);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.2s, color 0.2s;
+  transition: none;
 }
 .chat-attach-btn:hover { background: var(--bg5); color: var(--text); }
 
@@ -459,7 +459,7 @@
   color: #fff;
   cursor: pointer;
   flex-shrink: 0;
-  transition: var(--transition);
+  transition: none;
   box-shadow: 0 2px 10px #3a3a3a;
 }
 /* .chat-voice-btn.recording lives in the "VOICE BTN — amplitude-based
@@ -519,7 +519,7 @@
   color: var(--text2);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.2s;
+  transition: none;
 }
 .cfp-remove:hover { background: #1e1e1e; color: #ef4444; }
 
@@ -570,7 +570,7 @@
   cursor: pointer;
   flex-shrink: 0;
   text-decoration: none;
-  transition: background 0.15s;
+  transition: none;
 }
 .chat-msg.theirs .cfm-dl { background: var(--bg5, #e3e3e3); color: var(--text); }
 .cfm-dl:hover { background: rgba(255,255,255,0.35); }
@@ -596,7 +596,7 @@
   max-height: 320px;
   object-fit: cover;
   border-radius: 12px;
-  transition: opacity 0.2s;
+  transition: none;
 }
 .chat-img-msg img:hover { opacity: 1; }
 
@@ -620,7 +620,7 @@
   border-radius: 0 6px 6px 0;
   background: #26262C;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: none;
 }
 .chat-msg.theirs .chat-reply-preview {
   border-left-color: var(--blue);
@@ -714,7 +714,7 @@
   border-radius: 12px;
   font-size: 13px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
+  transition: none;
   color: var(--text);
 }
 .reaction-pill:hover { background: var(--bg5);}
@@ -746,7 +746,7 @@
   cursor: pointer;
   padding: 4px;
   border-radius: 8px;
-  transition: transform 0.2s, background 0.2s;
+  transition: none;
   line-height: 1;
 }
 .emoji-pick-btn:hover {background: var(--bg4); }
@@ -778,7 +778,7 @@
   background: none;
   width: 100%;
   text-align: left;
-  transition: background 0.2s;
+  transition: none;
 }
 .ctx-item:hover { background: var(--bg4); }
 .ctx-item.danger { color: #ef4444; }
@@ -822,7 +822,7 @@
   color: #fff;
   cursor: pointer;
   font-size: 20px;
-  transition: background 0.2s;
+  transition: none;
 }
 #chatLightboxClose:hover { background: #46464B; }
 
@@ -857,7 +857,7 @@
   height: 0;
   overflow: hidden;
   opacity: 0;
-  transition: height 0.2s, opacity 0.2s;
+  transition: none;
   white-space: nowrap;
 }
 
@@ -867,7 +867,7 @@
   padding: 0 14px;
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.2s ease;
+  transition: none;
   pointer-events: none;
 }
 .chat-typing-indicator.active {
@@ -909,15 +909,12 @@
   height: 5px;
   border-radius: 50%;
   background: var(--blue);
-  animation: typingPulse 1.2s ease-in-out infinite;
+  animation: none;
 }
-.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+.typing-dots span:nth-child(2) { animation-delay: 0s; }
+.typing-dots span:nth-child(3) { animation-delay: 0s; }
 
-@keyframes typingPulse {
-  0%, 80%, 100% { opacity: 0.25; transform: scale(0.85); }
-  40%           { opacity: 1;    transform: scale(1); }
-}
+
 
 
 
@@ -931,7 +928,7 @@
   color: var(--text2);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.2s, color 0.2s;
+  transition: none;
 }
 .chat-search-btn:hover { background: var(--bg5); color: var(--text); }
 .chat-search-btn.active { background: #212121; color: var(--blue); }
@@ -946,7 +943,7 @@
   border-bottom: 1px solid var(--line);
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.2s ease;
+  transition: none;
 }
 .chat-search-wrap.active {
   max-height: 56px;
@@ -969,7 +966,7 @@
   font-size: 14px;
   color: var(--text);
   outline: none;
-  transition: border-color 0.2s;
+  transition: none;
 }
 .chat-search-input:focus {
   border-color: var(--blue);
@@ -985,7 +982,7 @@
   color: var(--text2);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.2s;
+  transition: none;
 }
 .chat-search-close:hover { background: var(--bg5); color: var(--text); }
 
@@ -1038,7 +1035,7 @@
   color: var(--text2);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.2s, color 0.2s;
+  transition: none;
 }
 .chat-call-btn:hover { background: #181818; color: #22c55e; }
 
@@ -1115,15 +1112,12 @@
   inset: 0;
   border-radius: 50%;
   border: 2px solid #156737;
-  animation: ringPulse 1.8s ease-out infinite;
+  animation: none;
 }
-.incoming-call-ring-anim span:nth-child(2) { animation-delay: 0.6s; }
-.incoming-call-ring-anim span:nth-child(3) { animation-delay: 1.2s; }
+.incoming-call-ring-anim span:nth-child(2) { animation-delay: 0s; }
+.incoming-call-ring-anim span:nth-child(3) { animation-delay: 0s; }
 
-@keyframes ringPulse {
-  0%   { transform: scale(1);   opacity: 0.8; }
-  100% { transform: scale(2.5); opacity: 0; }
-}
+
 
 .incoming-call-avi {
   width: 128px; height: 128px;
@@ -1160,7 +1154,7 @@
   border: none;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: none;
 }
 .inc-call-btn.reject  { background: #ef4444; color: #fff; }
 .inc-call-btn.accept  { background: #22c55e; color: #fff; }
@@ -1185,7 +1179,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 60px 24px 48px;
-  transition: background 0.4s ease, padding 0.4s ease;
+  transition: none;
 }
 #callActiveModal.show { display: flex; }
 #callActiveModal.video-mode { padding: 0; background: #000000; }
@@ -1209,7 +1203,7 @@
   opacity: 0;
   transform: scale(0.94);
   pointer-events: none;
-  transition: opacity 0.4s cubic-bezier(.22,.61,.36,1), transform 0.4s cubic-bezier(.22,.61,.36,1);
+  transition: none;
 }
 .call-voice-wrap.cs-active,
 .call-video-wrap.cs-active {
@@ -1269,7 +1263,7 @@
   z-index: 2;
   opacity: 0;
   transform: scale(0.85);
-  transition: opacity 0.35s ease 0.1s, transform 0.35s ease 0.1s;
+  transition: none;
 }
 .call-local-pip.cs-active {
   opacity: 1;
@@ -1280,7 +1274,7 @@
   font-size: 14px;
   color: #9C9C9F;
   text-align: center;
-  transition: font-size 0.4s ease, transform 0.4s ease, top 0.4s ease;
+  transition: none;
 }
 .call-timer {
   font-size: 32px;
@@ -1288,7 +1282,7 @@
   color: #fff;
   font-variant-numeric: tabular-nums;
   letter-spacing: 2px;
-  transition: font-size 0.4s ease, transform 0.4s ease, top 0.4s ease;
+  transition: none;
 }
 #callActiveModal.video-mode .call-status,
 #callActiveModal.video-mode .call-timer {
@@ -1307,8 +1301,7 @@
   align-items: flex-start;
   justify-content: center;
   padding-bottom: env(safe-area-inset-bottom, 0);
-  transition: gap 0.4s ease, background 0.4s ease, padding 0.4s ease,
-              border-radius 0.4s ease, bottom 0.4s ease, transform 0.4s ease;
+  transition: none;
 }
 .call-ctrl-col {
   display: flex;
@@ -1360,7 +1353,7 @@
   color: #fff;
   cursor: pointer;
   box-shadow: inset 0 1px 0 #3A3A3F;
-  transition: background 0.2s, transform 0.2s, box-shadow 0.2s, width 0.4s ease, height 0.4s ease;
+  transition: none;
 }
 .call-ctrl-btn:hover   {
   background: #35353B;
@@ -1388,7 +1381,7 @@
 #callActiveModal.video-mode .call-ctrl-btn {
   width: 42px; height: 42px;
 }
-#callActiveModal.video-mode .call-ctrl-btn svg { width: 17px; height: 17px; transition: width 0.3s ease, height 0.3s ease; }
+#callActiveModal.video-mode .call-ctrl-btn svg { width: 17px; height: 17px; transition: none; }
 #callActiveModal.video-mode .call-ctrl-btn.end-btn {
   width: 48px; height: 48px;
 }
@@ -1412,7 +1405,7 @@
 
 /* ── Back button — background/color owned by chat-dark-redesign.css; transition/hover-scale kept here ── */
 .chat-thread-back {
-  transition: background 0.2s, transform 0.2s;
+  transition: none;
 }
 
 /* ── Messages — bubble background/color/border owned by chat-dark-redesign.css.
@@ -1496,7 +1489,7 @@ a.cfm-name--link {
   text-underline-offset: 2px;
   text-decoration-color: #77777B;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: none;
 }
 a.cfm-name--link:hover {
   opacity: 1;
@@ -1523,7 +1516,7 @@ a.cfm-name--link:hover {
   border-radius: 14px;
   overflow: hidden;
   line-height: 0;
-  transition: opacity 0.2s;
+  transition: none;
 }
 .cfm-img-link:hover { opacity: 1; }
 
@@ -1581,7 +1574,7 @@ a.cfm-name--link:hover {
     0 0 0 calc((var(--rec-scale, 1.0) - 1) * 28px) #232323,
     0 0 calc(var(--rec-glow, 0) * 0.4px) #393939,
     0 4px 16px #2e2e2e !important;
-  transition: transform 0.08s ease-out, box-shadow 0.08s ease-out !important;
+  transition: none !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -1648,7 +1641,7 @@ a.cfm-name--link:hover {
   width: 0%;
   background: #fff;
   border-radius: 4px;
-  transition: width 0.2s ease-out;
+  transition: none;
   box-shadow: 0 0 8px #848487;
 }
 
@@ -1696,7 +1689,7 @@ a.cfm-name--link:hover {
 .inc-call-btn {
   border: 0.5px solid #3F3F44 !important;
   box-shadow: inset 0 1px 0 #4D4D52, 0 6px 24px #000000 !important;
-  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s !important;
+  transition: none !important;
 }
 .inc-call-btn.reject {
   background: #CC3B3C !important;
@@ -1759,7 +1752,7 @@ a.cfm-name--link:hover {
   padding: 0;
   background: var(--bg3, #323232);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  transition: none;
   position: relative;
   align-self: flex-end;
 }
@@ -1808,16 +1801,13 @@ a.cfm-name--link:hover {
 /* ── 5. Incoming call modal — slide up ── */
 
 /* ── 6. Incoming call — avatar pulsing rings (kattaroq, ko'proq) ── */
-@keyframes incRingPulse {
-  0%   { transform: scale(1);   opacity: 0.85; }
-  100% { transform: scale(3.2); opacity: 0; }
-}
+
 .incoming-call-ring-anim span {
-  animation: incRingPulse 2.0s ease-out infinite !important;
+  animation: none !important;
   border: 2.5px solid #18793E !important;
 }
-.incoming-call-ring-anim span:nth-child(2) { animation-delay: 0.65s !important; }
-.incoming-call-ring-anim span:nth-child(3) { animation-delay: 1.3s  !important; }
+.incoming-call-ring-anim span:nth-child(2) { animation-delay: 0s !important; }
+.incoming-call-ring-anim span:nth-child(3) { animation-delay: 0s !important; }
 
 /* ── 7. Online dot pulse ── */
 
@@ -1825,7 +1815,7 @@ a.cfm-name--link:hover {
 
 /* ── 9. Rasm lazy-load blur → clear ── */
 .cfm-img-preview {
-  transition: filter 0.2s ease;
+  transition: none;
 }
 
 /* ── 10. Xabar o'chirilganda collapse ── */
@@ -1835,24 +1825,21 @@ a.cfm-name--link:hover {
 }
 
 /* ── 11. Typing indicator — wave bounce ── */
-@keyframes typingDot {
-  0%,60%,100% { transform: translateY(0); opacity:0.5; }
-  30%         { transform: translateY(-6px); opacity:1; }
-}
+
 .typing-dot {
   display: inline-block;
   width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--blue, #ffffff);
-  animation: typingDot 1.2s ease-in-out infinite;
+  animation: none;
   margin: 0 2px;
 }
-.typing-dot:nth-child(2) { animation-delay: 0.18s; }
-.typing-dot:nth-child(3) { animation-delay: 0.36s; }
+.typing-dot:nth-child(2) { animation-delay: 0s; }
+.typing-dot:nth-child(3) { animation-delay: 0s; }
 
 /* ── 12b. Voice message play button — buffering/loading spinner ── */
-.cvm-spin { animation: cvm-spin-rotate 0.8s linear infinite; }
-@keyframes cvm-spin-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.cvm-spin { animation: none; }
+
 
 /* ── 12. Voice waveform — bar balandliklari endi HAQIQIY audio
  * amplitudasidan olinadi (bar sun'iy ravishda o'ynab turmaydi).
@@ -1869,7 +1856,7 @@ a.cfm-name--link:hover {
   transform-origin: top left;
 }
 .ctx-item {
-  transition: background 0.2s, transform 0.2s, color 0.2s !important;
+  transition: none !important;
 }
 
 .ctx-item.danger:hover { background: #171717 !important; }
@@ -1887,14 +1874,11 @@ a.cfm-name--link:hover {
 /* ── 7. Yangi xabar notification badge bounce ── */
 
 /* ── 8. File preview — shimmer loading skeleton ── */
-@keyframes shimmerSlide {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
+
 .cfm-skeleton {
   background: var(--bg3, #1a1a1a);
   background-size: 400px 100%;
-  animation: shimmerSlide 1.4s infinite linear;
+  animation: none;
   border-radius: 12px;
   min-height: 120px;
 }
@@ -1922,13 +1906,13 @@ a.cfm-name--link:hover {
   z-index: 100;
 }
 #chatScrollDownBtn.visible { display: flex; }
-#chatScrollDownBtn:hover  {box-shadow: 0 6px 24px #ffffff; transition: all 0.2s; }
+#chatScrollDownBtn:hover  {box-shadow: 0 6px 24px #ffffff; transition: none; }
 
 /* ── 11. Emoji picker — bounce in ── */
 
 /* ── 12. Input area focus glow ── */
 #chatThreadInput {
-  transition: box-shadow 0.2s ease, border-color 0.2s ease !important;
+  transition: none !important;
 }
 #chatThreadInput:focus {
   box-shadow: 0 0 0 3px #2b2b2b !important;
@@ -1946,7 +1930,7 @@ a.cfm-name--link:hover {
   border-radius: 999px;
   background: #242424;
   cursor: pointer;
-  transition: transform 0.2s var(--ease-back), background 0.2s;
+  transition: none;
   display: inline-flex; align-items: center; gap: 3px;
   font-size: 14px;
   border: 1px solid #202020;
@@ -2150,7 +2134,7 @@ a.cfm-name--link:hover {
   display: block;
   width: 1.5px; border-radius: 10px;
   background: rgba(255,255,255,0.42) !important;
-  transition: height 0.25s ease, background 0.2s linear, opacity 0.2s linear;
+  transition: none;
 }
 /* Eshitilmagan qism — muted (past intensivlik); eshitilgan qism —
  * to'liq yorqin oq bilan ajralib turadi (Telegram progress mantig'i) */
@@ -2189,7 +2173,7 @@ a.cfm-name--link:hover {
   width: 1.5px; border-radius: 10px;
   background: var(--text3) !important;
   opacity: 0.5;
-  transition: height 0.25s ease, background 0.2s linear, opacity 0.2s linear;
+  transition: none;
 }
 /* Eshitilgan qism — Telegram Primary Blue (#ffffff) bilan to'liq
  * to'ldiriladi, eshitilmagan qism muted kulrang holida qoladi. */
@@ -2201,10 +2185,7 @@ a.cfm-name--link:hover {
   font-size: 11px; white-space: nowrap; flex-shrink: 0;
   color: var(--text3) !important;
 }
-@keyframes cvpBlink {
-  0%, 80%, 100% { opacity: 0.25; transform: scale(0.85); }
-  40% { opacity: 1; transform: scale(1); }
-}
+
 
 
 /* ── Voice mini-player — chat almashtirilganda/thread yopilganda ham

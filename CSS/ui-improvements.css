@@ -15,7 +15,7 @@
 [data-theme] .app-hdr,
 [data-theme] .sheet,
 [data-theme] .overlay {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  transition: none;
 }
 
 /* Theme toggle glow effect */
@@ -37,7 +37,7 @@
   z-index: 10000;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.3s var(--ease-back);
+  transition: none;
   box-shadow: 0 8px 32px #000000;
   display: flex;
   align-items: center;
@@ -76,7 +76,7 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: none;
   pointer-events: none;
 }
 
@@ -122,13 +122,10 @@
   right: 0;
   bottom: 0;
   background: #242424;
-  animation: avatarShimmer 2s infinite;
+  animation: none;
 }
 
-@keyframes avatarShimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
+
 
 /* ═══════════════════════════════════════════
    3. NAVIGATION BAR — Active State Enhancement
@@ -198,7 +195,7 @@
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 6px;
-  transition: background 0.15s;
+  transition: none;
 }
 
 .search-clear-all:hover {
@@ -242,7 +239,7 @@
   color: var(--text);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: none;
   white-space: nowrap;
 }
 
@@ -258,7 +255,7 @@
   gap: 10px;
   padding: 10px 12px;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: none;
 }
 
 .search-history-item:hover {
@@ -286,7 +283,7 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.15s;
+  transition: none;
 }
 
 .search-history-item:hover .search-history-remove {
@@ -335,10 +332,7 @@
    SHIMMER LOADING ANIMATION
    ═══════════════════════════════════════════ */
 
-@keyframes shimmer {
-  0% { background-position: -200px 0; }
-  100% { background-position: 200px 0; }
-}
+
 
 .skel,
 .skel-avi,
@@ -346,7 +340,7 @@
 .skel-media {
   background: var(--bg3);
   background-size: 200px 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: none;
 }
 
 /* Skeleton post cards */
@@ -371,7 +365,7 @@
   border-radius: 6px;
   background: var(--bg3);
   background-size: 200px 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: none;
 }
 
 .skeleton-post .skel-media {
@@ -381,7 +375,7 @@
   margin: 12px 0;
   background: var(--bg3);
   background-size: 200px 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: none;
 }
 
 .skeleton-post .skel-actions {
@@ -398,7 +392,7 @@
   border-radius: 8px;
   background: var(--bg3);
   background-size: 200px 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: none;
 }
 
 /* ═══════════════════════════════════════════
@@ -496,7 +490,7 @@
   font-size: 13px;
   cursor: pointer;
   border: none;
-  transition: transform 0.15s var(--ease-back), box-shadow 0.15s;
+  transition: none;
 }
 
 .empty-cta:hover {
@@ -532,7 +526,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s var(--ease), filter 0.3s;
+  transition: none;
 }
 
 .grid-cell:hover img,
@@ -550,7 +544,7 @@
   padding: 8px;
   gap: 4px;
   opacity: 0;
-  transition: opacity 0.2s var(--ease);
+  transition: none;
 }
 
 .grid-cell:hover .grid-cell-overlay,
@@ -581,7 +575,7 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: none;
 }
 
 .grid-cell:hover .grid-play-badge {
@@ -623,7 +617,7 @@
     inset: 0;
     background: #000000;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: none;
     pointer-events: none;
   }
 
@@ -659,7 +653,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s var(--ease);
+  transition: none;
   font-size: 11px;
   font-weight: 600;
   color: #fff;
@@ -682,7 +676,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s var(--ease);
+  transition: none;
   flex-shrink: 0;
   cursor: pointer;
   border: none;
@@ -710,7 +704,7 @@
   box-shadow: 0 4px 16px #000000;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.15s;
+  transition: none;
   transform: translateX(-50%);
 }
 
@@ -751,7 +745,7 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: none;
 }
 
 .cmt-row.swiping .cmt-swipe-indicator {
@@ -779,7 +773,7 @@
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s;
+  transition: none;
 }
 
 .cmt-body.long-press .cmt-copy-hint {
@@ -799,17 +793,14 @@
   height: 6px;
   background: var(--text3);
   border-radius: 50%;
-  animation: typingBounce 1.4s ease-in-out infinite;
+  animation: none;
 }
 
 .cmt-typing-dot:nth-child(1) { animation-delay: 0s; }
-.cmt-typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.cmt-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+.cmt-typing-dot:nth-child(2) { animation-delay: 0s; }
+.cmt-typing-dot:nth-child(3) { animation-delay: 0s; }
 
-@keyframes typingBounce {
-  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-  30% { transform: translateY(-8px); opacity: 1; }
-}
+
 
 /* ═══════════════════════════════════════════
    7. PROFILE PAGE — Enhanced
@@ -864,7 +855,7 @@
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: none;
 }
 
 .avatar-crop-cancel {
@@ -887,7 +878,7 @@
   right: 0;
   height: 30px;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: none;
 }
 
 .stat:hover .stat-sparkline {
@@ -990,13 +981,10 @@
   background: var(--blue);
   border-radius: 0 0 50px 50px;
   transform-origin: left;
-  animation: toastProgress 3s linear;
+  animation: none;
 }
 
-@keyframes toastProgress {
-  from { transform: scaleX(1); }
-  to { transform: scaleX(0); }
-}
+
 
 
 /* ═══════════════════════════════════════════
@@ -1073,7 +1061,7 @@
 .lazy-image {
   background-size: cover;
   background-position: center;
-  transition: filter 0.3s ease;
+  transition: none;
 }
 
 
@@ -1086,7 +1074,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: opacity 0.3s ease;
+  transition: none;
 }
 
 .video-thumbnail.hidden {
@@ -1136,13 +1124,10 @@
   right: 0;
   bottom: 0;
   background: #181818;
-  animation: cachedShimmer 1.5s infinite;
+  animation: none;
 }
 
-@keyframes cachedShimmer {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
-}
+
 
 /* ═══════════════════════════════════════════
    BONUS: Scroll Progress Indicator
@@ -1156,7 +1141,7 @@
   background: var(--blue2);
   z-index: 10000;
   width: 0%;
-  transition: width 0.1s linear;
+  transition: none;
   box-shadow: 0 0 10px #ffffff;
 }
 
@@ -1190,7 +1175,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s var(--ease);
+  transition: none;
 }
 
 .vc-play:hover,
@@ -1205,7 +1190,7 @@
 /* Progress bar hover interaction */
 .vc-bar {
   height: 4px;
-  transition: height 0.15s var(--ease);
+  transition: none;
 }
 
 .vc-progress:hover .vc-bar {
@@ -1227,7 +1212,7 @@
   background: #fff;
   border-radius: 50%;
   opacity: 0;
-  transition: opacity 0.15s;
+  transition: none;
 }
 
 .vc-progress:hover .vc-fill::after {
@@ -1266,7 +1251,7 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  transition: background 0.15s var(--ease);
+  transition: none;
 }
 
 .search-suggestion-item:hover {
@@ -1309,7 +1294,7 @@
   z-index: 9999;
   opacity: 0;
   pointer-events: none;
-  transition: all 0.3s var(--ease-back);
+  transition: none;
 }
 
 #toast.show {
@@ -1380,11 +1365,11 @@
 
 
 
-.cmt-row:nth-child(1) { animation-delay: 0.05s; }
-.cmt-row:nth-child(2) { animation-delay: 0.1s; }
-.cmt-row:nth-child(3) { animation-delay: 0.15s; }
-.cmt-row:nth-child(4) { animation-delay: 0.2s; }
-.cmt-row:nth-child(5) { animation-delay: 0.25s; }
+.cmt-row:nth-child(1) { animation-delay: 0s; }
+.cmt-row:nth-child(2) { animation-delay: 0s; }
+.cmt-row:nth-child(3) { animation-delay: 0s; }
+.cmt-row:nth-child(4) { animation-delay: 0s; }
+.cmt-row:nth-child(5) { animation-delay: 0s; }
 
 /* Comment hover */
 .cmt-body:hover {
@@ -1403,7 +1388,7 @@
 
 
 .up-avi {
-  transition: transform 0.3s var(--ease-back);
+  transition: none;
 }
 
 
@@ -1430,14 +1415,10 @@
 .ufb-fill.indeterminate {
   background: var(--blue3);
   background-size: 200% 100%;
-  animation: ufb-slide 1.4s ease-in-out infinite,
-             ufb-gradient 2s linear infinite;
+  animation: none;
 }
 
-@keyframes ufb-gradient {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
-}
+
 
 /* .heart-burst and .like-pop are now defined once, in feed.css, with a
  * calmer animation (no extra rotation/oversized burst layered on top). */
@@ -1454,7 +1435,7 @@
   background: var(--blue);
   z-index: 9999;
   width: 0%;
-  transition: width 0.1s linear;
+  transition: none;
   box-shadow: 0 0 8px #ffffff;
 }
 
@@ -1466,9 +1447,9 @@
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: 0s !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 0s !important;
     scroll-behavior: auto !important;
   }
 
@@ -1519,7 +1500,7 @@
 @media (min-width: 768px) {
   /* Smoother sidebar transitions */
   .bot-nav {
-    transition: background 0.3s var(--ease);
+    transition: none;
   }
 
   /* Enhanced feed on desktop */
@@ -1593,7 +1574,7 @@
 /* header icon buttons — flat, oddiy hover */
 .hdr-icon-btn {
   border-radius: 12px;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: none;
 }
 .hdr-icon-btn:hover {
   background: var(--glass-mid);
@@ -1606,7 +1587,7 @@
 
 /* ── 2. Nav-btn — flat, glow olib tashlandi ── */
 .nav-btn {
-  transition: background 0.15s ease;
+  transition: none;
 }
 .nav-btn:hover {
   background: var(--glass-mid);
@@ -1622,7 +1603,7 @@
 /* ── 4. Sheet handle — oddiy hover ── */
 .sheet-handle {
   cursor: grab;
-  transition: opacity 0.15s ease;
+  transition: none;
 }
 .sheet-handle:hover {
   opacity: 1;
@@ -1647,7 +1628,7 @@
 /* .btn-primary/.btn-ghost/.btn-danger spring-bounce o'chirildi —
    CSS/00-components.core.css flat hover'ni belgilaydi. */
 .cmt-send {
-  transition: opacity 0.15s ease;
+  transition: none;
 }
 
 /* ── 9. Avatar — flat ring, glow/scale olib tashlandi ── */
@@ -1663,7 +1644,7 @@
 
 /* ── 11. File card — flat hover, lift/scale olib tashlandi ── */
 .file-card {
-  transition: background 0.15s ease;
+  transition: none;
 }
 .file-card:hover {
   background: var(--glass-mid);
@@ -1671,11 +1652,11 @@
 
 /* ── 12. Toggle — flat, glow olib tashlandi ── */
 .toggle-track {
-  transition: background 0.15s ease;
+  transition: none;
 }
 .toggle-track::after {
   box-shadow: none;
-  transition: transform 0.15s ease;
+  transition: none;
 }
 .toggle input:checked + .toggle-track::after {
   box-shadow: none;
@@ -1683,7 +1664,7 @@
 
 /* ── 13. Comment body — flat, glow/translateX olib tashlandi ── */
 .cmt-body {
-  transition: background 0.15s ease;
+  transition: none;
 }
 .cmt-body:hover {
   background: var(--glass-mid);
@@ -1717,7 +1698,7 @@
 
 /* ── 18. Create button — pulse animatsiya butunlay o'chirildi (flat) ── */
 .nav-center-btn {
-  transition: background 0.15s ease;
+  transition: none;
 }
 /* .nav-center-btn::before pulse-glow pseudo-element olib tashlandi */
 .nav-center-btn:hover {

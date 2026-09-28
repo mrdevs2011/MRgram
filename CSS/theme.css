@@ -99,12 +99,7 @@ body,
 .cmt-avi,
 .rcap-avi,
 .avatar-crop-container {
-  transition:
-    background-color 0.35s ease,
-    background 0.35s ease,
-    border-color 0.35s ease,
-    color 0.35s ease,
-    box-shadow 0.35s ease;
+  transition: none;
 }
 
 .theme-transition-overlay {
@@ -114,7 +109,7 @@ body,
   z-index: 99999;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: none;
 }
 
 .theme-transition-overlay.active {
@@ -137,7 +132,7 @@ body,
   box-shadow: var(--specular-top);
   color: var(--text2);
   cursor: pointer;
-  transition: all 0.35s var(--ease-back);
+  transition: none;
   padding: 0;
   flex-shrink: 0;
 }
@@ -149,7 +144,7 @@ body,
 }
 
 .theme-btn:active {
-  transition: transform 0.08s ease;
+  transition: none;
 }
 
 .theme-btn svg {
@@ -184,7 +179,7 @@ body,
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.15s var(--ease);
+    transition: none;
     z-index: 200;
     box-shadow: var(--liquid-shadow-sm);
   }
@@ -213,7 +208,7 @@ body,
 .success-glow { box-shadow: 0 4px 16px var(--green-glow); }
 
 /* Card hover — liquid lift */
-.card-hover { transition: all 0.40s var(--ease-back); }
+.card-hover { transition: none; }
 .card-hover:hover {
   box-shadow: var(--liquid-shadow-lg);
 }
@@ -223,7 +218,7 @@ input, textarea {
   background: var(--glass);
   border: 0.5px solid var(--glass-border);
   color: var(--text);
-  transition: all 0.25s ease;
+  transition: none;
 }
 
 input:focus, textarea:focus {

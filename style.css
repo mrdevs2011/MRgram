@@ -17,6 +17,7 @@
 @import url('./CSS/borderless.css');
 @import url('./CSS/chat-dark-redesign.css');
 @import url('./CSS/00-components.core.css'); /* Yagona manba: btn/bot-nav/app-hdr/field/post — eski takrorlarni asta-sekin pastdagi AUDIT.md bo'yicha o'chiring */
+@import url('./CSS/no-animations.css'); /* eng oxirida — hamma animatsiya/transition/silliqlikni o'chiradi */
 
 /* ── Global Reset ── */
 *, *::before, *::after {
@@ -43,7 +44,7 @@
   --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 
   /* Transition shorthands */
-  --transition:  all 0.28s var(--ease);
+  --transition: none;
   --transition-spring: all 0.40s var(--ease-spring);
   --transition-fast:   all 0.12s ease;
 
@@ -63,7 +64,7 @@
 html {
   /* iOS 27 rubber-band overscroll — elastik, bloklash yo'q */
   overscroll-behavior-y: auto;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 /* ── Body — wallopaper ko'rinib tursin ── */
@@ -137,7 +138,7 @@ body {
 /* ── Global interactive tap feedback ── */
 button:active,
 [role="button"]:active {
-  transition: transform 0.08s ease;
+  transition: none;
 }
 
 /* ── iOS 27 Haptic Flash — visual touch confirmation ── */

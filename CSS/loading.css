@@ -26,7 +26,7 @@
   border: 2px solid #525257;
   border-top-color: #fff;
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  animation: none;
   top: 50%;
   left: 50%;
   margin-left: -10px;
@@ -45,7 +45,7 @@
   height: 3px;
   background: var(--bg4);
   border-radius: 2px;
-  transition: background 0.3s ease;
+  transition: none;
 }
 
 .strength-bar.weak { background: var(--red); }
@@ -164,10 +164,10 @@
   border-top-color: var(--blue);
   border-radius: 50%;
   margin: 0 auto;
-  animation: spin 0.7s linear infinite;
+  animation: none;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+
 
 /* ═══════════════════════
    SKELETON LOADING
@@ -179,13 +179,10 @@
   margin-bottom: 12px;
   overflow: hidden;
   padding: 14px;
-  animation: skelFadeIn 0.3s var(--ease);
+  animation: none;
 }
 
-@keyframes skelFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+
 
 .skel {
   background: var(--bg4);
@@ -200,13 +197,10 @@
   position: absolute;
   inset: 0;
   background: #212121;
-  animation: shimmer 0.9s infinite;
+  animation: none;
 }
 
-@keyframes shimmer {
-  from { transform: translateX(-100%); }
-  to   { transform: translateX(100%); }
-}
+
 
 .skel-avi  { width: 38px; height: 38px; border-radius: 50%; }
 .skel-line { height: 11px; }
@@ -223,7 +217,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
-  animation: skelFadeIn 0.25s var(--ease) both;
+  animation: none;
 }
 
 /* ═══════════════════════
@@ -244,7 +238,7 @@
   z-index: 9999;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.25s var(--ease);
+  transition: none;
   white-space: nowrap;
   pointer-events: none;
   box-shadow: 0 8px 32px #000000;
@@ -380,7 +374,7 @@
   padding: 24px;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.22s ease;
+  transition: none;
 }
 
 #pwdWarnOverlay.show {
@@ -408,7 +402,7 @@
     0 8px 40px #222222,
     0 2px 8px #000000;
   transform: scale(0.88) translateY(12px);
-  transition: transform 0.3s var(--ease-back);
+  transition: none;
   position: relative;
   overflow: hidden;
 }
@@ -473,7 +467,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  transition: none;
   font-family: inherit;
   letter-spacing: -0.1px;
 }

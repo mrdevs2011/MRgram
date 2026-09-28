@@ -508,7 +508,7 @@ export function scrollToPostFromHash() {
   const tryScroll = () => {
     const el = document.querySelector(`.post[data-id="${postId}"]`);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.scrollIntoView({ behavior: 'auto', block: 'center' });
       // Glow / flash effect
       el.classList.add('post-highlight');
       setTimeout(() => el.classList.remove('post-highlight'), 2200);

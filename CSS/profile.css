@@ -25,7 +25,7 @@
   color: var(--text3);
   border-bottom: 2px solid transparent;
   cursor: pointer;
-  transition: var(--transition);
+  transition: none;
 }
 
 .profile-grid-tab.active {
@@ -59,7 +59,7 @@
   position: relative;
   cursor: pointer;
   flex-shrink: 0;
-  transition: border-color 0.15s ease;
+  transition: none;
 }
 
 /* .profile-avi:hover border-color → --pg-* blok belgilaydi (pastda).
@@ -141,7 +141,7 @@
   border-radius: 12px;
   color: var(--text2);
   cursor: pointer;
-  transition: var(--transition);
+  transition: none;
 }
 
 .settings-icon-btn:hover {
@@ -195,7 +195,7 @@
   border: 1px solid var(--line2);
   position: relative;
   cursor: pointer;
-  transition: var(--transition);
+  transition: none;
 }
 
 .switch-toggle .switch-knob {
@@ -207,7 +207,7 @@
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0,0.35);
-  transition: transform 0.22s var(--ease-spring, ease);
+  transition: none;
 }
 
 .switch-toggle.on {
@@ -242,7 +242,7 @@
   border-radius: 8px;
   color: var(--text3);
   cursor: pointer;
-  transition: var(--transition);
+  transition: none;
 }
 
 .settings-more-btn:hover {
@@ -281,7 +281,7 @@
   font-weight: 500;
   color: var(--red);
   cursor: pointer;
-  transition: var(--transition);
+  transition: none;
 }
 
 .settings-more-menu-item:hover {
@@ -382,7 +382,7 @@
   justify-content: center;
   cursor: pointer;
   z-index: 351;
-  transition: var(--transition);
+  transition: none;
   color: #fff;
 }
 
@@ -522,12 +522,12 @@
   cursor: pointer;
   margin-bottom: 4px;
   padding: 0;
-  transition: border-color 0.2s, color 0.2s;
+  transition: none;
 }
 
 .up-follow-btn svg {
   display: block;
-  transition: transform 0.25s var(--ease-back);
+  transition: none;
 }
 
 .up-follow-btn.not-following {
@@ -593,7 +593,7 @@
   /* aspect-ratio/background/overflow/cursor/position/border-radius →
      ui-improvements.css:610 (.grid-cell,.up-grid-cell guruhida), o'lik.
      transition u yerda belgilanmagan — tirik */
-  transition: opacity 0.2s;
+  transition: none;
 }
 
 .up-grid-cell-overlay {
@@ -735,10 +735,10 @@
 
 
 /* Stagger animation for each stat */
-.stat:nth-child(1) .stat-val.animate { animation-delay: 0.1s; }
-.stat:nth-child(2) .stat-val.animate { animation-delay: 0.2s; }
-.stat:nth-child(3) .stat-val.animate { animation-delay: 0.3s; }
-.stat:nth-child(4) .stat-val.animate { animation-delay: 0.4s; }
+.stat:nth-child(1) .stat-val.animate { animation-delay: 0s; }
+.stat:nth-child(2) .stat-val.animate { animation-delay: 0s; }
+.stat:nth-child(3) .stat-val.animate { animation-delay: 0s; }
+.stat:nth-child(4) .stat-val.animate { animation-delay: 0s; }
 
 /* Avatar pulse-ring o'chirildi (flat X.com uslubi, 2026) */
 
@@ -761,7 +761,7 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: none;
 }
 
 .grid-cell-is-video:hover::after {
@@ -778,7 +778,7 @@
   font-size: 16px;
   z-index: 2;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: none;
 }
 
 .grid-cell-is-video:hover::before {
@@ -820,9 +820,9 @@
 
 
 
-.up-stat:nth-child(1) .up-stat-val.animate { animation-delay: 0.1s; }
-.up-stat:nth-child(2) .up-stat-val.animate { animation-delay: 0.2s; }
-.up-stat:nth-child(3) .up-stat-val.animate { animation-delay: 0.3s; }
+.up-stat:nth-child(1) .up-stat-val.animate { animation-delay: 0s; }
+.up-stat:nth-child(2) .up-stat-val.animate { animation-delay: 0s; }
+.up-stat:nth-child(3) .up-stat-val.animate { animation-delay: 0s; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    PROFILE PAGE — SOLID UI
@@ -882,7 +882,7 @@
   background: var(--pg-glass);
   border-radius: 14px;
   border: 0.5px solid var(--pg-border-side);
-  transition: background 0.15s ease;
+  transition: none;
   margin: 0 3px;
 }
 .stat:hover {
@@ -895,7 +895,7 @@
      yengiladi, o'lik */
   background: var(--pg-glass-mid);
   border-radius: 14px;
-  transition: background 0.15s ease;
+  transition: none;
 }
 .edit-btn:hover {
   background: var(--pg-glass-strong);
@@ -919,7 +919,7 @@
 
 /* Profile grid items — flat hover, scale olib tashlandi */
 .profile-grid-item {
-  transition: filter 0.15s ease;
+  transition: none;
 }
 .profile-grid-item:hover {
   z-index: 2;
@@ -951,7 +951,7 @@
   letter-spacing: 0.01em;
   cursor: pointer;
   z-index: 10;
-  transition: background 0.2s, transform 0.18s;
+  transition: none;
   white-space: nowrap;
   box-shadow: 0 4px 24px #000000;
 }
@@ -966,7 +966,7 @@
 
 /* up-avi hover ring — boshqa user profili */
 #upAviImg {
-  transition: box-shadow 0.25s, transform 0.25s;
+  transition: none;
 }
 #upAviImg:hover {
   box-shadow: 0 0 0 4px #393939, 0 6px 24px #000000;
@@ -1209,7 +1209,7 @@ a.profile-meta-link:hover { text-decoration: underline; }
   cursor: pointer;
   color: var(--text);
   flex-shrink: 0;
-  transition: var(--transition);
+  transition: none;
 }
 .settings-back:hover { background: var(--bg5); }
 
@@ -1242,7 +1242,7 @@ a.profile-meta-link:hover { text-decoration: underline; }
   cursor: pointer;
   text-align: left;
   font-family: var(--font);
-  transition: var(--transition);
+  transition: none;
   border-radius: 12px;
 }
 .settings-profile-card:hover { background: #161616; }
