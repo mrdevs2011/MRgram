@@ -327,6 +327,7 @@ let _usersCache     = null;
 let _latestChatMap  = {};
 let _watcherPromise = null;
 let _noticeUnsub    = null;   // adminNotice real-time listener
+let _loadNoticeFn   = null;   // 'chats-watcher' kanali admin_notice o'zgarganda shuni chaqiradi
 let _presenceRepaintTick = null; // onlayn nuqtalarni vaqt bo'yicha yangilab turadi
 let _latestNotice   = null;   // { text, target, createdAt } | null
 let _contactsUnsub  = null;   // contacts real-time listener
@@ -430,10 +431,9 @@ export function startChatsWatcher() {
         _latestNotice = data ? { text: data.text, target: data.target, createdAt: ts(data.created_at) } : null;
         if (state.view === 'chats') _repaintNoticeBanner();
       };
-      const nCh = sb.channel('chat-notice')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_notice' }, loadNotice)
-        .subscribe();
-      _noticeUnsub = () => { _nDead = true; sb.removeChannel(nCh); };
+      // admin_notice o'zgarishini 'chats-watcher' kanali tinglaydi (5.3: alohida kanal yo'q)
+      _noticeUnsub = () => { _nDead = true; };
+      _loadNoticeFn = loadNotice;
       loadNotice();
     }
 
@@ -461,6 +461,7 @@ export function startChatsWatcher() {
     };
     const schedChats = () => { clearTimeout(_chTimer); _chTimer = setTimeout(loadChats, 200); };
     const chCh = sb.channel('chats-watcher')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_notice' }, () => { _loadNoticeFn?.(); })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chats' }, schedChats)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_members', filter: `user_id=eq.${state.me.uid}` }, p => {
         // faqat typing/last_seen o'zgargan bo'lsa ro'yxatni qayta yuklamaymiz
@@ -488,6 +489,7 @@ export function stopChatsWatcher() {
   stopGroupsWatcher();
   if (_chatsUnsub) { _chatsUnsub(); _chatsUnsub = null; }
   if (_noticeUnsub) { _noticeUnsub(); _noticeUnsub = null; }
+  _loadNoticeFn = null;
   if (_contactsUnsub) { _contactsUnsub(); _contactsUnsub = null; }
   if (_presenceRepaintTick) { clearInterval(_presenceRepaintTick); _presenceRepaintTick = null; }
   _usersCache    = null;
