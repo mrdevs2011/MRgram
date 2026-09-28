@@ -1,0 +1,727 @@
+/* ═══════════════════════════════════════════
+   MRgram — Borderless / Minimal Override
+   Zamonaviy flat dizayn: border yo'q, shadow minimal
+   ═══════════════════════════════════════════ */
+
+/* ── CSS token override: border va shadow tokenlarini o'chiramiz ── */
+:root,
+[data-theme="dark"]{
+  --specular-top:    none;
+  --specular-edge:   none;
+
+  --liquid-shadow-sm: none;
+  --liquid-shadow-md: none;
+  --liquid-shadow-lg: none;
+
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+
+  --glass-border:      transparent;
+  --glass-border-top:  transparent;
+}
+
+/* ── Dark: line tokenlar ham yo'qolsin ── */
+[data-theme="dark"] {
+  --line:  #16181c;
+  --line2: transparent;
+  --line3: transparent;
+}
+
+/* ════════════════════════════════
+   GLOBAL — hamma border lar off
+   ════════════════════════════════ */
+
+/* Post kartochkalar */
+.post,
+[data-theme="dark"] .post{
+  border: none;
+  box-shadow: none;
+}
+
+.post:hover,
+[data-theme="dark"] .post:hover{
+  box-shadow: none;
+}
+
+/* Header — top bar */
+.app-hdr,
+[data-theme="dark"] .app-hdr{
+  border-bottom: none;
+  box-shadow: none;
+}
+
+/* Mobile: frosted glass blur */
+@media (max-width: 767px) {
+  .app-hdr,
+  [data-theme="dark"] .app-hdr{
+    background: rgba(16, 16, 16, 0.72);
+  }
+  }
+
+/* Desktop: shaffof qolsin */
+@media (min-width: 768px) {
+  .app-hdr,
+  [data-theme="dark"] .app-hdr{
+    background: transparent;
+  }
+}
+
+/* Header gradient line o'chirish */
+.app-hdr::after,
+[data-theme="dark"] .app-hdr::after {
+  display: none;
+}
+
+/* Bottom nav */
+.bot-nav,
+[data-theme="dark"] .bot-nav{
+  border-top: none;
+  border-right: none;
+  box-shadow: none;
+}
+
+/* Mobile: solid dark bar (was semi-transparent frosted glass — looked washed-out over content) */
+@media (max-width: 767px) {
+  [data-theme="dark"] .bot-nav {
+    background: #000000;
+  }
+  }
+
+/* Desktop: shaffof qolsin */
+@media (min-width: 768px) {
+  .bot-nav,
+  [data-theme="dark"] .bot-nav{
+    background: transparent;
+  }
+}
+
+/* Desktop sidebar ::before gradient line o'chirish */
+@media (min-width: 768px) {
+  .bot-nav::before {
+    display: none;
+    background: none;
+  }
+}
+
+/* Nav buttons */
+.nav-btn,
+[data-theme="dark"] .nav-btn:hover,
+[data-theme="dark"] .nav-btn.on{
+  border: none;
+  box-shadow: none;
+}
+
+/* Sheet (bottom panel) */
+.sheet,
+[data-theme="dark"] .sheet{
+  border-top: none;
+  box-shadow: none;
+}
+
+/* Modal */
+.modal-content,
+[data-theme="dark"] .modal-content{
+  border: none;
+  box-shadow: none;
+}
+
+/* Glass components */
+.glass,
+.glass-heavy {
+  border: none;
+  box-shadow: none;
+}
+
+/* Theme button */
+.theme-btn,
+[data-theme="dark"] .theme-btn:hover{
+  border: none;
+  box-shadow: none;
+}
+
+/* Auth card */
+.auth-card,
+[data-theme="dark"] .auth-card{
+  border: none;
+  box-shadow: none;
+}
+
+/* Avatar (avi) */
+.avi,
+[data-theme="dark"] .avi{
+  border: none;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .avi:hover{
+  box-shadow: none;
+}
+
+/* Profile avatar */
+.profile-avi,
+[data-theme="dark"] .profile-avi{
+  border: none;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .profile-avi:hover{
+  box-shadow: none;
+}
+
+/* Edit button */
+.edit-btn,
+[data-theme="dark"] .edit-btn{
+  border: none;
+  box-shadow: none;
+}
+
+/* Profile header */
+.profile-hdr,
+[data-theme="dark"] .profile-hdr {
+  border-bottom: none;
+}
+
+/* Profile grid */
+[data-theme="dark"] .grid-cell{
+  border: none;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .grid-cell:hover {
+  box-shadow: none;
+}
+
+/* Profile stats box */
+.up-stat-box,
+[data-theme="dark"] .up-stat-box {
+  border: none;
+  box-shadow: none;
+}
+.up-stat { border-right: none; }
+
+/* Profile grid header */
+.profile-grid-hdr,
+[data-theme="dark"] .profile-grid-hdr {
+  border-color: transparent;
+}
+
+/* Post stats separator */
+.post-stats,
+[data-theme="dark"] .post-stats {
+  border-top: none;
+  border-bottom: none;
+}
+
+/* Post action buttons */
+.act-btn,
+[data-theme="dark"] .act-btn {
+  border-right: none;
+}
+
+/* Post head separator */
+.post-head,
+[data-theme="dark"] .post-head {
+  border-bottom: none;
+}
+
+/* Input fields */
+.field,
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+[data-theme="dark"] .field,
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="dark"] textarea{
+  border: none;
+  box-shadow: none;
+}
+
+.field:focus,
+input:focus,
+textarea:focus,
+[data-theme="dark"] .field:focus,
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus{
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+/* Chat input */
+.chat-input-bar,
+[data-theme="dark"] .chat-input-bar {
+  border-top: none;
+  box-shadow: none;
+}
+
+.chat-input-wrap,
+[data-theme="dark"] .chat-input-wrap,
+[data-theme="dark"] .chat-input-wrap:focus-within {
+  border: none;
+  box-shadow: none;
+}
+
+/* Chat list rows */
+.chat-row,
+[data-theme="dark"] .chat-thread {
+  border-bottom: 1px solid var(--line);
+}
+
+/* Chat thread header separator */
+.chat-thread-hdr,
+[data-theme="dark"] .chat-thread-hdr {
+  border-bottom: none;
+}
+
+/* Message bubbles */
+[data-theme="dark"] .msg-in .msg-bubble {
+  border: none;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .msg-out .msg-bubble {
+  box-shadow: none;
+}
+
+/* File card */
+.file-card,
+[data-theme="dark"] .file-card{
+  border: none;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .file-card:hover {
+  box-shadow: none;
+}
+
+.file-dl,
+[data-theme="dark"] .file-dl,
+[data-theme="dark"] .file-dl:hover {
+  border: none;
+}
+
+/* Toast */
+#toast,
+[data-theme="dark"] #toast {
+  border: none;
+  box-shadow: none;
+}
+
+/* Badges */
+.badge-pub,
+.badge-priv,
+[data-theme="dark"] .badge-pub,
+[data-theme="dark"] .badge-priv {
+  border: none;
+  box-shadow: none;
+}
+
+/* Buttons */
+.btn-primary,
+.btn-primary:hover {
+  box-shadow: none;
+}
+
+.btn-danger,
+.btn-danger:hover {
+  box-shadow: none;
+}
+
+/* Sidebar */
+.sb-wrap,
+[data-theme="dark"] .sb-wrap {
+  border-right: none;
+}
+
+/* Search overlay */
+.search-overlay-box,
+[data-theme="dark"] .search-overlay-box {
+  border: none;
+  box-shadow: none;
+}
+
+.search-overlay-close,
+[data-theme="dark"] .search-overlay-close {
+  border: none;
+  box-shadow: none;
+}
+
+/* Upload float bar */
+.upload-float-bar,
+[data-theme="dark"] .upload-float-bar {
+  border: none;
+  box-shadow: none;
+}
+
+/* Visibility row */
+.visibility-row,
+[data-theme="dark"] .visibility-row,
+[data-theme="dark"] .visibility-row.is-public {
+  border: none;
+}
+
+/* Upload drop zone — border/hover feedback owned by nav.css, no override here */
+
+/* Empty state icons */
+.feed-empty-icon,
+.empty-icon,
+.empty-search-icon,
+[data-theme="dark"] .feed-empty-icon,
+[data-theme="dark"] .empty-icon,
+[data-theme="dark"] .empty-search-icon {
+  border: none;
+  box-shadow: none;
+}
+
+/* Comments */
+.cmt-body,
+[data-theme="dark"] .cmt-body,
+[data-theme="dark"] .cmt-body:hover {
+  border: none;
+  box-shadow: none;
+}
+
+.cmt-input,
+[data-theme="dark"] .cmt-input,
+[data-theme="dark"] .cmt-input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.cmt-input-row,
+[data-theme="dark"] .cmt-input-row {
+  border-top: none;
+}
+
+/* Onboarding / Admin / Verify cards */
+.onb-card,
+.admin-card,
+.verify-card,
+[data-theme="dark"] .onb-card,
+[data-theme="dark"] .admin-card,
+[data-theme="dark"] .verify-card {
+  border: none;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .admin-card:hover {
+  box-shadow: none;
+}
+
+/* Detail modal */
+#detailContent,
+[data-theme="dark"] #detailContent {
+  border: none;
+  box-shadow: none;
+}
+
+.dm-close,
+[data-theme="dark"] .dm-close {
+  border: none;
+}
+
+/* Skeleton */
+.skeleton-post,
+[data-theme="dark"] .skeleton-post {
+  border: none;
+}
+
+/* Reel */
+.reel-avi,
+[data-theme="dark"] .reel-avi {
+  border: none;
+  box-shadow: none;
+}
+
+.reel-top-btn,
+.reel-vol-top,
+[data-theme="dark"] .reel-top-btn,
+[data-theme="dark"] .reel-vol-top {
+  border: none;
+}
+
+/* Offline indicator */
+#offlineIndicator {
+  border: none;
+  box-shadow: none;
+}
+
+/* Cached badge */
+.cached-badge {
+  border: none;
+  box-shadow: none;
+}
+
+/* Card hover — shadow olib tashlash */
+.card-hover:hover {
+  box-shadow: none;
+}
+
+/* Sidebar desktop — chegarasiz */
+@media (min-width: 768px) {
+  .bot-nav {
+    border-right: none;
+    border-top: none;
+  }
+}
+
+/* Nav ring/glow animatsiyalari — shadow yo'q */
+.nav-btn:hover,
+.nav-btn.on {
+  box-shadow: none;
+}
+
+/* Feed buttons */
+/* Story/reel ring */
+.story-ring,
+.reel-ring {
+  box-shadow: none;
+}
+
+/* Profile cover-photo separator */
+.profile-cover {
+  border-bottom: none;
+}
+
+/* Splash bar */
+[data-theme="dark"] .splash-bar {
+  border: none;
+}
+
+[data-theme="dark"] .splash-fill {
+  box-shadow: none;
+}
+
+/* Offline indicator pulse dot */
+#offlineIndicator::before {
+  box-shadow: none;
+}
+
+/* Groups */
+.group-card,
+.group-hdr {
+  border: none;
+  box-shadow: none;
+}
+
+/* Admin */
+[data-theme="dark"] .admin-card {
+  border: none;
+}
+
+/* ════════════════════════════════════════════
+   LIGHT THEME — Xatolarni tuzatish
+   ════════════════════════════════════════════ */
+
+/* 1. act-btn hover — dark background light temada */
+.act-btn:hover {
+  background: var(--bg3);
+  color: var(--text);
+}
+
+/* 3. Sidebar nav-btn aktiv holat — dark styled light temada */
+
+/* Desktop sidebar nav-btn */
+@media (min-width: 768px) {
+  
+  }
+
+/* 4. Visibility buttons (Private/Public) — light temada dark styled */
+
+/* 5. Input focus — light temada dark border/outline chiqib qolishi */
+
+/* 6. nav-center-btn (+ tugma) — light temada shadow o'chish */
+
+/* 7. Sidebar top/bottom border — light temada */
+
+/* 8. Sheet handle — light temada */
+
+/* ════════════════════════════════════════════
+   CHAT — Audio xabar (voice message) tuzatish
+   ════════════════════════════════════════════ */
+
+/* Incoming (theirs) — play button light temada ko'rinsin */
+
+/* Incoming waveform bars — light temada ko'rinsin */
+
+/* Incoming duration text */
+
+/* Dark theme — incoming play button kontrast yaxshilash */
+[data-theme="dark"] .chat-msg.theirs .cvm-play {
+  background: var(--bg4);
+  color: var(--text);
+}
+
+[data-theme="dark"] .chat-msg.theirs .cvm-bar {
+  background: var(--text3);
+}
+
+/* ════════════════════════════════════════════
+   THEME BUTTON — sidebar pastida border o'chish
+   ════════════════════════════════════════════ */
+.theme-btn {
+  border: none;
+  box-shadow: none;
+  outline: none;
+}
+
+/* ════════════════════════════════════════════
+   AVATAR — light temada placeholder background
+   ════════════════════════════════════════════ */
+
+/* avi base — shadow olib tashlash */
+.avi {
+  box-shadow: none;
+  border: none;
+}
+
+.avi:hover {
+  box-shadow: none;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LIGHT THEME — GLOBAL DARK COLOR OVERRIDE
+   Barcha hard-coded dark hex larni light theme uchun tuzatish
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── CHAT THREAD ── */
+
+/* Incoming bubble */
+
+/* Chat input area */
+
+/* Chat list row hover */
+
+/* Chat header */
+
+/* Chat back button */
+
+/* Reply preview */
+
+/* File preview bar */
+
+/* File message */
+
+/* Voice message bubble */
+
+/* Call modal */
+
+/* Chat photo viewer */
+
+/* ── FEED ── */
+/* Header search/mute hover */
+
+/* Follow/like buttons */
+
+/* Comment body */
+
+/* Reel overlays */
+
+/* Post gradient overlay (media) */
+
+/* ── PROFILE ── */
+
+/* Profile cover gradient */
+
+/* Stats edit box */
+
+/* Profile grid cell */
+
+/* Profile actions bar */
+
+/* Profile tab header */
+
+/* Avatar cover bg (cover-crop) */
+
+/* ── NAV / SIDEBAR ── */
+/* Notification badge */
+
+/* Sidebar */
+
+/* Search overlay */
+
+/* Sheet */
+
+/* Modal */
+
+/* Upload drop zone */
+
+/* Upload float bar */
+
+/* Toast */
+
+/* Skeleton shimmer */
+
+/* File card */
+
+/* Empty state icons */
+
+/* Dm-close button */
+
+/* del-btn hover */
+
+/* cmt-del hover */
+
+/* Groups */
+
+/* Sidebar items active */
+
+/* hdr-icon-btn hover */
+
+/* nav-btn.on — active sidebar item */
+
+/* Post background */
+
+/* Reels dark gradient — light temada oq */
+
+/* ══════════════════════════════════════════
+   BARCHA BARLAR — TRANSPARENT (SEAMLESS)
+   Top bar, bottom bar, left bar, chat hdr,
+   profile hdr — hammasi body bg bilan bir xil
+   ══════════════════════════════════════════ */
+
+/* Chat thread header */
+.chat-thread-hdr,
+[data-theme="dark"] .chat-thread-hdr {
+  background: transparent;
+  border-bottom: none;
+  box-shadow: none;
+}
+.chat-thread-hdr::after,
+[data-theme="dark"] .chat-thread-hdr::after {
+  display: none;
+}
+
+/* Chat input row */
+.chat-thread-input-row,
+[data-theme="dark"] .chat-thread-input-row {
+  background: transparent;
+  box-shadow: none;
+  border-top: none;
+}
+
+/* Profile header */
+.profile-hdr,
+[data-theme="dark"] .profile-hdr {
+  background: transparent;
+  border-bottom: none;
+}
+.profile-hdr::before,
+[data-theme="dark"] .profile-hdr::before {
+  display: none;
+}
+
+/* Profile grid tab bar */
+.profile-grid-hdr,
+[data-theme="dark"] .profile-grid-hdr {
+  background: transparent;
+  border-top: none;
+  border-bottom: none;
+}
+
+/* Chats list view header */
+.chats-hdr {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}

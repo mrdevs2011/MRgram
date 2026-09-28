@@ -1,0 +1,158 @@
+/* ═══════════════════════════════════════════
+   MRgram — Monochrome (qora + oq) override
+   Eng OXIRIDA yuklanadi. Fon har doim #000000, accent = oq
+   (oq fonli elementlarda matn qora). Qizil/yashil faqat
+   semantik holatlar uchun (xato, onlayn) qoldirilgan.
+   ═══════════════════════════════════════════ */
+:root,
+[data-theme="dark"] {
+  --bg:  #000000;
+  --bg2: #000000;
+  --bg3: #000000;
+  --bg4: #16181c;
+  --bg5: #202327;
+
+  --blue:  #ffffff;
+  --blue2: #e7e9ea;
+  --blue3: #d0d0d0;
+  --blue-glow:  #16181c;
+  --blue-glow2: #16181c;
+  --blue-glow3: #0d0d0d;
+
+  --tg-bg:      #000000;
+  --tg-surface: #000000;
+  --tg-input:   #16181c;
+  --tg-blue:    #ffffff;
+  --tg-out:     #2f3336;
+  --tg-in:      #16181c;
+  --tg-text-muted:   #71767b;
+  --tg-primary-blue: #ffffff;
+  --tg-text-main:    #ffffff;
+}
+
+html, body, #app { background: #000000; }
+meta[name="theme-color"] { color: #000000; }
+
+/* ── Oq (accent) fonli elementlarda matn/ikonka qora ── */
+.btn-primary,
+.btn-primary * { color: #000 !important; }
+.btn-primary:hover,
+.btn-primary:hover * { color: #000 !important; }
+.ua-avi-placeholder,
+.ua-avi-placeholder * { color: #000 !important; }
+.ua-approve-btn,
+.ua-approve-btn * { color: #000 !important; }
+.ua-unlock-banner-btn,
+.ua-unlock-banner-btn * { color: #000 !important; }
+.ua-detail-tab.active,
+.ua-detail-tab.active * { color: #000 !important; }
+#chatThreadModal .chat-msg.theirs .cvm-bar.played,
+#chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: #000 !important; }
+.chat-row-badge,
+.chat-row-badge * { color: #000 !important; }
+.chat-thread-send,
+.chat-thread-send * { color: #000 !important; }
+.chat-thread-send:hover,
+.chat-thread-send:hover * { color: #000 !important; }
+.cv-pulse,
+.cv-pulse * { color: #000 !important; }
+.chat-voice-btn,
+.chat-voice-btn * { color: #000 !important; }
+.crb-line,
+.crb-line * { color: #000 !important; }
+.typing-dots span,
+.typing-dots span * { color: #000 !important; }
+.chat-voice-btn.recording,
+.chat-voice-btn.recording * { color: #000 !important; }
+.typing-dot,
+.typing-dot * { color: #000 !important; }
+#chatScrollDownBtn,
+#chatScrollDownBtn * { color: #000 !important; }
+.chat-msg.theirs .cvm-play,
+.chat-msg.theirs .cvm-play * { color: #000 !important; }
+.chat-msg.theirs .cvm-play:hover,
+.chat-msg.theirs .cvm-play:hover * { color: #000 !important; }
+.chat-msg.theirs .cvm-bar.played,
+.chat-msg.theirs .cvm-bar.played * { color: #000 !important; }
+.vmp-play,
+.vmp-play * { color: #000 !important; }
+.vmp-progress-fill,
+.vmp-progress-fill * { color: #000 !important; }
+[data-theme="dark"] .msg-out .msg-bubble,
+[data-theme="dark"] .msg-out .msg-bubble * { color: #000 !important; }
+[data-theme="dark"] .splash-fill,
+[data-theme="dark"] .splash-fill * { color: #000 !important; }
+[data-theme="dark"] .reel-progress-fill,
+[data-theme="dark"] .reel-progress-fill * { color: #000 !important; }
+.reel-progress-fill,
+.reel-progress-fill * { color: #000 !important; }
+.rcap-follow,
+.rcap-follow * { color: #000 !important; }
+.ufb-icon,
+.ufb-icon * { color: #000 !important; }
+.ufb-fill,
+.ufb-fill * { color: #000 !important; }
+.feed-empty-cta,
+.feed-empty-cta * { color: #000 !important; }
+.grp-avi-badge--group,
+.grp-avi-badge--group * { color: #000 !important; }
+.grp-avi-badge--channel,
+.grp-avi-badge--channel * { color: #000 !important; }
+.chat-row-grp-badge--group,
+.chat-row-grp-badge--group * { color: #000 !important; }
+.chat-row-grp-badge--channel,
+.chat-row-grp-badge--channel * { color: #000 !important; }
+.grp-picker-check.on,
+.grp-picker-check.on * { color: #000 !important; }
+.grp-privacy-opt.active,
+.grp-privacy-opt.active * { color: #000 !important; }
+.nav-center-btn,
+.nav-center-btn * { color: #000 !important; }
+.upload-progress-fill,
+.upload-progress-fill * { color: #000 !important; }
+.toggle input:checked + .toggle-track,
+.toggle input:checked + .toggle-track * { color: #000 !important; }
+.cmt-send,
+.cmt-send * { color: #000 !important; }
+.switch-toggle.on,
+.switch-toggle.on * { color: #000 !important; }
+.avi-edit-badge,
+.avi-edit-badge * { color: #000 !important; }
+::selection { color: #000 !important; }
+.nav-btn.on::before { color: #000 !important; }
+.empty-cta,
+.empty-cta * { color: #000 !important; }
+.avatar-crop-save,
+.avatar-crop-save * { color: #000 !important; }
+.upload-file-icon.image,
+.upload-file-icon.image * { color: #000 !important; }
+.toast-progress,
+.toast-progress * { color: #000 !important; }
+.scroll-progress-bar,
+.scroll-progress-bar * { color: #000 !important; }
+.nav-badge,
+.nav-badge * { color: #000 !important; }
+.upload-float-bar,
+.upload-float-bar * { color: #000 !important; }
+.ufb-fill.indeterminate,
+.ufb-fill.indeterminate * { color: #000 !important; }
+.scroll-progress,
+.scroll-progress * { color: #000 !important; }
+
+/* ── Toggle/switch: oq trek ustida tugma qora ── */
+.toggle input:checked + .toggle-track::after,
+.switch-toggle.on .switch-knob { background: #000 !important; box-shadow: none; }
+.cc-btn--apply,
+.cc-btn--apply * { color: #000 !important; }
+.bc-send-btn,
+.bc-send-btn * { color: #000 !important; }
+
+/* ── Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan ── */
+[data-theme="dark"] .post,
+.post { background: #000000; border-bottom: 1px solid #16181c; }
+
+/* ── Logo hech qaysi konteyner ichida qirqilmasin (bubble dumchasi ko'rinib tursin) ── */
+.splash-inner, .splash-logo-wrap, .splash-logo-glass,
+.auth-logo, .auth-logo-glass, .hdr-logo, .hdr-logo-glass,
+.sb-logo-row, .sb-logo-glass { overflow: visible !important; }
+.splash-svg, .auth-logo-glass img, .hdr-logo-glass img, .sb-logo-img { border-radius: 0 !important; }
