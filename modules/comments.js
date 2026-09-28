@@ -1,5 +1,5 @@
 import { sb, state, isAdmin, getMediaUrl, mapProfile } from './config.js';
-import { $, esc, renderMarkdown, defAvi, fmtCount }          from './utils.js';
+import { $, esc, renderMarkdown, defAvi, fmtCount, fmt }     from './utils.js';
 import { toast }                   from './toast.js';
 
 /* ── Duplicate load oldini olish ──────────────────────────────────────── */
@@ -8,6 +8,11 @@ let _mode = null; // 'inline' | 'rail'
 
 function isDesktopCmt() {
   return window.matchMedia('(min-width: 1200px)').matches;
+}
+
+/* Yuborish tugmasi: matn bo'sh bo'lsa o'chiq (X kabi 50%) */
+function syncSend(inp, btn) {
+  if (btn) btn.disabled = !inp?.value?.trim();
 }
 
 /* ── Shared: skeleton HTML ────────────────────────────────────────────── */
@@ -52,9 +57,7 @@ function ensureRailCmt() {
         <div class="cmt-my-avi" id="rrCmtMyAvi"></div>
         <input class="cmt-input" id="rrCmtInput" placeholder="Izoh qoldirish..." maxlength="300">
         <span class="cmt-char-count" id="rrCmtCharCount">300</span>
-        <button class="cmt-send" id="rrCmtSend" type="button">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
+        <button class="cmt-send" id="rrCmtSend" type="button" disabled>Yuborish</button>
       </div>
       <div class="rr-cmt-list cmt-modal-list" id="rrCmtList"></div>
     `;
@@ -63,6 +66,7 @@ function ensureRailCmt() {
     $('rrCmtBack')?.addEventListener('click', closeRailCmt);
     $('rrCmtSend')?.addEventListener('click', () => sendComment('rail'));
     $('rrCmtInput')?.addEventListener('input', () => {
+      syncSend($('rrCmtInput'), $('rrCmtSend'));
       const len = $('rrCmtInput').value.length;
       const cnt = $('rrCmtCharCount');
       if (!cnt) return;
@@ -149,9 +153,7 @@ async function openInlineCmt(postId) {
       <div class="cmt-my-avi" id="inlineCmtMyAvi"></div>
       <input class="cmt-input" id="inlineCmtInput" placeholder="Izoh qoldirish..." maxlength="300">
       <span class="cmt-char-count" id="inlineCmtCharCount">300</span>
-      <button class="cmt-send" id="inlineCmtSend" type="button">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </button>
+      <button class="cmt-send" id="inlineCmtSend" type="button" disabled>Yuborish</button>
     </div>
     <div class="post-cmt-list" id="inlineCmtList">${skelHtml()}</div>
   `;
@@ -168,6 +170,7 @@ async function openInlineCmt(postId) {
 
   $('inlineCmtSend')?.addEventListener('click', () => sendComment('inline'));
   $('inlineCmtInput')?.addEventListener('input', () => {
+    syncSend($('inlineCmtInput'), $('inlineCmtSend'));
     const len = $('inlineCmtInput').value.length;
     const cnt = $('inlineCmtCharCount');
     if (!cnt) return;
@@ -215,6 +218,7 @@ async function openRailCmt(postId) {
     $('rrCmtCharCount').textContent = '300';
     $('rrCmtCharCount').className = 'cmt-char-count';
   }
+  syncSend(inp, $('rrCmtSend'));
 
   fillMyAvi('rrCmtMyAvi');
   setTimeout(() => inp?.focus(), 50);
@@ -270,7 +274,7 @@ async function loadComments(postId, listId) {
         <img src="${aMap[c.userId]}" onerror="this.style.display='none'">
       </div>
       <div class="cmt-body">
-        <div class="cmt-name">${esc(c.userName)}</div>
+        <div class="cmt-head"><span class="cmt-name">${esc(c.userName)}</span><span class="cmt-time">· ${fmt(c.createdAt)}</span></div>
         <div class="cmt-text">${renderMarkdown(c.text)}</div>
       </div>
       ${(state.me?.uid === c.userId || isAdmin())
@@ -381,7 +385,7 @@ async function sendComment(mode) {
     console.error('❌ Comment send failed:', e);
     toast('Izohni yuborib bo\'lmadi', 'error');
   } finally {
-    if (sendBtn) sendBtn.disabled = false;
+    if (sendBtn) sendBtn.disabled = !inp?.value?.trim();
   }
 }
 
