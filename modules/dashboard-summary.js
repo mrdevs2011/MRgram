@@ -55,7 +55,7 @@ function _render(containerId) {
 
   section.innerHTML = `
     <div class="dash-bar${loading ? ' dash-card-loading' : ''}">
-      ${cards.map(c => `<span class="dash-item${c.cls ? ' dash-item--' + c.cls : ''}">${c.label.toLowerCase().replace(/ /g, '_')}=<b>${loading ? '…' : c.value}</b></span>`).join('')}
+      ${cards.map(c => `<span class="dash-item${c.cls ? ' dash-item--' + c.cls : ''}">${c.label}: <b>${loading ? '…' : c.value}</b></span>`).join('')}
     </div>
   `;
 }

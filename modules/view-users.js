@@ -358,20 +358,10 @@ function _ensurePasswordModal() {
       await verifyPassword(_email, pwd);
       _unlocked = true;
       close();
-      if (_pendingOpenUid) {
-        const _uid = _pendingOpenUid;
-        const _name = _pendingOpenName;
-        _pendingOpenUid = null;
-        _pendingOpenName = null;
-        _renderList();
-        _loadExtraStats();
-        _ensureDetailModal();
-        _openDetailModal(_uid, _name);
-      } else {
-        _renderList();
-        _loadExtraStats();
-        toast("Ma'lumotlar ochildi", 'success');
-      }
+      _pendingOpenUid = null;
+      _pendingOpenName = null;
+      _renderList();
+      toast("Panel ochildi", 'success');
     } catch (err) {
       errEl.textContent = (err.code === 'wrong-password')
         ? "Parol noto'g'ri"
@@ -845,13 +835,12 @@ function _render(wrap, users) {
       <div class="ua-info">
         <span class="ua-name">${_esc(name)}</span>
         ${uname ? `<span class="ua-uname">${_esc(uname)}</span>` : ''}
-        <span class="ua-date">${created}${blockedUntil ? ' · blok tugashi: ' + blockedUntil : ''}</span>
+        ${blockedUntil ? `<span class="ua-date">blok tugashi: ${blockedUntil}</span>` : ''}
       </div>
       <div class="ua-status">${_statusBadge(u)}</div>
       <div class="ua-actions">
         ${_approveBtn(u)}
         ${_rejectBtn(u)}
-        <button class="ua-history-btn" data-uid="${uid}" data-name="${_esc(name)}">Ma'lumot</button>
         <button class="${blockBtnClass}" data-uid="${uid}" data-name="${_esc(name)}" data-blocked="${isBlocked}" data-blocked-until-ms="${blockedUntilMs}">${blockBtnLabel}</button>
         <button class="ua-delete-btn" data-uid="${uid}" data-name="${_esc(name)}">O'chirish</button>
       </div>
@@ -892,15 +881,6 @@ function _render(wrap, users) {
     const untilMs = Number(btn.dataset.blockedUntilMs);
     if (!untilMs || untilMs <= 0) return;
     _startAdminBlockCountdown(btn, uid, untilMs);
-  });
-
-  /* To'liq tarix */
-  wrap.querySelectorAll('.ua-history-btn').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      _ensureDetailModal();
-      _openDetailModal(btn.dataset.uid, btn.dataset.name);
-    });
   });
 
   /* Delete */
