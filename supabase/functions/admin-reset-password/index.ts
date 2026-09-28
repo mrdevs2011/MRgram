@@ -1,5 +1,4 @@
 // DIET F2 — Admin parol reset Edge Function.
-// Deploy: supabase functions deploy admin-reset-password
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const CORS = {
@@ -17,18 +16,21 @@ Deno.serve(async (req) => {
   }
 
   const authHeader = req.headers.get('Authorization') || '';
-  const userToken = authHeader.replace(/^Bearer\s+/i, '');
+  const userToken = authHeader.replace(/^Bearer\s+/i, '').trim();
   if (!userToken) return json({ error: 'Missing Authorization header' }, 401);
 
   const url = Deno.env.get('SUPABASE_URL')!;
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
+  // JWT ni to'g'ridan-to'g'ri getUser(jwt) ga beramiz — header orqali emas
   const userClient = createClient(url, anonKey, {
-    global: { headers: { Authorization: req.headers.get('Authorization')! } },
+    auth: { persistSession: false, autoRefreshToken: false },
   });
-  const { data: userData, error: userErr } = await userClient.auth.getUser();
-  if (userErr || !userData.user) return json({ error: 'Invalid session' }, 401);
+  const { data: userData, error: userErr } = await userClient.auth.getUser(userToken);
+  if (userErr || !userData?.user) {
+    return json({ error: 'Invalid session', detail: userErr?.message || null }, 401);
+  }
 
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
   const { data: callerProfile } = await admin
@@ -38,7 +40,11 @@ Deno.serve(async (req) => {
     .single();
   if (!callerProfile?.is_admin) return json({ error: 'Not an admin' }, 403);
 
-  const { uid, password } = await req.json();
+  let body: { uid?: string; password?: string } = {};
+  try { body = await req.json(); } catch {
+    return json({ error: 'Invalid JSON body' }, 400);
+  }
+  const { uid, password } = body;
   if (!uid || !password || String(password).length < 8) {
     return json({ error: 'uid and password (min 8 chars) required' }, 400);
   }

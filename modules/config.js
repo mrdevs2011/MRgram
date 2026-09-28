@@ -185,11 +185,18 @@ export const state = {
   _likeStatusCache: {},   // postId -> boolean (liked/unliked)
 };
 
-/** Parolni tekshirish — asosiy sessiyaga tegmaydi (alohida vaqtinchalik client) */
+/** Parolni tekshirish — asosiy sessiyaga tegmaydi (bitta vaqtinchalik client) */
+let _verifyClient = null;
+function _getVerifyClient() {
+  if (!_verifyClient) {
+    _verifyClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'mrspace-verify' },
+    });
+  }
+  return _verifyClient;
+}
 export async function verifyPassword(email, password) {
-  const tmp = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'mrspace-verify' },
-  });
+  const tmp = _getVerifyClient();
   const { error } = await tmp.auth.signInWithPassword({ email, password });
   if (error) {
     const e = new Error(error.message);

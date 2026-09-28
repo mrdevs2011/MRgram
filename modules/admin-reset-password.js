@@ -13,7 +13,7 @@
  */
 import { sb, state } from './config.js';
 import { toast } from './toast.js';
-import { SUPABASE_URL } from './env.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env.js';
 import { esc } from './utils.js';
 
 /* O'qib bo'ladigan vaqtinchalik parol (0/O/1/l/I harflari yo'q) */
@@ -37,12 +37,21 @@ export async function adminResetPassword(uid, displayName) {
 
   const tempPwd = genTempPassword();
   try {
-    const token = await sb.auth.getSession().then(r => r.data.session?.access_token);
+    // Token yangilanishi (muddati o'tgan bo'lishi mumkin)
+    const { data: sessData, error: sessErr } = await sb.auth.getSession();
+    let token = sessData?.session?.access_token;
+    if (!token || sessErr) {
+      const { data: ref } = await sb.auth.refreshSession();
+      token = ref?.session?.access_token;
+    }
+    if (!token) throw new Error('Sessiya topilmadi — qayta kiring');
+
     const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-reset-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
+        'apikey': SUPABASE_ANON_KEY,
       },
       body: JSON.stringify({ uid, password: tempPwd }),
     });
