@@ -11486,15 +11486,14 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
   display: flex; justify-content: space-between; align-items: center;
   max-width: 425px; margin: 6px 0 0 -8px;
 }
-.act-btn,
-.act-views {
+.act-btn {
   flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px;
   padding: 6px 8px; border: none; border-radius: 999px; background: none;
   font-family: var(--font); font-size: 13px; color: var(--text3);
   overflow: visible;
 }
-.act-btn svg, .act-views svg { width: 18px; height: 18px; }
-.act-btn span:empty, .act-views span:empty { display: none; }
+.act-btn svg { width: 18px; height: 18px; }
+.act-btn span:empty { display: none; }
 .act-btn:hover { background: none; color: var(--link); }
 .like-btn:hover { color: var(--red); }
 .act-btn.liked { color: var(--red); }
@@ -11601,9 +11600,9 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 .post:hover,
 [data-theme] .post:hover { background: var(--hover); border-color: var(--line); }
 
-.act-btn svg, .act-views svg { border-radius: 0; }
-.act-btn:hover, .act-views:hover { background: none; color: var(--x-blue); }
-.act-btn:hover svg, .act-views:hover svg {
+.act-btn svg { border-radius: 0; }
+.act-btn:hover { background: none; color: var(--x-blue); }
+.act-btn:hover svg {
   background: none; box-shadow: none;
 }
 .like-btn:hover,
@@ -11813,10 +11812,8 @@ nav.bot-nav #createBtn.nav-center-btn *,
 
 /* tugmalar orasidagi ajratgich chiziqlar va eski hover fon (dark-theme-fix.css) */
 [data-theme] .act-btn { border: none; gap: 10px; }
-[data-theme] .act-btn:hover,
-[data-theme] .act-views:hover { background: none; color: var(--x-blue); }
-[data-theme] .act-btn:hover svg,
-[data-theme] .act-views:hover svg {
+[data-theme] .act-btn:hover { background: none; color: var(--x-blue); }
+[data-theme] .act-btn:hover svg {
   background: none; box-shadow: none;
 }
 [data-theme] .like-btn:hover,
