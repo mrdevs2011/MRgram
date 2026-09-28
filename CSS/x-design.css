@@ -365,6 +365,8 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 .post-main { flex: 1; min-width: 0; }
 
 .post-head { padding: 0; gap: 8px; display: flex; align-items: center; }
+/* Caption yo'q postda media avatar ustiga chiqib ketmasin: header avatar balandligicha bo'ladi */
+.post-head:has(+ .post-media) { min-height: var(--post-avi); }
 .post-meta {
   flex: 1; min-width: 0; display: flex; align-items: baseline; gap: 4px;
   white-space: nowrap; overflow: hidden;
