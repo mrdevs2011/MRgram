@@ -6,7 +6,6 @@
 import { sb, state, isAdmin, fetchAllRows, mapProfile, mapPost, ts, purgeUserMedia, verifyPassword } from './config.js';
 import { $ } from './utils.js';
 import { toast } from './toast.js';
-import { logAdminAction } from './admin-audit.js';
 import { adminResetPassword } from './admin-reset-password.js';
 
 async function _updateProfile(uid, patch) {
@@ -232,7 +231,6 @@ async function _confirmAction() {
       const { error: delErr } = await sb.rpc('admin_delete_user', { p_uid: uid });
       if (delErr) throw delErr;
       toast(`${name} butunlay o'chirildi`, 'success');
-      logAdminAction({ action: 'userDelete', targetUid: uid, targetName: name });
       await _invalidateAndRefreshFeed(uid);
 
     } else if (type === 'block') {
@@ -250,13 +248,11 @@ async function _confirmAction() {
       const untilMsg = untilDate
         ? ` (${untilDate.toLocaleString('uz-UZ')} gacha)` : ' (doimiy)';
       toast(`${name} bloklandi${untilMsg}`, 'info');
-      logAdminAction({ action: 'userBlock', targetUid: uid, targetName: name, details: untilMsg.trim() });
       await _invalidateAndRefreshFeed(uid);
 
     } else if (type === 'unblock') {
       await _updateProfile(uid, { blocked: false, blocked_until: null, approval: 'approved' });
       toast(`${name} blokdan chiqarildi `, 'success');
-      logAdminAction({ action: 'userUnblock', targetUid: uid, targetName: name });
       await _invalidateAndRefreshFeed(uid);
     }
     _closeModal();
@@ -649,7 +645,6 @@ async function _doApprove(btn, uid, name) {
   try {
     await _updateProfile(uid, { approval: 'approved' });
     toast('Ruxsat berildi ', 'success');
-    logAdminAction({ action: 'userApprove', targetUid: uid, targetName: name });
     await _invalidateAndRefreshFeed(uid);
   } catch (err) {
     toast('Xatolik: ' + err.message, 'error');
@@ -662,7 +657,6 @@ async function _doReject(btn, uid, name) {
   try {
     await _updateProfile(uid, { approval: 'rejected' });
     toast('Rad etildi', 'info');
-    logAdminAction({ action: 'userReject', targetUid: uid, targetName: name });
     await _invalidateAndRefreshFeed(uid);
   } catch (err) {
     toast('Xatolik: ' + err.message, 'error');
