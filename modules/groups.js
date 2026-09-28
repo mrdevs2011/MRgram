@@ -638,21 +638,7 @@ export async function openGroupInfo(groupId) {
   if (nameEl)  nameEl.textContent  = g.name || '';
   if (badgeEl) badgeEl.textContent = typeLabel;
 
-  // Channel public link
-  if (isChannel && g.username && !g.isPrivate) {
-    const link = `@${g.username}`;
-    if (linkTxt) linkTxt.textContent = link;
-    if (linkRow) {
-      linkRow.style.display = 'flex';
-      linkRow.style.cursor  = 'pointer';
-      linkRow.onclick = () => {
-        navigator.clipboard?.writeText(g.username).catch(()=>{});
-        toast('Username nusxalandi', 'success');
-      };
-    }
-  } else {
-    if (linkRow) linkRow.style.display = 'none';
-  }
+  if (linkRow) linkRow.style.display = 'none';
 
   if (descEl) {
     if (g.description) { descEl.textContent = g.description; descEl.style.display = ''; }
@@ -836,14 +822,9 @@ export function openGroupEdit(groupId, g) {
 
   // Show/hide type-specific fields
   const isChannel = g.type === 'channel';
-  panel.querySelector('#grpEditChannelFields').style.display = isChannel ? '' : 'none';
   panel.querySelector('#grpEditGroupFields').style.display = isChannel ? 'none' : '';
 
-  if (isChannel) {
-    panel.querySelector('#grpEditUsername').value = g.username || '';
-    panel.querySelector('#grpEditPrivacy').value = g.isPrivate ? 'private' : 'public';
-  } else {
-    panel.querySelector('#grpEditGroupPrivacy').value = g.isPrivate ? 'private' : 'public';
+  if (!isChannel) {
     panel.querySelector('#grpEditMsgPerm').value = g.msgPermission || 'all';
   }
 
@@ -873,14 +854,7 @@ export function openGroupEdit(groupId, g) {
     const updates = { name, description: desc };
     if (_grpEditPendingAviUrl) updates.avatar = _grpEditPendingAviUrl;
 
-    if (isChannel) {
-      const uname = panel.querySelector('#grpEditUsername').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
-      if (uname) updates.invite_code = uname;
-      updates.is_private = panel.querySelector('#grpEditPrivacy').value === 'private';
-    } else {
-      updates.is_private = panel.querySelector('#grpEditGroupPrivacy').value === 'private';
-      updates.msg_permission = panel.querySelector('#grpEditMsgPerm').value;
-    }
+    if (!isChannel) updates.msg_permission = panel.querySelector('#grpEditMsgPerm').value;
 
     try {
       await _updateGroup(groupId, updates);
@@ -912,25 +886,11 @@ let _createType    = 'group'; // 'group' | 'channel'
 let _selectedMembers = new Set();
 let _pendingPhotoUrl = null;
 let _usersForPicker = [];
-let _isPrivate      = true;   // default: maxfiy
-let _inviteCode     = '';
-let _customLinkMode = false;
-
-function _genInviteCode(len = 20) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let out = '';
-  for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return out;
-}
-
 export function openCreateForm(type) {
   _createType      = type;
   _selectedMembers = new Set();
   _pendingPhotoUrl = null;
   _usersForPicker  = [];
-  _isPrivate       = true;
-  _inviteCode      = _genInviteCode();
-  _customLinkMode  = false;
 
   // Close choice sheet
   document.getElementById('grpCreateChoiceOverlay')?.classList.remove('show');
@@ -943,8 +903,6 @@ export function openCreateForm(type) {
   overlay.querySelector('.grp-form-desc-hint').textContent = type === 'channel'
     ? 'A\'zolar faqat o\'qiy oladi. Faqat siz xabar yubora olasiz.'
     : 'Barcha a\'zolar xabar yubora oladi.';
-
-  _renderLinkSection(overlay);
 
   // Member picker section — channels can have members too (subscribers)
   const pickerSection = overlay.querySelector('#grpMemberPickerSection');
@@ -964,77 +922,6 @@ export function openCreateForm(type) {
 
   overlay.classList.add('show');
 }
-
-function _renderLinkSection(overlay) {
-  const sec = overlay.querySelector('#grpFormLinkSection');
-  if (!sec) return;
-
-  sec.innerHTML = `
-    <div class="grp-privacy-toggle">
-      <button type="button" class="grp-privacy-opt ${_isPrivate ? 'active' : ''}" data-val="private">Maxfiy</button>
-      <button type="button" class="grp-privacy-opt ${!_isPrivate ? 'active' : ''}" data-val="public">Ochiq</button>
-    </div>
-    <div id="grpFormLinkBody" class="mt-12px"></div>
-  `;
-
-  sec.querySelectorAll('.grp-privacy-opt').forEach(btn => {
-    btn.onclick = () => {
-      _isPrivate = btn.dataset.val === 'private';
-      if (_isPrivate && !_inviteCode) _inviteCode = _genInviteCode();
-      _customLinkMode = false;
-      _renderLinkSection(overlay);
-    };
-  });
-
-  _renderLinkBody(overlay.querySelector('#grpFormLinkBody'));
-}
-
-function _renderLinkBody(body) {
-  if (!body) return;
-
-  if (_isPrivate) {
-    body.innerHTML = `
-      <div class="grp-form-desc-hint">Bu guruh maxfiy — unga faqat quyidagi havola orqali qo'shilish mumkin. Havolani hech kim taxmin qila olmaydi.</div>
-      <div class="grp-invite-box">
-        <input class="field grp-invite-code" id="grpInviteCodeInput" value="${esc(_inviteCode)}" readonly>
-        <button type="button" class="grp-invite-btn" id="grpInviteCopyBtn" title="Nusxalash">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        </button>
-        <button type="button" class="grp-invite-btn" id="grpInviteRegenBtn" title="Yangilash">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        </button>
-      </div>
-    `;
-    body.querySelector('#grpInviteCopyBtn').onclick = async () => {
-      try { await navigator.clipboard.writeText(_inviteCode); toast('Havola nusxalandi', 'success'); }
-      catch(_) { toast('Nusxalab bo\'lmadi', 'error'); }
-    };
-    body.querySelector('#grpInviteRegenBtn').onclick = () => {
-      _inviteCode = _genInviteCode();
-      body.querySelector('#grpInviteCodeInput').value = _inviteCode;
-    };
-  } else {
-    if (_customLinkMode) {
-      body.innerHTML = `
-        <div class="grp-form-desc-hint">O'zingizning havolangizni kiriting (ixtiyoriy).</div>
-        <input class="field" id="grpCustomLinkInput" placeholder="masalan: mening-guruhim" maxlength="40" value="${esc(_inviteCode)}">
-      `;
-      const inp = body.querySelector('#grpCustomLinkInput');
-      inp.addEventListener('input', () => { _inviteCode = inp.value.trim(); });
-    } else {
-      body.innerHTML = `
-        <div class="grp-form-desc-hint">Bu guruh ochiq. Havola kiritmasangiz, guruhga havolasiz qo'shib bo'lmaydi.</div>
-        <button type="button" class="btn-ghost grp-add-link-btn" id="grpAddLinkBtn">+ Havola qo'shish</button>
-      `;
-      body.querySelector('#grpAddLinkBtn').onclick = () => {
-        _customLinkMode = true;
-        _inviteCode = '';
-        _renderLinkBody(body);
-      };
-    }
-  }
-}
-
 
 async function _loadUsersForPicker() {
   try {
@@ -1148,80 +1035,6 @@ async function _submitAddUserByUsername() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   JOIN GROUP/CHANNEL BY INVITE LINK
-   ───────────────────────────────────────────────────────────────────── */
-export function openJoinByLink() {
-  const overlay = document.getElementById('grpJoinLinkOverlay');
-  if (!overlay) return;
-  const inp = overlay.querySelector('#grpJoinLinkInput');
-  const err = overlay.querySelector('#grpJoinLinkErr');
-  inp.value = '';
-  err.textContent = '';
-  err.style.display = 'none';
-  overlay.classList.add('show');
-  setTimeout(() => inp.focus(), 150);
-}
-
-/**
- * Shared logic: look up a group/channel by invite code, join (if not
- * already a member) and open its thread. Returns {ok:true} on success
- * or {ok:false, reason} on failure — caller decides how to display it.
- */
-export async function joinGroupByCode(code) {
-  code = (code || '').trim();
-  if (!code) return { ok: false, reason: 'empty' };
-  try {
-    const { data: gid, error } = await sb.rpc('join_group_by_code', { p_code: code });
-    if (error || !gid) {
-      return { ok: false, reason: /noto.?g.?ri/i.test(error?.message || '') ? 'not-found' : 'error' };
-    }
-    const wasMember = !!_latestGroupMap[gid];
-    await _loadGroups();
-    const g = _latestGroupMap[gid];
-    if (!g) return { ok: false, reason: 'error' };
-
-    if (wasMember) {
-      openGroupThread(gid);
-      return { ok: true, joined: false, group: g };
-    }
-
-    toast(`${g.type === 'channel' ? 'Kanalga' : 'Guruhga'} qo'shildingiz!`, 'success');
-    setTimeout(() => openGroupThread(gid), 200);
-    return { ok: true, joined: true, group: g };
-  } catch (e) {
-    return { ok: false, reason: 'error' };
-  }
-}
-
-async function _submitJoinByLink() {
-  const overlay = document.getElementById('grpJoinLinkOverlay');
-  const inp     = overlay.querySelector('#grpJoinLinkInput');
-  const err     = overlay.querySelector('#grpJoinLinkErr');
-  const btn     = overlay.querySelector('#grpJoinLinkSubmitBtn');
-  const code = inp.value.trim();
-  if (!code) {
-    err.textContent = 'Havola kiriting';
-    err.style.display = '';
-    return;
-  }
-  btn.disabled = true;
-  btn.textContent = 'Qidirilmoqda...';
-  try {
-    const res = await joinGroupByCode(code);
-    if (!res.ok) {
-      err.textContent = 'Bu havola orqali hech narsa topilmadi';
-      err.style.display = '';
-      return;
-    }
-    overlay.classList.remove('show');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "Qo'shilish";
-  }
-}
-
-
-/* ─────────────────────────────────────────────────────────────────────
    ADD MEMBER to existing group
    ───────────────────────────────────────────────────────────────────── */
 export async function openMemberPicker(groupId, mode) {
@@ -1282,20 +1095,6 @@ export async function submitCreateGroup() {
   btn.textContent = 'Yaratilmoqda...';
 
   try {
-    // Havola foydalanuvchi username'i bilan bir xil bo'lmasin
-    const unameKey = (_inviteCode || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    if (unameKey) {
-      try {
-        const { data: free } = await sb.rpc('username_available', { p_username: unameKey });
-        if (free === false) {
-          toast('Bu havola band (foydalanuvchi havolasi bilan mos), boshqa havola tanlang', 'error');
-          btn.disabled = false;
-          btn.textContent = 'Yaratish';
-          return;
-        }
-      } catch(_) { /* tekshirib bo'lmasa — davom etamiz */ }
-    }
-
     // id ni o'zimiz beramiz: yopiq guruhda insert...select RLS'dan o'tmasligi mumkin
     const newId = crypto.randomUUID();
     const { error: gErr } = await sb.from('groups').insert({
@@ -1305,18 +1104,9 @@ export async function submitCreateGroup() {
       avatar:      _pendingPhotoUrl || '',
       description: overlay.querySelector('#grpFormDesc')?.value?.trim() || '',
       owner_id:    state.me.uid,
-      is_private:  _isPrivate,
-      invite_code: _inviteCode || null,
+      is_private:  true,   // Q1=B: faqat taklif orqali (a'zolarni yaratuvchi/admin qo'shadi)
     });
-    if (gErr) {
-      if (gErr.code === '23505') {
-        toast('Bu havola band, boshqa havola tanlang', 'error');
-        btn.disabled = false;
-        btn.textContent = 'Yaratish';
-        return;
-      }
-      throw gErr;
-    }
+    if (gErr) throw gErr;
     // Egasi trigger orqali qo'shiladi; tanlangan a'zolarni qo'shamiz
     if (_selectedMembers.size) {
       try { await _addMembers(newId, Array.from(_selectedMembers)); }
@@ -1437,10 +1227,6 @@ export function injectGroupsDOM() {
 
         <div class="grp-form-desc-hint"></div>
 
-        <!-- Privacy & invite link -->
-        <div class="grp-form-section-title">Maxfiylik</div>
-        <div id="grpFormLinkSection"></div>
-
         <!-- Member picker -->
         <div class="grp-form-section-title">A'zolar qo'shish</div>
         <div id="grpMemberPickerSection"></div>
@@ -1448,20 +1234,6 @@ export function injectGroupsDOM() {
         <div class="grp-form-actions">
           <button class="btn-ghost" id="grpFormCancelBtn">Bekor qilish</button>
           <button class="btn-primary" id="grpFormCreateBtn">Yaratish</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Join group by invite link -->
-    <div class="overlay" id="grpJoinLinkOverlay">
-      <div class="sheet">
-        <div class="sheet-handle"></div>
-        <div class="sheet-title">Havola orqali qo'shilish</div>
-        <input class="field mb-12px" id="grpJoinLinkInput" placeholder="Guruh havolasini kiriting" maxlength="40" autocomplete="off">
-        <div class="grp-form-desc-hint" id="grpJoinLinkErr" style="display:none;color:var(--red,#ef4444)"></div>
-        <div class="grp-form-actions">
-          <button class="btn-ghost" id="grpJoinLinkCancelBtn">Bekor qilish</button>
-          <button class="btn-primary" id="grpJoinLinkSubmitBtn">Qo'shilish</button>
         </div>
       </div>
     </div>
@@ -1570,27 +1342,8 @@ export function injectGroupsDOM() {
           <div class="pe-field-label">Tavsif</div>
           <textarea class="ta" id="grpEditDesc" rows="3" placeholder="Guruh haqida..."></textarea>
 
-          <!-- Channel-only: username/link -->
-          <div id="grpEditChannelFields" style="display:none">
-            <div class="pe-field-label">Kanal havolasi (username)</div>
-            <div class="pe-field-prefix-wrap">
-              <span class="pe-prefix">@</span>
-              <input class="field pe-prefix-field" type="text" id="grpEditUsername" placeholder="channel_name" autocapitalize="none">
-            </div>
-            <div class="pe-field-label">Kanal turi</div>
-            <select class="field" id="grpEditPrivacy">
-              <option value="public">Ochiq (hamma topishi mumkin)</option>
-              <option value="private">Yopiq (faqat taklif orqali)</option>
-            </select>
-          </div>
-
           <!-- Group-only: settings -->
           <div id="grpEditGroupFields" style="display:none">
-            <div class="pe-field-label">Guruh turi</div>
-            <select class="field" id="grpEditGroupPrivacy">
-              <option value="public">Ochiq</option>
-              <option value="private">Yopiq</option>
-            </select>
             <div class="pe-field-label">Xabar yuborish huquqi</div>
             <select class="field" id="grpEditMsgPerm">
               <option value="all">Barcha a'zolar</option>
@@ -1619,11 +1372,6 @@ export function injectGroupsDOM() {
     document.getElementById('grpAddUserOverlay').classList.remove('show');
   document.getElementById('grpAddUserInput')
 
-  document.getElementById('grpJoinLinkSubmitBtn').onclick = _submitJoinByLink;
-  document.getElementById('grpJoinLinkCancelBtn').onclick = () =>
-    document.getElementById('grpJoinLinkOverlay').classList.remove('show');
-  document.getElementById('grpJoinLinkInput')
-
   document.getElementById('grpFormAvi').onclick   = pickGroupPhoto;
   document.getElementById('grpFormAviWrap').onclick = pickGroupPhoto;
   document.getElementById('grpFormCreateBtn').onclick = submitCreateGroup;
@@ -1641,7 +1389,7 @@ export function injectGroupsDOM() {
     document.getElementById('grpInfoOverlay').classList.remove('show');
 
   // Backdrop click closes
-  ['grpCreateChoiceOverlay','grpAddUserOverlay','grpJoinLinkOverlay','grpCreateFormOverlay','grpInfoOverlay','grpEditOverlay'].forEach(id => {
+  ['grpCreateChoiceOverlay','grpAddUserOverlay','grpCreateFormOverlay','grpInfoOverlay','grpEditOverlay'].forEach(id => {
     document.getElementById(id)?.addEventListener('click', e => {
       if (e.target.id === id) { document.getElementById(id).classList.remove('show'); unlockScroll(); }
     });

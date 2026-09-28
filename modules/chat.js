@@ -152,13 +152,6 @@ function _renderSearchBox(container) {
         return;
       }
 
-      // Username bo'yicha topilmasa — guruh/kanal havolasi (maxfiy yoki
-      // ochiq) sifatida ANIQ moslik tekshiramiz
-      const linkRes = await joinGroupByCode(raw);
-      if (linkRes.ok) {
-        res.classList.add('d-none');
-        return;
-      }
       res.textContent = `"${raw}" — topilmadi`;
       res.className = 'ulist-search-result not-found';
       _paintUserRows([], true);
@@ -292,7 +285,7 @@ import {
   openGroupThread, closeGroupThread,
   sendGroupMessage, sendGroupFile,
   injectGroupsDOM, openCreateChoice, getGroupRows,
-  getCurrentGroupId, joinGroupByCode
+  getCurrentGroupId
 } from './groups.js';
 import {
   cacheChatsList, getCachedChatsList, getCachedChatsListAgeMs,

@@ -151,7 +151,7 @@ drop table if exists public.login_history;
 
 - **3.1 Explore→filtr:** ❌ `explore.js` (316 q, `script.js:14` import) + typeahead + 5 tab joyida. `[TEKSHIR]` eskirgandi: explore.js'dagi lokal diff masalasi F0'da hal qilindi (working tree toza).
 - **3.2 Kanal→guruh rejimi:** ❌ `type:'channel'` (`groups.js:299`) hali alohida tur; migratsiya SQL (`patch-diet-03`) yozilmagan. Public kanal havolasi (`groups.js:641`) va `invite_code`/`username` (`groups.js:878`) joyida.
-- **3.3 Guruh ochiq/maxfiy [QAROR] (tavsiya B):** ❌ `invite_code`, `join_group_by_code()`, `group_is_private()`, UI (`groups.js:975, 1026, 1582, 1591`) hali faol.
+- **3.3 Guruh ochiq/maxfiy [QAROR Q1 = B, 2026-09-29]:** ✅ kod tomoni (branch `diet/03-groups-b`): yaratishda faqat yopiq (`is_private:true`, `invite_code` yo'q), maxfiylik/havola/username UI, "havola orqali qo'shilish" oynasi va chat qidiruvidagi kod-join olib tashlandi (`groups.js` −264 qator). DB: `supabase/unfulfilled/patch-diet-03-groups.sql` yozildi, ISHGA TUSHIRILMAGAN (1 hafta kuzatuv + zaxiradan keyin). RLS/`group_is_private()` tegilmadi. ⚠️ Brauzerda sinalmagan.
 - **3.4 Post views:** ✅ kod tomoni tag `diet-progress-03` bilan olib tashlangan (`posts.views` ustunini bazadan drop — contract, keyinroq).
 - **3.5 Profil [QAROR]:** 🔶 muqova (cover) va `cover-crop.js` butunlay olib tashlandi (2026-09-29, `bd3fb42`); `cover_url` ustuni bazada qoldi. `website`/`location` UI va kod tomonidan olib tashlandi ✅ (branch `diet/03-product-profile`; `profiles.website`/`location` ustunlarini drop — contract, 1 hafta kuzatuvdan keyin).
 - **3.6 Eski shaxsiy postlar [QAROR]:** ❌ sanov skripti yozilmagan.
@@ -313,7 +313,7 @@ drop table if exists public.follows;
 
 | # | Savol | Tavsiya | Qaror |
 |---|---|---|---|
-| Q1 | Guruhlar: hamma ko'radimi (A) yoki faqat taklif (B)? | B | |
+| Q1 | Guruhlar: hamma ko'radimi (A) yoki faqat taklif (B)? | B | **B** (2026-09-29, MR) |
 | Q2 | Muqova rasmi qolsinmi? | Oddiy yuklash, crop yo'q | |
 | Q3 | Profilda website/location? | O'chir | **O'chirildi** (2026-09-29, MR tasdiqi) |
 | Q4 | Eski shaxsiy postlar? | Egasi bilan hal qil | |

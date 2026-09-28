@@ -29,7 +29,6 @@ const CLOSERS = [
   ['grpCreateChoiceOverlay', backdrop('grpCreateChoiceOverlay')],
   ['grpAddUserOverlay',      backdrop('grpAddUserOverlay')],
   ['grpCreateFormOverlay',   backdrop('grpCreateFormOverlay')],
-  ['grpJoinLinkOverlay',     backdrop('grpJoinLinkOverlay')],
   ['grpInfoOverlay',         backdrop('grpInfoOverlay')],
   ['grpEditOverlay',         backdrop('grpEditOverlay')],
   ['uploadOverlay',          () => $('cancelUpload')?.click()],

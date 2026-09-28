@@ -86,7 +86,6 @@ export function navigateTo(routeName, pushState = true) {
     'grpCreateChoiceOverlay',
     'grpAddUserOverlay',
     'grpCreateFormOverlay',
-    'grpJoinLinkOverlay',
     'grpInfoOverlay',
     'grpEditOverlay',
     // Search panel
