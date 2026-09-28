@@ -598,12 +598,10 @@ function _appendGroupRows(root) {
       const av      = g.avatar || defAvi(g.name || 'G');
       const unread  = g.unreadCount?.[state.me?.uid] || 0;
       const badgeTxt = unread > 99 ? '+99' : `+${unread}`;
-      const preview  = g.lastMessage ? esc(g.lastMessage.slice(0, 46)) : (g.type === 'channel' ? 'Kanal' : 'Guruh');
+      const preview  = g.lastMessage ? esc(g.lastMessage.slice(0, 46)) : 'Guruh';
       const time     = g.lastMessageAt ? fmt(g.lastMessageAt) : '';
-      const typeIcon = g.type === 'channel'
-        ? `<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>`
-        : `<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
-      const badgeClass = g.type === 'channel' ? 'chat-row-grp-badge--channel' : 'chat-row-grp-badge--group';
+      const typeIcon = `<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+      const badgeClass = 'chat-row-grp-badge--group';
 
       return `<div class="chat-row${unread ? ' unread' : ''}" data-gid="${g.id}">
         <div class="chat-avi">

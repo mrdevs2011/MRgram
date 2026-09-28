@@ -266,7 +266,7 @@ export function mapGroup(r) {
     members,
     isPrivate: r.is_private === true,
     inviteCode: r.invite_code || null,
-    username: (r.type === 'channel' && !r.is_private) ? (r.invite_code || '') : '',
+    username: '',
     msgPermission: r.msg_permission || 'all',
     lastMessage: r.last_message || '',
     lastSenderId: r.last_sender_id || null,

@@ -105,7 +105,7 @@ function loadGroups() {
   box.innerHTML = items.map(g => {
     const name = g.name || g.title || 'Guruh';
     const n = g.subscriberCount || (g.members?.length || 0);
-    const sub = g.type === 'channel' ? ('Kanal' + (n ? ' · ' + n : '')) : (n ? n + ' a\'zo' : 'Guruh');
+    const sub = (n ? n + ' a\'zo' : 'Guruh');
     const av = g.avatar || g.photoURL || '';
     return `<button type="button" class="rr-row" data-rr-group="${esc(g.id)}">
       ${aviHtml(name, av, false)}
