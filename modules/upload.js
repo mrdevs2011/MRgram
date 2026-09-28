@@ -227,15 +227,17 @@ function _measureSelectedMedia(file, objUrl) {
    Story ham xuddi shu composer kartasida ochiladi — faqat matn maydoni o'rniga
    qisqa izoh, faqat rasm/video, tugma "Story". */
 const STORY_MAX = 30 * 1024 * 1024;
+const STORY_CAPTION_MAX = 200;
 const _POST_ACCEPT = $('fileInput').accept;
+const _POST_PLACEHOLDER = $('captionInput').placeholder;
 let _composerMode = 'post';
 
 function _setComposerMode(mode) {
   _composerMode = mode;
   const story = mode === 'story';
-  $('captionInput').style.display = story ? 'none' : '';
-  const hint = $('composerHint');
-  if (hint) hint.style.display = story ? '' : 'none';
+  const cap = $('captionInput');
+  cap.placeholder = story ? "Story 24 soat davomida ko'rinadi. Izoh yozing (ixtiyoriy)…" : _POST_PLACEHOLDER;
+  if (story) cap.maxLength = STORY_CAPTION_MAX; else cap.removeAttribute('maxlength');
   $('fileInput').accept = story ? 'image/*,video/*' : _POST_ACCEPT;
   $('uploadDrop').setAttribute('aria-label', story ? 'Story uchun rasm yoki video tanlash' : "Rasm yoki video qo'shish");
 }
@@ -401,6 +403,7 @@ function floatBarDone(success) {
 async function submitStory() {
   const file = state.selFile;
   if (!file || !state.me) return;
+  const caption = $('captionInput').value.trim().slice(0, STORY_CAPTION_MAX);
 
   $('uploadBtn').disabled    = true;
   $('uploadBtn').textContent = 'Yuklanmoqda…';
@@ -421,17 +424,27 @@ async function submitStory() {
     clearInterval(simInterval);
     floatBarUpdate(100);
 
-    const { error } = await sb.from('stories').insert({
+    const row = {
       user_id:    state.me.uid,
       media_path: path,
       media_type: file.type.startsWith('video/') ? 'video' : 'image',
       expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
-    });
+    };
+    if (caption) row.caption = caption;
+    let { error } = await sb.from('stories').insert(row);
+    let captionLost = false;
+    // stories.caption ustuni hali yo'q bo'lsa (patch qo'llanmagan) — izohsiz saqlaymiz
+    if (error && caption && /caption/i.test(error.message || '')) {
+      delete row.caption;
+      captionLost = true;
+      ({ error } = await sb.from('stories').insert(row));
+    }
     if (error) throw error;
 
     revokeObjUrl();
     floatBarDone(true);
-    toast('Story qo\'shildi', 'success');
+    toast(captionLost ? 'Story qo\'shildi, lekin izoh saqlanmadi (DB da caption ustuni yo\'q)' : 'Story qo\'shildi',
+          captionLost ? 'info' : 'success');
     import('./stories.js').then(m => m.loadStories()).catch(() => {});
   } catch (err) {
     clearInterval(simInterval);

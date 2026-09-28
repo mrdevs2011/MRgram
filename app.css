@@ -17103,7 +17103,3 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 .up-grid--uniform { grid-auto-flow: row; grid-auto-rows: auto; }
 .up-grid--uniform .up-grid-cell--media,
 .up-grid--uniform .up-grid-cell--text { grid-row: span 1; aspect-ratio: 1; min-height: 0; }
-
-
-/* Story rejimidagi composer: matn maydoni o'rniga qisqa izoh */
-#uploadOverlay #composerHint { color: #6e6e6e; }

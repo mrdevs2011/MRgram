@@ -173,6 +173,14 @@ function ensureStoriesCss() {
   display: block;
 }
 
+.sv-caption {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  padding: 56px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0));
+  color: #fff; font-size: 16px; line-height: 1.4; text-align: center;
+  white-space: pre-wrap; overflow-wrap: anywhere; pointer-events: none;
+}
+
 .sv-nav {
   position: absolute; top: 0; bottom: 0;
   width: 35%; z-index: 3; cursor: pointer;
@@ -289,10 +297,14 @@ export async function loadStories() {
 
   try {
     const nowIso = new Date().toISOString();
-    const { data: rows, error } = await sb.from('stories')
-      .select('id, user_id, media_path, media_type, created_at, expires_at')
+    const selStories = cols => sb.from('stories').select(cols)
       .gt('expires_at', nowIso)
       .order('created_at', { ascending: true });
+    let { data: rows, error } = await selStories('id, user_id, media_path, media_type, caption, created_at, expires_at');
+    // caption ustuni hali yo'q bo'lsa (patch qo'llanmagan) — izohsiz yuklaymiz
+    if (error && /caption/i.test(error.message || '')) {
+      ({ data: rows, error } = await selStories('id, user_id, media_path, media_type, created_at, expires_at'));
+    }
     if (error) throw error;
 
     const stories = rows || [];
@@ -328,6 +340,7 @@ export async function loadStories() {
         mediaPath: s.media_path,
         mediaType: s.media_type || 'image',
         mediaUrl: mediaPublicUrl(s.media_path),
+        caption: s.caption || '',
         createdAt: s.created_at,
         seen: viewed.has(s.id),
       });
@@ -529,6 +542,13 @@ async function showCurrent() {
     img.src = item.mediaUrl;
     img.alt = '';
     media.appendChild(img);
+  }
+
+  if (item.caption) {
+    const cap = document.createElement('div');
+    cap.className = 'sv-caption';
+    cap.textContent = item.caption;
+    media.appendChild(cap);
   }
 
   // Mark viewed
