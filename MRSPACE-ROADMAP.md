@@ -53,14 +53,14 @@
 
 | Faza | Nom | Xavf | Taxminiy vaqt | Bog'liqlik | Holat (2026-09-29) |
 |---|---|---|---|---|---|
-| 0 | Xavfsizlik to'ri | past | 1–2 soat | — | ⚠️ qisman (tag va remote tayyor; zaxira/preview/smoke — MR ishi) |
+| 0 | Xavfsizlik to'ri | past | 1–2 soat | — | ⚠️ qisman (tag va remote tayyor; preview/smoke — MR ishi) |
 | 1 | Axlat va o'lik kod | past | 2–3 soat | 0 | ✅ deyarli tayyor (`09bce2c`) |
 | 2 | Admin dieta + parol reset | o'rta | 1 kun | 0, 1 | ✅ kod tayyor (branch `diet/02-admin`, Preview sinovi + 1 hafta kuzatuv → `patch-diet-02-admin.sql` kutilmoqda) |
 | 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.4 views ✅, 3.5 cover ✅ (qisman); qolgani ❌ |
 | 4 | CSS konsolidatsiya | o'rta–yuqori (vizual) | 2–3 kun | 3 (oldin nima qolishi aniq bo'lsin) | 🔶 4.4/4.5 ✅ (bitta `app.css`); 23 fayl/~16.7k qator, 351 `!important` |
 | 5 | Realtime va presence | o'rta | 1 kun | 3 | 🔶 5.1/5.2 ✅; 5.3 kanallarni birlashtirish ❌ |
 | 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya + network-first ✅; yangilanish toast'i, `Ts` adapteri ❌ |
-| 7 | Family-grade mustahkamlash | o'rta | 1–2 kun | 2 | 🔶 7.1 ✅, 7.2 limit ✅; 7.3, 7.7, 7.8 ❌ |
+| 7 | Family-grade mustahkamlash | o'rta | 1–2 kun | 2 | 🔶 7.1 ✅, 7.2 limit ✅; 7.7 ❌, 7.8 ✅ |
 | 8 | Hujjat va smoke test | past | 0.5 kun | hammasi | 🔶 qisman (roadmap+AUDIT yozildi; README/SMOKE/migrations qoldi) |
 
 Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-biriga yaqin (parol reset), ular parallel ketishi mumkin.
@@ -74,12 +74,11 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 - [x] Ishchi papkadagi tugallanmagan o'zgarishlar hal qilindi: `CSS/x-design.css` (F4 bo'yicha commit `fbbcd8b`), `index.html` (link tartibi, `db6028d`), `.gitignore` (tasodifan bo'shatilgan edi — HEAD'dan tiklandi), `profile.css`/`ui-improvements.css`/`svg/favicon.png`/`CSS/call-modern.css` holati tarixda; working tree toza.
 - [x] `git tag pre-diet` (qaytish nuqtasi) yaratilgan.
 - [x] `origin` MRspace repoga qaraydi (`mrdevs2011/MRspace`).
-- [ ] **Supabase zaxira:** Dashboard → Database → Backups yoki `pg_dump` (schema + data). Storage `media` bucket ro'yxati (fayl soni, hajm). *MR dashboard ishi.*
 - [ ] Vercel Preview deploy + preview env (`SUPABASE_URL/ANON_KEY`). *MR Vercel panelida.*
 - [x] **Baseline o'lchov** 6-bo'lim jadvaliga kiritildi (2026-09-28 qayta o'lchangan raqamlar bilan).
 - [ ] **Smoke test ro'yxati** (7-bo'lim) hozirgi kodda o'tkazib chiqish. *Brauzer/qurilma kerak — MR.*
 
-**Tayyor mezoni:** tag bor, zaxira bor, baseline yozilgan, smoke test o'tdi. → *Yakunlanmadi (4 tashqi band).*
+**Tayyor mezoni:** tag bor, baseline yozilgan, smoke test o'tdi. → *Yakunlanmadi (tashqi bandlar qoldi).*
 
 ---
 
@@ -132,7 +131,7 @@ README: "parolni tiklash imkoni yo'q, adminga murojaat qilish mumkin". Lekin adm
 
 ### DB (contract bosqichi, kod deploydan 1 hafta keyin)
 ```sql
--- supabase/unfulfilled/patch-diet-02-admin.sql  (YOZILDI, ISHGA TUSHIRILMAGAN — zaxiradan va 1 hafta kuzatuvdan keyin)
+-- supabase/unfulfilled/patch-diet-02-admin.sql  (YOZILDI, ISHGA TUSHIRILMAGAN — 1 hafta kuzatuvdan keyin)
 drop table if exists public.admin_actions;
 drop table if exists public.broadcast_history;
 drop table if exists public.login_history;
@@ -151,7 +150,7 @@ drop table if exists public.login_history;
 
 - **3.1 Explore→filtr:** ❌ `explore.js` (316 q, `script.js:14` import) + typeahead + 5 tab joyida. `[TEKSHIR]` eskirgandi: explore.js'dagi lokal diff masalasi F0'da hal qilindi (working tree toza).
 - **3.2 Kanal→guruh rejimi:** ✅ (2026-09-29) SQL patch bazada ishlagan (MR), kodda `'channel'` shoxlari va `_renderChannelActionBar` olib tashlandi (`diet/03-channel-cleanup`, ⚠️ brauzerda sinalmagan; CSS `--channel` klasslari F4 ga qoldi; `groups.type` check-cheklovini qisqartirish — keyingi SQL). Oldingi holat: 🔶 kod tomoni (branch `diet/03-channel-group`): "+" to'g'ridan-to'g'ri guruh formasini ochadi, "Yangi kanal" tanlovi yo'q; yaratishda "Xabar yuborish: faqat adminlar" tanlovi (`msg_permission='admins'`). Eski `type:'channel'` yozuvlari bazada qoladi va ishlayveradi (render shoxlari saqlangan). DB: `supabase/unfulfilled/patch-diet-03-channels.sql` (channel→group+admins) yozildi, ISHGA TUSHIRILMAGAN; patchdan keyin kodda `'channel'` shoxlari olib tashlanadi. ⚠️ Brauzerda sinalmagan.
-- **3.3 Guruh ochiq/maxfiy [QAROR Q1 = B, 2026-09-29]:** ✅ kod tomoni (branch `diet/03-groups-b`): yaratishda faqat yopiq (`is_private:true`, `invite_code` yo'q), maxfiylik/havola/username UI, "havola orqali qo'shilish" oynasi va chat qidiruvidagi kod-join olib tashlandi (`groups.js` −264 qator). DB: `supabase/unfulfilled/patch-diet-03-groups.sql` yozildi, ISHGA TUSHIRILMAGAN (1 hafta kuzatuv + zaxiradan keyin). RLS/`group_is_private()` tegilmadi. ⚠️ Brauzerda sinalmagan.
+- **3.3 Guruh ochiq/maxfiy [QAROR Q1 = B, 2026-09-29]:** ✅ kod tomoni (branch `diet/03-groups-b`): yaratishda faqat yopiq (`is_private:true`, `invite_code` yo'q), maxfiylik/havola/username UI, "havola orqali qo'shilish" oynasi va chat qidiruvidagi kod-join olib tashlandi (`groups.js` −264 qator). DB: `supabase/unfulfilled/patch-diet-03-groups.sql` yozildi, ISHGA TUSHIRILMAGAN (1 hafta kuzatuvdan keyin). RLS/`group_is_private()` tegilmadi. ⚠️ Brauzerda sinalmagan.
 - **3.4 Post views:** ✅ kod tomoni tag `diet-progress-03` bilan olib tashlangan (`posts.views` ustunini bazadan drop — contract, keyinroq).
 - **3.5 Profil [QAROR]:** 🔶 muqova (cover) va `cover-crop.js` butunlay olib tashlandi (2026-09-29, `bd3fb42`); `cover_url` ustuni bazada qoldi. `website`/`location` UI va kod tomonidan olib tashlandi ✅ (branch `diet/03-product-profile`; `profiles.website`/`location` ustunlarini drop — contract, 1 hafta kuzatuvdan keyin).
 - **3.6 Eski shaxsiy postlar [QAROR]:** ❌ sanov skripti yozilmagan.
@@ -232,7 +231,6 @@ drop table if exists public.follows;
 |---|---|---|---|
 | 7.1 | Admin parol reset | 2-fazada. Eng katta real og'riq | ✅ |
 | 7.2 | Storage kvotasi | limit 25 MB ✅ (2026-09-29: avval kodda 50/30 MB edi, endi `MAX_FILE`/`STORY_MAX` = 25 MB, `diet/08-docs`), `compress.js` bor; admin sarf-ko'rsatkichi `[QAROR]` | 🔶 |
-| 7.3 | Zaxira nusxa | GitHub Actions cron: haftada bir `pg_dump` → shifrlangan artifact/MRdrive | 🔶 `.github/workflows/backup.yml` yozildi; secrets `SUPABASE_DB_URL`, `BACKUP_PASSPHRASE` — MR qo'yadi |
 | 7.4 | TURN | Env quvuri (`build-env.mjs:19-21`) bor; Vercel'da `TURN_*` env qo'yilganini MR tekshirsin `[TEKSHIR]` | 🔶 |
 | 7.5 | Media maxfiyligi | `[QAROR Q7]` public bucket hozircha qolsin, rasmiy qaror sifatida yozilsin | ✅ README "Qarorlar" bo'limiga yozildi |
 | 7.6 | Rate limit | Past ustuvorlik; faqat yuborish tezligi | ❌ |
@@ -376,11 +374,11 @@ main
 
 ## 12. Tavsiya etilgan bajarish tartibi (yangilangan, 2026-09-29)
 
-1. ~~F0 → F1~~ **F1 tayyor** (`09bce2c`, −64 q). F0 ning tashqi qismlari (tag, remote, zaxira, preview, smoke) — MR terminal/dashboard/brauzer ishi, ro'yxat yuqorida.
+1. ~~F0 → F1~~ **F1 tayyor** (`09bce2c`, −64 q). F0 ning tashqi qismlari (tag, remote, preview, smoke) — MR terminal/dashboard/brauzer ishi, ro'yxat yuqorida.
 2. **F4 to'xtash nuqtasi:** MR brauzerda 8 ekran solishtirsin (ayniqsa `.nav-badge`, `.chat-voice-btn.recording`, `.cmt-send`). Tasdiq → 4.1b inventar; rad → `git revert fbbcd8b`.
 3. **F2 dietasi** (2.1–2.9; parol reset tayyor) — eng katta real foyda; F4 testini kutmaydi.
 4. **F3** qolgani: Explore→filtr, kanal→guruh, invite/ochiq-maxfiy, `website`/`location` (views va cover tayyor).
-5. **F7.2–7.4** (storage, zaxira, TURN) — bular ilovani omon saqlaydi, F4–F6 dan oldin ham bo'ladi.
+5. **F7.2–7.4** (storage, TURN) — bular ilovani omon saqlaydi, F4–F6 dan oldin ham bo'ladi.
 6. **F4** davomi (chat.css ↔ mono → qolgan fayllar), keyin **F5**, **F6**.
 7. **F8** (hujjat).
 

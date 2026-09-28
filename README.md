@@ -27,7 +27,7 @@ Vercel Environment Variables:
 - `TURN_URLS` (vergul bilan), `TURN_USERNAME`, `TURN_CREDENTIAL` — qo'ng'iroq uchun; bo'lmasa umumiy OpenRelay (beqaror).
 
 Bazani o'rnatish: `supabase/completed/schema.sql`, keyin `supabase/completed/patch-*.sql` tartib bilan.
-Hali ishga tushirilmagan patchlar `supabase/unfulfilled/` da — faqat zaxiradan va 1 hafta kuzatuvdan keyin (roadmap 1-bo'lim, 3-qoida).
+Hali ishga tushirilmagan patchlar `supabase/unfulfilled/` da — faqat 1 hafta kuzatuvdan keyin (roadmap 1-bo'lim, 3-qoida).
 
 ## Ish tartibi
 1. Har vazifa = alohida branch/commit. Vizual CSS o'zgarishi brauzerda tekshirilmasdan commit qilinmaydi.
@@ -38,6 +38,3 @@ Hali ishga tushirilmagan patchlar `supabase/unfulfilled/` da — faqat zaxiradan
 ## Qarorlar
 - `media` bucket **public**. Havolalar tasodifiy UUID yo'lli, lekin bu haqiqiy maxfiylik emas (havolani olgan ochadi). Signed URL kerak bo'lsa — keyinroq (Q7).
 - Like/comment counter triggerlari qoladi (Q8).
-
-## Backup
-`.github/workflows/backup.yml` — haftada bir `pg_dump` (GitHub secret `SUPABASE_DB_URL` kerak). Storage `media` alohida zaxiralanmaydi.
