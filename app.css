@@ -16690,7 +16690,7 @@ html, body, #app, .app {
     border-right: 1px solid #2f3336;
   }
 
-  /* O'ng panel: lenta o'ng chetiga yopishadi */
+  /* O'ng panel: lentadan ekran o'ng chetigacha to'liq */
   .right-rail {
     display: flex;
     flex-direction: column;
@@ -16698,16 +16698,18 @@ html, body, #app, .app {
     position: fixed;
     top: 0;
     left: calc(var(--content-left, var(--sidebar, 260px)) + var(--center-w));
-    right: auto;
-    width: var(--right-rail);
+    right: 0;
+    width: auto;
+    min-width: 260px;
+    /* max-width olib tashlandi — o'ng chetgacha */
     height: 100dvh;
-    padding: 12px 16px 28px 12px;
+    padding: 12px 20px 28px 16px;
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 40;
     background: #000;
-    border-left: none;
+    border-left: 1px solid #2f3336;
     scrollbar-width: thin;
   }
   .right-rail[hidden] { display: none !important; }
