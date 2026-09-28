@@ -216,7 +216,7 @@ drop table if exists public.follows;
 - [x] **Cache versiyasi avtomatik:** `build-env.mjs` build vaqtida `CACHE_VERSION` ga vaqt tamg'asini yozadi (`t-<timestamp>`).
 - [x] **HTML strategiyasi:** network-first (3 s timeout) → kesh fallback (tag `diet-progress-04b`).
 - [x] **Yangilanish xabari:** SW `skipWaiting` qiladi, shuning uchun `controllerchange` (sahifa ochiq paytida) → pastda "Yangi versiya bor · Yangilash" paneli (`index.html`, branch `diet/06-sw-update-toast`). ⚠️ Brauzerda sinalmagan (qoida 8): stil inline, `#000`/`#fff`.
-- [ ] `PRECACHE_URLS` ni 4-fazadan keyin yangilash (CSS nomlari o'zgaradi!). `sw:170` atrofida `allSettled`-simon himoya bor — baribir tekshir.
+- [x] `PRECACHE_URLS` tekshirildi (2026-09-29, `diet/06-precache`): ro'yxatdagi barcha 33 URL diskda bor (`/app.css` to'g'ri); `allSettled` himoyasi joyida. Ro'yxatda yo'q 7 modul qo'shildi: `admin-reset-password, chats-x, compress, right-rail, shortcuts, sidebar, stories`. ⚠️ Yangi modul qo'shilganda ro'yxatni ham yangilash kerak (qo'lda). Offline ochilish sinalmagan.
 
 ### 6.3 Supabase kutubxonasi — ❌ [QAROR, past ustuvorlik]
 - CDN (jsdelivr 2.39.3) yiqilsa ilova ochilmaydi. Variant: SW precache yoki vendored `vendor/supabase.js`.
