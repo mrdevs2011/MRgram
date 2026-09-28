@@ -48,7 +48,7 @@ async function loadOnline() {
       .filter(u => u && u.uid !== me && isOnline(u.lastSeenAt))
       .slice(0, MAX_ONLINE);
     if (!online.length) {
-      box.innerHTML = '<div class="rr-empty">Hozir hech kim onlayn emas</div>';
+      box.innerHTML = '<div class="rr-empty">Hozircha hech kim onlayn emas</div>';
       return;
     }
     box.innerHTML = online.map(u => {
@@ -70,7 +70,7 @@ function loadGroups() {
   if (!box) return;
   const items = (groupListItems || []).slice(0, MAX_GROUPS);
   if (!items.length) {
-    box.innerHTML = '<div class="rr-empty">Guruh yo‘q — suhbatlardan yarating</div>';
+    box.innerHTML = '<div class="rr-empty">Hali guruh yo‘q</div>';
     return;
   }
   box.innerHTML = items.map(g => {
@@ -90,7 +90,7 @@ function loadRecent() {
   if (!box) return;
   const posts = (state.allPosts || []).slice(0, MAX_RECENT);
   if (!posts.length) {
-    box.innerHTML = '<div class="rr-empty">Hali post yo‘q</div>';
+    box.innerHTML = '<div class="rr-empty">Hali yangilik yo‘q</div>';
     return;
   }
   box.innerHTML = posts.map(p => {
