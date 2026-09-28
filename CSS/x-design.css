@@ -798,3 +798,22 @@ body:has(.search-overlay.open) .rc-search { display: none; }
 .skeleton-post { display: none !important; }
 .spin-wrap { padding: 32px; }
 .spinner { border-color: var(--line); border-top-color: var(--x-blue); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Oyna/card orqa foni: ko'kish-kulrang emas, shunchaki sal xiralashadi.
+   Bitta token (--overlay) — hamma card/sheet/dialog uchun umumiy.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root,
+[data-theme="dark"]  { --overlay: rgba(0, 0, 0, .45); }
+[data-theme="light"] { --overlay: rgba(0, 0, 0, .30); }
+
+.overlay,
+[data-theme] .overlay,
+[data-theme="dark"] .overlay,
+[data-theme="light"] .overlay,
+.ua-modal-overlay,
+#pwdWarnOverlay::before,
+#uploadOverlay,
+:is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) {
+  background: var(--overlay);
+}
