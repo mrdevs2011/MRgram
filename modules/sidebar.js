@@ -28,9 +28,48 @@ function render() {
   box.title = name;
 }
 
-$('sbAccount')?.addEventListener('click', () => {
-  document.querySelector('.nav-btn[data-v="profile"]')?.click();
+/* ── Akkaunt bosilsa — faqat "Chiqish" menyusi ───────────────────────── */
+let _menu = null;
+
+function closeMenu() {
+  if (_menu) { _menu.remove(); _menu = null; }
+}
+
+function openMenu() {
+  const box = $('sbAccount');
+  if (!box) return;
+  const r = box.getBoundingClientRect();
+  const wide = window.matchMedia('(min-width: 1100px)').matches;
+
+  _menu = document.createElement('div');
+  _menu.className = 'sb-acc-menu';
+  const uname = state.me?.username ? ' @' + state.me.username : '';
+  _menu.innerHTML = `<button type="button" class="sb-acc-logout">Chiqish${esc(uname)}</button>`;
+  document.body.appendChild(_menu);
+
+  _menu.style.bottom = (window.innerHeight - r.top + 8) + 'px';
+  if (wide) {
+    _menu.style.left = (r.left + 8) + 'px';
+    _menu.style.minWidth = Math.max(r.width - 16, 180) + 'px';
+  } else {
+    _menu.style.left = (r.right + 8) + 'px';
+  }
+
+  _menu.querySelector('.sb-acc-logout').addEventListener('click', () => {
+    closeMenu();
+    $('logoutBtn')?.click(); // auth.js dagi to'liq chiqish (push token, kesh, signOut)
+  });
+}
+
+$('sbAccount')?.addEventListener('click', e => {
+  e.stopPropagation();
+  if (_menu) closeMenu(); else openMenu();
 });
+document.addEventListener('click', e => {
+  if (_menu && !_menu.contains(e.target)) closeMenu();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+window.addEventListener('resize', closeMenu);
 
 render();
 setInterval(render, 1500);
