@@ -68,5 +68,21 @@ for (const f of extra) {
 const out = parts.join('\n\n') + '\n';
 writeFileSync(join(ROOT, 'app.css'), out);
 
+// ── DIET F6.2: SW cache versiyasini avtomatik yangilash ──
+// Har deployda (build) CACHE_VERSION git SHA yoki vaqt tamg'asi bilan almashtiriladi.
+// Qo'lda 'vNNN' oshirish shart emas. SW nomi o'zgarmaydi (Q6: push obunalari saqlanadi).
+const sha = process.env.VERCEL_GIT_COMMIT_SHA || '';
+const version = sha ? `b-${sha.slice(0, 9)}` : `t-${Date.now()}`;
+const swPath = join(ROOT, 'firebase-messaging-sw.js');
+const swSrc = readFileSync(swPath, 'utf8');
+const VER_RE = /const CACHE_VERSION\s*=\s*'[^']*';\s*\/\* BUILD_VERSION_LINE \*\//;
+if (VER_RE.test(swSrc)) {
+  const updated = swSrc.replace(VER_RE, `const CACHE_VERSION  = '${version}'; /* BUILD_VERSION_LINE */`);
+  writeFileSync(swPath, updated);
+  console.log(`OK: firebase-messaging-sw.js CACHE_VERSION -> ${version}`);
+} else {
+  console.warn('WARN: BUILD_VERSION_LINE belgisi topilmadi — CACHE_VERSION qo\'lda yangilanishi kerak.');
+}
+
 const lines = out.split('\n').length;
 console.log(`OK: app.css yig'ildi — ${importOrder.length} + 1 + ${extra.length} manba, ${lines} qator, ${(out.length / 1024).toFixed(1)} KB`);

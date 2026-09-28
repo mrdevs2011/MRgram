@@ -71,9 +71,10 @@ self.addEventListener('notificationclick', (event) => {
 
 
 /* ── Cache versiyasi ── */
-// Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
-// bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 'v103';
+// DIET F6.2: qo'lda vNNN oshirish shart emas — build-css.mjs har deployda
+// bu qatorni git SHA / vaqt tamg'asi bilan almashtiradi. Lokal ishlatishda
+// quyidagi qiymat ishlaydi.
+const CACHE_VERSION  = 't-1790599308899'; /* BUILD_VERSION_LINE */
 const STATIC_CACHE   = `mrgram-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `mrgram-runtime-${CACHE_VERSION}`;
 
