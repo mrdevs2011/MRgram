@@ -1,0 +1,45 @@
+/* MRgram DIET utilities */
+#chatScrollDownBtn.visible{display:flex;}
+.c-red{color:var(--red, #ef4444) !important;}
+.fw-500{font-weight:500;}
+.fw-600{font-weight:600;}
+.tac{text-align:center;}
+.tar{text-align:right;}
+.pt-20px{padding-top:20px;}
+.pt-60px{padding-top:60px;}
+.pt-80px{padding-top:80px;}
+.mb-10px{margin-bottom:10px;}
+.mb-20px{margin-bottom:20px;}
+.brr-10px{border-radius:10px;}
+.d-none{display:none;}
+.d-block{display:block;}
+.gap-10px{gap:10px;}
+.aspect-1{aspect-ratio:1 / 1;}
+.w-full{width:100%;}
+.h-full{height:100%;}
+.overflow-hidden{overflow:hidden;}
+.flex{display:flex;}
+.flex-col{flex-direction:column;}
+.flex-wrap{flex-wrap:wrap;}
+.flex-1{flex:1;}
+.flex-shrink-0{flex-shrink:0;}
+.items-center{align-items:center;}
+.cursor-pointer{cursor:pointer;}
+.visible{visibility:visible;}
+.opacity-30{opacity:1;}
+.opacity-60{opacity:1;}
+.transition{transition:none;}
+.d-flex{display:flex;}
+.bg-transparent{background:transparent;}
+.border-none{border:none;}
+.fs-11px{font-size:11px;}
+.fs-13px{font-size:13px;}
+.fs-14px{font-size:14px;}
+.c-text2{color:var(--text2);}
+.c-text2-theme{color:var(--text2);}
+.c-text3-theme{color:var(--text3);}
+.c-blue-theme{color:var(--blue);}
+.c-red-theme{color:var(--red,#ef4444);}
+.mt-2px{margin-top:2px;}
+.p-32px{padding:32px;}
+.grid-col-span-full{grid-column:1/-1;}
