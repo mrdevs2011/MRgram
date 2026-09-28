@@ -1908,6 +1908,50 @@ body:has(.search-overlay.open) .app-hdr {
 /* ═══════════════════════
    PROFILE VIEW
    ═══════════════════════ */
+
+/* ── Profile view layout fix (desktop: sidebar ostida emas, markazda) ── */
+#profileView {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  min-height: 100%;
+}
+#profileView.on {
+  display: block;
+}
+@media (min-width: 768px) {
+  #profileView.on {
+    margin-left: var(--content-left, var(--sidebar, 68px)) !important;
+    width: calc(100% - var(--content-left, var(--sidebar, 68px)));
+    max-width: 680px;
+    padding-top: 0 !important;
+  }
+  #profileView .profile-hdr {
+    padding-top: 16px;
+  }
+  /* cover to'liq view ichida */
+  #profileView .profile-cover {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 0;
+  }
+  #profileView .profile-hdr:has(#profileCover:not([data-empty="true"])) .profile-cover {
+    width: calc(100% + 32px);
+    margin-left: -16px;
+    margin-right: -16px;
+  }
+}
+@media (min-width: 1200px) {
+  #profileView.on {
+    width: var(--center-w, 600px) !important;
+    max-width: var(--center-w, 600px) !important;
+    margin-right: 0;
+  }
+}
+
+
 /* profileView padding — .view.on orqali boshqariladi (feed.css) */
 
 .profile-hdr {
