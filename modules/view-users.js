@@ -3,7 +3,7 @@
  * Faqat admin (profiles.is_admin) uchun
  */
 
-import { sb, state, isAdmin, fetchAllRows, mapProfile, mapPost, ts, purgeUserMedia, verifyPassword } from './config.js';
+import { sb, state, isAdmin, fetchAllRows, mapProfile, mapPost, ts, purgeUserMedia } from './config.js';
 import { $ } from './utils.js';
 import { toast } from './toast.js';
 import { adminResetPassword } from './admin-reset-password.js';
@@ -37,11 +37,9 @@ let _initialized = false;
 /* ── Parol bilan ochish (har gal panel ochilganda qayta yopiq holatda
  * boshlanadi — admin hisobiga kirgan boshqa kishi parolni bilmasa
  * hech narsa ko'ra olmaydi, hatto username ham) ───────────────────────── */
-let _unlocked = false;
 let _lastUsers = [];
 let _searchQuery = '';
 let _statusFilter = 'all';
-let _stats = {}; // uid -> { posts, views, likes, publicPosts, lastPostAt, chats, lastChatAt }
 
 /* ── Modal state ────────────────────────────────────────────────────── */
 let _pendingAction = null; // { type: 'delete'|'block'|'unblock', uid, name }
@@ -62,9 +60,7 @@ export function initView() {
     if (wrap) wrap.innerHTML = '<p style="padding:24px;color:var(--text2)">Ruxsat yo\'q.</p>';
     return;
   }
-  _unlocked = false; // panelga har kirishda qaytadan parol so'raladi
   _ensureModal();
-  _ensurePasswordModal();
   _ensureSearchFilter();
   // Har doim yangi onSnapshot ulaymiz — destroyView() uni to'xtatgan bo'lishi mumkin
   _initialized = true;
@@ -295,257 +291,6 @@ function _loadUsers() {
 }
 
 /* ── Parol modal (admin o'zining joriy parolini qayta kiritadi) ──────── */
-function _ensurePasswordModal() {
-  if ($('uaPwdModal')) return;
-
-  const modal = document.createElement('div');
-  modal.id = 'uaPwdModal';
-  modal.className = 'ua-modal-overlay';
-  modal.innerHTML = `
-    <div class="ua-modal">
-      <div class="ua-modal-icon">${_svgKey()}</div>
-      <div class="ua-modal-title">Maxfiy ma'lumotlar</div>
-      <div class="ua-modal-body">
-        Foydalanuvchilar ro'yxatini to'liq ko'rish va boshqarish uchun
-        admin parolini qayta tasdiqlang.
-        <input type="password" id="uaPwdInput" placeholder="Admin paroli"
-          class="ua-pwd-input" autocomplete="current-password">
-        <div id="uaPwdErr" class="ua-modal-warn" style="display:none"></div>
-      </div>
-      <div class="ua-modal-btns">
-        <button class="ua-modal-cancel" id="uaPwdCancel">Bekor qilish</button>
-        <button class="ua-modal-confirm" id="uaPwdConfirm">
-          <span id="uaPwdConfirmTxt">Mayli</span>
-        </button>
-      </div>
-    </div>`;
-  document.body.appendChild(modal);
-
-  const close = () => {
-    modal.classList.remove('show');
-    $('uaPwdInput').value = '';
-    $('uaPwdErr').style.display = 'none';
-    _pendingOpenUid  = null;
-    _pendingOpenName = null;
-  };
-
-  $('uaPwdCancel').addEventListener('click', close);
-  modal.addEventListener('click', e => { if (e.target === modal) close(); });
-
-  const submit = async () => {
-    const pwd = $('uaPwdInput').value;
-    const errEl = $('uaPwdErr');
-    const btn = $('uaPwdConfirm');
-    const txt = $('uaPwdConfirmTxt');
-    errEl.style.display = 'none';
-
-    if (!pwd) {
-      errEl.textContent = "Parolni kiriting";
-      errEl.style.display = 'block';
-      return;
-    }
-    const _email = state.me?.email;
-    if (!_email) {
-      errEl.textContent = "Sessiya topilmadi, qayta kiring";
-      errEl.style.display = 'block';
-      return;
-    }
-
-    btn.disabled = true;
-    txt.textContent = '...';
-    try {
-      await verifyPassword(_email, pwd);
-      _unlocked = true;
-      close();
-      _pendingOpenUid = null;
-      _pendingOpenName = null;
-      _renderList();
-      toast("Panel ochildi", 'success');
-    } catch (err) {
-      errEl.textContent = (err.code === 'wrong-password')
-        ? "Parol noto'g'ri"
-        : "Xatolik: " + err.message;
-      errEl.style.display = 'block';
-    } finally {
-      btn.disabled = false;
-      txt.textContent = 'Mayli';
-    }
-  };
-
-  $('uaPwdConfirm').addEventListener('click', submit);
-  $('uaPwdInput')
-}
-
-function _openPasswordModal() {
-  const modal = $('uaPwdModal');
-  if (!modal) return;
-  modal.classList.add('show');
-  setTimeout(() => $('uaPwdInput')?.focus(), 50);
-}
-
-/* ── Foydalanuvchi bo'yicha "USER MALUMOTLARI" panel (3 tab) ──────────
- * Tablar: Ochiq malumotlar / Statuslar va yopiq malumotlar / Tarixlar.
- * Suhbatlar bo'limida faqat metama'lumot (oxirgi xabar preview'i) —
- * to'liq yozishma tarixi emas. ────────────────────────────────────── */
-let _detailUid = null;
-let _detailTab = 'info';
-let _pendingOpenUid = null;
-let _pendingOpenName = null;
-let _loginHistoryCache = {}; // uid -> array | 'loading'
-
-function _ensureDetailModal() {
-  if ($('uaDetailModal')) return;
-  const modal = document.createElement('div');
-  modal.id = 'uaDetailModal';
-  modal.className = 'ua-modal-overlay';
-  modal.innerHTML = `
-    <div class="ua-modal ua-detail-modal">
-      <div class="ua-detail-head">
-        <div class="ua-modal-title" style="margin:0">User malumotlari</div>
-        <div class="ua-detail-avi" id="uaDetailAvi"></div>
-      </div>
-      <div class="ua-detail-tabs">
-        <button class="ua-detail-tab" data-tab="info">Ochiq malumotlar</button>
-        <button class="ua-detail-tab" data-tab="status">Statuslar va yopiq malumotlar</button>
-        <button class="ua-detail-tab" data-tab="tarix">Tarixlar</button>
-      </div>
-      <div class="ua-detail-body" id="uaDetailBody"></div>
-      <div class="ua-modal-btns">
-        <button class="ua-modal-cancel" id="uaDetailClose">Yopish</button>
-      </div>
-    </div>`;
-  document.body.appendChild(modal);
-
-  $('uaDetailClose').addEventListener('click', () => modal.classList.remove('show'));
-  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
-
-  modal.querySelectorAll('.ua-detail-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      _detailTab = btn.dataset.tab;
-      _renderDetailBody();
-    });
-  });
-}
-
-function _openDetailModal(uid, name) {
-  _detailUid = uid;
-  _detailTab = 'info';
-  const u = _lastUsers.find(x => (x.uid || x.id) === uid) || {};
-  const initials = (name || 'U').trim()[0]?.toUpperCase() || 'U';
-  $('uaDetailAvi').innerHTML = u.avatar
-    ? `<img src="${u.avatar}" alt="">`
-    : initials;
-  $('uaDetailModal').classList.add('show');
-  _renderDetailBody();
-}
-
-async function _renderDetailBody() {
-  const body = $('uaDetailBody');
-  if (!body || !_detailUid) return;
-
-  document.querySelectorAll('.ua-detail-tab').forEach(b =>
-    b.classList.toggle('active', b.dataset.tab === _detailTab));
-
-  const u = _lastUsers.find(x => (x.uid || x.id) === _detailUid) || {};
-  const s = _stats[_detailUid] || { postList: [], chatList: [] };
-  const row = (label, value) => `
-    <div class="ua-field-row">
-      <span class="ua-field-label">${_esc(label)}</span>
-      <span class="ua-field-value">${value || '—'}</span>
-    </div>`;
-
-  /* ── Tab 1: Ochiq malumotlar ── */
-  if (_detailTab === 'info') {
-    body.innerHTML =
-      row('Ism', _esc(u.fullName || u.username || '')) +
-      row('Foydalanuvchi nomi', u.username ? '@' + _esc(u.username) : '') +
-      row('To\'liq ism', _esc(u.fullName || '')) +
-      row('UID', `<span style="font-size:12px;opacity:.7">${_esc(_detailUid)}</span>`) +
-      row('Bio (tavsif)', u.bio ? _esc(u.bio) : '');
-
-  /* ── Tab 2: Statuslar va yopiq malumotlar ── */
-  } else if (_detailTab === 'status') {
-    const approvedAt = u.approvedAt?.toDate ? u.approvedAt.toDate().toLocaleString('uz-UZ') : '';
-    const blockedAt  = u.blockedAt?.toDate  ? u.blockedAt.toDate().toLocaleString('uz-UZ')  : '';
-    const lastSeen   = u.lastSeenAt?.toDate ? u.lastSeenAt.toDate().toLocaleString('uz-UZ') : '';
-    const lastLogin  = u.lastLoginAt?.toDate? u.lastLoginAt.toDate().toLocaleString('uz-UZ'): '';
-    const devices    = Array.isArray(u.fcmTokens) ? u.fcmTokens.length : 0;
-    body.innerHTML =
-      row('Holat', _statusBadge(u)) +
-      row('Elektron pochta', u.email ? _esc(u.email) : '') +
-      row('Ruxsat berilgan', approvedAt) +
-      row('Bloklangan', blockedAt) +
-      row('Qurilmalar (push)', String(devices)) +
-      row('Oxirgi faollik', lastSeen) +
-      row('Oxirgi login', lastLogin) +
-      row('Platforma', u.lastPlatform ? _esc(u.lastPlatform) : '') +
-      (u.lastUserAgent ? `<div class="ua-field-row"><span class="ua-field-label">User agent</span>
-        <span class="ua-field-value" style="font-size:11px;word-break:break-all;opacity:.75">${_esc(u.lastUserAgent)}</span></div>` : '');
-
-  /* ── Tab 3: Tarixlar (login tarixi + postlar + suhbatlar) ── */
-  } else if (_detailTab === 'tarix') {
-    body.innerHTML = '<div class="spin-wrap"><div class="spinner"></div></div>';
-
-    let entries = _loginHistoryCache[_detailUid];
-    if (!entries || entries === 'loading') {
-      _loginHistoryCache[_detailUid] = 'loading';
-      try {
-        const { data, error } = await sb.from('login_history').select('*')
-          .eq('user_id', _detailUid).order('at', { ascending: false });
-        if (error) throw error;
-        entries = (data || []).map(r => ({ type: r.type, at: ts(r.at), platform: r.platform, userAgent: r.user_agent }));
-        _loginHistoryCache[_detailUid] = entries;
-      } catch (err) {
-        entries = [];
-      }
-    }
-    if (_detailTab !== 'tarix') return; // tab almashtirilgan bo'lsa eski natijani chizmaymiz
-
-    const pub  = s.postList.filter(p => p.isPublic);
-    const priv = s.postList.filter(p => !p.isPublic);
-    const postRow = p => `
-      <a class="ua-post-link" href="${p.url || '#'}" target="_blank" rel="noopener">
-        ${p.url ? 'Media' : 'Link yo\'q'}${p.text ? ' — ' + _esc(p.text.slice(0,40)) : ''}
-        <span class="ua-date" style="display:block">
-          ${p.views} ko'rish · ${p.likes} like ${p.at ? '· ' + new Date(p.at).toLocaleString('uz-UZ') : ''}
-        </span>
-      </a>`;
-    const chatRows = (s.chatList || []).map(c => {
-      const other = _lastUsers.find(x => (x.uid || x.id) === c.otherUid);
-      const otherName = other ? (other.fullName || other.username || c.otherUid) : (c.otherUid || 'Noma\'lum');
-      return `
-      <div class="ua-detail-row">
-        <div><strong>${_esc(otherName)}</strong> bilan suhbat</div>
-        <div class="ua-date">${_esc((c.lastMessage||'').slice(0,80) || '(media/bo\'sh)')}
-          ${c.at ? '· ' + new Date(c.at).toLocaleString('uz-UZ') : ''}</div>
-      </div>`;
-    }).join('');
-
-    body.innerHTML = `
-      <div class="ua-detail-section">
-        <div class="ua-detail-section-title">Kirish tarixi (${entries.length})</div>
-        ${entries.length ? entries.map(h => `
-          <div class="ua-detail-row">
-            <div>${h.type === 'login' ? 'Login (parol bilan)' : 'Sessiya tiklandi'}
-              — ${h.at?.toDate ? h.at.toDate().toLocaleString('uz-UZ') : ''}</div>
-            ${h.platform ? `<div class="ua-date">${_esc(h.platform)}</div>` : ''}
-          </div>`).join('') : '<p class="ua-empty">Tarix yo\'q (eski foydalanuvchi)</p>'}
-      </div>
-      <div class="ua-detail-section">
-        <div class="ua-detail-section-title">Ochiq postlar (${pub.length})</div>
-        ${pub.length ? pub.map(postRow).join('') : '<p class="ua-empty">Yo\'q</p>'}
-      </div>
-      <div class="ua-detail-section">
-        <div class="ua-detail-section-title">Yopiq (private) postlar (${priv.length})</div>
-        ${priv.length ? priv.map(postRow).join('') : '<p class="ua-empty">Yo\'q</p>'}
-      </div>
-      <div class="ua-detail-section">
-        <div class="ua-detail-section-title">Suhbatlar (${(s.chatList||[]).length})</div>
-        ${chatRows || '<p class="ua-empty">Suhbat yo\'q</p>'}
-      </div>`;
-  }
-}
-
 /* ── Helpers ────────────────────────────────────────────────────────── */
 function _statusBadge(user) {
   if (user.blocked === true)
@@ -599,8 +344,7 @@ async function _doReject(btn, uid, name) {
 
 /* ── "Kutayotgan foydalanuvchilar" tezkor mini-bo'lim ──
  * actionsView boshida — scroll qilmasdan tasdiqlash/rad etish uchun.
- * Umumiy ro'yxat kabi parol bilan qulflangan (_unlocked=false bo'lsa
- * faqat son ko'rsatiladi, ismlar yashirin). ── */
+ * ── */
 function _ensurePendingMiniCSS() {
   if (document.getElementById('pending-mini-css')) return;
   const s = document.createElement('style');
@@ -650,26 +394,6 @@ function _renderPendingMini(users) {
 
   const pending = (users || []).filter(u => u.approved === false && !u.blocked);
 
-  if (!_unlocked) {
-    if (!pending.length) {
-      section.innerHTML = `<div class="pmini-wrap"><div class="pmini-empty">Kutayotgan foydalanuvchilar yo'q</div></div>`;
-      return;
-    }
-    section.innerHTML = `
-      <div class="pmini-wrap">
-        <div class="pmini-locked" id="pminiUnlockBar">
-          <span class="pmini-locked-count">${pending.length} ta kutayotgan foydalanuvchi</span>
-          <span class="pmini-locked-hint">Parol bilan ochish →</span>
-        </div>
-      </div>`;
-    document.getElementById('pminiUnlockBar')?.addEventListener('click', () => {
-      _pendingOpenUid = null;
-      _pendingOpenName = null;
-      _openPasswordModal();
-    });
-    return;
-  }
-
   if (!pending.length) {
     section.innerHTML = `<div class="pmini-wrap"><div class="pmini-empty">Kutayotgan foydalanuvchilar yo'q</div></div>`;
     return;
@@ -705,45 +429,6 @@ function _renderPendingMini(users) {
 function _render(wrap, users) {
   if (!users.length) {
     wrap.innerHTML = '<p style="padding:24px;color:var(--text2)">Foydalanuvchilar yo\'q.</p>';
-    return;
-  }
-
-  if (!_unlocked) {
-    /* ── Yopiq holat: ism + pending badge ko'rinadi, boshqa ma'lumot yashirin ── */
-    wrap.innerHTML = `
-      <div class="ua-locked-banner">
-        To'liq ma'lumot va boshqaruv tugmalari berkitilgan.
-        <button id="uaUnlockBtn" class="ua-unlock-banner-btn">Parol bilan ochish</button>
-      </div>` + users.map(u => {
-        const name = u.fullName || u.username || u.uid || u.id;
-        const isPending = u.approved === false;
-        const isRejected = u.approved === 'rejected';
-        const badgeHtml = isPending
-          ? `<span class="ua-badge ua-badge--pending" style="margin-left:8px">Kutilmoqda</span>`
-          : isRejected
-          ? `<span class="ua-badge ua-badge--rejected" style="margin-left:8px">Rad etildi</span>`
-          : '';
-        return `
-        <div class="ua-row ua-row--locked" data-uid="${u.uid || u.id}">
-          <div class="ua-info">
-            <div class="ua-name">${_esc(name)}${badgeHtml}</div>
-          </div>
-        </div>`;
-      }).join('');
-
-    wrap.querySelectorAll('.ua-row--locked').forEach(row => {
-      row.addEventListener('click', () => {
-        _pendingOpenUid  = row.dataset.uid;
-        _pendingOpenName = (row.querySelector('.ua-name')?.textContent || '').trim();
-        _openPasswordModal();
-      });
-    });
-    $('uaUnlockBtn')?.addEventListener('click', e => {
-      e.stopPropagation();
-      _pendingOpenUid  = null;
-      _pendingOpenName = null;
-      _openPasswordModal();
-    });
     return;
   }
 
@@ -835,12 +520,6 @@ function _svgUnlock() {
     <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>
   </svg>`;
 }
-function _svgKey() {
-  return `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--blue)">
-    <circle cx="7.5" cy="15.5" r="5.5"/><path d="M21 2l-9.6 9.6"/><path d="M15.5 7.5l3 3"/><path d="M19 4l1.5 1.5"/>
-  </svg>`;
-}
-
 function _esc(str) {
   return String(str)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
@@ -850,6 +529,4 @@ function _esc(str) {
 export function destroyView() {
   if (_unsubUsers) { _unsubUsers(); _unsubUsers = null; }
   _initialized = false;
-  _unlocked = false;
-  _stats = {};
 }

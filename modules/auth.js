@@ -112,18 +112,6 @@ function _offlineAccessDecision(uid) {
   return { allow: true, reason: 'verified-clean' };
 }
 
-/* ── Kirish tarixi: har bir login/sessiya tiklanganda yangi yozuv ────── */
-async function _logLoginHistory(uid, type) {
-  try {
-    await sb.from('login_history').insert({
-      user_id: uid,
-      type, // 'login' | 'session'
-      user_agent: navigator.userAgent || null,
-      platform: navigator.platform || null,
-    });
-  } catch (_) { /* tarixni yoza olmasak ham ilova ishlashda davom etsin */ }
-}
-
 /* ── Render callbacks injected by script.js ──────────────────────────── */
 let _cb = {};
 export function setRenderCallbacks(callbacks) {
@@ -256,7 +244,6 @@ if (authBtn) {
             last_user_agent: navigator.userAgent || null,
             last_platform: navigator.platform || null,
           }).eq('id', data.user.id);
-          await _logLoginHistory(data.user.id, 'login');
         } catch (_) { /* profil yo'q bo'lsa ham loginni to'xtatmaymiz */ }
         // onAuthStateChange o'zi ilovani yoki pending ekranni ko'rsatadi
         return;
@@ -776,7 +763,6 @@ async function _enterApp(user) {
         last_user_agent: navigator.userAgent || null,
         last_platform: navigator.platform || null,
       }).eq('id', user.uid);
-      await _logLoginHistory(user.uid, 'session');
     } catch (_) { /* jim o'tkazib yuboramiz */ }
 
     startPresenceHeartbeat();
