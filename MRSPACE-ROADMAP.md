@@ -213,7 +213,7 @@ drop table if exists public.follows;
 - Bosqichma-bosqich: avval mapperlar oddiy `number` qaytarsin, keyin modul-modul ko'chir. Ustuvorlik: **past** (foya: soddalik, xavf: yuqori).
 
 ### 6.2 Service worker — 🔶
-- [ ] **Q6 tavsiyasi: nom O'ZGARMASIN** (`firebase-messaging-sw.js`), izoh yoz. *(Push obunalari nomga bog'liq.)*
+- [x] **Q6 tavsiyasi: nom O'ZGARMASIN** (`firebase-messaging-sw.js`), izoh yoz. *(Push obunalari nomga bog'liq.)*
 - [x] **Cache versiyasi avtomatik:** `build-env.mjs` build vaqtida `CACHE_VERSION` ga vaqt tamg'asini yozadi (`t-<timestamp>`).
 - [x] **HTML strategiyasi:** network-first (3 s timeout) → kesh fallback (tag `diet-progress-04b`).
 - [x] **Yangilanish xabari:** SW `skipWaiting` qiladi, shuning uchun `controllerchange` (sahifa ochiq paytida) → pastda "Yangi versiya bor · Yangilash" paneli (`index.html`, branch `diet/06-sw-update-toast`). ⚠️ Brauzerda sinalmagan (qoida 8): stil inline, `#000`/`#fff`.
@@ -231,13 +231,13 @@ drop table if exists public.follows;
 | # | Vazifa | Nima uchun | Holat |
 |---|---|---|---|
 | 7.1 | Admin parol reset | 2-fazada. Eng katta real og'riq | ✅ |
-| 7.2 | Storage kvotasi | video/fayl limiti 25 MB ✅, `compress.js` (klient siqish) bor; admin sarf-ko'rsatkichi `[QAROR]` | 🔶 |
-| 7.3 | Zaxira nusxa | GitHub Actions cron: haftada bir `pg_dump` → shifrlangan artifact/MRdrive | ❌ |
+| 7.2 | Storage kvotasi | limit 25 MB ✅ (2026-09-29: avval kodda 50/30 MB edi, endi `MAX_FILE`/`STORY_MAX` = 25 MB, `diet/08-docs`), `compress.js` bor; admin sarf-ko'rsatkichi `[QAROR]` | 🔶 |
+| 7.3 | Zaxira nusxa | GitHub Actions cron: haftada bir `pg_dump` → shifrlangan artifact/MRdrive | 🔶 `.github/workflows/backup.yml` yozildi; secrets `SUPABASE_DB_URL`, `BACKUP_PASSPHRASE` — MR qo'yadi |
 | 7.4 | TURN | Env quvuri (`build-env.mjs:19-21`) bor; Vercel'da `TURN_*` env qo'yilganini MR tekshirsin `[TEKSHIR]` | 🔶 |
-| 7.5 | Media maxfiyligi | `[QAROR Q7]` public bucket hozircha qolsin, rasmiy qaror sifatida yozilsin | ❌ |
+| 7.5 | Media maxfiyligi | `[QAROR Q7]` public bucket hozircha qolsin, rasmiy qaror sifatida yozilsin | ✅ README "Qarorlar" bo'limiga yozildi |
 | 7.6 | Rate limit | Past ustuvorlik; faqat yuborish tezligi | ❌ |
 | 7.7 | Xatolarni ko'rish | `window.onerror` + ixtiyoriy `client_errors` jadvali. Overengineering'ga qaytma | ❌ |
-| 7.8 | Onboarding matni | `index.html:79` hali "tiklash imkoni yo'q" deydi, aslida admin reset bor → "unutsangiz MR ga murojaat qiling" ga o'zgartirish | ❌ |
+| 7.8 | Onboarding matni | admin reset bor → "unutsangiz admin (MR) yangi parol beradi" | ✅ (`a3d0e14`) |
 
 ---
 
@@ -245,10 +245,10 @@ drop table if exists public.follows;
 
 - [x] Roadmap (`MRSPACE-ROADMAP.md`) repoga saqlandi va holatga ko'ra yangilandi (2026-09-28).
 - [x] `AUDIT.md` C10–C12 bo'limlari: holat qayta tekshiruvi, regressiya tahlili, link-tartibi tuzatilishi yozildi.
-- [ ] `README.md` ni qayta yozish: ~300 qator o'rniga ~80 qator (nima, deploy, env, patch tartibi, admin qo'llanmasi).
-- [ ] UI xaritasi/spetsifikatsiya bo'limlari → `docs/SPEC.md` yoki o'chirish; `AUDIT.md` → `docs/archive/`.
+- [x] `README.md` qayta yozildi: 43 qator (2026-09-29, `diet/08-docs`); eskisi `docs/archive/README-old.md`.
+- [x] UI xaritasi eski README bilan `docs/archive/` ga; `AUDIT.md` → `docs/archive/AUDIT.md`.
 - [ ] `supabase/patch-*.sql` → `supabase/migrations/NNN_*.sql`; `schema.sql` ni yangi holat bilan qayta yig'ish.
-- [ ] Smoke test ro'yxatini `docs/SMOKE.md` ga ko'chirish (har deploydan oldin 5 daqiqa).
+- [x] Smoke test ro'yxati `docs/SMOKE.md` ga ko'chirildi.
 - [ ] Ixtiyoriy: Playwright bilan 3 test (login, post, chat).
 
 ---
@@ -318,8 +318,8 @@ drop table if exists public.follows;
 | Q3 | Profilda website/location? | O'chir | **O'chirildi** (2026-09-29, MR tasdiqi) |
 | Q4 | Eski shaxsiy postlar? | Egasi bilan hal qil | |
 | Q5 | Parol reset: majburiy almashtirish? | Yo'q | |
-| Q6 | SW nomini o'zgartirish? | Qolsin (`firebase-messaging-sw.js`), izoh yoz | |
-| Q7 | Media bucket public qolsinmi? | Qolsin, rasmiy qaror sifatida yoz | |
+| Q6 | SW nomini o'zgartirish? | Qolsin (`firebase-messaging-sw.js`), izoh yoz | **Qolsin** (izoh yozildi, 2026-09-29) |
+| Q7 | Media bucket public qolsinmi? | Qolsin, rasmiy qaror sifatida yoz | **Qolsin** (README, 2026-09-29) |
 | Q8 | Like/comment counter triggerlari? | Hozircha qolsin | |
 | Q9 | Splash/loading animatsiya? | Bitta yengil animatsiya qoldir | |
 | Q10 | Supabase Pro'ga o'tish? | Storage 1 GB dan oshsa | |
