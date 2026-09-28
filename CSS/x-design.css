@@ -297,7 +297,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
   box-shadow: none;
   padding: 12px 16px;
 }
-.post-media { margin: 10px 0 0; border-radius: 16px; overflow: hidden; }
 
 /* ── Mobil: chap rail + to'liq kenglikdagi lenta ── */
 @media (max-width: 767px) {
@@ -357,8 +356,9 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 
 .post,
 [data-theme] .post {
-  display: flex; align-items: flex-start; gap: 12px;
-  padding: 12px 16px; overflow: visible;
+  --post-px: 16px; --post-avi: 40px; --post-gap: 12px;
+  display: flex; align-items: flex-start; gap: var(--post-gap);
+  padding: 12px var(--post-px); overflow: visible;
 }
 .post > .avi { width: 40px; height: 40px; border: none; box-shadow: none; }
 .post > .avi:hover { border: none; box-shadow: none; }
@@ -383,10 +383,14 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
   padding: 2px 0 0; margin: 0;
   font-size: 15px; line-height: 1.4; color: var(--text);
 }
+/* Media: post kartasining butun kengligiga (chetdan chetga), yumaloq burchak va ramkasiz.
+   Chap tomonda avatar ustuni + gap + padding, o'ng tomonda padding qadar chiqadi. */
 .post-media,
 [data-theme] .post-media {
-  margin: 12px 0 0; border: 1px solid var(--line);
-  border-radius: 16px; overflow: hidden;
+  width: auto;
+  margin: 12px calc(-1 * var(--post-px)) 0
+          calc(-1 * (var(--post-px) + var(--post-avi) + var(--post-gap)));
+  border: 0; border-radius: 0; overflow: hidden;
 }
 
 .post-actions {
