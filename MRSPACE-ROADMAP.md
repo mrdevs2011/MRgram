@@ -181,7 +181,7 @@ drop table if exists public.follows;
   - `db6028d` (4.0), `fbbcd8b` (4.1a) va `09bce2c` (F1) hashlari bu klonda **yo'q** (`git cat-file` → not a valid object). Ish boshqa klonda/branchda qolib ketgan yoki qaytarilgan bo'lishi mumkin.
   - `scripts/build-css.mjs` tartibi: `... admin-plain → mono → x-design` — ya'ni **x-design mono'dan KEYIN** (4.0 ta'rifidagi "mono oxirida" teskarisi; C11/C12 sababi aynan shu edi). `app.css` da ham shunday (mono 15560-qator, x-design 15720-qator).
   - `x-design.css`: **116** `!important` (tag'larda 82; "76 → 26" natijasi repoda yo'q). `x-design.css` da `color:#000 !important` = 0 ta, `mono.css` da 55 ta.
-  - F1.2: `vercel.json` da `/api`, `/img`, `/.well-known` rewrite/header'lari hali **bor** (roadmap "o'chirildi" degan edi).
+  - F1.2: `vercel.json` da `/api`, `/img`, `/.well-known` rewrite/header'lari topildi → **o'chirildi** (2026-09-29, branch `diet/01-vercel-cleanup`; papkalar yo'q, kodda ishlatilmaydi — grep). Catch-all faqat `modules/ CSS/ svg/ icons/` ni istisno qiladi. ⚠️ Preview'da ochilishi sinalmagan.
   - F1.8 (Eruda) tasdiqlandi: `index.html` da 0 ta.
   - **Qaror kerak (MR):** (a) tartibni `x-design → mono` ga o'zgartirish vizual natija beradi (qoida 8 — avval brauzerda ko'z bilan), (b) yoki mavjud tartib rasmiy qabul qilinadi. Shu qarorgacha CSS'da o'chirish/ko'chirish qilinmaydi.
 - [ ] **4.1b Inventar (to'liq):** Chrome DevTools Coverage yoki `purgecss --content index.html modules/*.js` bilan ishlatilmaydigan selektorlar ro'yxati. Taqqoslash **property darajasida** (AUDIT.md sabog'i).
