@@ -216,7 +216,7 @@ drop table if exists public.follows;
 - [ ] **Q6 tavsiyasi: nom O'ZGARMASIN** (`firebase-messaging-sw.js`), izoh yoz. *(Push obunalari nomga bog'liq.)*
 - [x] **Cache versiyasi avtomatik:** `build-env.mjs` build vaqtida `CACHE_VERSION` ga vaqt tamg'asini yozadi (`t-<timestamp>`).
 - [x] **HTML strategiyasi:** network-first (3 s timeout) → kesh fallback (tag `diet-progress-04b`).
-- [ ] **Yangilanish xabari:** yangi SW `waiting` bo'lsa toast "Yangi versiya bor, yangilash".
+- [x] **Yangilanish xabari:** SW `skipWaiting` qiladi, shuning uchun `controllerchange` (sahifa ochiq paytida) → pastda "Yangi versiya bor · Yangilash" paneli (`index.html`, branch `diet/06-sw-update-toast`). ⚠️ Brauzerda sinalmagan (qoida 8): stil inline, `#000`/`#fff`.
 - [ ] `PRECACHE_URLS` ni 4-fazadan keyin yangilash (CSS nomlari o'zgaradi!). `sw:170` atrofida `allSettled`-simon himoya bor — baribir tekshir.
 
 ### 6.3 Supabase kutubxonasi — ❌ [QAROR, past ustuvorlik]
