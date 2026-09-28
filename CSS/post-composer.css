@@ -43,7 +43,6 @@
   cursor: pointer;
   padding: 0;
 }
-#uploadOverlay .composer-close:hover { background: #272c30; }
 
 #uploadOverlay .composer-post-btn {
   width: auto;
@@ -55,8 +54,6 @@
 }
 #uploadOverlay .composer-post-btn:disabled,
 #uploadOverlay .composer-post-btn:disabled * {
-  background: var(--pal-gray-800) !important;
-  color: #6e6e6e !important;
   cursor: not-allowed;
   opacity: 1;
 }
@@ -75,7 +72,6 @@
   border-radius: 999px;
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--pal-gray-900);
 }
 #uploadOverlay .composer-avi img {
   width: 100%;

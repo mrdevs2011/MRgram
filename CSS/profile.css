@@ -41,12 +41,9 @@
 
 .profile-hdr {
   padding: 68px 16px 16px;
-  /* background/border-bottom → pastdagi --pg-* blok (~995-qator) belgilaydi (2026-08-30: !important olib tashlandi, halo pseudo-element o'chirildi) */
-  position: relative;
 }
 
 .profile-grid-hdr {
-  display: flex;
   /* border-top/border-bottom/background → --pg-* blok belgilaydi (2026-08-30: !important olib tashlandi) */
   margin: 0;
 }
@@ -59,15 +56,10 @@
   font-size: 12px;
   font-weight: 500;
   color: var(--text3);
-  border-bottom: 2px solid transparent;
   cursor: pointer;
   transition: none;
 }
 
-.profile-grid-tab.active {
-  color: var(--blue);
-  border-bottom-color: var(--blue);
-}
 
 /* .profile-hdr::before (blue-halo pseudo-element) butunlay o'chirildi
    2026-08-30 — bu yerdagi top/left-only qoldiq ham o'lik edi, chunki
@@ -314,10 +306,6 @@
   margin-top: 14px;
 }
 
-.edit-btn:hover {
-  background: var(--pal-gray-900);
-  border-color: var(--line3);
-}
 
 .profile-grid {
   /* display/grid-template-columns/gap → ui-improvements.css:603 (yagona manba), o'lik */

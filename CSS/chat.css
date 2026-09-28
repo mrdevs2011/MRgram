@@ -45,9 +45,7 @@
   flex-shrink: 0;
   background: var(--glass-mid);
   border: 0.5px solid var(--glass-border);
-  box-shadow: var(--specular-top);
-  position: relative;
-  overflow: visible; /* presence-dot kesilmasin */
+  box-shadow: var(--specular-top); /* presence-dot kesilmasin */
 }
 .chat-avi img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
 
@@ -113,8 +111,6 @@
 #chatThreadModal {
   position: fixed;
   inset: 0;
-  background: var(--bg);
-  z-index: 360;
   display: none;
   flex-direction: column;
   overscroll-behavior: contain;
@@ -168,22 +164,13 @@
   padding: 12px 12px 8px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
 /* ── Sana ajratuvchi — Telegram uslubidagi suzuvchi pill ("Bugun"/"Kecha") ── */
 .chat-date-sep {
-  display: flex;
-  justify-content: center;
   margin: 10px 0 8px;
 }
 .chat-date-sep span {
-  background: var(--pal-white-06);
-  color: var(--text2);
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 5px 14px;
-  border-radius: 12px;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
@@ -205,8 +192,6 @@
 }
 .chat-msg.theirs {
   align-self: flex-start;
-  align-items: flex-end;
-  gap: 0;
 }
 
 /* ── Bubble — Telegram compact style ── */
@@ -308,21 +293,12 @@
 .chat-thread-input-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
   padding-bottom: max(10px, env(safe-area-inset-bottom));
-  border-top: 1px solid var(--line);
   flex-shrink: 0;
 }
 
 .chat-thread-input {
   flex: 1;
-  background: var(--bg4);
-  border: 1px solid var(--line2);
-  border-radius: 20px;
-  padding: 10px 14px;
-  font-size: 13.5px;
-  color: var(--text);
   font-family: var(--font);
   outline: none;
 }
@@ -393,10 +369,6 @@
 /* ── New input row with blur & voice ── */
 .chat-thread-input-row {
   position: relative;
-  background: var(--bg);
-  border-top: 1px solid var(--line);
-  gap: 6px;
-  padding: 8px 10px;
   padding-bottom: max(8px, env(safe-area-inset-bottom));
 }
 
@@ -404,15 +376,11 @@
 .chat-attach-btn {
   width: 36px; height: 36px;
   border-radius: 50%;
-  background: var(--bg4);
-  border: none;
   display: flex; align-items: center; justify-content: center;
-  color: var(--text2);
   cursor: pointer;
   flex-shrink: 0;
   transition: none;
 }
-.chat-attach-btn:hover { background: var(--bg5); color: var(--text); }
 
 /* Voice / Send button */
 .chat-voice-wrap {
@@ -440,16 +408,12 @@
 .chat-voice-btn {
   position: relative;
   z-index: 1;
-  width: 38px; height: 38px;
   border-radius: 50%;
-  background: var(--blue);
-  border: none;
   display: flex; align-items: center; justify-content: center;
   color: var(--pal-white);
   cursor: pointer;
   flex-shrink: 0;
   transition: none;
-  box-shadow: 0 2px 10px #3a3a3a;
 }
 /* .chat-voice-btn.recording lives in the "VOICE BTN — amplitude-based
  * smooth pulse" section below, which is the only recording style that
@@ -616,8 +580,6 @@
 #chatContextMenu {
   position: fixed;
   display: none;
-  background: var(--bg);
-  border: 0.5px solid var(--line);
   border-radius: 14px;
   padding: 6px;
   min-width: 170px;
@@ -639,7 +601,6 @@
   background: none;
   width: 100%;
   text-align: left;
-  transition: none;
 }
 .ctx-item:hover { background: var(--bg4); }
 .ctx-item.danger { color: var(--pal-red); }
@@ -655,7 +616,6 @@
 #chatLightbox {
   position: fixed;
   inset: 0;
-  background: var(--pal-black);
   z-index: 600;
   display: none;
   align-items: center;
@@ -842,9 +802,6 @@
   position: fixed;
   inset: 0;
   z-index: 1000000;
-  background:
-    radial-gradient(circle at 50% 0%, var(--pal-gray-800) 0%, var(--pal-black) 55%),
-    var(--pal-black);
   display: none;
   /* Telegram-style: haqiqiy full-screen, hech qanday "karta" chegarasi yo'q */
 }
@@ -907,18 +864,13 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2px solid #156737;
-  animation: none;
 }
-.incoming-call-ring-anim span:nth-child(2) { animation-delay: 0s; }
-.incoming-call-ring-anim span:nth-child(3) { animation-delay: 0s; }
 
 .incoming-call-avi {
   width: 128px; height: 128px;
   border-radius: 50%;
   overflow: hidden;
   background: var(--bg4);
-  border: 3px solid var(--pal-green);
   flex-shrink: 0;
   position: relative;
   z-index: 1;
@@ -945,13 +897,11 @@
 .inc-call-btn {
   width: 66px; height: 66px;
   border-radius: 50%;
-  border: none;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  transition: none;
 }
-.inc-call-btn.reject  { background: var(--pal-red); color: var(--pal-white); }
-.inc-call-btn.accept  { background: var(--pal-green); color: var(--pal-white); }
+.inc-call-btn.reject  { color: var(--pal-white); }
+.inc-call-btn.accept  { color: var(--pal-white); }
 .inc-call-btn:hover   { box-shadow: 0 4px 20px var(--pal-black); }
 .inc-call-label {
   font-size: 13px;
@@ -1015,8 +965,6 @@
   width: 100px; height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  background: var(--bg4);
-  border: 3px solid var(--pal-legacy-2d2d33);
 }
 .call-voice-avi img { width: 100%; height: 100%; object-fit: cover; }
 .call-avi-initial {
@@ -1132,9 +1080,7 @@
   transform: translateX(-50%);
   z-index: 3;
   gap: 10px;
-  background: var(--pal-black-55);
   padding: 7px 10px;
-  border-radius: 50px;
   max-width: calc(100vw - 24px);
 }
 
@@ -1329,7 +1275,6 @@ a.cfm-name--link:hover {
    VOICE BTN — amplitude-based smooth pulse (no modal)
    ═══════════════════════════════════════════════════════════════════════ */
 .chat-voice-btn.recording {
-  background: var(--pal-white) !important;
   border: 0.5px solid #5F5F63 !important;
   animation: none !important;
   /* scale va glow CSS variable orqali JS dan boshqariladi */
@@ -1435,7 +1380,6 @@ a.cfm-name--link:hover {
 
 /* Ring animation — green glass rings */
 .incoming-call-ring-anim span {
-  border: 1.5px solid #145D33 !important;
   box-shadow: 0 0 12px var(--pal-gray-900) !important;
 }
 

@@ -189,7 +189,6 @@
   justify-content: center;
   padding: 20px;
   z-index: 100;
-  background: var(--bg);
   background-color: var(--pal-gray-900);
 }
 
@@ -254,12 +253,8 @@
 }
 
 .err-msg {
-  color: var(--red);
-  font-size: 12px;
   text-align: center;
   margin-top: 6px;
-  min-height: 16px;
-  font-family: var(--mono);
 }
 
 /* ═══════════════════════
@@ -279,14 +274,12 @@
 }
 
 .spin-wrap {
-  padding: 44px;
   text-align: center;
 }
 
 .spinner {
   width: 28px; height: 28px;
   border: 2px solid var(--line2);
-  border-top-color: var(--blue);
   border-radius: 50%;
   margin: 0 auto;
   /* no-animations.css hamma animatsiyani o'chiradi — spinner aylanishi kerak, aks holda qotib qolgandek ko'rinadi */
@@ -297,15 +290,6 @@
 /* ═══════════════════════
    SKELETON LOADING
    ═══════════════════════ */
-.skeleton-post {
-  background: var(--bg2);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  margin-bottom: 12px;
-  overflow: hidden;
-  padding: 14px;
-  animation: none;
-}
 
 .skel {
   background: var(--bg4);
@@ -323,14 +307,7 @@
   animation: none;
 }
 
-.skel-avi  { width: 38px; height: 38px; border-radius: 50%; }
-.skel-line { height: 11px; }
-.skel-media {
-  height: 200px;
-  margin: 12px -14px;
-  border-radius: 0;
-}
-.skel-actions { height: 42px; border-radius: 10px; margin-top: 10px; }
+.skel-actions { height: 42px; border-radius: 10px; }
 
 /* Comment skeleton rows */
 .cmt-skel-row {
@@ -346,30 +323,15 @@
    Types defined in ui-improvements.css
    ═══════════════════════ */
 #toast {
-  position: fixed;
-  bottom: calc(var(--nav) + 20px);
-  left: 50%;
-  transform: translateX(-50%) translateY(16px);
-  background: var(--glass);
   border: 1px solid var(--glass-border);
-  border-radius: 40px;
-  padding: 10px 24px;
-  font-size: 13px;
-  font-weight: 500;
-  z-index: 9999;
-  opacity: 0;
   visibility: hidden;
-  transition: none;
   white-space: nowrap;
-  pointer-events: none;
   box-shadow: 0 8px 32px var(--pal-black);
   letter-spacing: -0.1px;
 }
 
 #toast.show {
-  opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0);
 }
 
 /* ═══════════════════════════════════════════
@@ -436,9 +398,6 @@
 .empty-search strong { color: var(--text2); font-weight: 500; }
 
 .empty-search-hint {
-  font-size: 12px;
-  color: var(--text3);
-  margin-top: 6px;
   font-family: var(--mono);
 }
 
@@ -636,15 +595,12 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 10px;
   background: none;
   border: none;
   color: var(--text2);
   cursor: pointer;
-  transition: none;
   flex-shrink: 0;
 }
-.hdr-icon-btn:hover { background: var(--bg3); color: var(--text); }
 .hdr-icon-btn svg { width: 17px; height: 17px; }
 
 /* ── Search Overlay (replaces old hdr-search-expand) ── */
@@ -668,7 +624,6 @@
 .search-overlay.open {
   opacity: 1;
   pointer-events: all;
-  top: 0;
 }
 
 /* Search ochilganda header yashiriladi */
@@ -702,7 +657,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .search-overlay-icon {
-  color: var(--text3);
   flex-shrink: 0;
 }
 
@@ -888,12 +842,6 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* .post:hover cosmetics → CSS/00-components.core.css'da (flat, glow yo'q) */
 
-.post-head {
-  padding: 12px 14px 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
 .avi {
   width: 38px; height: 38px;
@@ -907,24 +855,16 @@ body:has(.search-overlay.open) .app-hdr {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  border: 0.5px solid var(--glass-border);
-  box-shadow: var(--specular-top), 0 2px 8px var(--pal-black);
   transition: none;
 }
 
 .avi:hover {
   border-color: var(--pal-legacy-464646);
-  box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-800);
 }
 .avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.post-meta { flex: 1; cursor: pointer; }
+.post-meta { cursor: pointer; }
 
-.post-name {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.2px;
-}
 
 .post-time {
   font-size: 10px;
@@ -954,7 +894,6 @@ body:has(.search-overlay.open) .app-hdr {
 
 .del-btn:hover {
   color: var(--red);
-  background: var(--red-glow);
 }
 
 /* ── Media ─ */
@@ -962,7 +901,6 @@ body:has(.search-overlay.open) .app-hdr {
   cursor: pointer;
   background: var(--pal-black);
   position: relative;
-  overflow: hidden;
   width: 100%;
   min-height: 180px; /* media joyi darrov qulab tushmasligi uchun */
 }
@@ -973,7 +911,6 @@ body:has(.search-overlay.open) .app-hdr {
   display: block;
   background: var(--pal-black);
   filter: blur(0);
-  transition: none;
 }
 
 .post-media video {
@@ -1032,7 +969,6 @@ body:has(.search-overlay.open) .app-hdr {
   left: 0;
   right: 0;
   height: 36px;
-  background: var(--pal-black);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1041,13 +977,10 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .vc-play, .vc-mute, .vc-fs {
-  background: none;
   border: none;
   color: var(--pal-white);
   cursor: pointer;
   padding: 4px;
-  display: flex;
-  align-items: center;
   flex-shrink: 0;
 }
 
@@ -1085,12 +1018,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 /* ── Caption ── */
-.post-caption {
-  padding: 10px 14px 8px;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--text);
-}
 
 .cap-more {
   color: var(--text3);
@@ -1109,17 +1036,7 @@ body:has(.search-overlay.open) .app-hdr {
 /* ── File Card ── */
 /* .file-card bazaviy blok → CSS/nav.css'ga ko'chirilgan (yagona manba, borderless.css bilan ziddiyatsiz) */
 
-.file-card:hover {
-  background: var(--glass-mid);
-  border-color: var(--glass-border-top);
-  box-shadow: var(--specular-top), var(--liquid-shadow-sm);
-}
 
-.file-card-icon {
-  width: 44px; height: 44px;
-  flex-shrink: 0;
-}
-.file-card-icon svg { width: 44px; height: 44px; display: block; }
 
 /* legacy – kept for old posts */
 .file-icon {
@@ -1180,36 +1097,16 @@ body:has(.search-overlay.open) .app-hdr {
   font-family: var(--mono);
 }
 
-.post-actions {
-  display: flex;
-}
 
 .act-btn {
-  flex: 1;
-  background: none;
-  border: none;
-  color: var(--text2);
-  padding: 11px 8px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 6px;
   cursor: pointer;
-  font-size: 13px;
-  font-family: var(--font);
   transition: none;
   border-right: 0.5px solid var(--glass-border);
-  position: relative;
-  overflow: hidden;
 }
 
 .act-btn:last-child { border-right: none; }
-.act-btn:hover {
-  background: var(--pal-gray-900);
-  color: var(--text);
-}
 .act-btn:active {transition: none; }
-.act-btn.liked { color: var(--red); }
 
 /* ── Reel Caption Sheet ── */
 #reelCapSheet .sheet {
@@ -1389,9 +1286,6 @@ body:has(.search-overlay.open) .app-hdr {
    ═══════════════════════════════════════════ */
 
 /* Dark mode: stronger borders and shadows */
-[data-theme="dark"] .post {
-  box-shadow: 0 2px 12px var(--pal-black);
-}
 
 [data-theme="dark"] .post:hover {
   box-shadow: 0 4px 20px var(--pal-black);
@@ -1425,12 +1319,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* Skeleton loading - theme aware shimmer */
 .skeleton-post {
-  background: var(--bg2);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 14px;
-  margin-bottom: 16px;
-  overflow: hidden;
   position: relative;
   animation: none;
 }
@@ -1526,25 +1415,9 @@ body:has(.search-overlay.open) .app-hdr {
 /* Action button ripple effect */
 .act-btn {
   position: relative;
-  overflow: hidden;
 }
 
 /* Avatar shimmer effect */
-.skel-avi {
-  position: relative;
-  overflow: hidden;
-}
-
-.skel-avi::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--pal-gray-700);
-  animation: none;
-}
 
 /* ─── CSS/profile.css ─── */
 /* ═══════════════════════
@@ -1590,12 +1463,9 @@ body:has(.search-overlay.open) .app-hdr {
 
 .profile-hdr {
   padding: 68px 16px 16px;
-  /* background/border-bottom → pastdagi --pg-* blok (~995-qator) belgilaydi (2026-08-30: !important olib tashlandi, halo pseudo-element o'chirildi) */
-  position: relative;
 }
 
 .profile-grid-hdr {
-  display: flex;
   /* border-top/border-bottom/background → --pg-* blok belgilaydi (2026-08-30: !important olib tashlandi) */
   margin: 0;
 }
@@ -1608,15 +1478,10 @@ body:has(.search-overlay.open) .app-hdr {
   font-size: 12px;
   font-weight: 500;
   color: var(--text3);
-  border-bottom: 2px solid transparent;
   cursor: pointer;
   transition: none;
 }
 
-.profile-grid-tab.active {
-  color: var(--blue);
-  border-bottom-color: var(--blue);
-}
 
 /* .profile-hdr::before (blue-halo pseudo-element) butunlay o'chirildi
    2026-08-30 — bu yerdagi top/left-only qoldiq ham o'lik edi, chunki
@@ -1863,10 +1728,6 @@ body:has(.search-overlay.open) .app-hdr {
   margin-top: 14px;
 }
 
-.edit-btn:hover {
-  background: var(--pal-gray-900);
-  border-color: var(--line3);
-}
 
 .profile-grid {
   /* display/grid-template-columns/gap → ui-improvements.css:603 (yagona manba), o'lik */
@@ -2653,8 +2514,7 @@ body:has(.search-overlay.open) .app-hdr {
   gap: 0;
   cursor: pointer;
   padding: 8px 16px;
-  border-radius: 14px;
-  transition: none; /* ui-improvements.css yagona manba, shu yerdagi qiymat o'lik edi */
+  border-radius: 14px; /* ui-improvements.css yagona manba, shu yerdagi qiymat o'lik edi */
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -2702,8 +2562,7 @@ body:has(.search-overlay.open) .app-hdr {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  margin-bottom: 8px;
-  transition: none; /* ui-improvements.css yagona manba, shu yerdagi qiymat o'lik edi */
+  margin-bottom: 8px; /* ui-improvements.css yagona manba, shu yerdagi qiymat o'lik edi */
   position: relative;
   overflow: hidden;
   box-shadow:
@@ -2903,7 +2762,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .file-card:hover {
-  background: var(--glass-mid);
   border-color: var(--glass-border-top);
   box-shadow: var(--specular-top), var(--liquid-shadow-sm);
 }
@@ -3086,14 +2944,9 @@ body:has(.search-overlay.open) .app-hdr {
   border: 0.5px solid var(--glass-border);
   border-radius: 16px;
   padding: 9px 13px;
-  transition: none;
   box-shadow: var(--specular-top);
 }
 
-.cmt-body:hover {
-  background: var(--glass-mid);
-  border-color: var(--glass-border-top);
-}
 
 .cmt-name {
   font-size: 11px;
@@ -3186,7 +3039,6 @@ body:has(.search-overlay.open) .app-hdr {
   font-family: var(--font);
   font-size: 13px;
   cursor: pointer;
-  transition: none;
   flex-shrink: 0;
   min-height: 44px;
   box-shadow: 0 4px 14px var(--blue-glow), inset 0 1px 0 var(--pal-legacy-46464b);
@@ -3211,7 +3063,6 @@ body:has(.search-overlay.open) .app-hdr {
   position: fixed;
   inset: 0;
   background: var(--pal-black);
-  z-index: 600;
   display: none;
   align-items: center;
   justify-content: center;
@@ -3258,7 +3109,6 @@ body:has(.search-overlay.open) .app-hdr {
 #detailModal {
   position: fixed;
   inset: 0;
-  z-index: 300;
   display: none;
   align-items: flex-end;
   justify-content: center;
@@ -3269,7 +3119,6 @@ body:has(.search-overlay.open) .app-hdr {
   display: flex;
 }
 
-#detailModal { z-index: 550 !important; }
 
 #detailContent {
   width: 100%;
@@ -3281,9 +3130,6 @@ body:has(.search-overlay.open) .app-hdr {
   border: 0.5px solid var(--glass-border);
   border-bottom: none;
   border-radius: 28px 28px 0 0;
-  box-shadow:
-    inset 0 1px 0 var(--glass-border-top),
-    0 -8px 48px var(--pal-black);
   position: relative;
 }
 
@@ -3613,10 +3459,9 @@ body:has(.search-overlay.open) .app-hdr {
     padding-bottom: 24px !important;
   }
 
-  .feed { max-width: 560px; margin: 0 auto; padding: 0 16px; }
+  .feed { margin: 0 auto; padding: 0 16px; }
 
   .post {
-    border-radius: 20px;
     border: 0.5px solid var(--glass-border);
     background: var(--glass);
     margin-bottom: 16px;
@@ -3625,7 +3470,7 @@ body:has(.search-overlay.open) .app-hdr {
   }
   .post-media { margin: 10px -14px; border-radius: 0; }
 
-  #detailContent { max-width: 580px; border-radius: 24px; margin-bottom: 20px; }
+  #detailContent { margin-bottom: 20px; }
   #detailModal { padding-left: var(--sidebar); }
 
   #userProfileModal { left: var(--sidebar); }
@@ -3777,9 +3622,7 @@ body:has(.search-overlay.open) .app-hdr {
   flex-shrink: 0;
   background: var(--glass-mid);
   border: 0.5px solid var(--glass-border);
-  box-shadow: var(--specular-top);
-  position: relative;
-  overflow: visible; /* presence-dot kesilmasin */
+  box-shadow: var(--specular-top); /* presence-dot kesilmasin */
 }
 .chat-avi img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
 
@@ -3845,8 +3688,6 @@ body:has(.search-overlay.open) .app-hdr {
 #chatThreadModal {
   position: fixed;
   inset: 0;
-  background: var(--bg);
-  z-index: 360;
   display: none;
   flex-direction: column;
   overscroll-behavior: contain;
@@ -3900,22 +3741,13 @@ body:has(.search-overlay.open) .app-hdr {
   padding: 12px 12px 8px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
 }
 
 /* ── Sana ajratuvchi — Telegram uslubidagi suzuvchi pill ("Bugun"/"Kecha") ── */
 .chat-date-sep {
-  display: flex;
-  justify-content: center;
   margin: 10px 0 8px;
 }
 .chat-date-sep span {
-  background: var(--pal-white-06);
-  color: var(--text2);
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: 5px 14px;
-  border-radius: 12px;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
@@ -3937,8 +3769,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 .chat-msg.theirs {
   align-self: flex-start;
-  align-items: flex-end;
-  gap: 0;
 }
 
 /* ── Bubble — Telegram compact style ── */
@@ -4040,21 +3870,12 @@ body:has(.search-overlay.open) .app-hdr {
 .chat-thread-input-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
   padding-bottom: max(10px, env(safe-area-inset-bottom));
-  border-top: 1px solid var(--line);
   flex-shrink: 0;
 }
 
 .chat-thread-input {
   flex: 1;
-  background: var(--bg4);
-  border: 1px solid var(--line2);
-  border-radius: 20px;
-  padding: 10px 14px;
-  font-size: 13.5px;
-  color: var(--text);
   font-family: var(--font);
   outline: none;
 }
@@ -4125,10 +3946,6 @@ body:has(.search-overlay.open) .app-hdr {
 /* ── New input row with blur & voice ── */
 .chat-thread-input-row {
   position: relative;
-  background: var(--bg);
-  border-top: 1px solid var(--line);
-  gap: 6px;
-  padding: 8px 10px;
   padding-bottom: max(8px, env(safe-area-inset-bottom));
 }
 
@@ -4136,15 +3953,11 @@ body:has(.search-overlay.open) .app-hdr {
 .chat-attach-btn {
   width: 36px; height: 36px;
   border-radius: 50%;
-  background: var(--bg4);
-  border: none;
   display: flex; align-items: center; justify-content: center;
-  color: var(--text2);
   cursor: pointer;
   flex-shrink: 0;
   transition: none;
 }
-.chat-attach-btn:hover { background: var(--bg5); color: var(--text); }
 
 /* Voice / Send button */
 .chat-voice-wrap {
@@ -4172,16 +3985,12 @@ body:has(.search-overlay.open) .app-hdr {
 .chat-voice-btn {
   position: relative;
   z-index: 1;
-  width: 38px; height: 38px;
   border-radius: 50%;
-  background: var(--blue);
-  border: none;
   display: flex; align-items: center; justify-content: center;
   color: var(--pal-white);
   cursor: pointer;
   flex-shrink: 0;
   transition: none;
-  box-shadow: 0 2px 10px #3a3a3a;
 }
 /* .chat-voice-btn.recording lives in the "VOICE BTN — amplitude-based
  * smooth pulse" section below, which is the only recording style that
@@ -4348,8 +4157,6 @@ body:has(.search-overlay.open) .app-hdr {
 #chatContextMenu {
   position: fixed;
   display: none;
-  background: var(--bg);
-  border: 0.5px solid var(--line);
   border-radius: 14px;
   padding: 6px;
   min-width: 170px;
@@ -4371,7 +4178,6 @@ body:has(.search-overlay.open) .app-hdr {
   background: none;
   width: 100%;
   text-align: left;
-  transition: none;
 }
 .ctx-item:hover { background: var(--bg4); }
 .ctx-item.danger { color: var(--pal-red); }
@@ -4387,7 +4193,6 @@ body:has(.search-overlay.open) .app-hdr {
 #chatLightbox {
   position: fixed;
   inset: 0;
-  background: var(--pal-black);
   z-index: 600;
   display: none;
   align-items: center;
@@ -4574,9 +4379,6 @@ body:has(.search-overlay.open) .app-hdr {
   position: fixed;
   inset: 0;
   z-index: 1000000;
-  background:
-    radial-gradient(circle at 50% 0%, var(--pal-gray-800) 0%, var(--pal-black) 55%),
-    var(--pal-black);
   display: none;
   /* Telegram-style: haqiqiy full-screen, hech qanday "karta" chegarasi yo'q */
 }
@@ -4639,18 +4441,13 @@ body:has(.search-overlay.open) .app-hdr {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2px solid #156737;
-  animation: none;
 }
-.incoming-call-ring-anim span:nth-child(2) { animation-delay: 0s; }
-.incoming-call-ring-anim span:nth-child(3) { animation-delay: 0s; }
 
 .incoming-call-avi {
   width: 128px; height: 128px;
   border-radius: 50%;
   overflow: hidden;
   background: var(--bg4);
-  border: 3px solid var(--pal-green);
   flex-shrink: 0;
   position: relative;
   z-index: 1;
@@ -4677,13 +4474,11 @@ body:has(.search-overlay.open) .app-hdr {
 .inc-call-btn {
   width: 66px; height: 66px;
   border-radius: 50%;
-  border: none;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  transition: none;
 }
-.inc-call-btn.reject  { background: var(--pal-red); color: var(--pal-white); }
-.inc-call-btn.accept  { background: var(--pal-green); color: var(--pal-white); }
+.inc-call-btn.reject  { color: var(--pal-white); }
+.inc-call-btn.accept  { color: var(--pal-white); }
 .inc-call-btn:hover   { box-shadow: 0 4px 20px var(--pal-black); }
 .inc-call-label {
   font-size: 13px;
@@ -4747,8 +4542,6 @@ body:has(.search-overlay.open) .app-hdr {
   width: 100px; height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  background: var(--bg4);
-  border: 3px solid var(--pal-legacy-2d2d33);
 }
 .call-voice-avi img { width: 100%; height: 100%; object-fit: cover; }
 .call-avi-initial {
@@ -4864,9 +4657,7 @@ body:has(.search-overlay.open) .app-hdr {
   transform: translateX(-50%);
   z-index: 3;
   gap: 10px;
-  background: var(--pal-black-55);
   padding: 7px 10px;
-  border-radius: 50px;
   max-width: calc(100vw - 24px);
 }
 
@@ -5061,7 +4852,6 @@ a.cfm-name--link:hover {
    VOICE BTN — amplitude-based smooth pulse (no modal)
    ═══════════════════════════════════════════════════════════════════════ */
 .chat-voice-btn.recording {
-  background: var(--pal-white) !important;
   border: 0.5px solid #5F5F63 !important;
   animation: none !important;
   /* scale va glow CSS variable orqali JS dan boshqariladi */
@@ -5167,7 +4957,6 @@ a.cfm-name--link:hover {
 
 /* Ring animation — green glass rings */
 .incoming-call-ring-anim span {
-  border: 1.5px solid #145D33 !important;
   box-shadow: 0 0 12px var(--pal-gray-900) !important;
 }
 
@@ -5614,29 +5403,10 @@ a.cfm-name--link:hover {
 .chats-add-btn:hover { background: color-mix(in srgb, var(--blue) 18%, var(--bg4)); }
 
 /* ── Group row badge (type icon on avi) ── */
-.grp-avi-badge {
-  position: absolute;
-  bottom: 0; right: 0;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  border: 2px solid var(--bg);
-  pointer-events: none;
-}
 .grp-avi-badge--group   { background: var(--blue, var(--pal-white)); color: var(--pal-white); }
 .grp-avi-badge--channel { background: var(--pal-white); color: var(--pal-white); }
 
-.chat-thread-avi { position: relative; }
-.chat-row-grp-badge {
-  position: absolute;
-  bottom: 1px; right: 1px;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  border: 1.5px solid var(--bg);
-}
 .chat-row-grp-badge--group   { background: var(--blue); color: var(--pal-white); }
-.chat-avi { position: relative; }
 
 /* ── Create form ── */
 .grp-form-title { margin-bottom: 16px !important; }
@@ -6123,8 +5893,6 @@ body,
   height: 44px;
   border-radius: 14px;
   background: var(--glass);
-  border: 0.5px solid var(--glass-border);
-  box-shadow: var(--specular-top);
   color: var(--text2);
   cursor: pointer;
   transition: none;
@@ -6207,7 +5975,6 @@ input:focus, textarea:focus {
 
 input::placeholder, textarea::placeholder { color: var(--text3); }
 
-::selection { background: var(--blue); color: var(--pal-white); }
 
 /* ═══════════════════════════════════════════
    Unified Icon System — 2026 minimalist line icons
@@ -6957,16 +6724,12 @@ svg { color: inherit; }
 }
 
 .search-suggestion-icon {
-  width: 20px;
-  height: 20px;
   color: var(--text3);
   flex-shrink: 0;
 }
 
 .search-suggestion-text {
   flex: 1;
-  font-size: 13px;
-  color: var(--text);
 }
 
 /* ═══════════════════════════════════════════
@@ -7155,9 +6918,6 @@ svg { color: inherit; }
   }
 
   /* Larger post cards */
-  .post {
-    border-radius: 20px;
-  }
 
   /* Desktop hover effects */
 
@@ -7311,17 +7071,6 @@ svg { color: inherit; }
 }
 
 /* ── 15. Scrollbar — solid style ── */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--glass-border) transparent;
-}
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: var(--glass-border);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover { background: var(--glass-border-top); }
 
 /* ── 16. Upload drop zone — flat, owned by nav.css base (no inner-glow override) ── */
 
@@ -7360,7 +7109,6 @@ svg { color: inherit; }
    kamaytirildi (faqat bitta aniq ring, ikkinchi "glow2" halo olib
    tashlandi) ── */
 :focus-visible {
-  outline: none;
   box-shadow: 0 0 0 2px var(--blue);
   border-radius: inherit;
 }
@@ -7441,11 +7189,6 @@ svg { color: inherit; }
 #userProfileModal      { z-index: 500 !important; }
 
 /* Guruh info paneli — user profil ustida */
-#grpInfoOverlay,
-#grpCreateChoiceOverlay,
-#grpCreateFormOverlay,
-#grpJoinLinkOverlay,
-#grpAddUserOverlay     { z-index: 520 !important; }
 
 /* Post detail */
 #detailModal           { z-index: 550 !important; }
@@ -7569,7 +7312,6 @@ svg { color: inherit; }
 
 [data-theme="dark"] .avi:hover {
   border-color: var(--pal-white);
-  box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 0 0 3px var(--pal-gray-900);
 }
 
 /* ══════════════════════════════════════════
@@ -7682,10 +7424,6 @@ svg { color: inherit; }
 
 [data-theme="dark"] .profile-avi:hover {
   border-color: var(--pal-white);
-  box-shadow:
-    inset 0 1px 0 var(--pal-gray-800),
-    0 0 0 4px #252525,
-    0 8px 28px var(--pal-black);
 }
 
 [data-theme="dark"] .edit-btn {
@@ -7715,7 +7453,6 @@ svg { color: inherit; }
 /* Profile grid cells */
 [data-theme="dark"] .grid-cell {
   background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
 }
 
 [data-theme="dark"] .grid-cell:hover {
@@ -7997,7 +7734,6 @@ svg { color: inherit; }
 /* Post kartochkalar */
 .post,
 [data-theme="dark"] .post{
-  border: none;
   box-shadow: none;
 }
 
@@ -8009,7 +7745,6 @@ svg { color: inherit; }
 /* Header — top bar */
 .app-hdr,
 [data-theme="dark"] .app-hdr{
-  border-bottom: none;
   box-shadow: none;
 }
 
@@ -8132,10 +7867,6 @@ svg { color: inherit; }
 }
 
 /* Profile header */
-.profile-hdr,
-[data-theme="dark"] .profile-hdr {
-  border-bottom: none;
-}
 
 /* Profile grid */
 [data-theme="dark"] .grid-cell{
@@ -8202,10 +7933,6 @@ textarea:focus,
 }
 
 /* Chat thread header separator */
-.chat-thread-hdr,
-[data-theme="dark"] .chat-thread-hdr {
-  border-bottom: none;
-}
 
 /* File card */
 .file-card,
@@ -8322,10 +8049,6 @@ textarea:focus,
 
 /* Sidebar desktop — chegarasiz */
 @media (min-width: 768px) {
-  .bot-nav {
-    border-right: none;
-    border-top: none;
-  }
 }
 
 /* Nav ring/glow animatsiyalari — shadow yo'q */
@@ -8355,10 +8078,6 @@ textarea:focus,
    ════════════════════════════════════════════ */
 
 /* 1. act-btn hover — dark background light temada */
-.act-btn:hover {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* 3. Sidebar nav-btn aktiv holat — dark styled light temada */
 
@@ -8629,9 +8348,6 @@ textarea:focus,
 
 /* ── Thread background (subtle glow pattern like the demo) ────────────── */
 #chatThreadModal .chat-thread-messages {
-  background-image:
-    rgba(16,16,18,0.72),
-    url('../img/chat-wallpaper.jpg');
   background-size: cover, cover;
   background-position: center top, center top;
   background-repeat: no-repeat, no-repeat;
@@ -8652,16 +8368,6 @@ textarea:focus,
 #chatThreadModal .chat-bubble {
   border-radius: 16px;
   padding: 7px 11px 8px;
-  font-size: 15.5px;
-  line-height: 1.36;
-}
-#chatThreadModal .chat-msg.mine .chat-bubble {
-  background: var(--c-bubble-out);
-  color: var(--c-text-1);
-}
-#chatThreadModal .chat-msg.theirs .chat-bubble {
-  background: var(--c-bubble-in);
-  color: var(--c-text-1);
 }
 
 /* ── Bubble tail — "dekor" tarafdagi burchak sal qirrali (Telegram/
@@ -8693,7 +8399,7 @@ textarea:focus,
 /* ── Voice message bubble — circular play + waveform (demo look) ─────── */
 #chatThreadModal .chat-voice-msg { min-width: 210px; gap: 8px; }
 
-#chatThreadModal .chat-msg.mine .cvm-play { background: rgba(255,255,255,0.22); color: var(--pal-white); }
+#chatThreadModal .chat-msg.mine .cvm-play { color: var(--pal-white); }
 #chatThreadModal .chat-msg.mine .cvm-play:hover { background: rgba(255,255,255,0.34); }
 #chatThreadModal .chat-msg.mine .cvm-bar { background: var(--pal-white-42); }
 #chatThreadModal .chat-msg.mine .cvm-bar.played { background: rgba(255,255,255,0.95); }
@@ -8802,21 +8508,14 @@ textarea:focus,
 
 .btn-primary {
   width: 100%;
-  padding: 14px;
-  background: var(--blue3, var(--blue));
   border: none;
-  border-radius: 12px;
   color: var(--pal-white);
-  font-size: 14px;
-  font-weight: 600;
   font-family: var(--font);
   cursor: pointer;
   margin-top: 4px;
-  letter-spacing: -0.1px;
   transition: none;
 }
 
-.btn-primary:hover  { background: var(--blue2, var(--blue)); }
 .btn-primary:active { opacity: 0.85; }
 
 .btn-ghost {
@@ -8833,7 +8532,7 @@ textarea:focus,
   transition: none;
 }
 
-.btn-ghost:hover  { background: var(--glass); color: var(--text); }
+.btn-ghost:hover  { color: var(--text); }
 .btn-ghost:active { opacity: 0.85; }
 
 .btn-danger {
@@ -8850,7 +8549,6 @@ textarea:focus,
   transition: none;
 }
 
-.btn-danger:hover  { background: var(--pal-gray-900); }
 .btn-danger:active { opacity: 0.85; }
 
 /* ── 2. Bottom nav / sidebar ────────────────────────────────── */
@@ -8904,9 +8602,6 @@ textarea:focus,
 .field,
 input:not([type="checkbox"]):not([type="radio"]),
 textarea {
-  background: var(--glass);
-  border: 0.5px solid var(--glass-border);
-  border-radius: 10px;
   color: var(--text);
   transition: none;
 }
@@ -8914,11 +8609,7 @@ textarea {
 .field:focus,
 input:focus,
 textarea:focus {
-  border-color: var(--blue);
-  background: var(--glass-mid);
-  box-shadow: 0 0 0 2px var(--blue-glow2, transparent);
   outline: none;
-  border-radius: 10px;
 }
 
 input::placeholder,
@@ -8936,7 +8627,6 @@ textarea::placeholder,
 }
 
 .post:hover {
-  border-color: var(--glass-border-top);
   box-shadow: none;
   transform: none;
 }
@@ -8991,7 +8681,6 @@ textarea::placeholder,
   cursor: pointer;
   padding: 0;
 }
-#uploadOverlay .composer-close:hover { background: #272c30; }
 
 #uploadOverlay .composer-post-btn {
   width: auto;
@@ -9003,8 +8692,6 @@ textarea::placeholder,
 }
 #uploadOverlay .composer-post-btn:disabled,
 #uploadOverlay .composer-post-btn:disabled * {
-  background: var(--pal-gray-800) !important;
-  color: #6e6e6e !important;
   cursor: not-allowed;
   opacity: 1;
 }
@@ -9023,7 +8710,6 @@ textarea::placeholder,
   border-radius: 999px;
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--pal-gray-900);
 }
 #uploadOverlay .composer-avi img {
   width: 100%;
@@ -9182,8 +8868,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
 @media (max-width: 1099px) {
   nav.bot-nav .sb-acc-meta,
   nav.bot-nav .sb-acc-dots { display: none; }
-  nav.bot-nav .sb-account {
-    width: 44px; height: 44px; padding: 0;
+  nav.bot-nav .sb-account { padding: 0;
     justify-content: center; border-radius: 50%;
   }
   nav.bot-nav .sb-acc-avi { width: 36px; height: 36px; }
@@ -9192,7 +8877,6 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav #createBtn.nav-center-btn {
     display: flex !important;
     align-items: center; justify-content: center;
-    width: 48px; height: 48px; margin: 10px 0;
     border-radius: 50%; padding: 0; flex-shrink: 0;
     background: var(--text); color: var(--bg);
     border: none; box-shadow: none;
@@ -9205,7 +8889,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
 
 /* ── Mobil: chap rail ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  :root { --rail: 56px; --sidebar: 56px; --content-left: 56px; --nav: 0px; }
+  :root { --nav: 0px; }
 
   nav.bot-nav {
     top: 0; bottom: 0; left: 0; right: auto;
@@ -9213,7 +8897,6 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
     flex-direction: column; justify-content: flex-start; align-items: center;
     gap: 2px;
     padding: max(env(safe-area-inset-top), 10px) 0 max(env(safe-area-inset-bottom), 10px);
-    border: none;
     overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
   }
   nav.bot-nav::-webkit-scrollbar { display: none; }
@@ -9253,7 +8936,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
 
   nav.bot-nav {
     width: var(--sidebar);
-    align-items: stretch; gap: 2px;
+    align-items: stretch;
     padding: 8px 12px 12px;
     overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
   }
@@ -9262,11 +8945,9 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav .sb-top {
     align-items: flex-start; padding: 0 0 4px 4px; margin: 0; border: none;
   }
-  nav.bot-nav .sb-logo-row {
-    width: auto; height: 52px; padding: 0 12px 0 4px; gap: 10px;
+  nav.bot-nav .sb-logo-row { padding: 0 12px 0 4px; gap: 10px;
     justify-content: flex-start;
   }
-  nav.bot-nav .sb-logo-img { width: 30px; height: 30px; }
   nav.bot-nav .sb-brand-text {
     display: block;
     font-size: 20px;
@@ -9281,12 +8962,10 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav .sb-search-toggle {
     flex-direction: row; justify-content: flex-start; align-items: center;
     align-self: flex-start;
-    width: auto; max-width: 100%; height: 52px;
-    padding: 0 22px 0 14px; gap: 18px;
-    border-radius: 999px;
+    width: auto; max-width: 100%;
     background: none; border: none; box-shadow: none;
   }
-  nav.bot-nav .nav-btn:hover { background: var(--pal-mid-16); border: none; box-shadow: none; }
+  nav.bot-nav .nav-btn:hover { border: none; box-shadow: none; }
   nav.bot-nav .nav-btn.on,
   nav.bot-nav #sbSearchToggle.search-active { background: none; border: none; box-shadow: none; }
   nav.bot-nav .nav-btn svg { width: 26px; height: 26px; stroke: var(--text); flex-shrink: 0; }
@@ -9294,11 +8973,9 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav #sbSearchToggle.search-active svg { stroke: var(--text); stroke-width: 2.4; }
 
   nav.bot-nav .nav-btn .nav-label {
-    display: block; font-size: 19px; line-height: 1; font-weight: 400;
+    display: block;
     color: var(--text); white-space: nowrap;
   }
-  nav.bot-nav .nav-btn.on .nav-label,
-  nav.bot-nav #sbSearchToggle.search-active .nav-label { font-weight: 700; }
 
   /* yozuv bor — tooltip kerak emas */
   nav.bot-nav .nav-btn::after,
@@ -9309,8 +8986,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   /* Post — keng oq tugma */
   nav.bot-nav #createBtn.nav-center-btn {
     display: flex !important; align-items: center; justify-content: center;
-    align-self: stretch; width: auto; height: 52px;
-    margin: 16px 8px; padding: 0; border-radius: 999px;
+    align-self: stretch; width: auto; padding: 0; border-radius: 999px;
     background: var(--text); color: var(--bg);
     border: none; box-shadow: none;
   }
@@ -9318,7 +8994,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav #createBtn.nav-center-btn::after { display: none !important; }
   nav.bot-nav #createBtn.nav-center-btn svg { display: none; }
   nav.bot-nav #createBtn.nav-center-btn .sb-create-label {
-    display: block; font-size: 17px; font-weight: 700; color: var(--bg);
+    display: block; color: var(--bg);
   }
 
   /* pastda akkaunt */
@@ -9326,12 +9002,10 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
     display: flex; flex-direction: column; align-items: stretch;
     margin-top: auto; padding: 12px 0 0; border: none;
   }
-  nav.bot-nav .sb-account:hover { background: var(--pal-mid-16); }
 }
 
 /* Post tugma hover: ui-improvements.css dagi #createBtn:hover (transparent) ni bosib o'tadi */
-nav.bot-nav #createBtn.nav-center-btn:hover {
-  background: var(--text); opacity: .88; box-shadow: none;
+nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none;
 }
 
 /* ── Akkaunt menyusi (faqat "Chiqish") ─────────────────────────────── */
@@ -9517,9 +9191,6 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
 }
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--line3); }
 
 /* ── HTML root ── */
@@ -9531,13 +9202,11 @@ html {
 
 /* ── Body — wallopaper ko'rinib tursin ── */
 body {
-  font-family: var(--font);
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden;
   min-height: 100dvh;
   -webkit-overflow-scrolling: touch;
-  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
@@ -10378,16 +10047,10 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 
 /* ── Row ─────────────────────────────────────────────────────────────── */
 .ua-row {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
-  border-bottom: 1px solid var(--line);
-  transition: none;
-}
-.ua-row:hover {
-  background: var(--bg3);
 }
 
 /* Delete btn — hover'da chiqadi */
@@ -10554,7 +10217,6 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background: var(--pal-black);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10568,16 +10230,12 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
   pointer-events: all;
 }
 .ua-modal {
-  background: var(--bg2);
-  border: 1px solid var(--line2);
-  border-radius: 20px;
   padding: 28px 24px 22px;
   max-width: 340px;
   width: 100%;
   text-align: center;
   transform: scale(0.93);
   transition: none;
-  box-shadow: 0 24px 64px var(--pal-black);
 }
 .ua-modal-overlay.show .ua-modal { transform: scale(1); }
 .ua-modal-icon {
@@ -10626,11 +10284,8 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
   font-family: var(--font);
 }
 .ua-modal-cancel {
-  background: var(--bg4);
   color: var(--text);
-  border: 1px solid var(--line2);
 }
-.ua-modal-cancel:hover { background: var(--bg5); }
 
 .ua-modal-confirm { background: var(--red); color: var(--pal-white); }
 .ua-modal-confirm:hover   { opacity: 1; }
@@ -10712,10 +10367,6 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
    ACTIONS VIEW — MOBILE (default)
    Bitta ustun, katta bosish nuqtalari, doim ko'rinadigan amallar.
    ═══════════════════════════════════════════════════════════════════════ */
-#actionsView .ua-row {
-  padding: 14px 14px;
-  gap: 10px;
-}
 #actionsView .ua-delete-btn {
   opacity: 1;
   width: 36px;
@@ -10724,8 +10375,6 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 }
 #actionsView .ua-actions {
   margin-right: 48px;
-  flex-direction: row;
-  flex-wrap: wrap;
 }
 #actionsView .ua-approve-btn,
 #actionsView .ua-reject-btn,
@@ -10734,9 +10383,6 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 #actionsView .ua-history-btn {
   padding: 9px 14px;
   font-size: 0.8rem;
-}
-#actionsView .users-admin-hdr {
-  padding: 18px 16px 12px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -10770,16 +10416,8 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 
   /* Foydalanuvchi qatorlarini "karta" ko'rinishiga o'tkazamiz */
   #actionsView .ua-row {
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--bg2);
-    margin-bottom: 8px;
     padding: 14px 16px;
     transition: none;
-  }
-  #actionsView .ua-row:hover {
-    background: var(--bg3);
-    border-color: var(--line2);
   }
   #actionsView .ua-delete-btn {
     opacity: 0; /* sichqoncha bo'lgani uchun hover bilan chiqadi */
@@ -11045,7 +10683,6 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
    semantik holatlar uchun (xato, onlayn) qoldirilgan.
    ═══════════════════════════════════════════ */
 
-html, body, #app { background: var(--pal-black); }
 meta[name="theme-color"] { color: var(--pal-black); }
 
 /* ── Oq (accent) fonli elementlarda matn/ikonka qora ── */
@@ -11053,74 +10690,11 @@ meta[name="theme-color"] { color: var(--pal-black); }
 .btn-primary * { color: var(--pal-black) !important; }
 .btn-primary:hover,
 .btn-primary:hover * { color: var(--pal-black) !important; }
-.ua-approve-btn,
-.ua-approve-btn * { color: var(--pal-black) !important; }
-#chatThreadModal .chat-msg.theirs .cvm-bar.played,
-#chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: var(--pal-black) !important; }
-.chat-row-badge,
-.chat-row-badge * { color: var(--pal-black) !important; }
-.cv-pulse,
-.cv-pulse * { color: var(--pal-black) !important; }
-.chat-voice-btn,
-.chat-voice-btn * { color: var(--pal-black) !important; }
-.crb-line,
-.crb-line * { color: var(--pal-black) !important; }
-.chat-voice-btn.recording,
-.chat-voice-btn.recording * { color: var(--pal-black) !important; }
-.chat-msg.theirs .cvm-play,
-.chat-msg.theirs .cvm-play * { color: var(--pal-black) !important; }
-.chat-msg.theirs .cvm-play:hover,
-.chat-msg.theirs .cvm-play:hover * { color: var(--pal-black) !important; }
-.chat-msg.theirs .cvm-bar.played,
-.chat-msg.theirs .cvm-bar.played * { color: var(--pal-black) !important; }
-.vmp-play,
-.vmp-play * { color: var(--pal-black) !important; }
-.vmp-progress-fill,
-.vmp-progress-fill * { color: var(--pal-black) !important; }
-[data-theme="dark"] .splash-fill,
-[data-theme="dark"] .splash-fill * { color: var(--pal-black) !important; }
-.ufb-icon,
-.ufb-icon * { color: var(--pal-black) !important; }
-.ufb-fill,
-.ufb-fill * { color: var(--pal-black) !important; }
-.grp-avi-badge--group,
-.grp-avi-badge--group * { color: var(--pal-black) !important; }
-.grp-avi-badge--channel,
-.grp-avi-badge--channel * { color: var(--pal-black) !important; }
-.chat-row-grp-badge--group,
-.chat-row-grp-badge--group * { color: var(--pal-black) !important; }
-.grp-picker-check.on,
-.grp-picker-check.on * { color: var(--pal-black) !important; }
-.nav-center-btn,
-.nav-center-btn * { color: var(--pal-black) !important; }
-.upload-progress-fill,
-.upload-progress-fill * { color: var(--pal-black) !important; }
-.cmt-send,
-.cmt-send * { color: var(--pal-black) !important; }
-.switch-toggle.on,
-.switch-toggle.on * { color: var(--pal-black) !important; }
-.avi-edit-badge,
-.avi-edit-badge * { color: var(--pal-black) !important; }
 ::selection { color: var(--pal-black) !important; }
-.nav-btn.on::before { color: var(--pal-black) !important; }
-.empty-cta,
-.empty-cta * { color: var(--pal-black) !important; }
-.toast-progress,
-.toast-progress * { color: var(--pal-black) !important; }
-.nav-badge,
-.nav-badge * { color: var(--pal-black) !important; }
-.upload-float-bar,
-.upload-float-bar * { color: var(--pal-black) !important; }
-.ufb-fill.indeterminate,
-.ufb-fill.indeterminate * { color: var(--pal-black) !important; }
 
 /* ── Toggle/switch: oq trek ustida tugma qora ── */
 .toggle input:checked + .toggle-track::after,
-.switch-toggle.on .switch-knob { background: var(--pal-black) !important; box-shadow: none; }
-.cc-btn--apply,
-.cc-btn--apply * { color: var(--pal-black) !important; }
-.bc-send-btn,
-.bc-send-btn * { color: var(--pal-black) !important; }
+.switch-toggle.on .switch-knob { box-shadow: none; }
 
 /* ── Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan ── */
 [data-theme="dark"] .post,
@@ -11212,7 +10786,7 @@ textarea {
 }
 
 /* Sidebar Post tugmasi va hover: yangi palitraga moslash */
-nav.bot-nav #createBtn.nav-center-btn { background: var(--blue); color: var(--bg); }
+nav.bot-nav #createBtn.nav-center-btn { color: var(--bg); }
 nav.bot-nav .nav-btn:hover,
 nav.bot-nav .sb-account:hover { background: var(--bg4); }
 
@@ -11328,15 +10902,12 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 #uploadOverlay .composer-sheet,
 :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet {
   background: var(--bg);
-  border: 1px solid var(--line);
-  box-shadow: none;
 }
 /* sheet ustidagi yorqin "specular" chiziq (nav.css) — olib tashlandi */
 .sheet::before,
 [data-theme] .sheet::before { display: none !important; }
 
 /* Composer ichki qismlari */
-#uploadOverlay .composer-close:hover { background: var(--bg4); }
 #uploadOverlay .composer-avi { background: var(--bg4); }
 #uploadOverlay .composer-post-btn:disabled,
 #uploadOverlay .composer-post-btn:disabled * {
@@ -11354,7 +10925,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 [data-theme] .post {
   margin-bottom: 0;
   box-shadow: none;
-  padding: 12px 16px;
 }
 
 /* ── Mobil: chap rail + to'liq kenglikdagi lenta ── */
@@ -11454,8 +11024,7 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 }
 
 .post-actions {
-  display: flex; justify-content: space-between; align-items: center;
-  max-width: 425px; margin: 6px 0 0 -8px;
+  display: flex; justify-content: space-between; align-items: center; margin: 6px 0 0 -8px;
 }
 .act-btn {
   flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px;
@@ -11465,7 +11034,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 }
 .act-btn svg { width: 18px; height: 18px; }
 .act-btn span:empty { display: none; }
-.act-btn:hover { background: none; color: var(--link); }
 .like-btn:hover { color: var(--red); }
 .act-btn.liked { color: var(--red); }
 
@@ -11558,7 +11126,7 @@ nav.bot-nav #sbSearchToggle.search-active svg { stroke-width: 2.4; }
 #uploadOverlay .composer-post-btn *,
 #uploadOverlay .composer-post-btn:disabled,
 #uploadOverlay .composer-post-btn:disabled * { color: var(--pal-white) !important; }
-#uploadOverlay .composer-post-btn:disabled { background: var(--x-blue) !important; opacity: .5; }
+#uploadOverlay .composer-post-btn:disabled { background: var(--x-blue) !important; }
 
 /* Sidebar: X hover (10% shaffof) va ko'k Post */
 nav.bot-nav .nav-btn:hover,

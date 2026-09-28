@@ -76,15 +76,12 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 10px;
   background: none;
   border: none;
   color: var(--text2);
   cursor: pointer;
-  transition: none;
   flex-shrink: 0;
 }
-.hdr-icon-btn:hover { background: var(--bg3); color: var(--text); }
 .hdr-icon-btn svg { width: 17px; height: 17px; }
 
 /* ── Search Overlay (replaces old hdr-search-expand) ── */
@@ -108,7 +105,6 @@
 .search-overlay.open {
   opacity: 1;
   pointer-events: all;
-  top: 0;
 }
 
 /* Search ochilganda header yashiriladi */
@@ -142,7 +138,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .search-overlay-icon {
-  color: var(--text3);
   flex-shrink: 0;
 }
 
@@ -328,12 +323,6 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* .post:hover cosmetics → CSS/00-components.core.css'da (flat, glow yo'q) */
 
-.post-head {
-  padding: 12px 14px 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
 
 .avi {
   width: 38px; height: 38px;
@@ -347,24 +336,16 @@ body:has(.search-overlay.open) .app-hdr {
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  border: 0.5px solid var(--glass-border);
-  box-shadow: var(--specular-top), 0 2px 8px var(--pal-black);
   transition: none;
 }
 
 .avi:hover {
   border-color: var(--pal-legacy-464646);
-  box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-800);
 }
 .avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-.post-meta { flex: 1; cursor: pointer; }
+.post-meta { cursor: pointer; }
 
-.post-name {
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.2px;
-}
 
 .post-time {
   font-size: 10px;
@@ -394,7 +375,6 @@ body:has(.search-overlay.open) .app-hdr {
 
 .del-btn:hover {
   color: var(--red);
-  background: var(--red-glow);
 }
 
 /* ── Media ─ */
@@ -402,7 +382,6 @@ body:has(.search-overlay.open) .app-hdr {
   cursor: pointer;
   background: var(--pal-black);
   position: relative;
-  overflow: hidden;
   width: 100%;
   min-height: 180px; /* media joyi darrov qulab tushmasligi uchun */
 }
@@ -413,7 +392,6 @@ body:has(.search-overlay.open) .app-hdr {
   display: block;
   background: var(--pal-black);
   filter: blur(0);
-  transition: none;
 }
 
 .post-media video {
@@ -472,7 +450,6 @@ body:has(.search-overlay.open) .app-hdr {
   left: 0;
   right: 0;
   height: 36px;
-  background: var(--pal-black);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -481,13 +458,10 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 .vc-play, .vc-mute, .vc-fs {
-  background: none;
   border: none;
   color: var(--pal-white);
   cursor: pointer;
   padding: 4px;
-  display: flex;
-  align-items: center;
   flex-shrink: 0;
 }
 
@@ -525,12 +499,6 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 /* ── Caption ── */
-.post-caption {
-  padding: 10px 14px 8px;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--text);
-}
 
 .cap-more {
   color: var(--text3);
@@ -549,17 +517,7 @@ body:has(.search-overlay.open) .app-hdr {
 /* ── File Card ── */
 /* .file-card bazaviy blok → CSS/nav.css'ga ko'chirilgan (yagona manba, borderless.css bilan ziddiyatsiz) */
 
-.file-card:hover {
-  background: var(--glass-mid);
-  border-color: var(--glass-border-top);
-  box-shadow: var(--specular-top), var(--liquid-shadow-sm);
-}
 
-.file-card-icon {
-  width: 44px; height: 44px;
-  flex-shrink: 0;
-}
-.file-card-icon svg { width: 44px; height: 44px; display: block; }
 
 /* legacy – kept for old posts */
 .file-icon {
@@ -620,36 +578,16 @@ body:has(.search-overlay.open) .app-hdr {
   font-family: var(--mono);
 }
 
-.post-actions {
-  display: flex;
-}
 
 .act-btn {
-  flex: 1;
-  background: none;
-  border: none;
-  color: var(--text2);
-  padding: 11px 8px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 6px;
   cursor: pointer;
-  font-size: 13px;
-  font-family: var(--font);
   transition: none;
   border-right: 0.5px solid var(--glass-border);
-  position: relative;
-  overflow: hidden;
 }
 
 .act-btn:last-child { border-right: none; }
-.act-btn:hover {
-  background: var(--pal-gray-900);
-  color: var(--text);
-}
 .act-btn:active {transition: none; }
-.act-btn.liked { color: var(--red); }
 
 /* ── Reel Caption Sheet ── */
 #reelCapSheet .sheet {
@@ -829,9 +767,6 @@ body:has(.search-overlay.open) .app-hdr {
    ═══════════════════════════════════════════ */
 
 /* Dark mode: stronger borders and shadows */
-[data-theme="dark"] .post {
-  box-shadow: 0 2px 12px var(--pal-black);
-}
 
 [data-theme="dark"] .post:hover {
   box-shadow: 0 4px 20px var(--pal-black);
@@ -865,12 +800,7 @@ body:has(.search-overlay.open) .app-hdr {
 
 /* Skeleton loading - theme aware shimmer */
 .skeleton-post {
-  background: var(--bg2);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  padding: 14px;
-  margin-bottom: 16px;
-  overflow: hidden;
   position: relative;
   animation: none;
 }
@@ -966,23 +896,8 @@ body:has(.search-overlay.open) .app-hdr {
 /* Action button ripple effect */
 .act-btn {
   position: relative;
-  overflow: hidden;
 }
 
 /* Avatar shimmer effect */
-.skel-avi {
-  position: relative;
-  overflow: hidden;
-}
 
-.skel-avi::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--pal-gray-700);
-  animation: none;
-}
 

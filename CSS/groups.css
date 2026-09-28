@@ -22,29 +22,10 @@
 .chats-add-btn:hover { background: color-mix(in srgb, var(--blue) 18%, var(--bg4)); }
 
 /* ── Group row badge (type icon on avi) ── */
-.grp-avi-badge {
-  position: absolute;
-  bottom: 0; right: 0;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  border: 2px solid var(--bg);
-  pointer-events: none;
-}
 .grp-avi-badge--group   { background: var(--blue, var(--pal-white)); color: var(--pal-white); }
 .grp-avi-badge--channel { background: var(--pal-white); color: var(--pal-white); }
 
-.chat-thread-avi { position: relative; }
-.chat-row-grp-badge {
-  position: absolute;
-  bottom: 1px; right: 1px;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  border: 1.5px solid var(--bg);
-}
 .chat-row-grp-badge--group   { background: var(--blue); color: var(--pal-white); }
-.chat-avi { position: relative; }
 
 /* ── Create form ── */
 .grp-form-title { margin-bottom: 16px !important; }

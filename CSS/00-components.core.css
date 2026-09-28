@@ -28,21 +28,14 @@
 
 .btn-primary {
   width: 100%;
-  padding: 14px;
-  background: var(--blue3, var(--blue));
   border: none;
-  border-radius: 12px;
   color: var(--pal-white);
-  font-size: 14px;
-  font-weight: 600;
   font-family: var(--font);
   cursor: pointer;
   margin-top: 4px;
-  letter-spacing: -0.1px;
   transition: none;
 }
 
-.btn-primary:hover  { background: var(--blue2, var(--blue)); }
 .btn-primary:active { opacity: 0.85; }
 
 .btn-ghost {
@@ -59,7 +52,7 @@
   transition: none;
 }
 
-.btn-ghost:hover  { background: var(--glass); color: var(--text); }
+.btn-ghost:hover  { color: var(--text); }
 .btn-ghost:active { opacity: 0.85; }
 
 .btn-danger {
@@ -76,7 +69,6 @@
   transition: none;
 }
 
-.btn-danger:hover  { background: var(--pal-gray-900); }
 .btn-danger:active { opacity: 0.85; }
 
 /* ── 2. Bottom nav / sidebar ────────────────────────────────── */
@@ -130,9 +122,6 @@
 .field,
 input:not([type="checkbox"]):not([type="radio"]),
 textarea {
-  background: var(--glass);
-  border: 0.5px solid var(--glass-border);
-  border-radius: 10px;
   color: var(--text);
   transition: none;
 }
@@ -140,11 +129,7 @@ textarea {
 .field:focus,
 input:focus,
 textarea:focus {
-  border-color: var(--blue);
-  background: var(--glass-mid);
-  box-shadow: 0 0 0 2px var(--blue-glow2, transparent);
   outline: none;
-  border-radius: 10px;
 }
 
 input::placeholder,
@@ -162,7 +147,6 @@ textarea::placeholder,
 }
 
 .post:hover {
-  border-color: var(--glass-border-top);
   box-shadow: none;
   transform: none;
 }

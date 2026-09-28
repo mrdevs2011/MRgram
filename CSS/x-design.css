@@ -77,7 +77,7 @@ textarea {
 }
 
 /* Sidebar Post tugmasi va hover: yangi palitraga moslash */
-nav.bot-nav #createBtn.nav-center-btn { background: var(--blue); color: var(--bg); }
+nav.bot-nav #createBtn.nav-center-btn { color: var(--bg); }
 nav.bot-nav .nav-btn:hover,
 nav.bot-nav .sb-account:hover { background: var(--bg4); }
 
@@ -193,15 +193,12 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 #uploadOverlay .composer-sheet,
 :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet {
   background: var(--bg);
-  border: 1px solid var(--line);
-  box-shadow: none;
 }
 /* sheet ustidagi yorqin "specular" chiziq (nav.css) — olib tashlandi */
 .sheet::before,
 [data-theme] .sheet::before { display: none !important; }
 
 /* Composer ichki qismlari */
-#uploadOverlay .composer-close:hover { background: var(--bg4); }
 #uploadOverlay .composer-avi { background: var(--bg4); }
 #uploadOverlay .composer-post-btn:disabled,
 #uploadOverlay .composer-post-btn:disabled * {
@@ -219,7 +216,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 [data-theme] .post {
   margin-bottom: 0;
   box-shadow: none;
-  padding: 12px 16px;
 }
 
 /* ── Mobil: chap rail + to'liq kenglikdagi lenta ── */
@@ -319,8 +315,7 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 }
 
 .post-actions {
-  display: flex; justify-content: space-between; align-items: center;
-  max-width: 425px; margin: 6px 0 0 -8px;
+  display: flex; justify-content: space-between; align-items: center; margin: 6px 0 0 -8px;
 }
 .act-btn {
   flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px;
@@ -330,7 +325,6 @@ nav.bot-nav .nav-btn.on::before { content: none !important; display: none !impor
 }
 .act-btn svg { width: 18px; height: 18px; }
 .act-btn span:empty { display: none; }
-.act-btn:hover { background: none; color: var(--link); }
 .like-btn:hover { color: var(--red); }
 .act-btn.liked { color: var(--red); }
 
@@ -423,7 +417,7 @@ nav.bot-nav #sbSearchToggle.search-active svg { stroke-width: 2.4; }
 #uploadOverlay .composer-post-btn *,
 #uploadOverlay .composer-post-btn:disabled,
 #uploadOverlay .composer-post-btn:disabled * { color: var(--pal-white) !important; }
-#uploadOverlay .composer-post-btn:disabled { background: var(--x-blue) !important; opacity: .5; }
+#uploadOverlay .composer-post-btn:disabled { background: var(--x-blue) !important; }
 
 /* Sidebar: X hover (10% shaffof) va ko'k Post */
 nav.bot-nav .nav-btn:hover,

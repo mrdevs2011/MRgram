@@ -66,9 +66,6 @@
 
 /* ── Thread background (subtle glow pattern like the demo) ────────────── */
 #chatThreadModal .chat-thread-messages {
-  background-image:
-    rgba(16,16,18,0.72),
-    url('../img/chat-wallpaper.jpg');
   background-size: cover, cover;
   background-position: center top, center top;
   background-repeat: no-repeat, no-repeat;
@@ -89,16 +86,6 @@
 #chatThreadModal .chat-bubble {
   border-radius: 16px;
   padding: 7px 11px 8px;
-  font-size: 15.5px;
-  line-height: 1.36;
-}
-#chatThreadModal .chat-msg.mine .chat-bubble {
-  background: var(--c-bubble-out);
-  color: var(--c-text-1);
-}
-#chatThreadModal .chat-msg.theirs .chat-bubble {
-  background: var(--c-bubble-in);
-  color: var(--c-text-1);
 }
 
 /* ── Bubble tail — "dekor" tarafdagi burchak sal qirrali (Telegram/
@@ -130,7 +117,7 @@
 /* ── Voice message bubble — circular play + waveform (demo look) ─────── */
 #chatThreadModal .chat-voice-msg { min-width: 210px; gap: 8px; }
 
-#chatThreadModal .chat-msg.mine .cvm-play { background: rgba(255,255,255,0.22); color: var(--pal-white); }
+#chatThreadModal .chat-msg.mine .cvm-play { color: var(--pal-white); }
 #chatThreadModal .chat-msg.mine .cvm-play:hover { background: rgba(255,255,255,0.34); }
 #chatThreadModal .chat-msg.mine .cvm-bar { background: var(--pal-white-42); }
 #chatThreadModal .chat-msg.mine .cvm-bar.played { background: rgba(255,255,255,0.95); }

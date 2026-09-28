@@ -62,8 +62,6 @@ body,
   height: 44px;
   border-radius: 14px;
   background: var(--glass);
-  border: 0.5px solid var(--glass-border);
-  box-shadow: var(--specular-top);
   color: var(--text2);
   cursor: pointer;
   transition: none;
@@ -146,7 +144,6 @@ input:focus, textarea:focus {
 
 input::placeholder, textarea::placeholder { color: var(--text3); }
 
-::selection { background: var(--blue); color: var(--pal-white); }
 
 /* ═══════════════════════════════════════════
    Unified Icon System — 2026 minimalist line icons

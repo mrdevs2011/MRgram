@@ -5,7 +5,6 @@
    semantik holatlar uchun (xato, onlayn) qoldirilgan.
    ═══════════════════════════════════════════ */
 
-html, body, #app { background: var(--pal-black); }
 meta[name="theme-color"] { color: var(--pal-black); }
 
 /* ── Oq (accent) fonli elementlarda matn/ikonka qora ── */
@@ -13,74 +12,11 @@ meta[name="theme-color"] { color: var(--pal-black); }
 .btn-primary * { color: var(--pal-black) !important; }
 .btn-primary:hover,
 .btn-primary:hover * { color: var(--pal-black) !important; }
-.ua-approve-btn,
-.ua-approve-btn * { color: var(--pal-black) !important; }
-#chatThreadModal .chat-msg.theirs .cvm-bar.played,
-#chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: var(--pal-black) !important; }
-.chat-row-badge,
-.chat-row-badge * { color: var(--pal-black) !important; }
-.cv-pulse,
-.cv-pulse * { color: var(--pal-black) !important; }
-.chat-voice-btn,
-.chat-voice-btn * { color: var(--pal-black) !important; }
-.crb-line,
-.crb-line * { color: var(--pal-black) !important; }
-.chat-voice-btn.recording,
-.chat-voice-btn.recording * { color: var(--pal-black) !important; }
-.chat-msg.theirs .cvm-play,
-.chat-msg.theirs .cvm-play * { color: var(--pal-black) !important; }
-.chat-msg.theirs .cvm-play:hover,
-.chat-msg.theirs .cvm-play:hover * { color: var(--pal-black) !important; }
-.chat-msg.theirs .cvm-bar.played,
-.chat-msg.theirs .cvm-bar.played * { color: var(--pal-black) !important; }
-.vmp-play,
-.vmp-play * { color: var(--pal-black) !important; }
-.vmp-progress-fill,
-.vmp-progress-fill * { color: var(--pal-black) !important; }
-[data-theme="dark"] .splash-fill,
-[data-theme="dark"] .splash-fill * { color: var(--pal-black) !important; }
-.ufb-icon,
-.ufb-icon * { color: var(--pal-black) !important; }
-.ufb-fill,
-.ufb-fill * { color: var(--pal-black) !important; }
-.grp-avi-badge--group,
-.grp-avi-badge--group * { color: var(--pal-black) !important; }
-.grp-avi-badge--channel,
-.grp-avi-badge--channel * { color: var(--pal-black) !important; }
-.chat-row-grp-badge--group,
-.chat-row-grp-badge--group * { color: var(--pal-black) !important; }
-.grp-picker-check.on,
-.grp-picker-check.on * { color: var(--pal-black) !important; }
-.nav-center-btn,
-.nav-center-btn * { color: var(--pal-black) !important; }
-.upload-progress-fill,
-.upload-progress-fill * { color: var(--pal-black) !important; }
-.cmt-send,
-.cmt-send * { color: var(--pal-black) !important; }
-.switch-toggle.on,
-.switch-toggle.on * { color: var(--pal-black) !important; }
-.avi-edit-badge,
-.avi-edit-badge * { color: var(--pal-black) !important; }
 ::selection { color: var(--pal-black) !important; }
-.nav-btn.on::before { color: var(--pal-black) !important; }
-.empty-cta,
-.empty-cta * { color: var(--pal-black) !important; }
-.toast-progress,
-.toast-progress * { color: var(--pal-black) !important; }
-.nav-badge,
-.nav-badge * { color: var(--pal-black) !important; }
-.upload-float-bar,
-.upload-float-bar * { color: var(--pal-black) !important; }
-.ufb-fill.indeterminate,
-.ufb-fill.indeterminate * { color: var(--pal-black) !important; }
 
 /* ── Toggle/switch: oq trek ustida tugma qora ── */
 .toggle input:checked + .toggle-track::after,
-.switch-toggle.on .switch-knob { background: var(--pal-black) !important; box-shadow: none; }
-.cc-btn--apply,
-.cc-btn--apply * { color: var(--pal-black) !important; }
-.bc-send-btn,
-.bc-send-btn * { color: var(--pal-black) !important; }
+.switch-toggle.on .switch-knob { box-shadow: none; }
 
 /* ── Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan ── */
 [data-theme="dark"] .post,

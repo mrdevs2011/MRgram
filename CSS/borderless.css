@@ -14,7 +14,6 @@
 /* Post kartochkalar */
 .post,
 [data-theme="dark"] .post{
-  border: none;
   box-shadow: none;
 }
 
@@ -26,7 +25,6 @@
 /* Header — top bar */
 .app-hdr,
 [data-theme="dark"] .app-hdr{
-  border-bottom: none;
   box-shadow: none;
 }
 
@@ -149,10 +147,6 @@
 }
 
 /* Profile header */
-.profile-hdr,
-[data-theme="dark"] .profile-hdr {
-  border-bottom: none;
-}
 
 /* Profile grid */
 [data-theme="dark"] .grid-cell{
@@ -219,10 +213,6 @@ textarea:focus,
 }
 
 /* Chat thread header separator */
-.chat-thread-hdr,
-[data-theme="dark"] .chat-thread-hdr {
-  border-bottom: none;
-}
 
 /* File card */
 .file-card,
@@ -339,10 +329,6 @@ textarea:focus,
 
 /* Sidebar desktop — chegarasiz */
 @media (min-width: 768px) {
-  .bot-nav {
-    border-right: none;
-    border-top: none;
-  }
 }
 
 /* Nav ring/glow animatsiyalari — shadow yo'q */
@@ -372,10 +358,6 @@ textarea:focus,
    ════════════════════════════════════════════ */
 
 /* 1. act-btn hover — dark background light temada */
-.act-btn:hover {
-  background: var(--bg3);
-  color: var(--text);
-}
 
 /* 3. Sidebar nav-btn aktiv holat — dark styled light temada */
 

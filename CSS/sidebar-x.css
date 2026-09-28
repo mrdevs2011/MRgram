@@ -33,8 +33,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
 @media (max-width: 1099px) {
   nav.bot-nav .sb-acc-meta,
   nav.bot-nav .sb-acc-dots { display: none; }
-  nav.bot-nav .sb-account {
-    width: 44px; height: 44px; padding: 0;
+  nav.bot-nav .sb-account { padding: 0;
     justify-content: center; border-radius: 50%;
   }
   nav.bot-nav .sb-acc-avi { width: 36px; height: 36px; }
@@ -43,7 +42,6 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav #createBtn.nav-center-btn {
     display: flex !important;
     align-items: center; justify-content: center;
-    width: 48px; height: 48px; margin: 10px 0;
     border-radius: 50%; padding: 0; flex-shrink: 0;
     background: var(--text); color: var(--bg);
     border: none; box-shadow: none;
@@ -56,7 +54,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
 
 /* ── Mobil: chap rail ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  :root { --rail: 56px; --sidebar: 56px; --content-left: 56px; --nav: 0px; }
+  :root { --nav: 0px; }
 
   nav.bot-nav {
     top: 0; bottom: 0; left: 0; right: auto;
@@ -64,7 +62,6 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
     flex-direction: column; justify-content: flex-start; align-items: center;
     gap: 2px;
     padding: max(env(safe-area-inset-top), 10px) 0 max(env(safe-area-inset-bottom), 10px);
-    border: none;
     overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
   }
   nav.bot-nav::-webkit-scrollbar { display: none; }
@@ -104,7 +101,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
 
   nav.bot-nav {
     width: var(--sidebar);
-    align-items: stretch; gap: 2px;
+    align-items: stretch;
     padding: 8px 12px 12px;
     overflow-y: auto; overflow-x: hidden; scrollbar-width: none;
   }
@@ -113,11 +110,9 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav .sb-top {
     align-items: flex-start; padding: 0 0 4px 4px; margin: 0; border: none;
   }
-  nav.bot-nav .sb-logo-row {
-    width: auto; height: 52px; padding: 0 12px 0 4px; gap: 10px;
+  nav.bot-nav .sb-logo-row { padding: 0 12px 0 4px; gap: 10px;
     justify-content: flex-start;
   }
-  nav.bot-nav .sb-logo-img { width: 30px; height: 30px; }
   nav.bot-nav .sb-brand-text {
     display: block;
     font-size: 20px;
@@ -132,12 +127,10 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav .sb-search-toggle {
     flex-direction: row; justify-content: flex-start; align-items: center;
     align-self: flex-start;
-    width: auto; max-width: 100%; height: 52px;
-    padding: 0 22px 0 14px; gap: 18px;
-    border-radius: 999px;
+    width: auto; max-width: 100%;
     background: none; border: none; box-shadow: none;
   }
-  nav.bot-nav .nav-btn:hover { background: var(--pal-mid-16); border: none; box-shadow: none; }
+  nav.bot-nav .nav-btn:hover { border: none; box-shadow: none; }
   nav.bot-nav .nav-btn.on,
   nav.bot-nav #sbSearchToggle.search-active { background: none; border: none; box-shadow: none; }
   nav.bot-nav .nav-btn svg { width: 26px; height: 26px; stroke: var(--text); flex-shrink: 0; }
@@ -145,11 +138,9 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav #sbSearchToggle.search-active svg { stroke: var(--text); stroke-width: 2.4; }
 
   nav.bot-nav .nav-btn .nav-label {
-    display: block; font-size: 19px; line-height: 1; font-weight: 400;
+    display: block;
     color: var(--text); white-space: nowrap;
   }
-  nav.bot-nav .nav-btn.on .nav-label,
-  nav.bot-nav #sbSearchToggle.search-active .nav-label { font-weight: 700; }
 
   /* yozuv bor — tooltip kerak emas */
   nav.bot-nav .nav-btn::after,
@@ -160,8 +151,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   /* Post — keng oq tugma */
   nav.bot-nav #createBtn.nav-center-btn {
     display: flex !important; align-items: center; justify-content: center;
-    align-self: stretch; width: auto; height: 52px;
-    margin: 16px 8px; padding: 0; border-radius: 999px;
+    align-self: stretch; width: auto; padding: 0; border-radius: 999px;
     background: var(--text); color: var(--bg);
     border: none; box-shadow: none;
   }
@@ -169,7 +159,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav #createBtn.nav-center-btn::after { display: none !important; }
   nav.bot-nav #createBtn.nav-center-btn svg { display: none; }
   nav.bot-nav #createBtn.nav-center-btn .sb-create-label {
-    display: block; font-size: 17px; font-weight: 700; color: var(--bg);
+    display: block; color: var(--bg);
   }
 
   /* pastda akkaunt */
@@ -177,12 +167,10 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
     display: flex; flex-direction: column; align-items: stretch;
     margin-top: auto; padding: 12px 0 0; border: none;
   }
-  nav.bot-nav .sb-account:hover { background: var(--pal-mid-16); }
 }
 
 /* Post tugma hover: ui-improvements.css dagi #createBtn:hover (transparent) ni bosib o'tadi */
-nav.bot-nav #createBtn.nav-center-btn:hover {
-  background: var(--text); opacity: .88; box-shadow: none;
+nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none;
 }
 
 /* ── Akkaunt menyusi (faqat "Chiqish") ─────────────────────────────── */

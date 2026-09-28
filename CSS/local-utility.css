@@ -73,11 +73,6 @@
 #userProfileModal      { z-index: 500 !important; }
 
 /* Guruh info paneli — user profil ustida */
-#grpInfoOverlay,
-#grpCreateChoiceOverlay,
-#grpCreateFormOverlay,
-#grpJoinLinkOverlay,
-#grpAddUserOverlay     { z-index: 520 !important; }
 
 /* Post detail */
 #detailModal           { z-index: 550 !important; }
