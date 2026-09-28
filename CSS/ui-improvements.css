@@ -302,17 +302,20 @@
 .hdr-icon-btn:focus-visible,
 .hdr-mute-btn:focus-visible,
 .theme-btn:focus-visible,
-.btn-primary:focus-visible,
-.btn-ghost:focus-visible,
-.btn-danger:focus-visible,
-.cmt-send:focus-visible,
-.cmt-modal-close:focus-visible,
 .dm-close:focus-visible,
 .dm-act:focus-visible,
 .reel-act:focus-visible,
 .reel-follow:focus-visible,
-.file-dl:focus-visible {
-  outline: 2px solid var(--blue);
+.file-dl:focus-visible,
+.cmt-modal-close:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.btn-primary:focus-visible,
+.btn-ghost:focus-visible,
+.btn-danger:focus-visible,
+.cmt-send:focus-visible {
+  outline: 2px solid var(--line);
   outline-offset: 2px;
 }
 

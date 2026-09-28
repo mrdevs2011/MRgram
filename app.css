@@ -7737,17 +7737,20 @@ svg { color: inherit; }
 .hdr-icon-btn:focus-visible,
 .hdr-mute-btn:focus-visible,
 .theme-btn:focus-visible,
-.btn-primary:focus-visible,
-.btn-ghost:focus-visible,
-.btn-danger:focus-visible,
-.cmt-send:focus-visible,
-.cmt-modal-close:focus-visible,
 .dm-close:focus-visible,
 .dm-act:focus-visible,
 .reel-act:focus-visible,
 .reel-follow:focus-visible,
-.file-dl:focus-visible {
-  outline: 2px solid var(--blue);
+.file-dl:focus-visible,
+.cmt-modal-close:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.btn-primary:focus-visible,
+.btn-ghost:focus-visible,
+.btn-danger:focus-visible,
+.cmt-send:focus-visible {
+  outline: 2px solid var(--line);
   outline-offset: 2px;
 }
 
@@ -15845,7 +15848,12 @@ nav.bot-nav .sb-account:hover { background: var(--bg4); }
 ::-webkit-scrollbar-track { background: transparent; }
 
 /* ── 8. Fokus halqasi: klaviatura uchun tinch ko'k ────────────────────── */
-:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+:focus-visible { outline: none; }
+/* faqat matn maydonlari uchun nozik fokus */
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 1px solid var(--line);
+  outline-offset: 0;
+}
 a { color: var(--link); }
 
 /* ── Yorug' temada to'ldirilgan (qora) elementlarda matn oq (mono.css ning aksi) ── */
@@ -16222,7 +16230,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 .post:hover,
 [data-theme] .post:hover { background: var(--hover); border-color: var(--line); }
 
-.act-btn svg, .act-views svg { border-radius: 50%; }
+.act-btn svg, .act-views svg { border-radius: 0; }
 .act-btn:hover, .act-views:hover { background: none; color: var(--x-blue); }
 .act-btn:hover svg, .act-views:hover svg {
   background: rgba(29, 155, 240, .10); box-shadow: 0 0 0 8px rgba(29, 155, 240, .10);
@@ -16774,4 +16782,25 @@ html, body, #app, .app {
   text-overflow: ellipsis;
   line-height: 1.3;
   margin-top: 1px;
+}
+
+
+/* DIET no icon ring — post action ikonlarida ko'k doira yo'q */
+.act-btn,
+.act-btn:focus,
+.act-btn:focus-visible,
+.act-btn:active,
+.like-btn,
+.like-btn:focus,
+.like-btn:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+.act-btn svg,
+.like-btn svg {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
 }
