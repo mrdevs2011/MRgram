@@ -1173,7 +1173,7 @@
   }
 
   #homeView, #followingView, #reelsView, #profileView, #chatsView,
-  #statsView, #usersView, #actionsView {
+  #actionsView {
     margin-left: var(--sidebar);
     position: relative;
     z-index: 1;

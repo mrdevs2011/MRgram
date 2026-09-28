@@ -98,7 +98,6 @@ export function mapPost(r) {
     fileSize: r.file_size,
     isPublic: r.is_public === true,
     isMaxPrivate: r.is_max_private === true,
-    views: r.views || 0,
     likes: r.likes_count || 0,
     commentCount: r.comment_count || 0,
     createdAt: ts(r.created_at),

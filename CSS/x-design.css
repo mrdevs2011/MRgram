@@ -169,13 +169,110 @@ nav.bot-nav .sb-account:hover { background: var(--bg4); }
 :focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 a { color: var(--link); }
 
-/* ── Matn ranglari: bu yerda 52 ta `.sel, .sel * { color:#fff !important }`
-   qoidasi 2026-09-28'da o'chirildi. Sabab: index.html yuklanish tartibi
-   x-design → mono bo'lgach, ular haqiqatan o'lik kodga aylandi —
-   mono.css'da AYNAN bir xil selectorli `color:#000 !important` egizi bor
-   va u kaskadda g'olib (skript bilan property-darajasida tekshirildi).
-   Mono maqsad: accent fonlarda OQ MATN emas, QORA MATN (qora tugma). ── */
-::selection { color: inherit !important; }
+/* ── Yorug' temada to'ldirilgan (qora) elementlarda matn oq (mono.css ning aksi) ── */
+.ua-avi-placeholder,
+.ua-avi-placeholder * { color: #fff !important; }
+.ua-approve-btn,
+.ua-approve-btn * { color: #fff !important; }
+.ua-unlock-banner-btn,
+.ua-unlock-banner-btn * { color: #fff !important; }
+.ua-detail-tab.active,
+.ua-detail-tab.active * { color: #fff !important; }
+#chatThreadModal .chat-msg.theirs .cvm-bar.played,
+#chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: #fff !important; }
+.chat-row-badge,
+.chat-row-badge * { color: #fff !important; }
+.chat-thread-send,
+.chat-thread-send * { color: #fff !important; }
+.chat-thread-send:hover,
+.chat-thread-send:hover * { color: #fff !important; }
+.cv-pulse,
+.cv-pulse * { color: #fff !important; }
+.chat-voice-btn,
+.chat-voice-btn * { color: #fff !important; }
+.crb-line,
+.crb-line * { color: #fff !important; }
+.typing-dots span,
+.typing-dots span * { color: #fff !important; }
+.chat-voice-btn.recording,
+.chat-voice-btn.recording * { color: #fff !important; }
+.typing-dot,
+.typing-dot * { color: #fff !important; }
+#chatScrollDownBtn,
+#chatScrollDownBtn * { color: #fff !important; }
+.chat-msg.theirs .cvm-play,
+.chat-msg.theirs .cvm-play * { color: #fff !important; }
+.chat-msg.theirs .cvm-play:hover,
+.chat-msg.theirs .cvm-play:hover * { color: #fff !important; }
+.chat-msg.theirs .cvm-bar.played,
+.chat-msg.theirs .cvm-bar.played * { color: #fff !important; }
+.vmp-play,
+.vmp-play * { color: #fff !important; }
+.vmp-progress-fill,
+.vmp-progress-fill * { color: #fff !important; }
+[data-theme="dark"] .msg-out .msg-bubble,
+[data-theme="dark"] .msg-out .msg-bubble * { color: #fff !important; }
+[data-theme="dark"] .splash-fill,
+[data-theme="dark"] .splash-fill * { color: #fff !important; }
+[data-theme="dark"] .reel-progress-fill,
+[data-theme="dark"] .reel-progress-fill * { color: #fff !important; }
+.reel-progress-fill,
+.reel-progress-fill * { color: #fff !important; }
+.rcap-follow,
+.rcap-follow * { color: #fff !important; }
+.ufb-icon,
+.ufb-icon * { color: #fff !important; }
+.ufb-fill,
+.ufb-fill * { color: #fff !important; }
+.feed-empty-cta,
+.feed-empty-cta * { color: #fff !important; }
+.grp-avi-badge--group,
+.grp-avi-badge--group * { color: #fff !important; }
+.grp-avi-badge--channel,
+.grp-avi-badge--channel * { color: #fff !important; }
+.chat-row-grp-badge--group,
+.chat-row-grp-badge--group * { color: #fff !important; }
+.chat-row-grp-badge--channel,
+.chat-row-grp-badge--channel * { color: #fff !important; }
+.grp-picker-check.on,
+.grp-picker-check.on * { color: #fff !important; }
+.grp-privacy-opt.active,
+.grp-privacy-opt.active * { color: #fff !important; }
+.nav-center-btn,
+.nav-center-btn * { color: #fff !important; }
+.upload-progress-fill,
+.upload-progress-fill * { color: #fff !important; }
+.toggle input:checked + .toggle-track,
+.toggle input:checked + .toggle-track * { color: #fff !important; }
+.cmt-send,
+.cmt-send * { color: #fff !important; }
+.switch-toggle.on,
+.switch-toggle.on * { color: #fff !important; }
+.avi-edit-badge,
+.avi-edit-badge * { color: #fff !important; }
+.nav-btn.on::before { color: #fff !important; }
+.empty-cta,
+.empty-cta * { color: #fff !important; }
+.avatar-crop-save,
+.avatar-crop-save * { color: #fff !important; }
+.upload-file-icon.image,
+.upload-file-icon.image * { color: #fff !important; }
+.toast-progress,
+.toast-progress * { color: #fff !important; }
+.scroll-progress-bar,
+.scroll-progress-bar * { color: #fff !important; }
+.nav-badge,
+.nav-badge * { color: #fff !important; }
+.upload-float-bar,
+.upload-float-bar * { color: #fff !important; }
+.ufb-fill.indeterminate,
+.ufb-fill.indeterminate * { color: #fff !important; }
+.scroll-progress,
+.scroll-progress * { color: #fff !important; }
+.cc-btn--apply,
+.cc-btn--apply * { color: #fff !important; }
+.bc-send-btn,
+.bc-send-btn * { color: #fff !important; }
 
 /* ── Sidebar tuzatishlari ───────────────────────────────────────────────
    Faol tugma ostidagi chiziq/nur (ui-improvements.css) X uslubida yo'q:
@@ -416,6 +513,7 @@ nav.bot-nav #sbSearchToggle.search-active svg { stroke-width: 2.4; }
    Ko'k #1d9bf0 = faol/aksent, oq(qora) pill = asosiy CTA (Next / Follow / Save)
    ═══════════════════════════════════════════════════════════════════════ */
 
+::selection { color: inherit !important; }
 
 /* Asosiy CTA: X'dagi kabi teskari pill (dark: oq/qora matn, light: qora/oq matn) */
 .btn-primary { background: var(--x-inv-bg); }
