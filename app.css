@@ -11456,9 +11456,21 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav .sb-top {
     align-items: flex-start; padding: 0 0 4px 4px; margin: 0; border: none;
   }
-  nav.bot-nav .sb-logo-row { width: 52px; height: 52px; }
+  nav.bot-nav .sb-logo-row {
+    width: auto; height: 52px; padding: 0 12px 0 4px; gap: 10px;
+    justify-content: flex-start;
+  }
   nav.bot-nav .sb-logo-img { width: 30px; height: 30px; }
   nav.bot-nav .sb-logo-tip { display: none; }
+  nav.bot-nav .sb-brand-text {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    white-space: nowrap;
+    line-height: 1;
+  }
 
   nav.bot-nav .nav-btn,
   nav.bot-nav .sb-search-toggle {
