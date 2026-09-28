@@ -73,7 +73,7 @@ self.addEventListener('notificationclick', (event) => {
 /* ── Cache versiyasi ── */
 // Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
 // bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 't-1790625794097'; /* BUILD_VERSION_LINE */
+const CACHE_VERSION  = 't-1790626277214'; /* BUILD_VERSION_LINE */
 const STATIC_CACHE   = `mrspace-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `mrspace-runtime-${CACHE_VERSION}`;
 
@@ -104,7 +104,6 @@ const PRECACHE_URLS = [
   '/modules/chat.js',
   '/modules/call.js',
   '/modules/comments.js',
-  '/modules/cover-crop.js',
   '/modules/duration-picker.js',
   '/modules/groups.js',
   '/modules/local-cache.js',

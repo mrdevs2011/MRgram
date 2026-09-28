@@ -609,3 +609,36 @@ window.addEventListener('paste', e => {
     }
   }
 });
+
+/* ── Sahifaning istalgan joyiga fayl tashlash → composer ochiladi ───── */
+let _dragDepth = 0;
+const _hasFiles = e => Array.from(e.dataTransfer?.types || []).includes('Files');
+const _endGlobalDrag = () => { _dragDepth = 0; document.body.classList.remove('file-dragging'); };
+
+window.addEventListener('dragenter', e => {
+  if (!_hasFiles(e) || !state.me) return;
+  e.preventDefault();
+  _dragDepth++;
+  document.body.classList.add('file-dragging');
+});
+window.addEventListener('dragover', e => {
+  if (!_hasFiles(e)) return;
+  e.preventDefault(); // brauzer faylni ochib yubormasin
+});
+window.addEventListener('dragleave', e => {
+  if (!_hasFiles(e)) return;
+  _dragDepth = Math.max(0, _dragDepth - 1);
+  if (_dragDepth === 0) document.body.classList.remove('file-dragging');
+});
+window.addEventListener('drop', e => {
+  if (!_hasFiles(e)) return;
+  e.preventDefault();
+  _endGlobalDrag();
+  if (e.defaultPrevented && e.target.closest?.('#uploadDrop')) return; // uploadDrop o'zi hal qildi
+  if (!state.me) return;
+  const f = e.dataTransfer.files[0];
+  if (!f) return;
+  if (!$('uploadOverlay').classList.contains('show')) openComposer();
+  pickFile(f);
+  setTimeout(() => $('captionInput')?.focus({ preventScroll: true }), 50);
+});

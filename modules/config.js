@@ -66,7 +66,6 @@ export function mapProfile(r) {
     email: r.email || null,
     bio: r.bio || '',
     avatar: r.avatar || '',
-    coverUrl: r.cover_url || null,
     website: r.website || '',
     location: r.location || '',
     approval: r.approval,

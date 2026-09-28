@@ -1932,27 +1932,8 @@ body:has(.search-overlay.open) .app-hdr {
     padding-left: 16px;
     padding-right: 16px;
   }
-  /* Cover yo'q: avatar tepadan kesilmasin */
   #profileView .profile-avi-row {
     margin-top: 0;
-  }
-  #profileView .profile-hdr:has(#profileCover:not([data-empty="true"]):not(:empty)) .profile-avi-row {
-    margin-top: -38px;
-  }
-  #profileView .profile-hdr:has(#profileCover:not([data-empty="true"]):not(:empty)) {
-    padding-top: 0;
-  }
-  /* cover to'liq view ichida */
-  #profileView .profile-cover {
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-    border-radius: 0;
-  }
-  #profileView .profile-hdr:has(#profileCover:not([data-empty="true"])) .profile-cover {
-    width: calc(100% + 32px);
-    margin-left: -16px;
-    margin-right: -16px;
   }
 }
 @media (min-width: 1200px) {
@@ -2353,51 +2334,14 @@ body:has(.search-overlay.open) .app-hdr {
 
 .up-body { padding-bottom: 60px; }
 
-.up-cover {
-  height: 180px;
-  background: #202327;
-  position: relative;
-  overflow: visible;
+.up-head {
+  display: flex;
+  justify-content: center;
+  padding-top: 64px;
 }
-
-.up-cover > img,
-.up-cover > video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  overflow: hidden;
-  border-radius: 0;
-}
-
-.up-cover::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: 0;
-  z-index: 0;
-  clip-path: inset(0);
-}
-
-.up-cover::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #2f3336,
-              #16181c;
-  pointer-events: none;
-  clip-path: inset(0);
-}
-
-.up-cover-glow { display: none; }
 
 .up-avi-wrap {
-  position: absolute;
-  bottom: -44px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   z-index: 2;
 }
 
@@ -2416,7 +2360,7 @@ body:has(.search-overlay.open) .app-hdr {
 .up-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 .up-info {
-  padding: 54px 20px 0;
+  padding: 14px 20px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2576,8 +2520,6 @@ body:has(.search-overlay.open) .app-hdr {
   background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,.12) 100%);
 }
 
-/* ── Profile avatar overflow fix ── */
-.up-cover::after { clip-path: inset(0); }
 
 /* ═══════════════════════════════════════════
    PROFILE STATS — Animated Numbers
@@ -2640,31 +2582,8 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 /* ═══════════════════════════════════════════
-   USER PROFILE MODAL — Cover Gradient
+   USER PROFILE MODAL
    ═══════════════════════════════════════════ */
-
-/* Dynamic cover gradient based on user */
-.up-cover-gradient-1 {
-  background: #202327;
-}
-
-.up-cover-gradient-2 {
-  background: #16181c;
-}
-
-.up-cover-gradient-3 {
-  background: #16181c;
-}
-
-.up-cover-gradient-4 {
-  background: #16181c;
-}
-
-.up-cover-gradient-5 {
-  background: #16181c;
-}
-
-/* Cover animation on load */
 
 /* User stats animation */
 .up-stat-val {
@@ -2805,32 +2724,10 @@ body:has(.search-overlay.open) .app-hdr {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   PROFILE EDIT — cover, avi, fields (qo'shildi)
+   PROFILE EDIT — avi, fields (qo'shildi)
    ═══════════════════════════════════════════════════════════════════════ */
 
-/* Cover photo on profile page */
-/* ── Cover: to'liq kenglik, padding tashqarida ── */
-.profile-cover {
-  width: calc(100% + 32px);
-  height: 150px;
-  background-size: cover;
-  background-position: center;
-  display: block;
-  margin: -68px -16px 0;
-  position: relative;
-  z-index: 0;
-}
-/* Cover yo'q bo'lsa yashiriladi */
-.profile-cover:empty,
-.profile-cover[data-empty="true"] {
-  display: none;
-}
-/* Cover bor bo'lsa header padding-top = 0 */
-.profile-hdr:has(#profileCover:not([data-empty="true"])) {
-  padding-top: 0;
-}
-
-/* ── Avatar row: cover bo'lsa yarim chiqadi, yo'q bo'lsa oddiy ── */
+/* ── Avatar row ── */
 .profile-avi-row {
   display: flex;
   align-items: flex-end;
@@ -2840,11 +2737,6 @@ body:has(.search-overlay.open) .app-hdr {
   position: relative;
   z-index: 2;
 }
-/* Cover ko'rinadigan bo'lsagina avatar yarim cover ichiga chiqadi */
-.profile-hdr:has(#profileCover:not([data-empty="true"]):not(:empty)) .profile-avi-row {
-  margin-top: -38px;
-}
-
 /* Username & meta */
 .profile-username {
   font-size: 13px;
@@ -2871,48 +2763,12 @@ a.profile-meta-link {
 }
 a.profile-meta-link:hover { text-decoration: underline; }
 
-/* Profile edit sheet — cover picker */
-.pe-cover-wrap {
-  position: relative;
-  width: 100%;
-  height: 100px;
-  border-radius: var(--r);
-  overflow: hidden;
-  cursor: pointer;
-  background: var(--glass-mid);
-  border: 0.5px solid var(--glass-border);
-  margin-bottom: 16px;
-  flex-shrink: 0;
-}
-.pe-cover-img {
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center;
-  background-color: var(--bg3);
-}
-.pe-cover-edit-badge {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: #000000;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  pointer-events: none;
-}
-
 /* Avatar picker in edit sheet */
 .pe-avi-wrap {
   position: relative;
   width: 68px;
   height: 68px;
-  margin: -34px 0 12px 16px;
+  margin: 8px 0 12px 16px;
   flex-shrink: 0;
 }
 .pe-avi-img {
@@ -7089,29 +6945,16 @@ a.cfm-name--link:hover {
   padding-bottom: max(32px, env(safe-area-inset-bottom));
 }
 
-/* ── Cover section (gradient background) ── */
-.gi-cover {
-  height: 160px;
-  background: #202327;
-  position: relative;
-  overflow: visible;
+/* ── Avatar header ── */
+.gi-head {
+  display: flex;
+  justify-content: center;
+  padding-top: 64px;
   flex-shrink: 0;
 }
-.gi-cover::after {
-  content: '';
-  position: absolute; inset: 0;
-  background:
-    #2f3336,
-    #16181c;
-  pointer-events: none;
-}
 
-/* Avatar overlapping cover and info */
 .gi-avi-wrap {
-  position: absolute;
-  bottom: -45px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   z-index: 3;
 }
 .gi-avi {
@@ -7127,9 +6970,9 @@ a.cfm-name--link:hover {
 .gi-avi:hover {box-shadow: 0 6px 32px #2f3336; }
 .gi-avi img  { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* Info section below cover */
+/* Info section */
 .gi-info {
-  padding: 54px 20px 18px;
+  padding: 14px 20px 18px;
   display: flex; flex-direction: column; align-items: center;
   text-align: center;
   border-bottom: 0.5px solid var(--line, #202327);
@@ -10628,11 +10471,6 @@ textarea:focus,
   box-shadow: none;
 }
 
-/* Profile cover-photo separator */
-.profile-cover {
-  border-bottom: none;
-}
-
 /* Splash bar */
 [data-theme="dark"] .splash-bar {
   border: none;
@@ -10771,8 +10609,6 @@ textarea:focus,
 
 /* ── PROFILE ── */
 
-/* Profile cover gradient */
-
 /* Stats edit box */
 
 /* Profile grid cell */
@@ -10780,8 +10616,6 @@ textarea:focus,
 /* Profile actions bar */
 
 /* Profile tab header */
-
-/* Avatar cover bg (cover-crop) */
 
 /* ── NAV / SIDEBAR ── */
 /* Notification badge */
@@ -11439,6 +11273,18 @@ textarea::placeholder,
   }
 }
 
+
+/* Fayl sahifaga sudralganda — yengil ko'rsatkich */
+body.file-dragging::after {
+  content: '';
+  position: fixed; inset: 8px;
+  border: 2px dashed var(--x-blue, #1d9bf0);
+  border-radius: 16px;
+  background: rgba(29, 155, 240, .06);
+  pointer-events: none;
+  z-index: 9999;
+}
+
 /* ─── CSS/card-sheets.css ─── */
 /* ═══════════════════════════════════════════
    CARD SHEETS — guruh/kanal yaratish oynalari post composer bilan bir xil card
@@ -11736,13 +11582,13 @@ nav.bot-nav #createBtn.nav-center-btn:hover {
   }
   .chats-filter-btn:hover { background: rgba(128, 128, 128, .16); }
 
-  /* qidiruv — pill */
+  /* qidiruv — Explore "Qidiruv" input bilan bir xil */
   #chatsView .ulist-search-wrap {
     margin: 4px 16px 10px; padding: 0 16px; height: 44px;
-    border: 1px solid transparent; border-radius: 999px;
-    background: var(--bg3, #16181c);
+    border: 1px solid #2f3336; border-radius: 999px;
+    background: transparent;
   }
-  #chatsView .ulist-search-wrap:focus-within { border-color: var(--blue, #fff); box-shadow: none; }
+  #chatsView .ulist-search-wrap:focus-within { border-color: var(--x-blue, #1d9bf0); box-shadow: none; }
 
   /* filtr: Shaxsiy / Guruhlar */
   #chatsListWrap[data-filter="dm"] .grp-rows-section { display: none; }
@@ -16828,7 +16674,7 @@ html, body, #app, .app {
   background: #000000 !important;
 }
 
-/* DIET right-rail — feed yoniga yopishgan, bo'shliqsiz */
+/* Right-rail — chegarali karta, feed bilan 16px oraliq */
 .right-rail { display: none; }
 
 @media (min-width: 1200px) {
@@ -16868,26 +16714,26 @@ html, body, #app, .app {
     border-right: 1px solid #2f3336;
   }
 
-  /* O'ng panel: lentadan ekran o'ng chetigacha to'liq */
+  /* O'ng panel: chegarali, burchaklari yumaloq karta — chap va o'ng tomondan bir xil chetdan */
   .right-rail {
     display: flex;
     flex-direction: column;
     gap: 0;
     position: fixed;
-    top: 0;
-    left: calc(var(--content-left, var(--sidebar, 260px)) + var(--center-w));
-    right: 0;
+    top: 12px;
+    left: calc(var(--content-left, var(--sidebar, 260px)) + var(--center-w) + 16px);
+    right: max(12px, var(--gutter, 0px));
     width: auto;
     min-width: 260px;
-    /* max-width olib tashlandi — o'ng chetgacha */
-    height: 100dvh;
-    padding: 12px 20px 28px 16px;
+    height: calc(100dvh - 24px);
+    padding: 4px 20px 20px;
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 40;
     background: #000;
-    border-left: 1px solid #2f3336;
+    border: 1px solid #2f3336;
+    border-radius: 16px;
     scrollbar-width: thin;
   }
   .right-rail[hidden] { display: none !important; }

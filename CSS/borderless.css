@@ -478,11 +478,6 @@ textarea:focus,
   box-shadow: none;
 }
 
-/* Profile cover-photo separator */
-.profile-cover {
-  border-bottom: none;
-}
-
 /* Splash bar */
 [data-theme="dark"] .splash-bar {
   border: none;
@@ -621,8 +616,6 @@ textarea:focus,
 
 /* ── PROFILE ── */
 
-/* Profile cover gradient */
-
 /* Stats edit box */
 
 /* Profile grid cell */
@@ -630,8 +623,6 @@ textarea:focus,
 /* Profile actions bar */
 
 /* Profile tab header */
-
-/* Avatar cover bg (cover-crop) */
 
 /* ── NAV / SIDEBAR ── */
 /* Notification badge */

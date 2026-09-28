@@ -1035,7 +1035,6 @@ export function listenPosts() {
 /* ── Profil edit / logout — to'liq implementatsiya ─────────────────── */
 
 let _peAviPending = null;
-let _peCoverPending = null;
 let _peOriginalUsername = '';
 
 const editProfileBtn = $('editProfileBtn');
@@ -1064,19 +1063,6 @@ if (editProfileBtn) {
       peAviImg.innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
     }
 
-    _peCoverPending = null;
-    const peCoverImg = $('peCoverImg');
-    if (peCoverImg) {
-      if (d.coverUrl) {
-        peCoverImg.style.backgroundImage = `url(${d.coverUrl})`;
-        peCoverImg.style.backgroundSize = 'cover';
-        peCoverImg.style.backgroundPosition = 'center';
-      } else {
-        peCoverImg.style.backgroundImage = '';
-        peCoverImg.style.background = 'var(--glass-mid)';
-      }
-    }
-
     const peAviInput = $('peAviInput');
     const peAviEditBadge = $('peAviEditBadge');
     if (peAviEditBadge && peAviInput) {
@@ -1092,34 +1078,6 @@ if (editProfileBtn) {
           if (peAviImg) peAviImg.innerHTML = `<img src="${result.url}">`;
           toast('Avatar tanlandi', 'success');
         } catch(e) { toast('Xato: ' + e.message, 'error'); }
-      };
-    }
-
-    const peCoverInput = $('peCoverInput');
-    const peCoverWrap = $('peCoverWrap');
-    if (peCoverWrap && peCoverInput) {
-      peCoverWrap.onclick = (e) => { if (e.target !== peCoverInput) peCoverInput.click(); };
-      peCoverInput.onchange = async ev => {
-        const f = ev.target.files[0];
-        if (!f || !f.type.startsWith('image/')) return;
-        if (f.size > 20*1024*1024) { toast("Rasm 20 MB dan kichik bo'lishi kerak", 'error'); return; }
-        try {
-          const { openCropModal } = await import('./cover-crop.js');
-          const blob = await openCropModal(f);
-          const croppedFile = new File([blob], 'cover.jpg', { type: 'image/jpeg' });
-          toast('Cover yuklanmoqda...', 'info');
-          const result = await uploadViaController(croppedFile, 'covers');
-          _peCoverPending = result.url;
-          if (peCoverImg) {
-            peCoverImg.style.backgroundImage = `url(${result.url})`;
-            peCoverImg.style.backgroundSize = 'cover';
-            peCoverImg.style.backgroundPosition = 'center';
-          }
-          toast('Cover tanlandi ✓', 'success');
-        } catch(e) {
-          if (e.message !== 'cancelled') toast('Xato: ' + e.message, 'error');
-        }
-        peCoverInput.value = '';
       };
     }
 
@@ -1151,7 +1109,6 @@ if (saveProfileBtn) {
     }
 
     if (_peAviPending)   updates.avatar    = _peAviPending;
-    if (_peCoverPending) updates.cover_url = _peCoverPending;
 
     // Parol o'zgartirish (ixtiyoriy)
     const oldPwd = $('editOldPassword')?.value || '';

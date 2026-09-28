@@ -76,22 +76,6 @@ async function _paintProfile(ud) {
   const fn   = ud.fullName || state.me.displayName || 'Foydalanuvchi';
   const av   = ud.avatar   || defAvi(fn);
 
-  // Cover photo
-  const coverEl = $('profileCover');
-  if (coverEl) {
-    if (ud.coverUrl) {
-      coverEl.style.backgroundImage = `url(${ud.coverUrl})`;
-      coverEl.style.backgroundSize  = 'cover';
-      coverEl.style.backgroundPosition = 'center';
-      coverEl.style.display = 'block';
-      coverEl.dataset.empty = 'false';
-    } else {
-      coverEl.style.backgroundImage = '';
-      coverEl.style.display = 'none';
-      coverEl.dataset.empty = 'true';
-    }
-  }
-
   $('profileAvi').innerHTML = `<img src="${av}" onerror="this.style.display='none'">
     <div class="avi-edit-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>`;
 
@@ -404,11 +388,8 @@ export async function renderUserProfileModal(uid) {
 
   const gridHTML = _upGridHtml(userPublicPosts, uid, _upTab);
 
-  const coverStyle = ud.coverUrl
-    ? `background-image:url(${ud.coverUrl});background-size:cover;background-position:center;`
-    : '';
   $('upBody').innerHTML = `
-    <div class="up-cover" style="${coverStyle}"><div class="up-avi-wrap"><div class="up-avi" id="upAviImg" style="cursor:pointer" title="Rasmni ko'rish"><img class="w-full h-full object-cover" src="${av}" onerror="this.src='${defAvi(ud.fullName || 'U')}'"></div></div></div>
+    <div class="up-head"><div class="up-avi-wrap"><div class="up-avi" id="upAviImg" style="cursor:pointer" title="Rasmni ko'rish"><img class="w-full h-full object-cover" src="${av}" onerror="this.src='${defAvi(ud.fullName || 'U')}'"></div></div></div>
     <div class="up-info">
       <div class="up-name">${esc(ud.fullName||'Noma\'lum')}</div>
       ${ud.bio ? `<div class="up-bio">${esc(ud.bio)}</div>` : ''}

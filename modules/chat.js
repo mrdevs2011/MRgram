@@ -36,26 +36,23 @@ function _injectSearchCSS() {
   s.id = 'chat-search-css';
   s.textContent = `
 .ulist-search-wrap {
-  display: flex; align-items: center; gap: 10px;
-  margin: 12px 14px 8px;
-  background: var(--bg4, rgba(255,255,255,0.06));
-  border: 1.5px solid var(--line, rgba(255,255,255,0.10));
-  border-radius: 14px;
-  padding: 10px 14px;
-  transition: border-color .18s, box-shadow .18s;
+  position: relative; display: flex; align-items: center; gap: 12px;
+  margin: 12px 14px 8px; height: 44px; padding: 0 16px;
+  background: transparent;
+  border: 1px solid #2f3336;
+  border-radius: 999px;
+  transition: border-color .15s;
 }
-.ulist-search-wrap:focus-within {
-  border-color: var(--blue, #ffffff);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue, #ffffff) 18%, transparent);
-}
+.ulist-search-wrap:focus-within { border-color: var(--x-blue, #1d9bf0); box-shadow: none; }
 .ulist-search-icon {
   color: var(--text3, #767676); flex-shrink: 0; cursor: pointer;
   display: flex; align-items: center; transition: color .15s;
 }
-.ulist-search-icon:hover { color: var(--blue, #ffffff); }
+.ulist-search-icon svg { width: 18px; height: 18px; }
+.ulist-search-wrap:focus-within .ulist-search-icon { color: var(--x-blue, #1d9bf0); }
 .ulist-search-input {
-  flex: 1; min-width: 0; background: transparent; border: none; outline: none;
-  color: var(--text, #fff); font-size: 14.5px; line-height: 1.4;
+  flex: 1; min-width: 0; height: 100%; background: transparent; border: none; outline: none;
+  box-shadow: none; color: var(--text, #fff); font-size: 15px; line-height: 1.4;
 }
 .ulist-search-input::placeholder { color: var(--text3, #767676); }
 .ulist-search-result { margin: 0 18px 10px; font-size: 12.5px; font-weight: 500; color: var(--text3, #767676); }

@@ -233,7 +233,7 @@ function updateLayoutForRoute(routeName) {
   const sbSearchToggle = $('sbSearchToggle');
 
   // Tooltip ni yangilaymiz (DOM strukturasiga tegmaymiz)
-  const label = 'Qidiruv';
+  const label = 'Kashf';
   if (hdrSearchBtn)   { hdrSearchBtn.setAttribute('aria-label', label); hdrSearchBtn.title = label; }
   if (sbSearchToggle) { sbSearchToggle.setAttribute('data-tip', label); }
 

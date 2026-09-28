@@ -1475,14 +1475,14 @@ export function injectGroupsDOM() {
 
       <div class="gi-body">
 
-          <!-- Cover + overlapping avatar -->
-          <div class="gi-cover" id="grpInfoCover">
+          <!-- Avatar -->
+          <div class="gi-head" id="grpInfoHead">
             <div class="gi-avi-wrap">
               <div class="gi-avi" id="grpInfoAvi" title="Rasmni ko'rish"></div>
             </div>
           </div>
 
-          <!-- Info below cover -->
+          <!-- Info -->
           <div class="gi-info">
             <div class="gi-name" id="grpInfoName"></div>
             <div class="gi-type-badge" id="grpInfoTypeBadge"></div>

@@ -372,29 +372,16 @@
   padding-bottom: max(32px, env(safe-area-inset-bottom));
 }
 
-/* ── Cover section (gradient background) ── */
-.gi-cover {
-  height: 160px;
-  background: #202327;
-  position: relative;
-  overflow: visible;
+/* ── Avatar header ── */
+.gi-head {
+  display: flex;
+  justify-content: center;
+  padding-top: 64px;
   flex-shrink: 0;
 }
-.gi-cover::after {
-  content: '';
-  position: absolute; inset: 0;
-  background:
-    #2f3336,
-    #16181c;
-  pointer-events: none;
-}
 
-/* Avatar overlapping cover and info */
 .gi-avi-wrap {
-  position: absolute;
-  bottom: -45px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative;
   z-index: 3;
 }
 .gi-avi {
@@ -410,9 +397,9 @@
 .gi-avi:hover {box-shadow: 0 6px 32px #2f3336; }
 .gi-avi img  { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* Info section below cover */
+/* Info section */
 .gi-info {
-  padding: 54px 20px 18px;
+  padding: 14px 20px 18px;
   display: flex; flex-direction: column; align-items: center;
   text-align: center;
   border-bottom: 0.5px solid var(--line, #202327);
