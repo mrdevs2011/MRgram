@@ -867,14 +867,14 @@ async function _preloadForSplash(uid) {
 /* ── Onlayn holat (presence) heartbeat ─────────────────────────────────
  * profiles.last_seen har ~25s yangilanadi; boshqalar isOnline(lastSeenAt)
  * (utils.js) bilan "onlayn/oxirgi faollik"ni hisoblaydi.
- * Sahifa fonda bo'lsa to'xtaydi (batareya va yozuvlarni tejash).
+ * Fon/yopiq oynada ham yuboriladi (brauzer taymerni sekinlatadi, lekin oyna baribir ochiq).
  ─────────────────────────────────────────────────────────────────────── */
 const HEARTBEAT_MS = 25 * 1000;
 let _heartbeatTimer = null;
 
 async function _pingPresence() {
   const uid = state.me?.uid;
-  if (!uid || document.visibilityState !== 'visible') return;
+  if (!uid) return; // fon/yopiq oyna ham "onlayn" hisoblanadi (brauzer taymerni 1/min gacha sekinlatadi)
   try {
     await sb.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', uid);
   } catch (_) { /* tarmoq yo'q — keyingi tikda qayta urinadi */ }

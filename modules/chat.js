@@ -308,6 +308,25 @@ async function _fetchChatUsers() {
   return rows.map(mapProfile).filter(u => u.uid !== state.me.uid && _isActiveUser(u));
 }
 
+/** _usersCache 5 daqiqagacha keshlanadi — shu vaqt ichida `lastSeenAt` eskirib,
+ * "onlayn" nuqta noto'g'ri o'chib/yonib qoladi. Faqat `last_seen` ni yengil
+ * so'rov bilan yangilaymiz. O'zgarish bo'lsa true qaytaradi. */
+async function _refreshUsersPresence() {
+  if (!_usersCache || !_usersCache.length || !state.me) return false;
+  if (document.visibilityState !== 'visible') return false;
+  try {
+    const rows = await fetchAllRows('profiles', 'id,last_seen', 'created_at');
+    const seen = new Map((rows || []).map(r => [r.id, ts(r.last_seen)]));
+    let changed = false;
+    for (const u of _usersCache) {
+      if (!seen.has(u.uid)) continue;
+      const t = seen.get(u.uid);
+      if (t !== u.lastSeenAt) { u.lastSeenAt = t; changed = true; }
+    }
+    return changed;
+  } catch (_) { return false; }
+}
+
 let _threadUnsub = null;
 let _reloadThread = null;
 let _chatSelFile = null;
@@ -477,7 +496,9 @@ export function startChatsWatcher() {
     // o'zi so'nishi uchun — yangi ma'lumot kelmasa ham ro'yxatni davriy
     // qayta chizamiz (isOnline() joriy vaqtga qarab hisoblanadi).
     if (!_presenceRepaintTick) {
-      _presenceRepaintTick = setInterval(() => {
+      _presenceRepaintTick = setInterval(async () => {
+        if (state.view !== 'chats') return;
+        await _refreshUsersPresence();
         if (state.view === 'chats') paintChatsList(_usersCache || [], _latestChatMap);
       }, 30000);
     }
@@ -531,6 +552,10 @@ export async function renderChatsList() {
     }
 
     paintChatsList(_usersCache, _latestChatMap);
+    // Ro'yxat ochilganda darhol yangi last_seen — nuqtalar kesh bilan eskirmasin
+    _refreshUsersPresence().then(changed => {
+      if (changed && state.view === 'chats') paintChatsList(_usersCache || [], _latestChatMap);
+    });
   } catch (err) {
     console.error('❌ renderChatsList failed:', err.message);
     root.innerHTML = `<div class="empty pt-30vh tac">

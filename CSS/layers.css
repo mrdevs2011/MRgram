@@ -366,7 +366,7 @@ svg { color: inherit; }
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  background: var(--tg-blue, var(--pal-white));
+  background: var(--blue);
   border-radius: 9px;
   font-size: 10px;
   font-weight: 700;

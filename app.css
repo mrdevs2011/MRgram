@@ -1300,7 +1300,7 @@
   min-width: 22px;
   height: 22px;
   padding: 0 6px;
-  background: var(--tg-blue, var(--pal-white));
+  background: var(--blue);
   border-radius: 11px;
   font-size: 11.5px;
   font-weight: 700;
@@ -1513,7 +1513,7 @@
 /* Header info column (name + typing status) */
 .chat-thread-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
 /* Typing status under name in header */
-.chat-thread-typing { font-size: 11.5px; color: var(--blue); height: 0; overflow: hidden; opacity: 0; transition: none; white-space: nowrap; }
+.chat-thread-typing { font-size: 11.5px; color: var(--blue); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* Floating typing bubble above input */
 .chat-typing-indicator { flex-shrink: 0; padding: 0 14px; max-height: 0; overflow: hidden; transition: none; pointer-events: none; }
 .chat-typing-indicator.active { max-height: 42px; }
@@ -1551,7 +1551,9 @@
 .incoming-call-ring-anim { position: absolute; width: 150px; height: 150px; pointer-events: none; }
 .incoming-call-ring-anim span { position: absolute; inset: 0; border-radius: 50%; }
 .incoming-call-avi { width: 128px; height: 128px; border-radius: 50%; overflow: hidden; background: var(--bg4); flex-shrink: 0; position: relative; z-index: 1; }
-.incoming-call-avi img { width: 100%; height: 100%; object-fit: cover; }
+.incoming-call-avi img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+/* Halqa animatsiyasi ism/matn ustidan o'tmasin */
+.incoming-call-name, .incoming-call-type { position: relative; z-index: 2; }
 .incoming-call-name { font-size: 26px; font-weight: 700; color: var(--pal-white); text-align: center; }
 .incoming-call-type { font-size: 15px; color: var(--pal-legacy-b5b5b7); }
 .inc-call-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
@@ -1571,8 +1573,10 @@
 /* Voice mode */
 .call-voice-wrap { flex-direction: column; gap: 16px; }
 .call-voice-avi { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; }
-.call-voice-avi img { width: 100%; height: 100%; object-fit: cover; }
-.call-avi-initial { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 700; color: var(--pal-white); background: var(--pal-green); }
+.call-voice-avi img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+/* Doira qirqimi child (yashil harf) da yo'qolib, KVADRAT bo'lib qolmasin */
+.call-voice-avi { flex-shrink: 0; isolation: isolate; border-radius: 50% !important; }
+.call-avi-initial { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 700; color: var(--pal-white); background: var(--pal-green); border-radius: 50%; }
 .incoming-call-avi .call-avi-initial { font-size: 52px; }
 .call-voice-name { font-size: 24px; font-weight: 700; color: var(--pal-white); }
 /* Video mode */
@@ -1681,6 +1685,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .cfm-img-preview { display: block; width: 100%; max-width: 260px; max-height: 320px; object-fit: cover; border-radius: 14px; background: var(--pal-gray-900); }
 .cfm-video-preview { display: block; width: 100%; max-width: 260px; max-height: 300px; border-radius: 14px; background: var(--pal-black); outline: none; }
 .cfm-media-meta { font-size: 10.5px; color: var(--pal-legacy-909093); padding: 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-msg.mine .cfm-media-meta { color: rgba(255, 255, 255, 0.85); }
 .chat-msg.theirs .cfm-media-meta { color: var(--text3); }
 /* mine bubble — rasmlar uchun padding olib tashlanadi */
 .chat-msg.mine .chat-bubble:has(.cfm-media-wrap) { padding: 4px 4px 6px; }
@@ -2508,7 +2513,7 @@ svg { color: inherit; }
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  background: var(--tg-blue, var(--pal-white));
+  background: var(--blue);
   border-radius: 9px;
   font-size: 10px;
   font-weight: 700;

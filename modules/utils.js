@@ -117,7 +117,7 @@ export const fmtSz  = b  => b > 1048576 ? (b/1048576).toFixed(1)+' MB' : (b/1024
  * olinadi. Agar oxirgi yangilanishdan beri ONLINE_THRESHOLD_MS dan kam
  * vaqt o'tgan bo'lsa — foydalanuvchi "onlayn" hisoblanadi.
  */
-export const ONLINE_THRESHOLD_MS = 70 * 1000; // heartbeat ~25s, shuning uchun bufer sifatida 70s
+export const ONLINE_THRESHOLD_MS = 100 * 1000; // heartbeat ~25s (fon tabda ~60s gacha sekinlashadi), bufer 100s
 
 export function isOnline(lastSeenAt) {
   if (!lastSeenAt) return false;
