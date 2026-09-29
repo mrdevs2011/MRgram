@@ -14,7 +14,7 @@
 | F1 Axlat kod | 100% |
 | F2 Admin + parol reset | 100% |
 | F3 Mahsulot yuzasi | 100% |
-| F4 CSS | ~75% (6 fayl / 4585 qator — maqsad <=5k bajarildi; !important 230→151; vizual/smoke qoldi) |
+| F4 CSS | ~75% (6 fayl / 4585 qator — maqsad <=5k bajarildi; !important 230→149; vizual/smoke qoldi) |
 | F5 Realtime | 100% |
 | F6 Data qatlami / SW | ~55% |
 | F7 Family-grade | ~60% |
