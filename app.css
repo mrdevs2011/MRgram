@@ -240,7 +240,7 @@
 }
 .search-overlay.open { opacity: 1; pointer-events: all; }
 /* Search ochilganda header yashiriladi */
-.search-overlay.open ~ .app-hdr, body:has(.search-overlay.open) .app-hdr { display: none !important; }
+.search-overlay.open ~ .app-hdr, body:has(.search-overlay.open) .app-hdr { display: none; }
 .search-overlay-inner { width: min(580px, calc(100vw - 24px)); display: flex; flex-direction: column; gap: 8px; transform: translateY(-8px); transition: none; }
 .search-overlay.open .search-overlay-inner { transform: translateY(0); }
 .search-overlay-box { display: flex; align-items: center; gap: 10px; background: var(--bg2); border: 1.5px solid var(--line3); border-radius: 14px; padding: 12px 14px; }
@@ -410,12 +410,12 @@
 .heart-burst svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 8px var(--pal-black-35)); }
 /* ═══════════════════════ LIKE POP ANIMATION ═══════════════════════ */
 /* Hide header completely in reels on mobile */
-.app-hdr.force-hide { display: none !important; }
+.app-hdr.force-hide { display: none; }
 /* Mobile: reels da to'liq ekran (sidebar yo'q paytda) */
 /* Header button visibility control */
-.hdr-hidden { display: none !important; }
+.hdr-hidden { display: none; }
 /* Hide search btn when not on home/following */
-.hdr-search-wrap.search-hidden { display: none !important; }
+.hdr-search-wrap.search-hidden { display: none; }
 /* Video player mute btn: mobile faqat */
 @media (min-width: 768px) {
   .vc-mute { display: none !important; }
@@ -1133,7 +1133,7 @@
 .sb-panel-input::placeholder { color: var(--text3); }
 @media (min-width: 768px) {
   :root { --sidebar: 68px; --content-left: var(--sidebar); }
-  .app-hdr { display: none !important; }
+  .app-hdr { display: none; }
   .sb-search-toggle { display: flex; }
   #sbSearchToggle.search-active { background: var(--pal-gray-800); box-shadow: var(--specular-top); }
   #sbSearchToggle.search-active svg { stroke: var(--blue); }
@@ -1179,7 +1179,7 @@
   .sb-logo-img { width: 30px; height: 30px; position: relative; z-index: 1; }
   .sb-brand-text { display: none; }
   .nav-btn { flex-direction: column; justify-content: center; align-items: center; width: 44px; height: 44px; padding: 0; gap: 0; border-radius: 14px; flex-shrink: 0; }
-  .nav-btn::after { display: none !important; }
+  .nav-btn::after { display: none; }
   .nav-btn span { display: none; }
   .nav-btn svg { width: 22px; height: 22px; }
   .nav-btn:hover { transform: none; background: var(--glass); border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top); }
