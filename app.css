@@ -3279,8 +3279,8 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav .sb-acc-meta, nav.bot-nav .sb-acc-dots { display: none; }
   nav.bot-nav .sb-account { padding: 0; justify-content: center; border-radius: 50%; }
   nav.bot-nav .sb-acc-avi { width: 36px; height: 36px; }
-  nav.bot-nav #createBtn.nav-center-btn { display: flex !important; align-items: center; justify-content: center; border-radius: 50%; padding: 0; flex-shrink: 0; background: var(--text); color: var(--bg); border: none; box-shadow: none; }
-  nav.bot-nav #createBtn.nav-center-btn::before, nav.bot-nav #createBtn.nav-center-btn::after { display: none !important; }
+  nav.bot-nav #createBtn.nav-center-btn { display: flex; align-items: center; justify-content: center; border-radius: 50%; padding: 0; flex-shrink: 0; background: var(--text); color: var(--bg); border: none; box-shadow: none; }
+  nav.bot-nav #createBtn.nav-center-btn::before, nav.bot-nav #createBtn.nav-center-btn::after { display: none; }
   nav.bot-nav #createBtn.nav-center-btn svg { display: block; width: 22px; height: 22px; stroke: currentColor; }
   nav.bot-nav #createBtn.nav-center-btn .sb-create-label { display: none; }
 }
@@ -3330,10 +3330,10 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav .nav-btn svg { width: 26px; height: 26px; stroke: var(--text); flex-shrink: 0; }
   nav.bot-nav .nav-btn.on svg, nav.bot-nav #sbSearchToggle.search-active svg { stroke: var(--text); stroke-width: 2.4; }
   nav.bot-nav .nav-btn .nav-label { display: block; color: var(--text); white-space: nowrap; }
-  nav.bot-nav .nav-btn::after, #sbSearchToggle::after { display: none !important; }
+  nav.bot-nav .nav-btn::after, #sbSearchToggle::after { display: none; }
   nav.bot-nav .nav-badge { left: 30px; right: auto; top: 6px; }
   nav.bot-nav #createBtn.nav-center-btn {
-    display: flex !important;
+    display: flex;
     align-items: center;
     justify-content: center;
     align-self: stretch;
@@ -3345,7 +3345,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
     border: none;
     box-shadow: none;
   }
-  nav.bot-nav #createBtn.nav-center-btn::before, nav.bot-nav #createBtn.nav-center-btn::after { display: none !important; }
+  nav.bot-nav #createBtn.nav-center-btn::before, nav.bot-nav #createBtn.nav-center-btn::after { display: none; }
   nav.bot-nav #createBtn.nav-center-btn svg { display: none; }
   nav.bot-nav #createBtn.nav-center-btn .sb-create-label { display: block; color: var(--bg); }
   nav.bot-nav .sb-bottom { display: flex; flex-direction: column; align-items: stretch; margin-top: auto; padding: 12px 0 0; border: none; }
