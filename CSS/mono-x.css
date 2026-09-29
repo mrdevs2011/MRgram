@@ -62,7 +62,7 @@ a { color: var(--link); }
 .chat-voice-btn, .chat-voice-btn * { color: var(--pal-white) !important; }
 .crb-line, .crb-line * { color: var(--pal-white) !important; }
 .chat-voice-btn.recording, .chat-voice-btn.recording * { color: var(--pal-white) !important; }
-.chat-msg.theirs .cvm-play, .chat-msg.theirs .cvm-play * { color: var(--pal-white) !important; }
+.chat-msg.theirs .cvm-play, .chat-msg.theirs .cvm-play * { color: var(--pal-white); }
 .chat-msg.theirs .cvm-play:hover, .chat-msg.theirs .cvm-play:hover * { color: var(--pal-white) !important; }
 .chat-msg.theirs .cvm-bar.played, .chat-msg.theirs .cvm-bar.played * { color: var(--pal-white) !important; }
 .vmp-play, .vmp-play * { color: var(--pal-white) !important; }

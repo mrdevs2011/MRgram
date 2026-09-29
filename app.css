@@ -1801,11 +1801,11 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .chat-thread-messages { gap: 2px !important; background: transparent !important; }
 /* Message row */
 /* Bubble — chegrasiz (padding/border-radius/font-size/line-height → o'chirildi, chunki CSS/chat-dark-redesign... */
-.chat-bubble { border: none !important; box-shadow: none !important; }
+.chat-bubble { border: none; box-shadow: none; }
 /* mine — background/color/border-bottom-right-radius o'chirildi (o'lik edi, CSS/chat-dark-redesign.css g'olib... */
-.chat-msg.mine .chat-bubble { box-shadow: none !important; border: none !important; }
+.chat-msg.mine .chat-bubble { box-shadow: none; border: none; }
 /* theirs — background/color/border-bottom-left-radius o'chirildi (o'lik edi, CSS/chat-dark-redesign.css g'oli... */
-.chat-msg.theirs .chat-bubble { box-shadow: none !important; border: none !important; }
+.chat-msg.theirs .chat-bubble { box-shadow: none; border: none; }
 .chat-msg.mine .chat-bubble:has(.chat-img-msg), .chat-msg.theirs .chat-bubble:has(.chat-img-msg) { padding: 3px !important; border-radius: 16px !important; }
 /* Input row — clean, chegrasiz */
 .chat-thread-input-row { background: var(--bg); border-top: none; box-shadow: none; padding: 8px 10px; padding-bottom: max(8px, env(safe-area-inset-bottom)); gap: 6px; }
@@ -1868,10 +1868,10 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 }
 .chat-msg.theirs .cvm-play:hover { background: var(--pal-white) !important; }
 .chat-msg.theirs .cvm-waveform { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 1.5px; cursor: pointer; overflow: hidden; }
-.chat-msg.theirs .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--text3) !important; opacity: 0.5; transition: none; }
+.chat-msg.theirs .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--text3); opacity: 0.5; transition: none; }
 /* Eshitilgan qism — Telegram Primary Blue (#ffffff) bilan to'liq * to'ldiriladi, eshitilmagan qism muted kulr... */
 .chat-msg.theirs .cvm-bar.played { background: var(--blue) !important; opacity: 1; }
-.chat-msg.theirs .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: var(--text3) !important; }
+.chat-msg.theirs .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: var(--text3); }
 /* Voice mini-player — chat almashtirilganda/thread yopilganda ham * ovozli xabar ijrosi davom etayotganini ko... */
 .voice-mini-player {
   display: none;
@@ -2015,7 +2015,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* Badge overflow fix */
 /* chat-avi va chat-thread-avi border-radius:50% bilan overflow:hidden */
 /* qilishi mumkin — badge tashqariga chiqishi uchun visible qilamiz */
-.chat-avi { position: relative; overflow: visible !important; }
+.chat-avi { position: relative; overflow: visible; }
 .chat-thread-avi { position: relative; overflow: visible; }
 /* Badge o'lchami va joylashuvi aniqroq */
 .chat-row-grp-badge {
@@ -4075,7 +4075,7 @@ a { color: var(--link); }
 .chat-voice-btn, .chat-voice-btn * { color: var(--pal-white) !important; }
 .crb-line, .crb-line * { color: var(--pal-white) !important; }
 .chat-voice-btn.recording, .chat-voice-btn.recording * { color: var(--pal-white) !important; }
-.chat-msg.theirs .cvm-play, .chat-msg.theirs .cvm-play * { color: var(--pal-white) !important; }
+.chat-msg.theirs .cvm-play, .chat-msg.theirs .cvm-play * { color: var(--pal-white); }
 .chat-msg.theirs .cvm-play:hover, .chat-msg.theirs .cvm-play:hover * { color: var(--pal-white) !important; }
 .chat-msg.theirs .cvm-bar.played, .chat-msg.theirs .cvm-bar.played * { color: var(--pal-white) !important; }
 .vmp-play, .vmp-play * { color: var(--pal-white) !important; }
