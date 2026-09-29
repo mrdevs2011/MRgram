@@ -123,8 +123,8 @@ a { color: var(--link); }
 }
 /* O'ng ustun tarkibi */
 /* ═══════════════════════════════════════════════════════════════════════ Header YO'Q (mobil ham) + Post: X u... */
-.app-hdr, .app-hdr.search-open { display: none !important; }
-#homeView.on, #followingView.on { padding-top: 0 !important; padding-bottom: 0 !important; }
+.app-hdr, .app-hdr.search-open { display: none; }
+#homeView.on, #followingView.on { padding-top: 0; padding-bottom: 0; }
 .post, [data-theme] .post { --post-px: 16px; --post-avi: 40px; --post-gap: 12px; display: flex; align-items: flex-start; gap: var(--post-gap); padding: 12px var(--post-px); overflow: visible; }
 .post > .avi { width: 40px; height: 40px; border: none; box-shadow: none; }
 .post > .avi:hover { border: none; box-shadow: none; }

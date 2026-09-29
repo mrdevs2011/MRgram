@@ -513,12 +513,12 @@
 #profileView { position: relative; z-index: 1; box-sizing: border-box; overflow-x: hidden; min-height: 100%; }
 #profileView.on { display: block; }
 @media (min-width: 768px) {
-  #profileView.on { margin-left: var(--content-left, var(--sidebar, 68px)) !important; width: calc(100% - var(--content-left, var(--sidebar, 68px))); max-width: 680px; padding-top: 0 !important; }
+  #profileView.on { margin-left: var(--content-left, var(--sidebar, 68px)); width: calc(100% - var(--content-left, var(--sidebar, 68px))); max-width: 680px; padding-top: 0; }
   #profileView .profile-hdr { padding-top: 20px; padding-left: 16px; padding-right: 16px; }
   #profileView .profile-avi-row { margin-top: 0; }
 }
 @media (min-width: 1200px) {
-  #profileView.on { width: var(--center-w, 600px) !important; max-width: var(--center-w, 600px) !important; margin-right: 0; }
+  #profileView.on { width: var(--center-w, 600px); max-width: var(--center-w, 600px); margin-right: 0; }
 }
 /* profileView padding — .view.on orqali boshqariladi (feed.css) */
 .profile-hdr { padding: 68px 16px 16px; }
@@ -1213,7 +1213,7 @@
   .nav-btn[data-v]:hover::after, .nav-center-btn:hover::after, .sb-mute-btn:hover::after { opacity: 1; }
   .nav-center-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: var(--pal-legacy-3a3a3f); border-radius: 50% 50% 0 0; pointer-events: none; }
   #homeView, #followingView, #reelsView, #profileView, #chatsView, #actionsView { margin-left: var(--sidebar); position: relative; z-index: 1; }
-  .view.on { padding-top: 16px !important; padding-bottom: 24px !important; }
+  .view.on { padding-top: 16px; padding-bottom: 24px; }
   .feed { margin: 0 auto; padding: 0 16px; }
   .post { border: 0.5px solid var(--glass-border); background: var(--glass); margin-bottom: 16px; padding: 14px; box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
   .post-media { margin: 10px -14px; border-radius: 0; }
@@ -4136,8 +4136,8 @@ a { color: var(--link); }
 }
 /* O'ng ustun tarkibi */
 /* ═══════════════════════════════════════════════════════════════════════ Header YO'Q (mobil ham) + Post: X u... */
-.app-hdr, .app-hdr.search-open { display: none !important; }
-#homeView.on, #followingView.on { padding-top: 0 !important; padding-bottom: 0 !important; }
+.app-hdr, .app-hdr.search-open { display: none; }
+#homeView.on, #followingView.on { padding-top: 0; padding-bottom: 0; }
 .post, [data-theme] .post { --post-px: 16px; --post-avi: 40px; --post-gap: 12px; display: flex; align-items: flex-start; gap: var(--post-gap); padding: 12px var(--post-px); overflow: visible; }
 .post > .avi { width: 40px; height: 40px; border: none; box-shadow: none; }
 .post > .avi:hover { border: none; box-shadow: none; }
