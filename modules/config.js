@@ -5,7 +5,7 @@
  * Mapperlar qolgan modullarni bosqichma-bosqich ko'chirish imkonini beradi.
  */
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/+esm';
+import { createClient } from './vendor-supabase.js';
 
 // URL va anon key modules/env.js dan keladi — uni Vercel build (scripts/build-env.mjs)
 // Environment Variables'dan yozadi. service_role ni BU YERGA YOZMANG.

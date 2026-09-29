@@ -95,6 +95,7 @@ const PRECACHE_URLS = [
   '/modules/script.js',
   '/modules/router.js',
   '/modules/config.js',
+  '/modules/vendor-supabase.js',
   '/modules/env.js',
   '/modules/ui.js',
   '/modules/utils.js',
