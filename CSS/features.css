@@ -88,7 +88,7 @@
 .hdr-new-post-btn:active { opacity: 0.7; }
 /* Desktop: hide header new post button (sidebar used instead) */
 @media (min-width: 768px) {
-  .hdr-new-post-btn { display: none !important; }
+  .hdr-new-post-btn { display: none; }
 }
 /* hdr-theme-btn → now uses .hdr-icon-btn.theme-btn */
 /* ═══════════════════════ VIEWS ═══════════════════════ */
@@ -649,7 +649,7 @@
   flex-shrink: 0;
 }
 @media (max-width: 767px) {
-  .nav-center-btn { display: none !important; }
+  .nav-center-btn { display: none; }
   .bot-nav { justify-content: space-around; padding-bottom: max(env(safe-area-inset-bottom), 8px); }
 }
 /* Specular highlight on create button */
@@ -920,7 +920,7 @@
 /* ═══════════════════════════════════════════════ DESKTOP SIDEBAR — Solid ═══════════════════════════════════... */
 .sb-top, .sb-search-row, .sb-bottom, .sb-create-label { display: none; }
 .sb-search-toggle { display: none; }
-#sbSearchPanel { display: none !important; }
+#sbSearchPanel { display: none; }
 .sb-panel-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); }
 .sb-panel-input-wrap { display: flex; align-items: center; gap: 8px; background: var(--glass); border: 0.5px solid var(--glass-border); border-radius: 14px; padding: 9px 12px; transition: none; box-shadow: var(--specular-top); }
 .sb-panel-input-wrap:focus-within { border-color: var(--pal-legacy-464646); background: var(--glass-mid); box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-900); }
@@ -1018,7 +1018,7 @@
   #userProfileModal { left: var(--sidebar); }
   #grpInfoOverlay { left: var(--sidebar); }
   .up-back { left: calc(var(--sidebar) + 14px); }
-  .bot-nav { display: flex !important; position: fixed !important; }
+  .bot-nav { display: flex; position: fixed; }
 }
 /* ═══════════════════════════════════════════ DESKTOP SEARCH PANEL — Solid ══════════════════════════════════... */
 #sbSearchPanel {
@@ -1451,7 +1451,7 @@
 /* Voice button — hover/press feedback */
 /* .chat-voice-btn base look + .recording pulse now live only in the * "VOICE BTN — amplitude-based smooth pul... */
 /* Audio message bubble */
-.chats-hdr { background: transparent !important; position: relative; }
+.chats-hdr { background: transparent; position: relative; }
 /* Openable file name (zip/pdf) — clickable link */
 a.cfm-name--link {
   font-size: 12.5px;
@@ -1589,7 +1589,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .ctx-item.danger:hover { background: var(--pal-legacy-171717) !important; }
 /* 11. Emoji picker — bounce in */
 /* 12. Input area focus glow */
-#chatThreadInput { transition: none !important; }
+#chatThreadInput { transition: none; }
 #chatThreadInput:focus { box-shadow: 0 0 0 3px var(--pal-gray-800) !important; border-color: #4c4c4c !important; outline: none; }
 /* ═══════════════════════════════════════════ CLEAN CHAT REDESIGN — Telegram/Instagram style Chegrasiz, minim... */
 /* #chatThreadModal foni → CSS/chat-dark-redesign.css'da belgilangan (bir xil selector, o'sha fayl keyinroq yu... */
@@ -1696,7 +1696,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* ─── groups ─── */
 /* ═══════════════════════════════════════════════════════════════ MRspace — Groups & Channels CSS ═══════════... */
 /* "+" button in chats header */
-.chats-hdr { display: flex !important; align-items: center; justify-content: space-between; }
+.chats-hdr { display: flex; align-items: center; justify-content: space-between; }
 .chats-add-btn {
   width: 36px;
   height: 36px;
@@ -1812,7 +1812,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* chat-avi va chat-thread-avi border-radius:50% bilan overflow:hidden */
 /* qilishi mumkin — badge tashqariga chiqishi uchun visible qilamiz */
 .chat-avi { position: relative; overflow: visible !important; }
-.chat-thread-avi { position: relative; overflow: visible !important; }
+.chat-thread-avi { position: relative; overflow: visible; }
 /* Badge o'lchami va joylashuvi aniqroq */
 .chat-row-grp-badge {
   position: absolute;

@@ -292,7 +292,7 @@
 .hdr-new-post-btn:active { opacity: 0.7; }
 /* Desktop: hide header new post button (sidebar used instead) */
 @media (min-width: 768px) {
-  .hdr-new-post-btn { display: none !important; }
+  .hdr-new-post-btn { display: none; }
 }
 /* hdr-theme-btn → now uses .hdr-icon-btn.theme-btn */
 /* ═══════════════════════ VIEWS ═══════════════════════ */
@@ -853,7 +853,7 @@
   flex-shrink: 0;
 }
 @media (max-width: 767px) {
-  .nav-center-btn { display: none !important; }
+  .nav-center-btn { display: none; }
   .bot-nav { justify-content: space-around; padding-bottom: max(env(safe-area-inset-bottom), 8px); }
 }
 /* Specular highlight on create button */
@@ -1124,7 +1124,7 @@
 /* ═══════════════════════════════════════════════ DESKTOP SIDEBAR — Solid ═══════════════════════════════════... */
 .sb-top, .sb-search-row, .sb-bottom, .sb-create-label { display: none; }
 .sb-search-toggle { display: none; }
-#sbSearchPanel { display: none !important; }
+#sbSearchPanel { display: none; }
 .sb-panel-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); }
 .sb-panel-input-wrap { display: flex; align-items: center; gap: 8px; background: var(--glass); border: 0.5px solid var(--glass-border); border-radius: 14px; padding: 9px 12px; transition: none; box-shadow: var(--specular-top); }
 .sb-panel-input-wrap:focus-within { border-color: var(--pal-legacy-464646); background: var(--glass-mid); box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-900); }
@@ -1222,7 +1222,7 @@
   #userProfileModal { left: var(--sidebar); }
   #grpInfoOverlay { left: var(--sidebar); }
   .up-back { left: calc(var(--sidebar) + 14px); }
-  .bot-nav { display: flex !important; position: fixed !important; }
+  .bot-nav { display: flex; position: fixed; }
 }
 /* ═══════════════════════════════════════════ DESKTOP SEARCH PANEL — Solid ══════════════════════════════════... */
 #sbSearchPanel {
@@ -1655,7 +1655,7 @@
 /* Voice button — hover/press feedback */
 /* .chat-voice-btn base look + .recording pulse now live only in the * "VOICE BTN — amplitude-based smooth pul... */
 /* Audio message bubble */
-.chats-hdr { background: transparent !important; position: relative; }
+.chats-hdr { background: transparent; position: relative; }
 /* Openable file name (zip/pdf) — clickable link */
 a.cfm-name--link {
   font-size: 12.5px;
@@ -1793,7 +1793,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .ctx-item.danger:hover { background: var(--pal-legacy-171717) !important; }
 /* 11. Emoji picker — bounce in */
 /* 12. Input area focus glow */
-#chatThreadInput { transition: none !important; }
+#chatThreadInput { transition: none; }
 #chatThreadInput:focus { box-shadow: 0 0 0 3px var(--pal-gray-800) !important; border-color: #4c4c4c !important; outline: none; }
 /* ═══════════════════════════════════════════ CLEAN CHAT REDESIGN — Telegram/Instagram style Chegrasiz, minim... */
 /* #chatThreadModal foni → CSS/chat-dark-redesign.css'da belgilangan (bir xil selector, o'sha fayl keyinroq yu... */
@@ -1900,7 +1900,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* ─── groups ─── */
 /* ═══════════════════════════════════════════════════════════════ MRspace — Groups & Channels CSS ═══════════... */
 /* "+" button in chats header */
-.chats-hdr { display: flex !important; align-items: center; justify-content: space-between; }
+.chats-hdr { display: flex; align-items: center; justify-content: space-between; }
 .chats-add-btn {
   width: 36px;
   height: 36px;
@@ -2016,7 +2016,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* chat-avi va chat-thread-avi border-radius:50% bilan overflow:hidden */
 /* qilishi mumkin — badge tashqariga chiqishi uchun visible qilamiz */
 .chat-avi { position: relative; overflow: visible !important; }
-.chat-thread-avi { position: relative; overflow: visible !important; }
+.chat-thread-avi { position: relative; overflow: visible; }
 /* Badge o'lchami va joylashuvi aniqroq */
 .chat-row-grp-badge {
   position: absolute;
@@ -2559,7 +2559,7 @@ svg { color: inherit; }
 /* ═══════════════════════════════════════════ PRINT STYLES ═══════════════════════════════════════════ */
 @media print {
   .bot-nav, .app-hdr, .nav-btn, .upload-float-bar, #toast, .overlay, .reel-vol-top { display: none !important; }
-  body { background: var(--pal-white) !important; color: var(--pal-black) !important; }
+  body { background: var(--pal-white); color: var(--pal-black); }
   .post { break-inside: avoid; page-break-inside: avoid; }
 }
 /* Desktop: upload float bar sidebar hisobga olinadi */
@@ -4016,7 +4016,7 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 /* ═══════════════════════════════════════════ MRspace — Monochrome (qora + oq) override Eng OXIRIDA yuklanadi... */
 meta[name="theme-color"] { color: var(--pal-black); }
 /* Oq (accent) fonli elementlarda matn/ikonka qora */
-.btn-primary, .btn-primary * { color: var(--pal-black) !important; }
+.btn-primary, .btn-primary * { color: var(--pal-black); }
 .btn-primary:hover, .btn-primary:hover * { color: var(--pal-black) !important; }
 ::selection { color: var(--pal-black) !important; }
 /* Toggle/switch: oq trek ustida tugma qora */
@@ -4087,7 +4087,7 @@ a { color: var(--link); }
 .grp-avi-badge--channel, .grp-avi-badge--channel * { color: var(--pal-white) !important; }
 .chat-row-grp-badge--group, .chat-row-grp-badge--group * { color: var(--pal-white) !important; }
 .grp-picker-check.on, .grp-picker-check.on * { color: var(--pal-white) !important; }
-.nav-center-btn, .nav-center-btn * { color: var(--pal-white) !important; }
+.nav-center-btn, .nav-center-btn * { color: var(--pal-white); }
 .upload-progress-fill, .upload-progress-fill * { color: var(--pal-white) !important; }
 .cmt-send, .cmt-send * { color: var(--pal-white) !important; }
 .switch-toggle.on, .switch-toggle.on * { color: var(--pal-white) !important; }
@@ -4467,7 +4467,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 /* DIET force dark canvas — oq fonni yo'qotish */
 html, body, #app, .app { background: var(--pal-black) !important; background-color: var(--pal-black) !important; color: var(--pal-gray-100) !important; }
 .view.on, .feed, #homeView, #followingView, #reelsView, #profileView, #chatsView { background: transparent; }
-#authWrap { background: var(--pal-black) !important; }
+#authWrap { background: var(--pal-black); }
 /* Right-rail — chegarali karta, feed bilan 16px oraliq */
 .right-rail { display: none; }
 @media (min-width: 1200px) {

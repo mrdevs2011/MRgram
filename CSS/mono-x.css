@@ -3,7 +3,7 @@
 /* ═══════════════════════════════════════════ MRspace — Monochrome (qora + oq) override Eng OXIRIDA yuklanadi... */
 meta[name="theme-color"] { color: var(--pal-black); }
 /* Oq (accent) fonli elementlarda matn/ikonka qora */
-.btn-primary, .btn-primary * { color: var(--pal-black) !important; }
+.btn-primary, .btn-primary * { color: var(--pal-black); }
 .btn-primary:hover, .btn-primary:hover * { color: var(--pal-black) !important; }
 ::selection { color: var(--pal-black) !important; }
 /* Toggle/switch: oq trek ustida tugma qora */
@@ -74,7 +74,7 @@ a { color: var(--link); }
 .grp-avi-badge--channel, .grp-avi-badge--channel * { color: var(--pal-white) !important; }
 .chat-row-grp-badge--group, .chat-row-grp-badge--group * { color: var(--pal-white) !important; }
 .grp-picker-check.on, .grp-picker-check.on * { color: var(--pal-white) !important; }
-.nav-center-btn, .nav-center-btn * { color: var(--pal-white) !important; }
+.nav-center-btn, .nav-center-btn * { color: var(--pal-white); }
 .upload-progress-fill, .upload-progress-fill * { color: var(--pal-white) !important; }
 .cmt-send, .cmt-send * { color: var(--pal-white) !important; }
 .switch-toggle.on, .switch-toggle.on * { color: var(--pal-white) !important; }
@@ -454,7 +454,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 /* DIET force dark canvas — oq fonni yo'qotish */
 html, body, #app, .app { background: var(--pal-black) !important; background-color: var(--pal-black) !important; color: var(--pal-gray-100) !important; }
 .view.on, .feed, #homeView, #followingView, #reelsView, #profileView, #chatsView { background: transparent; }
-#authWrap { background: var(--pal-black) !important; }
+#authWrap { background: var(--pal-black); }
 /* Right-rail — chegarali karta, feed bilan 16px oraliq */
 .right-rail { display: none; }
 @media (min-width: 1200px) {
