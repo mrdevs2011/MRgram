@@ -7,26 +7,21 @@
 > **Oldingi yangilanish (2026-09-28):** bu fayl repoda ilk marta saqlandi va joriy holatga ko'ra belgilandi (`[x]`/`[ ]`, "Holat" ustunlari). Tarix: commitlar `09bce2c` (F1), `db6028d` (link tartibi), `fbbcd8b` (x-design klasteri).
 
 
-## Progress (2026-09-29 kech, kod holati)
+## Progress (2026-09-29 kech, kod maksimal)
 
-| Faza | Holat |
-|---|---|
-| F1 Axlat kod | 100% |
-| F2 Admin + parol reset | 100% |
-| F3 Mahsulot yuzasi | 100% |
-| F4 CSS | ~75% (6 fayl / 4585 qator — maqsad <=5k bajarildi; !important 230→147; vizual/smoke qoldi) |
-| F5 Realtime | 100% |
-| F6 Data qatlami / SW | ~55% |
-| F7 Family-grade | ~60% |
-| F8 Hujjat | 100% |
+| Faza | Kod | Tekshiruv (MR) |
+|---|---|---|
+| F1 Axlat kod | 100% | — |
+| F2 Admin + parol reset | 100% | brauzer smoke + DB contract (oktabr) |
+| F3 Mahsulot yuzasi | 100% | brauzer (explore/guruh) + DB contract |
+| F4 CSS | ~80% (6 fayl / 4585 qator ✅; !important 230→142; qolgani color/call/hover) | skrinshot/smoke |
+| F5 Realtime | 100% | 2 telefon sinov |
+| F6 Data / SW | ~90% kod (Ts✅ SW✅ vendor✅) | telefon offline + update toast |
+| F7 Family-grade | ~85% kod (7.1/7.2limit/7.5/7.8 ✅); TURN/rate-limit ixtiyoriy | Vercel TURN_* |
+| F8 Hujjat | 100% | docs/SMOKE.md qo'lda |
 
-**Umumiy (og'irliksiz o'rtacha):** ~86%. 100% emas — F4 !important/vizual, F6 offline sinov, F7 qoldiq, DB contract kutish.
-
-**100% deb belgilangan fazalardan ko'chgan qoldiqlar (yo'qolmasin):**
-- DB contract: `supabase/unfulfilled/` dagi patchlar (007-013), eng erta 2026-10-06, oldin `supabase db dump`. F1, F2, F3, F5.
-- 3.6 SQL natijasi + Explore filtr brauzer sinovi (F3).
-- 5.3 kanallar 5 -> 3 (`sb.channel()` 12 ta chaqiruv), 2 telefonda sinov (F5).
-- Qo'lda smoke: login, 25 MB yuklash, chat/push, "yozmoqda", qo'ng'iroq, parol reset (docs/SMOKE.md).
+**Kod tomon:** maksimal yopildi. **Senga qolgan:** brauzer/telefon smoke, Vercel TURN, DB contract.
+**Umumiy:** ~90%. To'liq 100% = sen tekshirib bo'lgach.
 
 ---
 
