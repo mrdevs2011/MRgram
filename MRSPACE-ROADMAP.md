@@ -79,7 +79,7 @@
 | 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.1 (main'da, sinalmagan), 3.2, 3.3, 3.4 ✅, 3.5 deyarli ✅; 3.6 ❌ |
 | 4 | CSS konsolidatsiya | o'rta–yuqori (vizual) | 2–3 kun | 3 (oldin nima qolishi aniq bo'lsin) | 🔶 4.4/4.5 ✅ (bitta `app.css`); 23 fayl/12.1k qator (partiya 1–3 keyin), 288 `!important` |
 | 5 | Realtime va presence | o'rta | 1 kun | 3 | 🔶 5.1/5.2 ✅; 5.3 deyarli ✅ (doimiy kanallar ~8 → 5, sinov MR) |
-| 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya, network-first, yangilanish toast'i ✅; `Ts` adapteri, vendored supabase ❌ |
+| 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya, network-first, yangilanish toast'i ✅; `Ts` adapteri, vendored supabase ✅ |
 | 7 | Family-grade mustahkamlash | o'rta | 1–2 kun | 2 | 🔶 7.1 ✅, 7.2 limit ✅; 7.7 ❌, 7.8 ✅ |
 | 8 | Hujjat va smoke test | past | 0.5 kun | hammasi | ✅ README, SMOKE, archive, migrations (000_schema jonli bazadan qayta yig'ilmagan; Playwright ixtiyoriy) |
 
@@ -251,8 +251,9 @@ drop table if exists public.follows;
 - [x] **Yangilanish xabari:** SW `skipWaiting` qiladi, shuning uchun `controllerchange` (sahifa ochiq paytida) → pastda "Yangi versiya bor · Yangilash" paneli (`index.html`, branch `diet/06-sw-update-toast`). ⚠️ Brauzerda sinalmagan (qoida 8): stil inline, `#000`/`#fff`.
 - [x] `PRECACHE_URLS` tekshirildi (2026-09-29, `diet/06-precache`): ro'yxatdagi barcha 33 URL diskda bor (`/app.css` to'g'ri); `allSettled` himoyasi joyida. Ro'yxatda yo'q 7 modul qo'shildi: `admin-reset-password, chats-x, compress, right-rail, shortcuts, sidebar, stories`. ⚠️ Yangi modul qo'shilganda ro'yxatni ham yangilash kerak (qo'lda). Offline ochilish sinalmagan.
 
-### 6.3 Supabase kutubxonasi — ❌ [QAROR, past ustuvorlik]
-- CDN (jsdelivr 2.39.3) yiqilsa ilova ochilmaydi. Variant: SW precache yoki vendored `vendor/supabase.js`.
+### 6.3 Supabase kutubxonasi — ✅ (2026-09-29)
+- `modules/vendor-supabase.js` (94 KB): supabase-js 2.39.3 + transitiv paketlar jsdelivr bilan AYNAN bir xil versiyalarga qadalgan (gotrue 2.62.0, postgrest 1.9.1, realtime 2.9.3, storage 2.5.5, functions 2.1.5). `config.js` shundan import qiladi, SW precache'ga qo'shildi — CDN yiqilsa ham ilova ochiladi.
+- Lokal headless-chromium: modul xatosiz yuklandi. Onlayn login/realtime — MR sinovi.
 
 **Xavf:** yuqori. Alohida preview + haqiqiy telefonda sinov shart.
 
