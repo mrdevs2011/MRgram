@@ -668,6 +668,8 @@ let _chatDocUnsub = null;
 let _peerTyping = false;
 let _iAmTyping = false;
 let _typingTimeout = null;
+let _typingCh = null;      // joriy DM uchun BITTA doimiy broadcast kanal (yuborish + qabul)
+let _typingChReady = false;
 
 function _paintPeerStatus(lastSeenAt) {
   _peerLastSeenAt = lastSeenAt;
@@ -683,23 +685,18 @@ function _paintPeerStatus(lastSeenAt) {
   el.classList.toggle('online', online);
 }
 
-/* ── "Yozmoqda..." holatini Firestore'ga yozish (debounce bilan) ─────────
- * chats/{chatId}.typing.{myUid} = true/false. Rules'da bu maydon
- * onlyFields ro'yxatida allaqachon ruxsat berilgan — qo'shimcha
- * o'zgarish kerak emas.
+/* ── "Yozmoqda..." — realtime broadcast (bazaga yozilmaydi) ──────────────
+ * Chat ochilganda BITTA kanal (`typing-bc-<chatId>`) ochiladi (openChatThread),
+ * ikki tomon ham shunga obuna; yuboruvchi shu kanaldan `send` qiladi.
+ * Kanal chat yopilganda olib tashlanadi. Faqat DM.
  ─────────────────────────────────────────────────────────────────────── */
 function _setTyping(isTyping) {
   if (!state.currentChatId || !state.me) return;
-  if (_iAmTyping === isTyping) return; // ortiqcha yozuvlarni oldini olish
+  if (_iAmTyping === isTyping) return; // ortiqcha yuborishlarni oldini olish
+  if (!_typingCh || !_typingChReady) return; // kanal hali ulanmagan
   _iAmTyping = isTyping;
-  // typing_until ustuni diet patch da olib tashlangan — realtime broadcast
   try {
-    const ch = sb.channel('typing-bc-' + state.currentChatId);
-    ch.subscribe(status => {
-      if (status === 'SUBSCRIBED') {
-        ch.send({ type: 'broadcast', event: 'typing', payload: { uid: state.me.uid, typing: isTyping } });
-      }
-    });
+    _typingCh.send({ type: 'broadcast', event: 'typing', payload: { uid: state.me.uid, typing: isTyping } });
   } catch (_) {}
 }
 
@@ -799,6 +796,7 @@ export async function openChatThread(uid) {
 
   // "Yozmoqda..." — realtime broadcast (typing_until ustuni yo'q)
   _peerTyping = false;
+  _iAmTyping = false;
   if (_chatDocUnsub) { _chatDocUnsub(); _chatDocUnsub = null; }
   {
     let tTimer = null;
@@ -810,8 +808,14 @@ export async function openChatThread(uid) {
         if (_peerTyping) tTimer = setTimeout(() => { _peerTyping = false; _paintPeerStatus(_peerLastSeenAt); }, 5000);
         _paintPeerStatus(_peerLastSeenAt);
       })
-      .subscribe();
-    _chatDocUnsub = () => { clearTimeout(tTimer); sb.removeChannel(tch); };
+      .subscribe(st => { if (tch === _typingCh) _typingChReady = (st === 'SUBSCRIBED'); });
+    _typingCh = tch;
+    _typingChReady = false;
+    _chatDocUnsub = () => {
+      clearTimeout(tTimer);
+      if (_typingCh === tch) { _typingCh = null; _typingChReady = false; }
+      sb.removeChannel(tch);
+    };
   }
 
   // Chat get_or_create_chat() bilan yaratilgan. Men ochyapman — o'qilmaganlarim nolga.
@@ -1345,9 +1349,10 @@ export function closeChatThread() {
   if (_threadUnsub) { _threadUnsub(); _threadUnsub = null; }
   if (_peerUserUnsub) { _peerUserUnsub(); _peerUserUnsub = null; }
   if (_peerStatusTick) { clearInterval(_peerStatusTick); _peerStatusTick = null; }
-  if (_chatDocUnsub) { _chatDocUnsub(); _chatDocUnsub = null; }
   clearTimeout(_typingTimeout);
   _setTyping(false);
+  if (_chatDocUnsub) { _chatDocUnsub(); _chatDocUnsub = null; }
+  _iAmTyping = false;
   _peerTyping = false;
   // If in group/channel mode, cleanup group state too
   if (state.currentChatKind && state.currentChatKind !== 'dm') {
