@@ -7,18 +7,20 @@
 > **Oldingi yangilanish (2026-09-28):** bu fayl repoda ilk marta saqlandi va joriy holatga ko'ra belgilandi (`[x]`/`[ ]`, "Holat" ustunlari). Tarix: commitlar `09bce2c` (F1), `db6028d` (link tartibi), `fbbcd8b` (x-design klasteri).
 
 
-## Progress (2026-09-29, MR qarori bilan)
+## Progress (2026-09-29 kech, kod holati)
 
 | Faza | Holat |
 |---|---|
 | F1 Axlat kod | 100% |
 | F2 Admin + parol reset | 100% |
 | F3 Mahsulot yuzasi | 100% |
-| F4 CSS | ~50% (CSS 17.4k -> 11.8k qator, maqsad <=5k) |
+| F4 CSS | ~75% (6 fayl / 4585 qator — maqsad <=5k bajarildi; !important 230→151; vizual/smoke qoldi) |
 | F5 Realtime | 100% |
 | F6 Data qatlami / SW | ~55% |
 | F7 Family-grade | ~60% |
 | F8 Hujjat | 100% |
+
+**Umumiy (og'irliksiz o'rtacha):** ~86%. 100% emas — F4 !important/vizual, F6 offline sinov, F7 qoldiq, DB contract kutish.
 
 **100% deb belgilangan fazalardan ko'chgan qoldiqlar (yo'qolmasin):**
 - DB contract: `supabase/unfulfilled/` dagi patchlar (007-013), eng erta 2026-10-06, oldin `supabase db dump`. F1, F2, F3, F5.
@@ -212,7 +214,9 @@ drop table if exists public.follows;
 - [ ] **4.3 Tuzilma (maqsad):** `tokens.css / base.css / components.css / features.css / admin.css`. **Hozir: 22 fayl / 17 055 qator.**
 - [ ] **4.4 `no-animations.css`:** `style.css`da hali eng oxirgi qatlam — transition/animation'larni manba faylidan olish. `[QAROR]` splash/loading uchun bitta yengil animatsiya (Q9).
 - [x] **4.5 `@import` zanjiri yo'q:** `scripts/build-css.mjs` CSS'ni bitta `app.css` ga yig'adi (`npm run build`). `app.css` qo'lda tahrirlanmaydi, manba `CSS/*.css`.
-- [ ] **4.6 `!important` audit:** joriy o'lchov quyida; maqsad: kamida 80% qisqarish.
+- [ ] **4.6 `!important` audit:**
+  - **2026-09-29 kech (4.6 davom):** 206→151 (modal z-index 7, nav createBtn 5, header/search 6, logo 2, call-ring anim 3). inspect3 load-bearing o'zgarmadi. Qolgan ~151 — asosan color contrast, call modal, hover/recording; holat ochuvchi test kengaytirish kerak.
+ joriy o'lchov quyida; maqsad: kamida 80% qisqarish.
   - **2026-09-29 (4.6 qisman):** 230 -> 216 (`9ff05e3`). Usul: har `!important` uchun mos elementlarda flag olib tashlanganda computed-style o'zgaradimi (inert) + 12 skrinshot (desktop/mobil) piksel farqi 0. Qolgan ~216 dinamik/holat qoidalari (modal, overlay, progress, hover, `.recording`, chat xabarlari): hozirgi DOM'da yo'q, avtomatik tekshirib bo'lmaydi; -80% maqsadi haqiqiy holatlarni ochuvchi testlarsiz (Playwright yoki qo'lda) yetib bo'lmaydi. Asbob: `~/Claude/work/shots/` (capture/compare/inspect/bisect).
   - **2026-09-29 (4.6, chat holati):** 216 -> 206. `inspect2.mjs` chat oynasi ochiq holatda o'lchaydi (`.chat-bubble`, `.cvm-*`, `.chat-avi`); 6 ta ekran + chatlar/chat oynasi (desktop/mobil) piksel farqi 0. Qolganlari: modal, overlay, hover, `.recording`.
 - [ ] **4.7 Vizual regressiya:** 8 ekran skrinshoti (login, kutish, lenta, post yuklash, chatlar, chat oynasi, guruh, profil, admin) — **hali hech qachon bajarilmagan** (brauzer kerak, MR). Shu qilingach 4.1b va keyingi o'chirishlar bloklanadi.
