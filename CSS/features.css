@@ -1585,7 +1585,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* ════════════════════════════════════════════════════════════════════ CHAT EFFECTS PACK v2 ═════════════════... */
 /* 1. Context menu — spring scale-in */
 #chatContextMenu.show { display: block; transform-origin: top left; }
-.ctx-item { transition: none !important; }
+.ctx-item { transition: none; }
 .ctx-item.danger:hover { background: var(--pal-legacy-171717) !important; }
 /* 11. Emoji picker — bounce in */
 /* 12. Input area focus glow */
@@ -1717,7 +1717,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .grp-avi-badge--channel { background: var(--pal-white); color: var(--pal-white); }
 .chat-row-grp-badge--group { background: var(--blue); color: var(--pal-white); }
 /* Create form */
-.grp-form-title { margin-bottom: 16px !important; }
+.grp-form-title { margin-bottom: 16px; }
 .grp-form-avi-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 18px; cursor: pointer; }
 .grp-form-avi {
   width: 80px;
