@@ -1,16 +1,5 @@
-/* ═══════════════════════════════════════════
-   CARD SHEETS — guruh/kanal yaratish oynalari post composer bilan bir xil card
-   (toq kulrang card + 0.8 shaffof orqa fon, markazda)
-   ═══════════════════════════════════════════ */
-#grpCreateChoiceOverlay,
-#grpAddUserOverlay,
-#grpCreateFormOverlay {
-  background: rgba(0,0,0,.8);
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
+/* ═══════════════════════════════════════════ CARD SHEETS — guruh/kanal yaratish oynalari post composer bilan... */
+#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay { background: rgba(0,0,0,.8); align-items: center; justify-content: center; padding: 20px; }
 :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet {
   width: 100%;
   max-width: 420px;
@@ -23,7 +12,4 @@
   box-shadow: 0 8px 40px var(--pal-black-55);
   padding: 16px;
 }
-
-:is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet-handle {
-  display: none;
-}
+:is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet-handle { display: none; }

@@ -1,43 +1,7 @@
-/* ═══════════════════════════════════════════════════════════════
-   MRspace — CORE COMPONENTS (single source of truth)
-   ═══════════════════════════════════════════════════════════════
-   Bu fayl quyidagi komponentlar uchun YAGONA manba:
-   .btn-primary, .btn-ghost, .btn-danger, .bot-nav, .app-hdr,
-   .field / input / textarea, .post (bazaviy karta)
-
-   Ilgari bu komponentlar theme.css, nav.css, borderless.css,
-   ui-improvements.css, feed.css fayllarida 4-5 marta qayta
-   ta'riflangan edi va ui-improvements.css oxirida "YAKUNIY POLISH"
-   nomli bo'lim borderless.css olib tashlagan glow/shadow'larni
-   !important bilan qaytadan yoqib qo'yardi — shu sabab flat dizaynga
-   o'tish urinishlari "yo'qolib" ketardi.
-
-   Bu fayl X.com uslubidagi FLAT dizaynni asos qilib oladi:
-   - shadow/glow yo'q (faqat funksional fokus-ring qoladi)
-   - transform/scale hover animatsiyalari yo'q
-   - shimmer/specular chiziqlar yo'q
-   - border orqali struktura ko'rsatiladi, soya orqali emas
-
-   Yuklanish tartibi: style.css'da eng OXIRIDA import qilinishi kerak
-   (barcha eski qoidalardan keyin), shunda bu fayl avtomatik g'olib
-   chiqadi va boshqa fayllardagi eski qoidalarni asta-sekin o'chirish
-   mumkin bo'ladi — hech narsa buzilmaydi.
-   ═══════════════════════════════════════════════════════════════ */
-
-/* ── 1. Buttons ─────────────────────────────────────────────── */
-
-.btn-primary {
-  width: 100%;
-  border: none;
-  color: var(--pal-white);
-  font-family: var(--font);
-  cursor: pointer;
-  margin-top: 4px;
-  transition: none;
-}
-
+/* ═══════════════════════════════════════════════════════════════ MRspace — CORE COMPONENTS (single source of... */
+/* 1. Buttons */
+.btn-primary { width: 100%; border: none; color: var(--pal-white); font-family: var(--font); cursor: pointer; margin-top: 4px; transition: none; }
 .btn-primary:active { opacity: 0.85; }
-
 .btn-ghost {
   width: 100%;
   padding: 12px;
@@ -51,10 +15,8 @@
   margin-top: 8px;
   transition: none;
 }
-
-.btn-ghost:hover  { color: var(--text); }
+.btn-ghost:hover { color: var(--text); }
 .btn-ghost:active { opacity: 0.85; }
-
 .btn-danger {
   width: 100%;
   padding: 12px;
@@ -68,14 +30,13 @@
   margin-top: 8px;
   transition: none;
 }
-
 .btn-danger:active { opacity: 0.85; }
-
-/* ── 2. Bottom nav / sidebar ────────────────────────────────── */
-
+/* 2. Bottom nav / sidebar */
 .bot-nav {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: var(--nav);
   background: var(--bg2, var(--glass));
   border-top: 0.5px solid var(--glass-border);
@@ -86,12 +47,13 @@
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom);
 }
-
 /* Desktop: bottom nav → left sidebar */
 @media (min-width: 768px) {
   .bot-nav {
     bottom: auto;
-    top: 0; left: 0; right: auto;
+    top: 0;
+    left: 0;
+    right: auto;
     width: var(--sidebar);
     height: 100dvh;
     flex-direction: column;
@@ -104,53 +66,18 @@
     background: transparent;
   }
 }
-
-/* ── 3. App header ──────────────────────────────────────────── */
-
-.app-hdr {
-  background: var(--bg2, var(--glass));
-  border-bottom: 0.5px solid var(--glass-border);
-  box-shadow: none;
-}
-
+/* 3. App header */
+.app-hdr { background: var(--bg2, var(--glass)); border-bottom: 0.5px solid var(--glass-border); box-shadow: none; }
 @media (min-width: 768px) {
   .app-hdr { background: transparent; }
 }
-
-/* ── 4. Input fields ────────────────────────────────────────── */
-
-.field,
-input:not([type="checkbox"]):not([type="radio"]),
-textarea {
-  color: var(--text);
-  transition: none;
-}
-
-.field:focus,
-input:focus,
-textarea:focus {
-  outline: none;
-}
-
-input::placeholder,
-textarea::placeholder,
-.field::placeholder { color: var(--text3); }
-
-/* ── 5. Post card (base) ────────────────────────────────────── */
-
-.post {
-  background: var(--bg2, var(--glass));
-  border: 0.5px solid var(--glass-border);
-  border-radius: 14px;
-  box-shadow: none;
-  transition: none;
-}
-
-.post:hover {
-  box-shadow: none;
-  transform: none;
-}
-
+/* 4. Input fields */
+.field, input:not([type="checkbox"]):not([type="radio"]), textarea { color: var(--text); transition: none; }
+.field:focus, input:focus, textarea:focus { outline: none; }
+input::placeholder, textarea::placeholder, .field::placeholder { color: var(--text3); }
+/* 5. Post card (base) */
+.post { background: var(--bg2, var(--glass)); border: 0.5px solid var(--glass-border); border-radius: 14px; box-shadow: none; transition: none; }
+.post:hover { box-shadow: none; transform: none; }
 @media (min-width: 768px) {
   .post { border-radius: 16px; }
 }

@@ -1,261 +1,48 @@
-/* ═══════════════════════
-   PROFILE VIEW
-   ═══════════════════════ */
-
-/* ── Profile view layout fix (desktop: sidebar ostida emas, markazda) ── */
-#profileView {
-  position: relative;
-  z-index: 1;
-  box-sizing: border-box;
-  overflow-x: hidden;
-  min-height: 100%;
-}
-#profileView.on {
-  display: block;
-}
+/* ═══════════════════════ PROFILE VIEW ═══════════════════════ */
+/* Profile view layout fix (desktop: sidebar ostida emas, markazda) */
+#profileView { position: relative; z-index: 1; box-sizing: border-box; overflow-x: hidden; min-height: 100%; }
+#profileView.on { display: block; }
 @media (min-width: 768px) {
-  #profileView.on {
-    margin-left: var(--content-left, var(--sidebar, 68px)) !important;
-    width: calc(100% - var(--content-left, var(--sidebar, 68px)));
-    max-width: 680px;
-    padding-top: 0 !important;
-  }
-  #profileView .profile-hdr {
-    padding-top: 20px;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-  #profileView .profile-avi-row {
-    margin-top: 0;
-  }
+  #profileView.on { margin-left: var(--content-left, var(--sidebar, 68px)) !important; width: calc(100% - var(--content-left, var(--sidebar, 68px))); max-width: 680px; padding-top: 0 !important; }
+  #profileView .profile-hdr { padding-top: 20px; padding-left: 16px; padding-right: 16px; }
+  #profileView .profile-avi-row { margin-top: 0; }
 }
 @media (min-width: 1200px) {
-  #profileView.on {
-    width: var(--center-w, 600px) !important;
-    max-width: var(--center-w, 600px) !important;
-    margin-right: 0;
-  }
+  #profileView.on { width: var(--center-w, 600px) !important; max-width: var(--center-w, 600px) !important; margin-right: 0; }
 }
-
 /* profileView padding — .view.on orqali boshqariladi (feed.css) */
-
-.profile-hdr {
-  padding: 68px 16px 16px;
-}
-
-.profile-grid-hdr {
-  /* border-top/border-bottom/background → --pg-* blok belgilaydi (2026-08-30: !important olib tashlandi) */
-  margin: 0;
-}
-
-.profile-grid-tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 11px 16px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text3);
-  cursor: pointer;
-  transition: none;
-}
-
-
-/* .profile-hdr::before (blue-halo pseudo-element) butunlay o'chirildi
-   2026-08-30 — bu yerdagi top/left-only qoldiq ham o'lik edi, chunki
-   content xususiyati pastki blokda o'chirilgach, ::before umuman
-   render bo'lmaydi (CSS spec: content:none → pseudo yaratilmaydi) */
-
-.profile-top {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  margin-bottom: 14px;
-  position: relative;
-  z-index: 1;
-}
-
+.profile-hdr { padding: 68px 16px 16px; }
+.profile-grid-hdr { margin: 0; }
+.profile-grid-tab { display: flex; align-items: center; gap: 6px; padding: 11px 16px; font-size: 12px; font-weight: 500; color: var(--text3); cursor: pointer; transition: none; }
+/* .profile-hdr::before (blue-halo pseudo-element) butunlay o'chirildi 2026-08-30 — bu yerdagi top/left-only q... */
+.profile-top { display: flex; gap: 16px; align-items: center; margin-bottom: 14px; position: relative; z-index: 1; }
 /* profile-info: ism, bio, tugma */
-.profile-info {
-  padding-top: 4px;
-}
-
-.profile-avi {
-  width: 76px; height: 76px;
-  border-radius: 50%;
-  /* background/border → --pg-* blok belgilaydi (2026-08-30: glow/!important olib tashlandi) */
-  position: relative;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: none;
-}
-
-/* .profile-avi:hover border-color → --pg-* blok belgilaydi (pastda).
-   Glow shadow va scale(1.05) 2026-08-30'da flat dizayn uchun o'chirildi. */
-
+.profile-info { padding-top: 4px; }
+.profile-avi { width: 76px; height: 76px; border-radius: 50%; position: relative; cursor: pointer; flex-shrink: 0; transition: none; }
+/* .profile-avi:hover border-color → --pg-* blok belgilaydi (pastda). Glow shadow va scale(1.05) 2026-08-30'da... */
 .profile-avi img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-
-.avi-edit-badge {
-  position: absolute;
-  bottom: 2px; right: 2px;
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  /* background/border → --pg-* blok belgilaydi (2026-08-30: box-shadow glow va !important olib tashlandi) */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.profile-stats {
-  display: flex;
-  gap: 0;
-  flex: 1;
-}
-
-.stat {
-  text-align: center;
-  flex: 1;
-  padding: 6px 0;
-}
-
-.stat-val {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
-
-.stat-lbl {
-  font-size: 10px;
-  color: var(--text3);
-  margin-top: 3px;
-  font-family: var(--mono);
-  letter-spacing: 0.3px;
-}
-
-.profile-name {
-  font-size: 15.5px;
-  font-weight: 600;
-  margin-bottom: 3px;
-  letter-spacing: -0.3px;
-}
-
-.profile-bio {
-  font-size: 13px;
-  color: var(--text2);
-  line-height: 1.45;
-}
-
-.profile-actions-row {
-  display: flex;
-  align-items: stretch;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.profile-actions-row .edit-btn {
-  flex: 1;
-  margin-top: 0;
-}
-
-.settings-section-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin: 6px 0 10px;
-}
-
-.settings-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 4px 2px 14px;
-}
-
-.settings-row-text {
-  min-width: 0;
-}
-
-.settings-row-title {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text);
-}
-
-.settings-row-hint {
-  font-size: 11px;
-  color: var(--text3);
-  margin-top: 3px;
-  line-height: 1.4;
-}
-
-.switch-toggle {
-  flex-shrink: 0;
-  width: 44px;
-  height: 26px;
-  padding: 0;
-  border-radius: 14px;
-  background: var(--pal-legacy-2e2e2e);
-  border: 1px solid var(--line2);
-  position: relative;
-  cursor: pointer;
-  transition: none;
-}
-
-.switch-toggle .switch-knob {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: var(--pal-white);
-  box-shadow: 0 1px 3px var(--pal-black-35);
-  transition: none;
-}
-
-.switch-toggle.on {
-  background: var(--blue);
-  border-color: transparent;
-}
-
-.switch-toggle.on .switch-knob {
-  transform: translateX(18px);
-}
-
-.switch-toggle.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.settings-more-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
-  position: relative;
-}
-
-.settings-more-btn {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  color: var(--text3);
-  cursor: pointer;
-  transition: none;
-}
-
-.settings-more-btn:hover {
-  background: var(--pal-gray-900);
-  color: var(--text2);
-}
-
+.avi-edit-badge { position: absolute; bottom: 2px; right: 2px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.profile-stats { display: flex; gap: 0; flex: 1; }
+.stat { text-align: center; flex: 1; padding: 6px 0; }
+.stat-val { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+.stat-lbl { font-size: 10px; color: var(--text3); margin-top: 3px; font-family: var(--mono); letter-spacing: 0.3px; }
+.profile-name { font-size: 15.5px; font-weight: 600; margin-bottom: 3px; letter-spacing: -0.3px; }
+.profile-bio { font-size: 13px; color: var(--text2); line-height: 1.45; }
+.profile-actions-row { display: flex; align-items: stretch; gap: 8px; margin-top: 14px; }
+.profile-actions-row .edit-btn { flex: 1; margin-top: 0; }
+.settings-section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; margin: 6px 0 10px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 2px 14px; }
+.settings-row-text { min-width: 0; }
+.settings-row-title { font-size: 13px; font-weight: 500; color: var(--text); }
+.settings-row-hint { font-size: 11px; color: var(--text3); margin-top: 3px; line-height: 1.4; }
+.switch-toggle { flex-shrink: 0; width: 44px; height: 26px; padding: 0; border-radius: 14px; background: var(--pal-legacy-2e2e2e); border: 1px solid var(--line2); position: relative; cursor: pointer; transition: none; }
+.switch-toggle .switch-knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--pal-white); box-shadow: 0 1px 3px var(--pal-black-35); transition: none; }
+.switch-toggle.on { background: var(--blue); border-color: transparent; }
+.switch-toggle.on .switch-knob { transform: translateX(18px); }
+.switch-toggle.disabled { opacity: 0.5; cursor: not-allowed; }
+.settings-more-row { display: flex; justify-content: flex-end; margin-top: 16px; position: relative; }
+.settings-more-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 8px; color: var(--text3); cursor: pointer; transition: none; }
+.settings-more-btn:hover { background: var(--pal-gray-900); color: var(--text2); }
 .settings-more-menu {
   position: absolute;
   bottom: 40px;
@@ -269,11 +56,7 @@
   display: none;
   z-index: 5;
 }
-
-.settings-more-menu.show {
-  display: block;
-}
-
+.settings-more-menu.show { display: block; }
 .settings-more-menu-item {
   display: block;
   width: 100%;
@@ -289,84 +72,26 @@
   cursor: pointer;
   transition: none;
 }
-
-.settings-more-menu-item:hover {
-  background: var(--red-glow);
-}
-
-.edit-btn {
-  width: 100%;
-  padding: 10px;
-  /* background/border/border-radius/transition → --pg-* blok belgilaydi (2026-08-30: glow/!important olib tashlandi) */
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 500;
-  font-family: var(--font);
-  cursor: pointer;
-  margin-top: 14px;
-}
-
-
-.profile-grid {
-  /* display/grid-template-columns/gap → ui-improvements.css:603 (yagona manba), o'lik */
-  margin-top: 4px;
-  padding: 0 0 12px;
-}
-
-/* .grid-cell, .grid-cell img/video, .grid-cell:hover img/video → to'liq
-   ui-improvements.css:610-635 tomonidan yopiladi (barcha property bir xil
-   yoki yangi qiymat bilan qayta ta'riflangan), o'lik, o'chirildi */
-
-.grid-cell-overlay {
-  /* position/inset/background/display/justify-content/gap/transition →
-     ui-improvements.css:637 (yagona manba), o'lik. align-items va
-     border-radius u yerda umuman belgilanmagan — shu ikkitasi tirik */
-  align-items: center;
-  border-radius: 6px;
-}
-
-/* .grid-cell:hover .grid-cell-overlay { opacity:1 } → ui-improvements.css:651
-   bilan bir xil qiymat, o'lik, o'chirildi */
-
-.grid-cell-txt {
-  /* display/align-items/justify-content/padding/font-size/color/text-align/
-     line-height → ui-improvements.css:687 (yagona manba), o'lik. height va
-     background u yerda belgilanmagan — tirik */
-  height: 100%;
-  background: var(--bg2);
-}
-
-.grid-play-badge {
-  /* position/top/right/background/border-radius/display/align-items →
-     ui-improvements.css:667 (yagona manba), o'lik. padding u yerda
-     belgilanmagan (width/height bilan almashtirilgan) — tirik */
-  padding: 3px 5px;
-}
-
-/* ═══════════════════════
-   USER PROFILE MODAL
-   ═══════════════════════ */
-#userProfileModal {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  /* z-index → CSS/local-utility.css'da 500 !important bilan yengiladi, shu yerda o'lik */
-  display: none;
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-
-#userProfileModal.show {
-  display: block;
-}
-
+.settings-more-menu-item:hover { background: var(--red-glow); }
+.edit-btn { width: 100%; padding: 10px; color: var(--text); font-size: 13px; font-weight: 500; font-family: var(--font); cursor: pointer; margin-top: 14px; }
+.profile-grid { margin-top: 4px; padding: 0 0 12px; }
+/* .grid-cell, .grid-cell img/video, .grid-cell:hover img/video → to'liq ui-improvements.css:610-635 tomonidan... */
+.grid-cell-overlay { align-items: center; border-radius: 6px; }
+/* .grid-cell:hover .grid-cell-overlay { opacity:1 } → ui-improvements.css:651 bilan bir xil qiymat, o'lik, o'... */
+.grid-cell-txt { height: 100%; background: var(--bg2); }
+.grid-play-badge { padding: 3px 5px; }
+/* ═══════════════════════ USER PROFILE MODAL ═══════════════════════ */
+#userProfileModal { position: fixed; inset: 0; background: var(--bg); display: none; overflow-y: auto; scrollbar-width: none; }
+#userProfileModal.show { display: block; }
 .up-back {
   position: fixed;
-  top: 14px; left: 14px; /* modal fullscreen - app header ko'rinmaydi */
+  top: 14px;
+  left: 14px;
   background: var(--pal-black);
   border: 1px solid var(--pal-legacy-26262c);
   border-radius: 50%;
-  width: 38px; height: 38px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -375,295 +100,79 @@
   transition: none;
   color: var(--pal-white);
 }
-
-.up-back:hover {
-  background: var(--pal-black);
-}
-
+.up-back:hover { background: var(--pal-black); }
 .up-body { padding-bottom: 60px; }
-
-.up-head {
-  display: flex;
-  justify-content: center;
-  padding-top: 64px;
-}
-
-.up-avi-wrap {
-  position: relative;
-  z-index: 2;
-}
-
-.up-avi {
-  width: 90px; height: 90px;
-  border-radius: 50%;
-  background: var(--bg4);
-  overflow: hidden;
-  border: 3.5px solid var(--bg);
-  box-shadow: 0 4px 20px var(--pal-black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
+.up-head { display: flex; justify-content: center; padding-top: 64px; }
+.up-avi-wrap { position: relative; z-index: 2; }
+.up-avi { width: 90px; height: 90px; border-radius: 50%; background: var(--bg4); overflow: hidden; border: 3.5px solid var(--bg); box-shadow: 0 4px 20px var(--pal-black); display: flex; align-items: center; justify-content: center; }
 .up-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-.up-info {
-  padding: 14px 20px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.up-name {
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.4px;
-}
-
-.up-bio {
-  font-size: 13px;
-  color: var(--text2);
-  line-height: 1.5;
-  margin-top: 5px;
-  max-width: 260px;
-}
-
-.up-stats {
-  display: flex;
-  gap: 0;
-  margin: 18px 0 16px;
-  width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--bg2);
-  overflow: hidden;
-}
-
-.up-stat {
-  flex: 1;
-  text-align: center;
-  padding: 13px 0;
-  /* border-right → borderless.css:234 'none' bilan yengiladi, o'lik */
-}
-
+.up-info { padding: 14px 20px 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.up-name { font-size: 19px; font-weight: 700; letter-spacing: -0.4px; }
+.up-bio { font-size: 13px; color: var(--text2); line-height: 1.5; margin-top: 5px; max-width: 260px; }
+.up-stats { display: flex; gap: 0; margin: 18px 0 16px; width: 100%; border: 1px solid var(--line); border-radius: 16px; background: var(--bg2); overflow: hidden; }
+.up-stat { flex: 1; text-align: center; padding: 13px 0; }
 .up-stat:last-child { border-right: none; }
-
-.up-stat-val {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
-
-.up-stat-lbl {
-  font-size: 10px;
-  color: var(--text3);
-  margin-top: 2px;
-  font-family: var(--mono);
-}
-
+.up-stat-val { font-size: 17px; font-weight: 700; letter-spacing: -0.5px; }
+.up-stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
 .up-divider { display: none; }
-
-.up-posts-tab {
-  display: flex;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  margin: 16px -20px 0;
-  width: calc(100% + 40px);
-  background: var(--bg);
-}
-
-.up-grid {
-  /* display/grid-template-columns/gap → ui-improvements.css:603 (yagona
-     manba, .profile-grid,.up-grid guruhida), o'lik */
-  margin: 0 -20px;
-  width: calc(100% + 40px);
-  padding-bottom: 8px;
-}
-
-.up-grid-cell {
-  /* aspect-ratio/background/overflow/cursor/position/border-radius →
-     ui-improvements.css:610 (.grid-cell,.up-grid-cell guruhida), o'lik.
-     transition u yerda belgilanmagan — tirik */
-  transition: none;
-}
-
-.up-grid-cell-overlay {
-  /* position/inset/background/display/justify-content/gap/transition →
-     ui-improvements.css:637 (.grid-cell-overlay,.up-grid-cell-overlay
-     guruhida), o'lik. align-items va border-radius tirik */
-  align-items: center;
-  border-radius: 4px;
-}
-
-/* .up-grid-cell:hover .up-grid-cell-overlay { opacity:1 } →
-   ui-improvements.css:651 bilan bir xil qiymat, o'lik, o'chirildi */
-
-/* .up-grid-cell img/video → to'liq ui-improvements.css:620 tomonidan
-   yopiladi, o'lik, o'chirildi */
-
-.up-grid-cell-txt {
-  /* display/align-items/justify-content/padding/font-size/color/text-align →
-     ui-improvements.css:687 (.grid-cell-txt,.up-grid-cell-txt guruhida),
-     o'lik. height va background tirik */
-  height: 100%;
-  background: var(--bg2);
-}
-
-/* ═══════════════════════════════════════════
-   PROFILE — THEME AWARE ENHANCEMENTS
-   ═══════════════════════════════════════════ */
-
+.up-posts-tab { display: flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 16px -20px 0; width: calc(100% + 40px); background: var(--bg); }
+.up-grid { margin: 0 -20px; width: calc(100% + 40px); padding-bottom: 8px; }
+.up-grid-cell { transition: none; }
+.up-grid-cell-overlay { align-items: center; border-radius: 4px; }
+/* .up-grid-cell:hover .up-grid-cell-overlay { opacity:1 } → ui-improvements.css:651 bilan bir xil qiymat, o'l... */
+/* .up-grid-cell img/video → to'liq ui-improvements.css:620 tomonidan yopiladi, o'lik, o'chirildi */
+.up-grid-cell-txt { height: 100%; background: var(--bg2); }
+/* ═══════════════════════════════════════════ PROFILE — THEME AWARE ENHANCEMENTS ════════════════════════════... */
 /* Dark mode profile */
-/* [data-theme="dark"] .profile-hdr/.profile-avi/.profile-avi:hover → to'liq
-   CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi) —
-   bu yerdagi qoidalar o'lik edi */
-
-[data-theme="dark"] .profile-stat {
-  background: var(--pal-gray-900);
-  border: 1px solid var(--pal-gray-800);
-}
-
-[data-theme="dark"] .profile-stat:hover {
-  background: var(--pal-gray-800);
-  border-color: var(--pal-legacy-2d2d33);
-}
-
+/* [data-theme="dark"] .profile-hdr/.profile-avi/.profile-avi:hover → to'liq CSS/dark-theme-fix.css'da qayta b... */
+[data-theme="dark"] .profile-stat { background: var(--pal-gray-900); border: 1px solid var(--pal-gray-800); }
+[data-theme="dark"] .profile-stat:hover { background: var(--pal-gray-800); border-color: var(--pal-legacy-2d2d33); }
 /* Light mode profile */
-
 /* Profile grid tabs */
-/* [data-theme="dark"] .profile-grid-tab (color) → CSS/dark-theme-fix.css'da
-   qayta belgilangan — bu yerdagi qoida o'lik edi */
-
-[data-theme="dark"] .profile-grid-tab.active {
-  /* color, border-bottom-color → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  background: var(--pal-gray-900);
-}
-
+/* [data-theme="dark"] .profile-grid-tab (color) → CSS/dark-theme-fix.css'da qayta belgilangan — bu yerdagi qo... */
+[data-theme="dark"] .profile-grid-tab.active { background: var(--pal-gray-900); }
 /* User profile modal */
-[data-theme="dark"] .up-back {
-  background: var(--pal-black);
-  border: 1px solid var(--pal-legacy-2d2d33);
-}
-
-[data-theme="dark"] .up-back:hover {
-  background: var(--pal-black);
-}
-
+[data-theme="dark"] .up-back { background: var(--pal-black); border: 1px solid var(--pal-legacy-2d2d33); }
+[data-theme="dark"] .up-back:hover { background: var(--pal-black); }
 /* Grid cell overlay — engil qorayish, to'liq qora emas */
-[data-theme="dark"] .grid-cell-overlay,
-[data-theme="dark"] .up-grid-cell-overlay {
-  background: linear-gradient(to top, var(--pal-black-55) 0%, var(--pal-black-25) 45%, rgba(0,0,0,.12) 100%);
-}
-
-/* ═══════════════════════════════════════════
-   PROFILE STATS — Animated Numbers
-   ═══════════════════════════════════════════ */
-
+[data-theme="dark"] .grid-cell-overlay, [data-theme="dark"] .up-grid-cell-overlay { background: linear-gradient(to top, var(--pal-black-55) 0%, var(--pal-black-25) 45%, rgba(0,0,0,.12) 100%); }
+/* ═══════════════════════════════════════════ PROFILE STATS — Animated Numbers ══════════════════════════════... */
 /* Stat value animation on page load */
-.stat-val {
-  display: inline-block;
-}
-
+.stat-val { display: inline-block; }
 /* Stagger animation for each stat */
 .stat:nth-child(1) .stat-val.animate { animation-delay: 0s; }
 .stat:nth-child(2) .stat-val.animate { animation-delay: 0s; }
 .stat:nth-child(3) .stat-val.animate { animation-delay: 0s; }
 .stat:nth-child(4) .stat-val.animate { animation-delay: 0s; }
-
-/* ═══════════════════════════════════════════
-   USER PROFILE MODAL
-   ═══════════════════════════════════════════ */
-
+/* ═══════════════════════════════════════════ USER PROFILE MODAL ═══════════════════════════════════════════ */
 /* User stats animation */
-.up-stat-val {
-  display: inline-block;
-}
-
+.up-stat-val { display: inline-block; }
 .up-stat:nth-child(1) .up-stat-val.animate { animation-delay: 0s; }
 .up-stat:nth-child(2) .up-stat-val.animate { animation-delay: 0s; }
 .up-stat:nth-child(3) .up-stat-val.animate { animation-delay: 0s; }
-
-/* ═══════════════════════════════════════════════════════════════════════
-   PROFILE PAGE — SOLID UI
-   ═══════════════════════════════════════════════════════════════════════ */
-
+/* ═══════════════════════════════════════════════════════════════════════ PROFILE PAGE — SOLID UI ═══════════... */
 /* Profile variables */
-
 /* Profile header — flat (2026-08-30 tozalandi, halo/glow olib tashlandi) */
-.profile-hdr {
-  background: var(--pg-hdr-bg);
-  border-bottom: none;
-  position: relative;
-}
-/* .profile-hdr::before blue-halo pseudo-element butunlay o'chirildi —
-   flat dizaynda header ustida gradient halo kerak emas */
-.profile-hdr::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 0.5px;
-  background: var(--pg-border-top);
-  pointer-events: none;
-}
-
+.profile-hdr { background: var(--pg-hdr-bg); border-bottom: none; position: relative; }
+/* .profile-hdr::before blue-halo pseudo-element butunlay o'chirildi — flat dizaynda header ustida gradient ha... */
+.profile-hdr::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 0.5px; background: var(--pg-border-top); pointer-events: none; }
 /* Avatar — flat ring, glow olib tashlandi */
-.profile-avi {
-  /* border → borderless.css:191 (.profile-avi guruhida) 'none' bilan
-     yengiladi, o'lik — loyihaning umumiy "borderless" maqsadiga mos */
-  background: var(--pg-glass-mid);
-}
-.profile-avi:hover {
-  border-color: var(--pal-legacy-464646);
-}
-
+.profile-avi { background: var(--pg-glass-mid); }
+.profile-avi:hover { border-color: var(--pal-legacy-464646); }
 /* Stat blocks — flat chips */
-.stat {
-  background: var(--pg-glass);
-  border-radius: 14px;
-  border: 0.5px solid var(--pg-border-side);
-  transition: none;
-  margin: 0 3px;
-}
-.stat:hover {
-  background: var(--pg-glass-mid);
-}
-
+.stat { background: var(--pg-glass); border-radius: 14px; border: 0.5px solid var(--pg-border-side); transition: none; margin: 0 3px; }
+.stat:hover { background: var(--pg-glass-mid); }
 /* Edit button — flat */
-.edit-btn {
-  /* border → borderless.css:206 (.edit-btn guruhida) 'none' bilan
-     yengiladi, o'lik */
-  background: var(--pg-glass-mid);
-  border-radius: 14px;
-  transition: none;
-}
-.edit-btn:hover {
-  background: var(--pg-glass-strong);
-  border-color: var(--pg-border-top);
-}
-
+.edit-btn { background: var(--pg-glass-mid); border-radius: 14px; transition: none; }
+.edit-btn:hover { background: var(--pg-glass-strong); border-color: var(--pg-border-top); }
 /* Follow/unfollow button — icon only, circle */
-
-/* Grid tab header — flat strip.
-   background/border-top/border-bottom → borderless.css:1124
-   (.profile-grid-hdr guruhida) 'transparent'/'none' bilan to'liq
-   yengiladi, o'lik — butun blok shu sababli o'chirildi */
-
+/* Grid tab header — flat strip. background/border-top/border-bottom → borderless.css:1124 (.profile-grid-hdr... */
 /* Profile grid items — flat hover, scale olib tashlandi */
-.profile-grid-item {
-  transition: none;
-}
-.profile-grid-item:hover {
-  z-index: 2;
-}
-
+.profile-grid-item { transition: none; }
+.profile-grid-item:hover { z-index: 2; }
 /* Avi edit badge — flat */
-.avi-edit-badge {
-  background: var(--pal-white);
-  border: 1px solid var(--pal-legacy-525257);
-}
-
-/* ── Avatar Zoom Modal ichidagi Tahrirlash tugmasi ───────────────────── */
+.avi-edit-badge { background: var(--pal-white); border: 1px solid var(--pal-legacy-525257); }
+/* Avatar Zoom Modal ichidagi Tahrirlash tugmasi */
 .avi-zoom-edit-btn {
   position: absolute;
   bottom: 28px;
@@ -686,61 +195,19 @@
   white-space: nowrap;
   box-shadow: 0 4px 24px var(--pal-black);
 }
-.avi-zoom-edit-btn:hover {
-  background: var(--pal-gray-700);
-  border-color: var(--pal-white);
-  transform: translateX(-50%) scale(1.04);
-}
-.avi-zoom-edit-btn:active {
-  transform: translateX(-50%) scale(0.97);
-}
-
+.avi-zoom-edit-btn:hover { background: var(--pal-gray-700); border-color: var(--pal-white); transform: translateX(-50%) scale(1.04); }
+.avi-zoom-edit-btn:active { transform: translateX(-50%) scale(0.97); }
 /* up-avi hover ring — boshqa user profili */
-#upAviImg {
-  transition: none;
-}
-#upAviImg:hover {
-  box-shadow: 0 0 0 4px var(--pal-gray-700), 0 6px 24px var(--pal-black);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   PROFILE EDIT — avi, fields (qo'shildi)
-   ═══════════════════════════════════════════════════════════════════════ */
-
-/* ── Avatar row ── */
-.profile-avi-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
-  margin-top: 0;
-  padding: 0 0 12px;
-  position: relative;
-  z-index: 2;
-}
+#upAviImg { transition: none; }
+#upAviImg:hover { box-shadow: 0 0 0 4px var(--pal-gray-700), 0 6px 24px var(--pal-black); }
+/* ═══════════════════════════════════════════════════════════════════════ PROFILE EDIT — avi, fields (qo'shil... */
+/* Avatar row */
+.profile-avi-row { display: flex; align-items: flex-end; gap: 16px; margin-top: 0; padding: 0 0 12px; position: relative; z-index: 2; }
 /* Username & meta */
-.profile-username {
-  font-size: 13px;
-  color: var(--text3);
-  margin-top: 2px;
-  font-weight: 500;
-}
+.profile-username { font-size: 13px; color: var(--text3); margin-top: 2px; font-weight: 500; }
 /* Avatar picker in edit sheet */
-.pe-avi-wrap {
-  position: relative;
-  width: 68px;
-  height: 68px;
-  margin: 8px 0 12px 16px;
-  flex-shrink: 0;
-}
-.pe-avi-img {
-  width: 68px;
-  height: 68px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 3px solid var(--bg);
-  background: var(--bg3);
-  cursor: pointer;
-}
+.pe-avi-wrap { position: relative; width: 68px; height: 68px; margin: 8px 0 12px 16px; flex-shrink: 0; }
+.pe-avi-img { width: 68px; height: 68px; border-radius: 50%; overflow: hidden; border: 3px solid var(--bg); background: var(--bg3); cursor: pointer; }
 .pe-avi-img img { width: 100%; height: 100%; object-fit: cover; }
 .pe-avi-edit-badge {
   position: absolute;
@@ -756,56 +223,16 @@
   cursor: pointer;
   border: 2px solid var(--bg);
 }
-
 /* Fields wrapper */
-.pe-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 0 0 12px;
-}
-.pe-field-label {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--text3);
-  margin: 10px 0 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.pe-field-prefix-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-.pe-prefix {
-  position: absolute;
-  left: 14px;
-  color: var(--text3);
-  font-size: 15px;
-  font-weight: 500;
-  pointer-events: none;
-}
-/* !important shart — .field'ning shorthand padding (nav.css) @import
-   zanjirida profile.css'dan KEYIN yuklanadi (teng specificity, keyingi
-   fayl g'olib chiqadi), shuning uchun !important'siz padding-left
-   hech qachon qo'llanmaydi. Tekshirilgan 2026-08-30. */
+.pe-fields { display: flex; flex-direction: column; gap: 4px; padding: 0 0 12px; }
+.pe-field-label { font-size: 11.5px; font-weight: 600; color: var(--text3); margin: 10px 0 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.pe-field-prefix-wrap { position: relative; display: flex; align-items: center; }
+.pe-prefix { position: absolute; left: 14px; color: var(--text3); font-size: 15px; font-weight: 500; pointer-events: none; }
+/* !important shart — .field'ning shorthand padding (nav.css) @import zanjirida profile.css'dan KEYIN yuklanad... */
 .pe-prefix-field { padding-left: 28px !important; }
-
 /* Group edit avatar */
-.grp-edit-avi-wrap {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 16px;
-}
-.grp-edit-avi {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  background: var(--bg3);
-  border: 3px solid var(--glass-border);
-}
+.grp-edit-avi-wrap { position: relative; width: 80px; height: 80px; margin: 0 auto 16px; }
+.grp-edit-avi { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: var(--bg3); border: 3px solid var(--glass-border); }
 .grp-edit-avi img { width: 100%; height: 100%; object-fit: cover; }
 .grp-edit-avi-badge {
   position: absolute;
@@ -821,154 +248,32 @@
   cursor: pointer;
   border: 2px solid var(--bg);
 }
-
-/* ═══════════════════════════════════════════════════════════════════
-   SETTINGS — alohida fullscreen sahifa (Telegram uslubi)
-   Endi bottom-sheet emas, boshqa fullscreen modallar
-   (#chatThreadModal, #userProfileModal) bilan bir xil qolipda ishlaydi.
-   ═══════════════════════════════════════════════════════════════════ */
-#settingsOverlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  z-index: 150; /* bot-nav (100) dan yuqori, .overlay (200) dan past —
-                   shu tufayli Profilni tahrirlash sheet undan ustida ochiladi */
-  display: none;
-  flex-direction: column;
-}
-
-#settingsOverlay.show {
-  display: flex;
-}
-
-.settings-hdr {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
-}
-
-.settings-back {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg4);
-  border: none;
-  cursor: pointer;
-  color: var(--text);
-  flex-shrink: 0;
-  transition: none;
-}
+/* ═══════════════════════════════════════════════════════════════════ SETTINGS — alohida fullscreen sahifa (T... */
+#settingsOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 150; display: none; flex-direction: column; }
+#settingsOverlay.show { display: flex; }
+.settings-hdr { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+.settings-back { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg4); border: none; cursor: pointer; color: var(--text); flex-shrink: 0; transition: none; }
 .settings-back:hover { background: var(--bg5); }
-
-.settings-hdr-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: -0.3px;
-  flex: 1;
-}
-
+.settings-hdr-title { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; flex: 1; }
 .settings-hdr-spacer { width: 34px; flex-shrink: 0; }
-
-.settings-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 16px 20px max(28px, env(safe-area-inset-bottom));
-}
-
-/* Profil kartasi — Sozlamalar sahifasi tepasida, bosilganda
-   Profilni tahrirlash varag'i ochiladi (Telegram'dagi kabi) */
-.settings-profile-card {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 4px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  font-family: var(--font);
-  transition: none;
-  border-radius: 12px;
-}
+.settings-body { flex: 1; overflow-y: auto; padding: 16px 20px max(28px, env(safe-area-inset-bottom)); }
+/* Profil kartasi — Sozlamalar sahifasi tepasida, bosilganda Profilni tahrirlash varag'i ochiladi (Telegram'da... */
+.settings-profile-card { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 4px; background: none; border: none; cursor: pointer; text-align: left; font-family: var(--font); transition: none; border-radius: 12px; }
 .settings-profile-card:hover { background: var(--pal-gray-900); }
-
-.settings-profile-avi {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  background: var(--bg4);
-  overflow: hidden;
-}
+.settings-profile-avi { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; background: var(--bg4); overflow: hidden; }
 .settings-profile-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
 .settings-profile-info { flex: 1; min-width: 0; }
-
-.settings-profile-name {
-  font-size: 15.5px;
-  font-weight: 600;
-  color: var(--text);
-  letter-spacing: -0.3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.settings-profile-username {
-  font-size: 13px;
-  color: var(--text3);
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.settings-profile-chevron {
-  flex-shrink: 0;
-  color: var(--text3);
-}
-
+.settings-profile-name { font-size: 15.5px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.settings-profile-username { font-size: 13px; color: var(--text3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.settings-profile-chevron { flex-shrink: 0; color: var(--text3); }
 /* Profil post tablar */
-.profile-grid-hdr {
-  display: flex;
-  gap: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
+.profile-grid-hdr { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .profile-grid-hdr::-webkit-scrollbar { display: none; }
-.profile-grid-tab {
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  font-family: var(--font);
-  white-space: nowrap;
-}
-.profile-grid-tab.active {
-  color: var(--blue);
-  border-bottom-color: var(--blue);
-}
-
+.profile-grid-tab { background: none; border: none; border-bottom: 2px solid transparent; font-family: var(--font); white-space: nowrap; }
+.profile-grid-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
 /* Filterlangan tablar — bir xil kvadrat katak */
-.profile-grid--uniform {
-  grid-auto-flow: row;
-  grid-auto-rows: auto;
-}
-.profile-grid--uniform .grid-cell--media,
-.profile-grid--uniform .grid-cell--text {
-  grid-row: span 1;
-  aspect-ratio: 1;
-  min-height: 0;
-}
-
+.profile-grid--uniform { grid-auto-flow: row; grid-auto-rows: auto; }
+.profile-grid--uniform .grid-cell--media, .profile-grid--uniform .grid-cell--text { grid-row: span 1; aspect-ratio: 1; min-height: 0; }
 /* Profile grid empty state */
 .up-grid-empty {
   grid-column: 1 / -1;
@@ -984,14 +289,5 @@
   background: rgba(255,255,255,0.02);
   margin: 8px 0 16px;
 }
-.up-grid-empty-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text, var(--pal-gray-100));
-}
-.up-grid-empty-sub {
-  font-size: 13px;
-  color: var(--text3, var(--pal-gray-500));
-  max-width: 260px;
-  line-height: 1.4;
-}
+.up-grid-empty-title { font-size: 15px; font-weight: 600; color: var(--text, var(--pal-gray-100)); }
+.up-grid-empty-sub { font-size: 13px; color: var(--text3, var(--pal-gray-500)); max-width: 260px; line-height: 1.4; }

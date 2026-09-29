@@ -1,31 +1,11 @@
-/* ═══════════════════════════════════════════
-   MRspace — Theme System
-   MRspace — Theme System
-   ═══════════════════════════════════════════ */
-
-/* ── PALITRA (primitivlar) — yagona manba. Boshqa fayllarda qattiq hex o'rniga shular ishlatiladi. ── */
-
-/* ── DARK theme — Telegram Dark Palette ── */
-
-/* [data-theme="dark"] body/.app/.bot-nav/.sheet/.modal-content → hammasi
-   CSS/dark-theme-fix.css'da (o'sha fayl keyinroq yuklanadi) xuddi shu
-   property'lar bilan qayta belgilangan edi — bu yerdagi qoidalar
-   to'liq o'lik edi (har bir property boshqa faylda g'olib chiqadi),
-   o'chirildi. */
-
+/* ═══════════════════════════════════════════ MRspace — Theme System MRspace — Theme System ═════════════════... */
+/* PALITRA (primitivlar) — yagona manba. Boshqa fayllarda qattiq hex o'rniga shular ishlatiladi. */
+/* DARK theme — Telegram Dark Palette */
+/* [data-theme="dark"] body/.app/.bot-nav/.sheet/.modal-content → hammasi CSS/dark-theme-fix.css'da (o'sha fay... */
 /* Dark — glass element overrides */
-[data-theme="dark"] .post {
-  background: var(--pal-gray-800);
-  border: 0.5px solid var(--pal-gray-700);
-  box-shadow: var(--specular-top), var(--liquid-shadow-sm);
-}
-
+[data-theme="dark"] .post { background: var(--pal-gray-800); border: 0.5px solid var(--pal-gray-700); box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
 /* Light mode brand text */
-
-/* ═══════════════════════════════════════════
-   Smooth Theme Transitions
-   ═══════════════════════════════════════════ */
-
+/* ═══════════════════════════════════════════ Smooth Theme Transitions ══════════════════════════════════════... */
 body,
 .app,
 .post,
@@ -50,41 +30,11 @@ body,
 .avatar-crop-container {
   transition: none;
 }
-
-/* ═══════════════════════════════════════════
-   Theme Toggle Button
-   ═══════════════════════════════════════════ */
-.theme-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: var(--glass);
-  color: var(--text2);
-  cursor: pointer;
-  transition: none;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.theme-btn:hover {
-  background: var(--glass-mid);
-  color: var(--text);
-  box-shadow: var(--specular-top), var(--liquid-shadow-sm);
-}
-
-.theme-btn:active {
-  transition: none;
-}
-
-.theme-btn svg {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-}
-
+/* ═══════════════════════════════════════════ Theme Toggle Button ═══════════════════════════════════════════ */
+.theme-btn { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 14px; background: var(--glass); color: var(--text2); cursor: pointer; transition: none; padding: 0; flex-shrink: 0; }
+.theme-btn:hover { background: var(--glass-mid); color: var(--text); box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
+.theme-btn:active { transition: none; }
+.theme-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
 @media (min-width: 768px) {
   .theme-btn { position: relative; }
   .theme-btn::after {
@@ -110,66 +60,38 @@ body,
   }
   .theme-btn:hover::after { opacity: 1; }
 }
-
-/* ═══════════════════════════════════════════
-   Global Solid Component Classes
-   ═══════════════════════════════════════════ */
-
+/* ═══════════════════════════════════════════ Global Solid Component Classes ════════════════════════════════... */
 /* Base glass class — use anywhere */
-.glass {
-  background: var(--glass);
-  border: 0.5px solid var(--glass-border);
-  box-shadow: var(--specular-top), var(--liquid-shadow-md);
-}
-
-.glass-heavy {
-  background: var(--glass-heavy);
-  border: 0.5px solid var(--glass-border-top);
-  box-shadow: var(--specular-top), var(--liquid-shadow-lg);
-}
-
+.glass { background: var(--glass); border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top), var(--liquid-shadow-md); }
+.glass-heavy { background: var(--glass-heavy); border: 0.5px solid var(--glass-border-top); box-shadow: var(--specular-top), var(--liquid-shadow-lg); }
 /* Input fields */
-input, textarea {
-  background: var(--glass);
-  border: 0.5px solid var(--glass-border);
-  color: var(--text);
-  transition: none;
-}
-
-input:focus, textarea:focus {
-  border-color: var(--blue);
-  background: var(--glass-mid);
-  box-shadow: 0 0 0 3px var(--blue-glow2), var(--specular-top);
-}
-
+input, textarea { background: var(--glass); border: 0.5px solid var(--glass-border); color: var(--text); transition: none; }
+input:focus, textarea:focus { border-color: var(--blue); background: var(--glass-mid); box-shadow: 0 0 0 3px var(--blue-glow2), var(--specular-top); }
 input::placeholder, textarea::placeholder { color: var(--text3); }
-
-
-/* ═══════════════════════════════════════════
-   Unified Icon System — 2026 minimalist line icons
-   All inline SVGs use stroke="currentColor" and inherit
-   their color from the parent element below, so a single
-   set of rules themes every icon in the app consistently.
-   ═══════════════════════════════════════════ */
+/* ═══════════════════════════════════════════ Unified Icon System — 2026 minimalist line icons All inline SVG... */
 svg { color: inherit; }
-
-.act-btn, .nav-btn, .hdr-icon-btn, .hdr-new-post-btn,
-.edit-btn, .del-btn, .dm-act, .dm-close,
-.chat-attach-btn, .chat-call-btn, .chat-search-btn,
-.chat-thread-back, .chat-voice-btn, .crb-close,
-.cfp-icon, .cfp-remove, .search-overlay-close,
-.profile-grid-tab, .tab-btn, .admin-tab, .icon-btn {
+.act-btn,
+.nav-btn,
+.hdr-icon-btn,
+.hdr-new-post-btn,
+.edit-btn,
+.del-btn,
+.dm-act,
+.dm-close,
+.chat-attach-btn,
+.chat-call-btn,
+.chat-search-btn,
+.chat-thread-back,
+.chat-voice-btn,
+.crb-close,
+.cfp-icon,
+.cfp-remove,
+.search-overlay-close,
+.profile-grid-tab,
+.tab-btn,
+.admin-tab,
+.icon-btn {
   color: var(--tg-text-muted);
 }
-
-.nav-btn.on, .nav-btn.active,
-.act-btn.liked, .act-btn.active,
-.profile-grid-tab.active, .tab-btn.active, .admin-tab.active,
-.chat-search-btn.active, .icon-btn.active, .icon-btn.selected {
-  color: var(--tg-primary-blue);
-}
-
-.nav-center-btn, .btn-primary, .chat-voice-btn,
-.fab {
-  color: var(--tg-text-main);
-}
+.nav-btn.on, .nav-btn.active, .act-btn.liked, .act-btn.active, .profile-grid-tab.active, .tab-btn.active, .admin-tab.active, .chat-search-btn.active, .icon-btn.active, .icon-btn.selected { color: var(--tg-primary-blue); }
+.nav-center-btn, .btn-primary, .chat-voice-btn, .fab { color: var(--tg-text-main); }

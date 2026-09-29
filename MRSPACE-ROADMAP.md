@@ -215,6 +215,7 @@ drop table if exists public.follows;
 - [ ] **4.6 `!important` audit:** joriy o'lchov quyida; maqsad: kamida 80% qisqarish.
 - [ ] **4.7 Vizual regressiya:** 8 ekran skrinshoti (login, kutish, lenta, post yuklash, chatlar, chat oynasi, guruh, profil, admin) — **hali hech qachon bajarilmagan** (brauzer kerak, MR). Shu qilingach 4.1b va keyingi o'chirishlar bloklanadi.
 - [ ] **4.8 Tartib:** keyingi nomzod klaster — `chat.css` cvm-bloklari ↔ mono; bir fayl → tekshir → keyingisi; har fayl = 1 commit.
+- [x] **4.9 Ixchamlash** (branch `diet/04-css-5k`, 2026-09-29): `CSS/*.css` izohsiz (faqat top-level sarlavha), bo`sh qatorsiz, oddiy qoida = 1 qator (<=240 belgi). **11 632 -> 4 430 qator** (maqsad <=5k), 293 645 -> 255 355 bayt (-13%). Bu FORMAT o`zgarishi, kontent kamaymadi: normalizatsiya isboti (izohsiz/bo`shliqsiz matn eski == yangi) 24/24 fayl, computed-style harness 4 542 holat x 2 viewport, FARQ 0. Asbob: `~/Claude/tools/css-regress/compact.mjs`. Fayl soni hali 24 (maqsad <=6), `!important` 239.
 
 **Joriy `!important` o'lchovi (2026-09-28, `grep -c`):** x-design **26**, mono 58, chat 74, chat-dark-redesign ~130, ui-improvements ~56… (AUDIT.md C6/C9 jadvallari eskirgan — har sessiya boshida qayta o'lchanadi.)
 

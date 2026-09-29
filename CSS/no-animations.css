@@ -8,6 +8,4 @@
   transition-delay: 0s !important;
   scroll-behavior: auto !important;
 }
-html {
-  scroll-behavior: auto !important;
-}
+html { scroll-behavior: auto !important; }

@@ -1,161 +1,46 @@
-/* ═══════════════════════
-   APP SHELL
-   ═══════════════════════ */
+/* ═══════════════════════ APP SHELL ═══════════════════════ */
 #app { display: none; }
 #app.show { display: block; }
-
-/* ── Header ── */
-.app-hdr {
-  /* background/border-bottom → CSS/00-components.core.css (yagona manba) */
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: var(--hdr);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 12px;
-  gap: 8px;
-  z-index: 80;
-}
-
+/* Header */
+.app-hdr { position: fixed; top: 0; left: 0; right: 0; height: var(--hdr); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; gap: 8px; z-index: 80; }
 /* .app-hdr::after gradient chizig'i o'chirildi — flat dizayn, chiziq kerak emas */
-
-.hdr-logo {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  padding: 6px 8px 6px 0;
-  cursor: pointer;
-  border-radius: 10px;
-  transition: none;
-  -webkit-tap-highlight-color: transparent;
-}
+.hdr-logo { display: flex; align-items: center; gap: 6px; flex-shrink: 0; background: none; border: none; padding: 6px 8px 6px 0; cursor: pointer; border-radius: 10px; transition: none; -webkit-tap-highlight-color: transparent; }
 .hdr-logo:active { opacity: 1; }
-
-.hdr-logo-glass {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px; height: 32px;
-  background: none;
-  border: none;
-  box-shadow: none;
-}
-
-.hdr-logo-glass img {
-  position: relative;
-  z-index: 1;
-}
-
-.hdr-brand {
-  font-weight: 700;
-  font-size: 15px;
-  letter-spacing: -0.2px;
-  background: var(--blue2);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* ── Header right group ── */
-.hdr-right {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
-}
-
-/* ── Icon button (search, theme) in header ── */
-.hdr-icon-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  background: none;
-  border: none;
-  color: var(--text2);
-  cursor: pointer;
-  flex-shrink: 0;
-}
+.hdr-logo-glass { position: relative; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: none; border: none; box-shadow: none; }
+.hdr-logo-glass img { position: relative; z-index: 1; }
+.hdr-brand { font-weight: 700; font-size: 15px; letter-spacing: -0.2px; background: var(--blue2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* Header right group */
+.hdr-right { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+/* Icon button (search, theme) in header */
+.hdr-icon-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: none; border: none; color: var(--text2); cursor: pointer; flex-shrink: 0; }
 .hdr-icon-btn svg { width: 17px; height: 17px; }
-
-/* ── Search Overlay (replaces old hdr-search-expand) ── */
+/* Search Overlay (replaces old hdr-search-expand) */
 .search-overlay {
   position: fixed;
-  top: var(--hdr);   /* header pastidan boshlansin */
-  left: 0; right: 0; bottom: 0;
+  top: var(--hdr);
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 500;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   padding-top: 16px;
-  /* Backdrop — no blur, just semi-transparent */
   background: var(--pal-black);
   opacity: 0;
   pointer-events: none;
   transition: none;
 }
-
-.search-overlay.open {
-  opacity: 1;
-  pointer-events: all;
-}
-
+.search-overlay.open { opacity: 1; pointer-events: all; }
 /* Search ochilganda header yashiriladi */
-.search-overlay.open ~ .app-hdr,
-body:has(.search-overlay.open) .app-hdr {
-  display: none !important;
-}
-
-.search-overlay-inner {
-  width: min(580px, calc(100vw - 24px));
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transform: translateY(-8px);
-  transition: none;
-}
-
-.search-overlay.open .search-overlay-inner {
-  transform: translateY(0);
-}
-
-.search-overlay-box {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg2);
-  border: 1.5px solid var(--line3);
-  border-radius: 14px;
-  padding: 12px 14px;
-  /* NO backdrop-filter, NO blur — clean solid bg */
-}
-
-.search-overlay-icon {
-  flex-shrink: 0;
-}
-
-.search-overlay-box input {
-  flex: 1;
-  background: none;
-  border: none;
-  outline: none;
-  color: var(--text);
-  font-size: 15px;
-  font-family: var(--font);
-  caret-color: var(--blue);
-}
-
-.search-overlay-box input::placeholder {
-  color: var(--text3);
-}
-
+.search-overlay.open ~ .app-hdr, body:has(.search-overlay.open) .app-hdr { display: none !important; }
+.search-overlay-inner { width: min(580px, calc(100vw - 24px)); display: flex; flex-direction: column; gap: 8px; transform: translateY(-8px); transition: none; }
+.search-overlay.open .search-overlay-inner { transform: translateY(0); }
+.search-overlay-box { display: flex; align-items: center; gap: 10px; background: var(--bg2); border: 1.5px solid var(--line3); border-radius: 14px; padding: 12px 14px; }
+.search-overlay-icon { flex-shrink: 0; }
+.search-overlay-box input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-size: 15px; font-family: var(--font); caret-color: var(--blue); }
+.search-overlay-box input::placeholder { color: var(--text3); }
 .search-overlay-close {
   display: flex;
   align-items: center;
@@ -170,67 +55,17 @@ body:has(.search-overlay.open) .app-hdr {
   flex-shrink: 0;
   transition: none;
 }
-.search-overlay-close:hover {
-  background: var(--bg5);
-  color: var(--text);
-}
-
-/* ── old hdr-search kept for desktop ── */
-.hdr-search {
-  flex: 1;
-  max-width: 400px;
-  display: none; /* hidden on mobile; shown on desktop search-open */
-  align-items: center;
-  gap: 6px;
-  background: var(--pal-gray-900);
-  border: 1px solid var(--line);
-  border-radius: 50px;
-  padding: 6px 10px;
-  transition: none;
-  margin: 0 auto;
-}
-
-.hdr-search:focus-within {
-  border-color: var(--pal-gray-700);
-  background: var(--pal-gray-900);
-  box-shadow: 0 0 0 3px var(--pal-gray-900);
-}
-
-.hdr-search input {
-  background: none;
-  border: none;
-  color: var(--text);
-  font-size: 13px;
-  font-family: var(--font);
-  outline: none;
-  width: 100%;
-  min-width: 100px;
-}
-
-.hdr-search input::placeholder {
-  color: var(--text3);
-  font-size: 12px;
-}
-
-/* ── Global mute button ── */
-.hdr-mute-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  border: none;
-  background: none;
-  color: var(--text2);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: none;
-}
+.search-overlay-close:hover { background: var(--bg5); color: var(--text); }
+/* old hdr-search kept for desktop */
+.hdr-search { flex: 1; max-width: 400px; display: none; align-items: center; gap: 6px; background: var(--pal-gray-900); border: 1px solid var(--line); border-radius: 50px; padding: 6px 10px; transition: none; margin: 0 auto; }
+.hdr-search:focus-within { border-color: var(--pal-gray-700); background: var(--pal-gray-900); box-shadow: 0 0 0 3px var(--pal-gray-900); }
+.hdr-search input { background: none; border: none; color: var(--text); font-size: 13px; font-family: var(--font); outline: none; width: 100%; min-width: 100px; }
+.hdr-search input::placeholder { color: var(--text3); font-size: 12px; }
+/* Global mute button */
+.hdr-mute-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: none; background: none; color: var(--text2); cursor: pointer; flex-shrink: 0; transition: none; }
 .hdr-mute-btn:hover { background: var(--pal-gray-800); color: var(--text); }
 .hdr-mute-btn.is-unmuted { color: var(--blue); }
-
-/* ── Header New Post Button (Mobile) ── */
+/* Header New Post Button (Mobile) */
 .hdr-new-post-btn {
   display: flex;
   align-items: center;
@@ -246,45 +81,18 @@ body:has(.search-overlay.open) .app-hdr {
   flex-shrink: 0;
   transition: none;
 }
-
-.hdr-new-post-btn svg {
-  width: 20px;
-  height: 20px;
-  stroke: currentColor;
-  stroke-width: 2;
-  fill: none;
-}
-
+.hdr-new-post-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
 .hdr-new-post-btn:hover { background: var(--bg3); color: var(--text); }
 .hdr-new-post-btn:active { opacity: 0.7; }
-
 /* Desktop: hide header new post button (sidebar used instead) */
 @media (min-width: 768px) {
-  .hdr-new-post-btn {
-    display: none !important;
-  }
+  .hdr-new-post-btn { display: none !important; }
 }
-
 /* hdr-theme-btn → now uses .hdr-icon-btn.theme-btn */
-
-/* ═══════════════════════
-   VIEWS
-   ═══════════════════════ */
-/* ══════════════════════════════════════════════
-   VIEW SYSTEM — 1 vaqtda faqat 1 ta view
-   Har bir view to'liq ekran, erkin scroll
-   ══════════════════════════════════════════════ */
-
+/* ═══════════════════════ VIEWS ═══════════════════════ */
+/* ══════════════════════════════════════════════ VIEW SYSTEM — 1 vaqtda faqat 1 ta view Har bir view to'liq e... */
 /* Yashirin view — hech qanday joy olmaydi */
-.view {
-  display: none !important;
-  visibility: hidden;
-  position: absolute;
-  pointer-events: none;
-  height: 0;
-  overflow: hidden;
-}
-
+.view { display: none !important; visibility: hidden; position: absolute; pointer-events: none; height: 0; overflow: hidden; }
 /* Aktiv view — to'liq erkin */
 .view.on {
   display: block !important;
@@ -293,39 +101,20 @@ body:has(.search-overlay.open) .app-hdr {
   pointer-events: auto;
   height: auto;
   overflow: visible;
-
-  /* Header va nav orasida to'g'ri joy */
   padding-top: calc(var(--hdr) + 10px);
   padding-bottom: calc(var(--nav) + env(safe-area-inset-bottom, 0px) + 16px);
   min-height: calc(100dvh - var(--hdr));
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
 }
-
 /* Desktop: content offset — nav.css dagi margin-left boshqaradi */
-
-.feed {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 0 10px;
-}
-
-/* ═══════════════════════
-   POST CARD — Solid UI
-   ═══════════════════════ */
-.post {
-  /* background/border/box-shadow → CSS/00-components.core.css (yagona manba) */
-  /* position:relative → ui-improvements.css:70 bilan bir xil, o'sha yerda qoldirildi */
-  margin-bottom: 16px;
-  overflow: hidden;
-  isolation: isolate;
-}
-
+.feed { max-width: 500px; margin: 0 auto; padding: 0 10px; }
+/* ═══════════════════════ POST CARD — Solid UI ═══════════════════════ */
+.post { margin-bottom: 16px; overflow: hidden; isolation: isolate; }
 /* .post:hover cosmetics → CSS/00-components.core.css'da (flat, glow yo'q) */
-
-
 .avi {
-  width: 38px; height: 38px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   flex-shrink: 0;
   background: var(--glass-mid);
@@ -338,83 +127,20 @@ body:has(.search-overlay.open) .app-hdr {
   cursor: pointer;
   transition: none;
 }
-
-.avi:hover {
-  border-color: var(--pal-legacy-464646);
-}
+.avi:hover { border-color: var(--pal-legacy-464646); }
 .avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
 .post-meta { cursor: pointer; }
-
-
-.post-time {
-  font-size: 10px;
-  color: var(--text3);
-  margin-top: 2px;
-  font-family: var(--mono);
-}
-
-.post-badge {
-  font-size: 9px;
-  font-family: var(--mono);
-  padding: 3px 8px;
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-.del-btn {
-  background: none;
-  border: none;
-  color: var(--text3);
-  cursor: pointer;
-  padding: 6px;
-  border-radius: 8px;
-  transition: none;
-  display: flex;
-}
-
-.del-btn:hover {
-  color: var(--red);
-}
-
-/* ── Media ─ */
-.post-media {
-  cursor: pointer;
-  background: var(--pal-black);
-  position: relative;
-  width: 100%;
-  min-height: 180px; /* media joyi darrov qulab tushmasligi uchun */
-}
-
-.post-media img {
-  width: 100%;
-  height: auto;
-  display: block;
-  background: var(--pal-black);
-  filter: blur(0);
-}
-
-.post-media video {
-  width: 100%;
-  height: auto;
-  max-height: 70vh;
-  display: block;
-  background: var(--pal-black);
-  object-fit: contain;
-  filter: blur(0);
-  transition: none;
-}
-
-/* Media hali to'liq yuklanmagan holat: o'lchami saqlanadi, faqat blur bilan.
-   Post matni buldMedia'dan alohida chizilgani uchun har doim darrov o'qiladi. */
-.post-media.pm-loading {
-  background: var(--pal-gray-800);
-}
-.post-media.pm-loading img,
-.post-media.pm-loading video {
-  filter: blur(22px);
-  transform: scale(1.08);
-}
+.post-time { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+.post-badge { font-size: 9px; font-family: var(--mono); padding: 3px 8px; border-radius: 20px; font-weight: 500; }
+.del-btn { background: none; border: none; color: var(--text3); cursor: pointer; padding: 6px; border-radius: 8px; transition: none; display: flex; }
+.del-btn:hover { color: var(--red); }
+/* Media */
+.post-media { cursor: pointer; background: var(--pal-black); position: relative; width: 100%; min-height: 180px; }
+.post-media img { width: 100%; height: auto; display: block; background: var(--pal-black); filter: blur(0); }
+.post-media video { width: 100%; height: auto; max-height: 70vh; display: block; background: var(--pal-black); object-fit: contain; filter: blur(0); transition: none; }
+/* Media hali to'liq yuklanmagan holat: o'lchami saqlanadi, faqat blur bilan. Post matni buldMedia'dan alohida... */
+.post-media.pm-loading { background: var(--pal-gray-800); }
+.post-media.pm-loading img, .post-media.pm-loading video { filter: blur(22px); transform: scale(1.08); }
 .post-media.pm-loading::after {
   content: '';
   position: absolute;
@@ -428,126 +154,28 @@ body:has(.search-overlay.open) .app-hdr {
   animation: none;
   pointer-events: none;
 }
-
-.vid-wrap {
-  position: relative;
-  width: 100%;
-  background: var(--pal-black);
-  overflow: hidden;
-}
-
-.vid-overlay {
-  position: absolute;
-  inset: 0;
-  bottom: 36px;
-  cursor: pointer;
-  z-index: 1;
-}
-
-.vid-controls {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 8px;
-  z-index: 2;
-}
-
-.vc-play, .vc-mute, .vc-fs {
-  border: none;
-  color: var(--pal-white);
-  cursor: pointer;
-  padding: 4px;
-  flex-shrink: 0;
-}
-
-.vc-play svg, .vc-mute svg, .vc-fs svg {
-  width: 16px;
-  height: 16px;
-}
-
-.vc-progress {
-  flex: 1;
-  cursor: pointer;
-  padding: 8px 0;
-}
-
-.vc-bar {
-  height: 3px;
-  background: var(--pal-legacy-525257);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.vc-fill {
-  height: 100%;
-  background: var(--pal-white);
-  width: 0%;
-  border-radius: 2px;
-  transition: none;
-}
-
-.vc-time {
-  font-size: 11px;
-  color: var(--pal-white);
-  flex-shrink: 0;
-  min-width: 28px;
-}
-
-/* ── Caption ── */
-
-.cap-more {
-  color: var(--text3);
-  font-size: 12px;
-  cursor: pointer;
-  font-weight: 500;
-  margin-left: 2px;
-  transition: none;
-}
-
+.vid-wrap { position: relative; width: 100%; background: var(--pal-black); overflow: hidden; }
+.vid-overlay { position: absolute; inset: 0; bottom: 36px; cursor: pointer; z-index: 1; }
+.vid-controls { position: absolute; bottom: 0; left: 0; right: 0; height: 36px; display: flex; align-items: center; gap: 6px; padding: 0 8px; z-index: 2; }
+.vc-play, .vc-mute, .vc-fs { border: none; color: var(--pal-white); cursor: pointer; padding: 4px; flex-shrink: 0; }
+.vc-play svg, .vc-mute svg, .vc-fs svg { width: 16px; height: 16px; }
+.vc-progress { flex: 1; cursor: pointer; padding: 8px 0; }
+.vc-bar { height: 3px; background: var(--pal-legacy-525257); border-radius: 2px; overflow: hidden; }
+.vc-fill { height: 100%; background: var(--pal-white); width: 0%; border-radius: 2px; transition: none; }
+.vc-time { font-size: 11px; color: var(--pal-white); flex-shrink: 0; min-width: 28px; }
+/* Caption */
+.cap-more { color: var(--text3); font-size: 12px; cursor: pointer; font-weight: 500; margin-left: 2px; transition: none; }
 .cap-more:hover { color: var(--text2); }
 .cap-collapsed .cap-full { display: none; }
 .cap-expanded .cap-short { display: none; }
-.cap-expanded .cap-full  { display: inline; }
-
-/* ── File Card ── */
+.cap-expanded .cap-full { display: inline; }
+/* File Card */
 /* .file-card bazaviy blok → CSS/nav.css'ga ko'chirilgan (yagona manba, borderless.css bilan ziddiyatsiz) */
-
-
-
 /* legacy – kept for old posts */
-.file-icon {
-  width: 42px; height: 42px;
-  border-radius: 12px;
-  background: var(--blue-glow2);
-  border: 1px solid var(--pal-gray-700);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
+.file-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--blue-glow2); border: 1px solid var(--pal-gray-700); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .file-info { flex: 1; min-width: 0; }
-
-.file-name {
-  font-size: 13px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.file-size {
-  font-size: 10px;
-  color: var(--text3);
-  margin-top: 2px;
-  font-family: var(--mono);
-}
-
+.file-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-size { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
 .file-dl {
   padding: 7px 14px;
   background: var(--blue-glow2);
@@ -561,127 +189,57 @@ body:has(.search-overlay.open) .app-hdr {
   transition: none;
   flex-shrink: 0;
 }
-
-.file-dl:hover {
-  background: var(--pal-gray-700);
-}
-
-/* ── Stats & Actions ── */
-.post-stats {
-  padding: 8px 14px;
-  display: flex;
-  gap: 16px;
-  font-size: 11px;
-  color: var(--text3);
-  border-top: 0.5px solid var(--glass-border);
-  border-bottom: 0.5px solid var(--glass-border);
-  font-family: var(--mono);
-}
-
-
-.act-btn {
-  justify-content: center;
-  cursor: pointer;
-  transition: none;
-  border-right: 0.5px solid var(--glass-border);
-}
-
+.file-dl:hover { background: var(--pal-gray-700); }
+/* Stats & Actions */
+.post-stats { padding: 8px 14px; display: flex; gap: 16px; font-size: 11px; color: var(--text3); border-top: 0.5px solid var(--glass-border); border-bottom: 0.5px solid var(--glass-border); font-family: var(--mono); }
+.act-btn { justify-content: center; cursor: pointer; transition: none; border-right: 0.5px solid var(--glass-border); }
 .act-btn:last-child { border-right: none; }
-.act-btn:active {transition: none; }
-
-/* ── Reel Caption Sheet ── */
-#reelCapSheet .sheet {
-  background: var(--pal-gray-900);
-}
-
-.rcap-user-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-}
-
-.rcap-text {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--text);
-  white-space: pre-wrap;
-}
-
-/* ═══════════════════════
-   HEART BURST ANIMATION
-   ═══════════════════════ */
-.heart-burst {
-  position: absolute;
-  width: 52px;
-  height: 52px;
-  pointer-events: none;
-  z-index: 10;
-  transform: translate(-50%, -50%);
-}
-
-.heart-burst svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 2px 8px var(--pal-black-35));
-}
-
-/* ═══════════════════════
-   LIKE POP ANIMATION
-   ═══════════════════════ */
-
+.act-btn:active { transition: none; }
+/* Reel Caption Sheet */
+#reelCapSheet .sheet { background: var(--pal-gray-900); }
+.rcap-user-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.rcap-text { font-size: 14px; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+/* ═══════════════════════ HEART BURST ANIMATION ═══════════════════════ */
+.heart-burst { position: absolute; width: 52px; height: 52px; pointer-events: none; z-index: 10; transform: translate(-50%, -50%); }
+.heart-burst svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 8px var(--pal-black-35)); }
+/* ═══════════════════════ LIKE POP ANIMATION ═══════════════════════ */
 /* Hide header completely in reels on mobile */
 .app-hdr.force-hide { display: none !important; }
-
 /* Mobile: reels da to'liq ekran (sidebar yo'q paytda) */
-
-/* ── Header button visibility control ── */
+/* Header button visibility control */
 .hdr-hidden { display: none !important; }
-
-/* ── Hide search btn when not on home/following ── */
+/* Hide search btn when not on home/following */
 .hdr-search-wrap.search-hidden { display: none !important; }
-
-/* ── Video player mute btn: mobile faqat ── */
+/* Video player mute btn: mobile faqat */
 @media (min-width: 768px) {
   .vc-mute { display: none !important; }
 }
-
-/* ── Reel vol btn: mobile = top-right absolute, desktop = top bar ichida ── */
+/* Reel vol btn: mobile = top-right absolute, desktop = top bar ichida */
 .reel-vol-top {
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
   border-radius: 50%;
-  width: 36px; height: 36px;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
   transition: none;
   flex-shrink: 0;
-  /* default (mobile): absolute top-right */
   position: absolute;
-  top: 14px; right: 14px;
+  top: 14px;
+  right: 14px;
   z-index: 20;
   background: var(--pal-black);
 }
 .reel-vol-top:hover { background: var(--pal-black); }
 .reel-vol-top svg { width: 18px; height: 18px; }
-
 /* Desktop: top bar ichida — position reset */
 @media (min-width: 768px) {
-  .reel-vol-top {
-    position: static;
-    background: var(--pal-black);
-    width: 36px; height: 36px;
-  }
+  .reel-vol-top { position: static; background: var(--pal-black); width: 36px; height: 36px; }
 }
-
-/* ── Feed Subscribe Button ── */
-
-/* ═══════════════════════════════════════════════
-   FLOATING UPLOAD PROGRESS BAR
-   ═══════════════════════════════════════════════ */
+/* Feed Subscribe Button */
+/* ═══════════════════════════════════════════════ FLOATING UPLOAD PROGRESS BAR ══════════════════════════════... */
 .upload-float-bar {
   position: fixed;
   bottom: calc(var(--content-bottom, var(--nav)) + 10px);
@@ -700,204 +258,46 @@ body:has(.search-overlay.open) .app-hdr {
   min-width: 200px;
   max-width: calc(100vw - 32px);
 }
-
-.ufb-icon {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--blue);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  color: var(--pal-white);
-}
-
-.ufb-icon.done {
-  animation: none;
-  background: #16a34a;
-}
-
-.ufb-body {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.ufb-name {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ufb-track {
-  height: 3px;
-  background: var(--bg4);
-  border-radius: 99px;
-  overflow: hidden;
-}
-
-.ufb-fill {
-  height: 100%;
-  background: var(--blue);
-  border-radius: 99px;
-  transition: none;
-  width: 0%;
-}
-
+.ufb-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--pal-white); }
+.ufb-icon.done { animation: none; background: #16a34a; }
+.ufb-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.ufb-name { font-size: 11px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ufb-track { height: 3px; background: var(--bg4); border-radius: 99px; overflow: hidden; }
+.ufb-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: none; width: 0%; }
 /* Indeterminate animation when stuck */
-.ufb-fill.indeterminate {
-  width: 40% !important;
-  animation: none;
-}
-
-.ufb-pct {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--blue);
-  flex-shrink: 0;
-  min-width: 32px;
-  text-align: right;
-}
-
-/* ═══════════════════════════════════════════
-   THEME AWARE ENHANCEMENTS
-   ═══════════════════════════════════════════ */
-
+.ufb-fill.indeterminate { width: 40% !important; animation: none; }
+.ufb-pct { font-size: 11px; font-weight: 600; color: var(--blue); flex-shrink: 0; min-width: 32px; text-align: right; }
+/* ═══════════════════════════════════════════ THEME AWARE ENHANCEMENTS ══════════════════════════════════════... */
 /* Dark mode: stronger borders and shadows */
-
-[data-theme="dark"] .post:hover {
-  box-shadow: 0 4px 20px var(--pal-black);
-}
-
+[data-theme="dark"] .post:hover { box-shadow: 0 4px 20px var(--pal-black); }
 /* Light mode: softer shadows */
-/* box-shadow o'chirildi — borderless.css:43 (.post
-   guruhida) bir xil specificity bilan keyinroq yuklanadi, box-shadow:none
-   g'olib chiqadi, bu qator hech qachon ko'rinmagan (o'lik) */
-
+/* box-shadow o'chirildi — borderless.css:43 (.post guruhida) bir xil specificity bilan keyinroq yuklanadi, bo... */
 /* Video controls - theme aware */
-[data-theme="dark"] .vid-controls {
-  background: var(--pal-black);
-}
-
+[data-theme="dark"] .vid-controls { background: var(--pal-black); }
 /* File card hover - theme aware */
-/* [data-theme="dark"] .file-card:hover → CSS/dark-theme-fix.css'da qayta
-   belgilangan (keyinroq yuklanadi, g'olib chiqadi) — bu yerdagi qoida o'lik edi */
-
+/* [data-theme="dark"] .file-card:hover → CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi, g'o... */
 /* Badge styles - theme aware */
-
 /* Search overlay - theme aware */
-/* [data-theme="dark"] .search-overlay-box → CSS/dark-theme-fix.css'da qayta
-   belgilangan (keyinroq yuklanadi, g'olib chiqadi) — bu yerdagi qoida o'lik edi */
-
+/* [data-theme="dark"] .search-overlay-box → CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi,... */
 /* Empty states - theme aware */
-[data-theme="dark"] .empty-icon,
-[data-theme="dark"] .empty-search-icon {
-  background: var(--blue-glow2);
-}
-
+[data-theme="dark"] .empty-icon, [data-theme="dark"] .empty-search-icon { background: var(--blue-glow2); }
 /* Skeleton loading - theme aware shimmer */
-.skeleton-post {
-  border: 1px solid var(--line);
-  position: relative;
-  animation: none;
-}
-
-.skel-avi {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--bg3);
-  background-size: 200% 100%;
-  animation: none;
-  flex-shrink: 0;
-}
-
-.skel-line {
-  height: 12px;
-  border-radius: 4px;
-  background: var(--bg3);
-  background-size: 200% 100%;
-  animation: none;
-}
-
-.skel-media {
-  width: 100%;
-  height: 200px;
-  border-radius: 8px;
-  background: var(--bg3);
-  background-size: 200% 100%;
-  animation: none;
-  margin: 0;
-}
-
-.skel-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.skel-actions .skel-line {
-  height: 32px;
-  flex: 1;
-  border-radius: 6px;
-}
-
-[data-theme="dark"] .skeleton-post {
-  /* background → CSS/dark-theme-fix.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  border-color: var(--pal-gray-800);
-}
-
-/* ── Like button pop animation ── */
-
-/* ═══════════════════════════════════════════
-   ENHANCED POST CARD STYLES
-   ═══════════════════════════════════════════ */
-
+.skeleton-post { border: 1px solid var(--line); position: relative; animation: none; }
+.skel-avi { width: 38px; height: 38px; border-radius: 50%; background: var(--bg3); background-size: 200% 100%; animation: none; flex-shrink: 0; }
+.skel-line { height: 12px; border-radius: 4px; background: var(--bg3); background-size: 200% 100%; animation: none; }
+.skel-media { width: 100%; height: 200px; border-radius: 8px; background: var(--bg3); background-size: 200% 100%; animation: none; margin: 0; }
+.skel-actions { display: flex; gap: 8px; margin-top: 8px; }
+.skel-actions .skel-line { height: 32px; flex: 1; border-radius: 6px; }
+[data-theme="dark"] .skeleton-post { border-color: var(--pal-gray-800); }
+/* Like button pop animation */
+/* ═══════════════════════════════════════════ ENHANCED POST CARD STYLES ═════════════════════════════════════... */
 /* Gradient border hover + zoom o'chirildi (flat X.com uslubi, 2026) */
-
-.post-media {
-  overflow: hidden;
-}
-
-.post-media img {
-  transition: none;
-}
-
+.post-media { overflow: hidden; }
+.post-media img { transition: none; }
 /* Video post indicator */
-.post-is-video::after {
-  content: '';
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 32px;
-  height: 32px;
-  background: var(--pal-black);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.post-is-video::before {
-  content: '▶';
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  color: var(--pal-white);
-  font-size: 12px;
-  z-index: 2;
-}
-
+.post-is-video::after { content: ''; position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: var(--pal-black); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.post-is-video::before { content: '▶'; position: absolute; top: 10px; right: 10px; color: var(--pal-white); font-size: 12px; z-index: 2; }
 /* Post badge animation */
-
 /* Action button ripple effect */
-.act-btn {
-  position: relative;
-}
-
+.act-btn { position: relative; }
 /* Avatar shimmer effect */
-
-

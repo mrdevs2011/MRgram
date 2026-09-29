@@ -1,69 +1,16 @@
-/* ═══════════════════════════════════════════════════════════════════════
-   ADMIN PANEL — Users bo'limi
-   Barcha variable'lar theme.css bilan mos (--line, --bg2, --blue, ...)
-   ═══════════════════════════════════════════════════════════════════════ */
-
-/* ── Header ──────────────────────────────────────────────────────────── */
-.users-admin-hdr {
-  padding: 20px 16px 12px;
-  border-bottom: 1px solid var(--line);
-}
-.users-admin-hdr h2 {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0 0 4px;
-  letter-spacing: -0.3px;
-}
-
-/* ── Qidiruv va status filtri ── */
-.ua-search-row {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-.ua-search-input {
-  flex: 1;
-  min-width: 160px;
-  background: var(--bg3);
-  border: 1px solid var(--line2);
-  border-radius: 8px;
-  color: var(--text);
-  font-family: var(--font);
-  font-size: 13px;
-  padding: 9px 12px;
-  outline: none;
-  transition: none;
-}
+/* ═══════════════════════════════════════════════════════════════════════ ADMIN PANEL — Users bo'limi Barcha... */
+/* Header */
+.users-admin-hdr { padding: 20px 16px 12px; border-bottom: 1px solid var(--line); }
+.users-admin-hdr h2 { font-size: 1.15rem; font-weight: 700; color: var(--text); margin: 0 0 4px; letter-spacing: -0.3px; }
+/* Qidiruv va status filtri */
+.ua-search-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.ua-search-input { flex: 1; min-width: 160px; background: var(--bg3); border: 1px solid var(--line2); border-radius: 8px; color: var(--text); font-family: var(--font); font-size: 13px; padding: 9px 12px; outline: none; transition: none; }
 .ua-search-input:focus { border-color: var(--blue); }
 .ua-search-input::placeholder { color: var(--text3); }
-.ua-status-filter {
-  background: var(--bg3);
-  border: 1px solid var(--line2);
-  border-radius: 8px;
-  color: var(--text2);
-  font-family: var(--font);
-  font-size: 12.5px;
-  padding: 9px 10px;
-  outline: none;
-  cursor: pointer;
-}
-
-.users-admin-list {
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 80px;
-}
-
-/* ── Row ─────────────────────────────────────────────────────────────── */
-.ua-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-}
-
+.ua-status-filter { background: var(--bg3); border: 1px solid var(--line2); border-radius: 8px; color: var(--text2); font-family: var(--font); font-size: 12.5px; padding: 9px 10px; outline: none; cursor: pointer; }
+.users-admin-list { display: flex; flex-direction: column; padding-bottom: 80px; }
+/* Row */
+.ua-row { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
 /* Delete btn — hover'da chiqadi */
 .ua-delete-btn {
   position: absolute;
@@ -86,381 +33,100 @@
 }
 .ua-row:hover .ua-delete-btn { opacity: 1; }
 .ua-delete-btn:hover { background: var(--red-glow); }
-
 /* Actions paneli */
-.ua-actions {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-right: 44px;
-}
-
-/* ── Info ────────────────────────────────────────────────────────────── */
-.ua-info {
-  flex: 1;
-  min-width: 0;
-}
-.ua-name {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 1px;
-}
-.ua-uname {
-  font-size: 0.78rem;
-  color: var(--blue);
-  font-family: var(--mono);
-  margin-bottom: 1px;
-  overflow-wrap: anywhere;
-}
-.ua-date {
-  font-size: 0.73rem;
-  color: var(--text3);
-  margin-top: 2px;
-  font-family: var(--mono);
-  overflow-wrap: anywhere;
-}
+.ua-actions { flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; margin-right: 44px; }
+/* Info */
+.ua-info { flex: 1; min-width: 0; }
+.ua-name { font-size: 0.92rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 1px; }
+.ua-uname { font-size: 0.78rem; color: var(--blue); font-family: var(--mono); margin-bottom: 1px; overflow-wrap: anywhere; }
+.ua-date { font-size: 0.73rem; color: var(--text3); margin-top: 2px; font-family: var(--mono); overflow-wrap: anywhere; }
 .ua-status { margin-top: 5px; }
-
-/* ── Badges ──────────────────────────────────────────────────────────── */
-.ua-badge {
-  display: inline-block;
-  font-size: 0.70rem;
-  font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 20px;
-  white-space: nowrap;
-  letter-spacing: 0.1px;
-}
-.ua-badge--approved {
-  background: var(--pal-gray-900);
-  color: var(--green);
-  border: 1px solid var(--pal-gray-800);
-}
-.ua-badge--pending {
-  background: var(--pal-gray-800);
-  color: var(--amber);
-  border: 1px solid var(--pal-gray-700);
-}
-.ua-badge--rejected {
-  background: var(--red-glow);
-  color: var(--red);
-  border: 1px solid #2d2d2d;
-}
-.ua-badge--legacy {
-  background: var(--bg4);
-  color: var(--text3);
-  border: 1px solid var(--line2);
-}
-.ua-badge--blocked {
-  background: var(--red-glow);
-  color: var(--red);
-  border: 1px solid #2d2d2d;
-}
-
-/* ── Action buttons ──────────────────────────────────────────────────── */
-.ua-approve-btn,
-.ua-reject-btn {
-  font-size: 0.76rem;
-  font-weight: 600;
-  padding: 6px 13px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: none;
-  font-family: var(--font);
-  letter-spacing: -0.1px;
-}
-.ua-approve-btn {
-  background: var(--blue);
-  color: var(--pal-white);
-  box-shadow: 0 2px 8px var(--blue-glow2);
-}
-.ua-approve-btn:hover   { opacity: 1; }
+/* Badges */
+.ua-badge { display: inline-block; font-size: 0.70rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; letter-spacing: 0.1px; }
+.ua-badge--approved { background: var(--pal-gray-900); color: var(--green); border: 1px solid var(--pal-gray-800); }
+.ua-badge--pending { background: var(--pal-gray-800); color: var(--amber); border: 1px solid var(--pal-gray-700); }
+.ua-badge--rejected { background: var(--red-glow); color: var(--red); border: 1px solid #2d2d2d; }
+.ua-badge--legacy { background: var(--bg4); color: var(--text3); border: 1px solid var(--line2); }
+.ua-badge--blocked { background: var(--red-glow); color: var(--red); border: 1px solid #2d2d2d; }
+/* Action buttons */
+.ua-approve-btn, .ua-reject-btn { font-size: 0.76rem; font-weight: 600; padding: 6px 13px; border-radius: 8px; border: none; cursor: pointer; transition: none; font-family: var(--font); letter-spacing: -0.1px; }
+.ua-approve-btn { background: var(--blue); color: var(--pal-white); box-shadow: 0 2px 8px var(--blue-glow2); }
+.ua-approve-btn:hover { opacity: 1; }
 .ua-approve-btn:disabled { opacity: 1; cursor: not-allowed; }
-
-.ua-reject-btn {
-  background: var(--red-glow);
-  color: var(--red);
-  border: 1px solid var(--pal-gray-800);
-}
-.ua-reject-btn:hover    { background: var(--pal-gray-800); }
+.ua-reject-btn { background: var(--red-glow); color: var(--red); border: 1px solid var(--pal-gray-800); }
+.ua-reject-btn:hover { background: var(--pal-gray-800); }
 .ua-reject-btn:disabled { opacity: 1; cursor: not-allowed; }
-
-/* ── Block / Unblock buttons ─────────────────────────────────────────── */
-.ua-block-btn,
-.ua-unblock-btn {
-  font-size: 0.76rem;
-  font-weight: 600;
-  padding: 6px 13px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: none;
-  white-space: nowrap;
-  font-family: var(--font);
-}
-.ua-block-btn {
-  background: var(--red-glow);
-  color: var(--red);
-  border: 1px solid var(--pal-gray-800);
-}
+/* Block / Unblock buttons */
+.ua-block-btn, .ua-unblock-btn { font-size: 0.76rem; font-weight: 600; padding: 6px 13px; border-radius: 8px; border: none; cursor: pointer; transition: none; white-space: nowrap; font-family: var(--font); }
+.ua-block-btn { background: var(--red-glow); color: var(--red); border: 1px solid var(--pal-gray-800); }
 .ua-block-btn:hover { background: var(--pal-gray-800); }
-
-.ua-unblock-btn {
-  background: var(--green-glow);
-  color: var(--green);
-  border: 1px solid var(--pal-gray-800);
-}
+.ua-unblock-btn { background: var(--green-glow); color: var(--green); border: 1px solid var(--pal-gray-800); }
 .ua-unblock-btn:hover { background: var(--pal-gray-800); }
-
 /* Bloklangan row */
 .ua-row--blocked { opacity: 1; }
-
-/* ═══════════════════════════════════════════════════════════════════════
-   DELETE CONFIRM MODAL
-   ═══════════════════════════════════════════════════════════════════════ */
-.ua-modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  opacity: 0;
-  pointer-events: none;
-  transition: none;
-}
-.ua-modal-overlay.show {
-  opacity: 1;
-  pointer-events: all;
-}
-.ua-modal {
-  padding: 28px 24px 22px;
-  max-width: 340px;
-  width: 100%;
-  text-align: center;
-  transform: scale(0.93);
-  transition: none;
-}
+/* ═══════════════════════════════════════════════════════════════════════ DELETE CONFIRM MODAL ══════════════... */
+.ua-modal-overlay { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: none; }
+.ua-modal-overlay.show { opacity: 1; pointer-events: all; }
+.ua-modal { padding: 28px 24px 22px; max-width: 340px; width: 100%; text-align: center; transform: scale(0.93); transition: none; }
 .ua-modal-overlay.show .ua-modal { transform: scale(1); }
-.ua-modal-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 12px;
-}
+.ua-modal-icon { display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
 .ua-modal-icon svg { display: block; }
-.ua-modal-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 10px;
-  letter-spacing: -0.2px;
-}
-.ua-modal-body {
-  font-size: 0.88rem;
-  color: var(--text2);
-  line-height: 1.65;
-  margin-bottom: 6px;
-  overflow-wrap: anywhere;
-}
+.ua-modal-title { font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 10px; letter-spacing: -0.2px; }
+.ua-modal-body { font-size: 0.88rem; color: var(--text2); line-height: 1.65; margin-bottom: 6px; overflow-wrap: anywhere; }
 .ua-modal-body strong { color: var(--text); overflow-wrap: anywhere; }
-.ua-modal-warn {
-  font-size: 0.78rem;
-  color: var(--red);
-  display: block;
-  margin-top: 6px;
-}
-.ua-modal-btns {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-.ua-modal-cancel,
-.ua-modal-confirm {
-  flex: 1;
-  padding: 11px 0;
-  border-radius: 10px;
-  border: none;
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: none;
-  font-family: var(--font);
-}
-.ua-modal-cancel {
-  color: var(--text);
-}
-
+.ua-modal-warn { font-size: 0.78rem; color: var(--red); display: block; margin-top: 6px; }
+.ua-modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+.ua-modal-cancel, .ua-modal-confirm { flex: 1; padding: 11px 0; border-radius: 10px; border: none; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: none; font-family: var(--font); }
+.ua-modal-cancel { color: var(--text); }
 .ua-modal-confirm { background: var(--red); color: var(--pal-white); }
-.ua-modal-confirm:hover   { opacity: 1; }
+.ua-modal-confirm:hover { opacity: 1; }
 .ua-modal-confirm:disabled { opacity: 1; cursor: not-allowed; }
-
 /* Modal variants */
 .ua-modal-confirm--danger { background: var(--red); color: var(--pal-white); }
 .ua-modal-confirm--danger:hover { opacity: 1; }
-.ua-modal-confirm--warn   { background: var(--amber); color: var(--pal-white); }
-.ua-modal-confirm--warn:hover   { opacity: 1; }
-.ua-modal-confirm--safe   { background: var(--green); color: var(--pal-white); }
-.ua-modal-confirm--safe:hover   { opacity: 1; }
-
+.ua-modal-confirm--warn { background: var(--amber); color: var(--pal-white); }
+.ua-modal-confirm--warn:hover { opacity: 1; }
+.ua-modal-confirm--safe { background: var(--green); color: var(--pal-white); }
+.ua-modal-confirm--safe:hover { opacity: 1; }
 /* Juda kichik telefonlar — joy tejaymiz */
-
 /* Planshet / kichik oyna */
-
 /* Desktop — sezilarli darajada kattalashadi va kengayadi */
-
 /* Katta desktop — yanada keng va qulay */
-
 /* Desktop: maydonlar HAM, tarix bo'limlari HAM keng grid'ga o'tadi */
-
-/* ═══════════════════════════════════════════════════════════════════════
-   DARK THEME — Admin Panel Override
-   ═══════════════════════════════════════════════════════════════════════ */
-[data-theme="dark"] .ua-row {
-  border-bottom-color: var(--pal-gray-800);
-}
-[data-theme="dark"] .ua-row:hover {
-  background: var(--pal-gray-800);
-}
-[data-theme="dark"] .ua-modal {
-  background: var(--pal-gray-800);
-  border-color: var(--pal-gray-800);
-  box-shadow: 0 24px 64px var(--pal-black);
-}
-[data-theme="dark"] .ua-modal-cancel {
-  background: var(--pal-gray-800);
-  border-color: var(--pal-gray-800);
-}
-[data-theme="dark"] .ua-modal-cancel:hover {
-  background: var(--pal-gray-700);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   LIGHT THEME — Admin Panel
-   ═══════════════════════════════════════════════════════════════════════ */
-
-/* ── Actions View (birlashtirilgan stats+users) ── */
+/* ═══════════════════════════════════════════════════════════════════════ DARK THEME — Admin Panel Override ═... */
+[data-theme="dark"] .ua-row { border-bottom-color: var(--pal-gray-800); }
+[data-theme="dark"] .ua-row:hover { background: var(--pal-gray-800); }
+[data-theme="dark"] .ua-modal { background: var(--pal-gray-800); border-color: var(--pal-gray-800); box-shadow: 0 24px 64px var(--pal-black); }
+[data-theme="dark"] .ua-modal-cancel { background: var(--pal-gray-800); border-color: var(--pal-gray-800); }
+[data-theme="dark"] .ua-modal-cancel:hover { background: var(--pal-gray-700); }
+/* ═══════════════════════════════════════════════════════════════════════ LIGHT THEME — Admin Panel ═════════... */
+/* Actions View (birlashtirilgan stats+users) */
 /* #actionsView scroll/height .view.on orqali boshqariladi */
-#actionsView {
-  background: var(--bg);
-}
-.actions-divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 20px 16px 10px;
-  margin-top: 4px;
-}
-.actions-divider::before,
-.actions-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--line);
-}
-.actions-divider-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text2);
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  padding: 0 4px;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   ACTIONS VIEW — MOBILE (default)
-   Bitta ustun, katta bosish nuqtalari, doim ko'rinadigan amallar.
-   ═══════════════════════════════════════════════════════════════════════ */
-#actionsView .ua-delete-btn {
-  opacity: 1;
-  width: 36px;
-  height: 36px;
-  right: 8px;
-}
-#actionsView .ua-actions {
-  margin-right: 48px;
-}
-#actionsView .ua-approve-btn,
-#actionsView .ua-reject-btn,
-#actionsView .ua-block-btn,
-#actionsView .ua-unblock-btn,
-#actionsView .ua-history-btn {
-  padding: 9px 14px;
-  font-size: 0.8rem;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   ACTIONS VIEW — DESKTOP (≥1024px)
-   Ikki ustunli "dashboard" ko'rinishi: chapda statistika, o'ngda
-   yopishqoq (sticky) foydalanuvchilar paneli — mobile dan tubdan farqli.
-   ═══════════════════════════════════════════════════════════════════════ */
+#actionsView { background: var(--bg); }
+.actions-divider { display: flex; align-items: center; gap: 10px; padding: 20px 16px 10px; margin-top: 4px; }
+.actions-divider::before, .actions-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.actions-divider-label { font-size: 12px; font-weight: 700; color: var(--text2); letter-spacing: 0.3px; white-space: nowrap; padding: 0 4px; }
+/* ═══════════════════════════════════════════════════════════════════════ ACTIONS VIEW — MOBILE (default) Bit... */
+#actionsView .ua-delete-btn { opacity: 1; width: 36px; height: 36px; right: 8px; }
+#actionsView .ua-actions { margin-right: 48px; }
+#actionsView .ua-approve-btn, #actionsView .ua-reject-btn, #actionsView .ua-block-btn, #actionsView .ua-unblock-btn, #actionsView .ua-history-btn { padding: 9px 14px; font-size: 0.8rem; }
+/* ═══════════════════════════════════════════════════════════════════════ ACTIONS VIEW — DESKTOP (≥1024px) Ik... */
 @media (min-width: 1024px) {
-  #actionsView {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 400px;
-    grid-template-rows: auto 1fr;
-    column-gap: 28px;
-    padding: 28px 32px 28px 0;
-    align-items: start;
-  }
-  #actionsView .users-admin-hdr {
-    grid-column: 2;
-    grid-row: 1;
-    padding: 0 0 14px;
-    border-bottom: 1px solid var(--line);
-  }
-  #actionsView #usersAdminList {
-    grid-column: 2;
-    grid-row: 2;
-    padding: 10px 4px 24px 0;
-  }
-  #actionsView .actions-divider {
-    display: none;
-  }
-
-  /* Foydalanuvchi qatorlarini "karta" ko'rinishiga o'tkazamiz */
-  #actionsView .ua-row {
-    padding: 14px 16px;
-    transition: none;
-  }
-  #actionsView .ua-delete-btn {
-    opacity: 0; /* sichqoncha bo'lgani uchun hover bilan chiqadi */
-  }
+  #actionsView { display: grid; grid-template-columns: minmax(0, 1fr) 400px; grid-template-rows: auto 1fr; column-gap: 28px; padding: 28px 32px 28px 0; align-items: start; }
+  #actionsView .users-admin-hdr { grid-column: 2; grid-row: 1; padding: 0 0 14px; border-bottom: 1px solid var(--line); }
+  #actionsView #usersAdminList { grid-column: 2; grid-row: 2; padding: 10px 4px 24px 0; }
+  #actionsView .actions-divider { display: none; }
+  #actionsView .ua-row { padding: 14px 16px; transition: none; }
+  #actionsView .ua-delete-btn { opacity: 0; }
   #actionsView .ua-row:hover .ua-delete-btn { opacity: 1; }
-  #actionsView .ua-actions {
-    flex-direction: column;
-    gap: 6px;
-    margin-right: 44px;
-  }
-
-  /* Statistika paneli kengroq ekranga moslashadi */
-  
-  
-  
+  #actionsView .ua-actions { flex-direction: column; gap: 6px; margin-right: 44px; }
 }
-
 @media (min-width: 1280px) {
-  #actionsView {
-    grid-template-columns: minmax(0, 1fr) 440px;
-    column-gap: 36px;
-    padding: 32px 40px 32px 0;
-  }
+  #actionsView { grid-template-columns: minmax(0, 1fr) 440px; column-gap: 36px; padding: 32px 40px 32px 0; }
 }
-
-/* ═══════════════════════════════════════════════════════════════════════
-   ADMIN PANEL — SOLID UI
-   ═══════════════════════════════════════════════════════════════════════ */
-
-/* ── Glass variables ── */
-
-/* ── Admin row — solid card ── */
+/* ═══════════════════════════════════════════════════════════════════════ ADMIN PANEL — SOLID UI ════════════... */
+/* Glass variables */
+/* Admin row — solid card */
 .ua-row {
   background: var(--ag-row-bg);
   border-bottom: none;
@@ -472,70 +138,20 @@
   position: relative;
   overflow: hidden;
 }
-.ua-row:hover {
-  background: var(--ag-row-hover);
-  box-shadow: var(--ag-specular), var(--ag-shadow-hover);
-}
-
-/* ── Modal overlay — solid panel ── */
-.ua-modal-overlay {
-  background: var(--ag-overlay);
-}
-
-/* ── Modal card — solid panel ── */
-.ua-modal {
-  background: var(--ag-modal-bg);
-  border: none;
-  border-radius: 28px;
-  box-shadow:
-    var(--ag-specular),
-    var(--ag-shadow),
-    inset 0 -1px 0 var(--ag-border-bot);
-  position: relative;
-  overflow: hidden;
-}
-.ua-modal::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: var(--ag-border-top);
-  pointer-events: none;
-}
-
-/* ── Buttons — solid style ── */
-.ua-modal-cancel {
-  background: var(--ag-glass-mid);
-  border: 0.5px solid var(--ag-border-side);
-  box-shadow: var(--ag-specular);
-  transition: none;
-}
-.ua-modal-cancel:hover {
-  background: var(--ag-glass-strong);
-  box-shadow: var(--ag-specular), 0 4px 16px var(--pal-black);
-}
-
-/* ── Badges — glass glow ── */
-.ua-badge--approved {
-  box-shadow: 0 0 12px var(--pal-gray-800);
-}
-.ua-badge--blocked {
-  box-shadow: 0 0 12px var(--pal-gray-800);
-}
-
-/* ── Actions view desktop — solid cards ── */
+.ua-row:hover { background: var(--ag-row-hover); box-shadow: var(--ag-specular), var(--ag-shadow-hover); }
+/* Modal overlay — solid panel */
+.ua-modal-overlay { background: var(--ag-overlay); }
+/* Modal card — solid panel */
+.ua-modal { background: var(--ag-modal-bg); border: none; border-radius: 28px; box-shadow: var(--ag-specular), var(--ag-shadow), inset 0 -1px 0 var(--ag-border-bot); position: relative; overflow: hidden; }
+.ua-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--ag-border-top); pointer-events: none; }
+/* Buttons — solid style */
+.ua-modal-cancel { background: var(--ag-glass-mid); border: 0.5px solid var(--ag-border-side); box-shadow: var(--ag-specular); transition: none; }
+.ua-modal-cancel:hover { background: var(--ag-glass-strong); box-shadow: var(--ag-specular), 0 4px 16px var(--pal-black); }
+/* Badges — glass glow */
+.ua-badge--approved { box-shadow: 0 0 12px var(--pal-gray-800); }
+.ua-badge--blocked { box-shadow: 0 0 12px var(--pal-gray-800); }
+/* Actions view desktop — solid cards */
 @media (min-width: 1024px) {
-  #actionsView .ua-row {
-    background: var(--ag-glass);
-    border: 0.5px solid var(--ag-border-side);
-    border-radius: 16px;
-    box-shadow: var(--ag-specular), 0 2px 12px var(--pal-black);
-    margin-bottom: 8px;
-  }
-  #actionsView .ua-row:hover {
-    background: var(--ag-glass-mid);
-    border-color: var(--ag-border-top);
-    box-shadow: var(--ag-specular), var(--ag-shadow-hover);
-  }
+  #actionsView .ua-row { background: var(--ag-glass); border: 0.5px solid var(--ag-border-side); border-radius: 16px; box-shadow: var(--ag-specular), 0 2px 12px var(--pal-black); margin-bottom: 8px; }
+  #actionsView .ua-row:hover { background: var(--ag-glass-mid); border-color: var(--ag-border-top); box-shadow: var(--ag-specular), var(--ag-shadow-hover); }
 }
-

@@ -1,9 +1,5 @@
-/* ═══════════════════════════════════════════
-   MRdatabase — Local Utility Classes
-   DEVS UTILITY framework'da yo'q qo'shimcha utility class'lar
-   ═══════════════════════════════════════════ */
-
-/* ── Display ── */
+/* ═══════════════════════════════════════════ MRdatabase — Local Utility Classes DEVS UTILITY framework'da yo... */
+/* Display */
 .d-none { display: none; }
 .d-block { display: block; }
 .d-grid { display: grid; }
@@ -11,85 +7,47 @@
 .d-inline { display: inline; }
 .d-inline-block { display: inline-block; }
 .gap-10px { gap: 10px; }
-
-/* ── Aspect Ratio ── */
+/* Aspect Ratio */
 .aspect-1 { aspect-ratio: 1 / 1; }
-
-/* ── Width ── */
+/* Width */
 .w-full { width: 100%; }
 .w-auto { width: auto; }
 .w-screen { width: 100vw; }
-
-/* ── Height ── */
+/* Height */
 .h-full { height: 100%; }
-
-/* ── Overflow ── */
+/* Overflow */
 .overflow-hidden { overflow: hidden; }
 .overflow-scroll { overflow: scroll; }
-
-/* ── Flex utilities ── */
+/* Flex utilities */
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .flex-wrap { flex-wrap: wrap; }
 .flex-1 { flex: 1; }
 .flex-shrink-0 { flex-shrink: 0; }
 .items-center { align-items: center; }
-
-/* ── Cursor ── */
+/* Cursor */
 .cursor-pointer { cursor: pointer; }
-
-/* ── Visibility ── */
+/* Visibility */
 .visible { visibility: visible; }
 .opacity-30 { opacity: 1; }
 .opacity-60 { opacity: 1; }
-
-/* ── Transition ── */
+/* Transition */
 .transition { transition: none; }
 .shadow { box-shadow: 0 1px 3px rgba(0, 0, 0,0.1), 0 1px 2px rgba(0, 0, 0,0.06); }
 .shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0,0.1), 0 4px 6px rgba(0, 0, 0,0.05); }
-
-/* ═══════════════════════════════════════════════════════════════════
-   MODAL Z-INDEX TARTIB (global override)
-   Barcha modal layerlar to'g'ri tartibda ko'rinishi uchun.
-   
-   Tartib (pastdan yuqoriga):
-   100  — navigatsiya bar, sidebar
-   200  — .overlay (sheet modals: upload, comment, reelCap, profileEdit...)
-   300  — #detailModal (post detail)
-   360  — #chatThreadModal (chat oynasi)
-   400  — .chat-msg-media-overlay va boshqa chat ichki elementlar
-   500  — #userProfileModal  ← chatThread USTIDA bo'lishi kerak
-   520  — #groupInfoPanel    ← userProfile ustida
-   550  — #detailModal override (nav.css dagi)
-   600  — #zoomModal
-   700  — toast, tooltiplar
-   999999+ — #incomingCallModal
-   ═══════════════════════════════════════════════════════════════════ */
-
+/* ═══════════════════════════════════════════════════════════════════ MODAL Z-INDEX TARTIB (global override)... */
 /* Chat thread modal */
-#chatThreadModal       { z-index: 360 !important; }
-
+#chatThreadModal { z-index: 360 !important; }
 /* User profili — chat thread USTIDA ochilishi kerak */
-#userProfileModal      { z-index: 500 !important; }
-
+#userProfileModal { z-index: 500 !important; }
 /* Guruh info paneli — user profil ustida */
-
 /* Post detail */
-#detailModal           { z-index: 550 !important; }
-
+#detailModal { z-index: 550 !important; }
 /* Zoom / media viewer */
-#zoomModal             { z-index: 600 !important; }
-
+#zoomModal { z-index: 600 !important; }
 /* Qo'ng'iroq — hamma narsadan yuqorida */
-#incomingCallModal,
-#activeCallModal       { z-index: 999999 !important; }
-
-/* ── Guruh overlaylari chatThreadModal (360) ustida bo'lishi uchun ── */
-#grpInfoOverlay,
-#grpCreateChoiceOverlay,
-#grpCreateFormOverlay,
-#grpJoinLinkOverlay,
-#grpAddUserOverlay { z-index: 520 !important; }
-
+#incomingCallModal, #activeCallModal { z-index: 999999 !important; }
+/* Guruh overlaylari chatThreadModal (360) ustida bo'lishi uchun */
+#grpInfoOverlay, #grpCreateChoiceOverlay, #grpCreateFormOverlay, #grpJoinLinkOverlay, #grpAddUserOverlay { z-index: 520 !important; }
 /* Chat thread ichidagi .overlay ham ustida tursin */
 #chatThreadModal .overlay { z-index: 520 !important; }

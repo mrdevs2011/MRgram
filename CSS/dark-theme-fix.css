@@ -1,147 +1,35 @@
-/* ═══════════════════════════════════════════════════════════
-   MRspace — Solid UI Override
-   dark-theme-fix.css — solid rang tizimi
-   Solid panel ranglar (glassmorphism o'chirilgan)
-   ═══════════════════════════════════════════════════════════ */
-
-/* ══════════════════════════════════════════
-   1. DARK THEME — Rang Tokenlari
-   ══════════════════════════════════════════ */
-/* ══════════════════════════════════════════
-   1. Base palette (--bg, --text, --blue, --red...) is owned by
-   theme.css. This file previously re-declared the entire palette
-   with old values, which silently won the cascade because it loads
-   later in style.css's @import chain — that was overwriting every
-   theme.css change without even needing !important. Removed.
-   Only glass/shadow tokens (this file's actual job) stay below.
-   ══════════════════════════════════════════ */
-
-/* ══════════════════════════════════════════
-   2. DARK — Body wallopaper
-   ══════════════════════════════════════════ */
-[data-theme="dark"] body {
-  background: var(--pal-black);
-  background-color: var(--pal-black);
-}
-
-[data-theme="dark"] .app {
-  background: transparent;
-}
-
-/* ══════════════════════════════════════════
-   3. HEADER — owned by ui-improvements.css (glass bg/border/shadow).
-   This block used to set background:transparent/border:none here,
-   fighting ui-improvements.css's background: var(--glass-mid) at
-   equal specificity + later load order — that's why !important
-   existed over there. Removed the losing side instead of patching
-   with more !important.
-   ══════════════════════════════════════════ */
-
-[data-theme="dark"] .app-hdr::after {
-  display: none;
-}
-
-[data-theme="dark"] .hdr-brand {
-  background: var(--pal-white);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* ══════════════════════════════════════════
-   4. POST CARD — owned by ui-improvements.css (glass bg/border/shadow
-   on .post and .post:hover). Same reasoning as header above.
-   ══════════════════════════════════════════ */
-
+/* ═══════════════════════════════════════════════════════════ MRspace — Solid UI Override dark-theme-fix.css... */
+/* ══════════════════════════════════════════ 1. DARK THEME — Rang Tokenlari ═════════════════════════════════... */
+/* ══════════════════════════════════════════ 1. Base palette (--bg, --text, --blue, --red...) is owned by the... */
+/* ══════════════════════════════════════════ 2. DARK — Body wallopaper ══════════════════════════════════════... */
+[data-theme="dark"] body { background: var(--pal-black); background-color: var(--pal-black); }
+[data-theme="dark"] .app { background: transparent; }
+/* ══════════════════════════════════════════ 3. HEADER — owned by ui-improvements.css (glass bg/border/shadow... */
+[data-theme="dark"] .app-hdr::after { display: none; }
+[data-theme="dark"] .hdr-brand { background: var(--pal-white); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* ══════════════════════════════════════════ 4. POST CARD — owned by ui-improvements.css (glass bg/border/sha... */
 /* Post head subtle separator */
-[data-theme="dark"] .post-head {
-  border-bottom: 0.5px solid var(--pal-gray-900);
-}
-
+[data-theme="dark"] .post-head { border-bottom: 0.5px solid var(--pal-gray-900); }
 /* Post gradient border on hover — more subtle */
-[data-theme="dark"] .post::before {
-  opacity: 0;
-  transition: none;
-}
-
-[data-theme="dark"] .post:hover::before {
-  opacity: 1;
-}
-
-/* ── Post action buttons ── */
-[data-theme="dark"] .post-stats {
-  border-top: 0.5px solid var(--pal-gray-900);
-  border-bottom: 0.5px solid var(--pal-gray-900);
-  color: var(--text3);
-}
-
-[data-theme="dark"] .act-btn {
-  color: var(--text2);
-  border-right: 0.5px solid var(--pal-gray-900);
-  transition: none;
-}
-
-[data-theme="dark"] .act-btn:hover {
-  background: var(--pal-gray-900);
-  color: var(--text);
-}
-
+[data-theme="dark"] .post::before { opacity: 0; transition: none; }
+[data-theme="dark"] .post:hover::before { opacity: 1; }
+/* Post action buttons */
+[data-theme="dark"] .post-stats { border-top: 0.5px solid var(--pal-gray-900); border-bottom: 0.5px solid var(--pal-gray-900); color: var(--text3); }
+[data-theme="dark"] .act-btn { color: var(--text2); border-right: 0.5px solid var(--pal-gray-900); transition: none; }
+[data-theme="dark"] .act-btn:hover { background: var(--pal-gray-900); color: var(--text); }
 [data-theme="dark"] .act-btn.liked { color: var(--red); }
-
-/* ══════════════════════════════════════════
-   5. AVATAR — Avatar halqasi
-   ══════════════════════════════════════════ */
-[data-theme="dark"] .avi {
-  border: 0.5px solid var(--pal-gray-900);
-  box-shadow: inset 0 1px 0 var(--pal-gray-900), 0 2px 8px var(--pal-black);
-  background: var(--pal-gray-900);
-}
-
-[data-theme="dark"] .avi:hover {
-  border-color: var(--pal-white);
-}
-
-/* ══════════════════════════════════════════
-   6. BOTTOM NAV — Pastki navigatsiya paneli
-   ══════════════════════════════════════════ */
-[data-theme="dark"] .bot-nav {
-  /* background → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  border-top: none;
-  box-shadow: none;
-}
-
-/* .nav-btn:hover background/border owned by ui-improvements.css
-   (glass hover state). Removed the competing rule that used to sit
-   here — same reasoning as the header/post fix above. */
-
-[data-theme="dark"] .nav-btn.on {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
-  box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 0 0 2px var(--pal-black);
-}
-
-/* ══════════════════════════════════════════
-   7. SHEET — Panel
-   ══════════════════════════════════════════ */
-[data-theme="dark"] .sheet {
-  background: var(--pal-black);
-  border-top: 0.5px solid var(--pal-gray-800);
-  box-shadow:
-    inset 0 1px 0 var(--pal-gray-800),
-    0 -12px 56px var(--pal-black);
-}
-
-[data-theme="dark"] .sheet-handle {
-  background: var(--pal-gray-800);
-}
-
-[data-theme="dark"] .overlay {
-  background: var(--pal-black);
-}
-
-/* ══════════════════════════════════════════
-   9. INPUT FIELDS — Inputs
-   ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════ 5. AVATAR — Avatar halqasi ═════════════════════════════════════... */
+[data-theme="dark"] .avi { border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-900), 0 2px 8px var(--pal-black); background: var(--pal-gray-900); }
+[data-theme="dark"] .avi:hover { border-color: var(--pal-white); }
+/* ══════════════════════════════════════════ 6. BOTTOM NAV — Pastki navigatsiya paneli ══════════════════════... */
+[data-theme="dark"] .bot-nav { border-top: none; box-shadow: none; }
+/* .nav-btn:hover background/border owned by ui-improvements.css (glass hover state). Removed the competing ru... */
+[data-theme="dark"] .nav-btn.on { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 0 0 2px var(--pal-black); }
+/* ══════════════════════════════════════════ 7. SHEET — Panel ══════════════════════════════════════════ */
+[data-theme="dark"] .sheet { background: var(--pal-black); border-top: 0.5px solid var(--pal-gray-800); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 -12px 56px var(--pal-black); }
+[data-theme="dark"] .sheet-handle { background: var(--pal-gray-800); }
+[data-theme="dark"] .overlay { background: var(--pal-black); }
+/* ══════════════════════════════════════════ 9. INPUT FIELDS — Inputs ══════════════════════════════════════════ */
 [data-theme="dark"] .field,
 [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
 [data-theme="dark"] textarea {
@@ -151,356 +39,89 @@
   color: var(--text);
   caret-color: var(--blue);
 }
-
 [data-theme="dark"] .field:focus,
 [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):focus,
 [data-theme="dark"] textarea:focus {
   background: var(--pal-gray-800);
   border-color: var(--pal-white);
-  box-shadow:
-    inset 0 1px 0 var(--pal-gray-900),
-    0 0 0 3px var(--pal-gray-900);
+  box-shadow: inset 0 1px 0 var(--pal-gray-900), 0 0 0 3px var(--pal-gray-900);
   outline: none;
   border-radius: 12px;
 }
-
-[data-theme="dark"] .field::placeholder,
-[data-theme="dark"] input::placeholder,
-[data-theme="dark"] textarea::placeholder {
-  color: var(--text3);
-}
-
-/* ══════════════════════════════════════════
-   10. AUTH CARD — Panel
-   ══════════════════════════════════════════ */
-[data-theme="dark"] #authWrap {
-  background: var(--pal-black);
-}
-
-[data-theme="dark"] .auth-card {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
-  box-shadow:
-    inset 0 1px 0 var(--pal-gray-800),
-    0 24px 72px var(--pal-black);
-}
-
-[data-theme="dark"] .auth-brand {
-  background: var(--pal-white);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
+[data-theme="dark"] .field::placeholder, [data-theme="dark"] input::placeholder, [data-theme="dark"] textarea::placeholder { color: var(--text3); }
+/* ══════════════════════════════════════════ 10. AUTH CARD — Panel ══════════════════════════════════════════ */
+[data-theme="dark"] #authWrap { background: var(--pal-black); }
+[data-theme="dark"] .auth-card { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 24px 72px var(--pal-black); }
+[data-theme="dark"] .auth-brand { background: var(--pal-white); -webkit-background-clip: text; background-clip: text; color: transparent; }
 [data-theme="dark"] .auth-title { color: var(--text2); }
-
-/* ══════════════════════════════════════════
-   11. PROFILE — Header
-   ══════════════════════════════════════════ */
-[data-theme="dark"] .profile-hdr {
-  background: transparent;
-  border-bottom: none;
-}
-
-[data-theme="dark"] .profile-avi {
-  border: 0.5px solid var(--pal-legacy-2d2d33);
-  box-shadow:
-    inset 0 1px 0 var(--pal-gray-800),
-    0 6px 20px var(--pal-black);
-}
-
-[data-theme="dark"] .profile-avi:hover {
-  border-color: var(--pal-white);
-}
-
-[data-theme="dark"] .edit-btn {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
-  box-shadow: inset 0 1px 0 var(--pal-gray-900);
-  color: var(--text);
-}
-
-[data-theme="dark"] .edit-btn:hover {
-  background: var(--pal-gray-900);
-  border-color: var(--pal-gray-800);
-}
-
+/* ══════════════════════════════════════════ 11. PROFILE — Header ══════════════════════════════════════════ */
+[data-theme="dark"] .profile-hdr { background: transparent; border-bottom: none; }
+[data-theme="dark"] .profile-avi { border: 0.5px solid var(--pal-legacy-2d2d33); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 6px 20px var(--pal-black); }
+[data-theme="dark"] .profile-avi:hover { border-color: var(--pal-white); }
+[data-theme="dark"] .edit-btn { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-900); color: var(--text); }
+[data-theme="dark"] .edit-btn:hover { background: var(--pal-gray-900); border-color: var(--pal-gray-800); }
 /* Profile grid tabs */
-[data-theme="dark"] .profile-grid-hdr {
-  background: transparent;
-  border-color: transparent;
-}
-
+[data-theme="dark"] .profile-grid-hdr { background: transparent; border-color: transparent; }
 [data-theme="dark"] .profile-grid-tab { color: var(--text3); }
-[data-theme="dark"] .profile-grid-tab.active {
-  color: var(--blue);
-  border-bottom-color: var(--blue);
-}
-
+[data-theme="dark"] .profile-grid-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
 /* Profile grid cells */
-[data-theme="dark"] .grid-cell {
-  background: var(--pal-gray-900);
-}
-
-[data-theme="dark"] .grid-cell:hover {
-  opacity: 1;
-  /* box-shadow → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-}
-
-/* ══════════════════════════════════════════
-   12. FILE CARD — Panel
-   ══════════════════════════════════════════ */
-[data-theme="dark"] .file-card {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-800);
-  box-shadow: inset 0 1px 0 var(--pal-gray-900);
-}
-
-[data-theme="dark"] .file-card:hover {
-  background: var(--pal-gray-900);
-  border-color: var(--pal-legacy-2d2d33);
-  /* box-shadow → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-}
-
-[data-theme="dark"] .file-dl {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
-  color: var(--blue2);
-  box-shadow: inset 0 1px 0 var(--pal-gray-900);
-}
-
-[data-theme="dark"] .file-dl:hover {
-  background: var(--pal-gray-900);
-  border-color: #3a3a3a;
-}
-
-/* ══════════════════════════════════════════
-   13. CHAT — Xabar pufakchalari
-   ══════════════════════════════════════════ */
-[data-theme="dark"] .chat-row:hover {
-  background: var(--pal-gray-900);
-}
-
-[data-theme="dark"] .chat-row:active {
-  background: var(--pal-gray-900);
-}
-
-/* ══════════════════════════════════════════
-   14. SEARCH OVERLAY — Qidiruv overlay
-   ══════════════════════════════════════════ */
-[data-theme="dark"] .search-overlay {
-  background: var(--pal-black);
-}
-
-[data-theme="dark"] .search-overlay-box {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
-  box-shadow:
-    inset 0 1px 0 var(--pal-legacy-2d2d33),
-    0 8px 40px var(--pal-black);
-}
-
-[data-theme="dark"] .search-overlay-close {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
-  color: var(--text2);
-  box-shadow: inset 0 1px 0 var(--pal-gray-900);
-}
-
-[data-theme="dark"] .search-overlay-close:hover {
-  background: var(--pal-gray-900);
-  color: var(--text);
-}
-
-/* ══════════════════════════════════════════
-   15. TOAST — Pill
-   ══════════════════════════════════════════ */
-[data-theme="dark"] #toast {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-800);
-  color: var(--text);
-  box-shadow:
-    inset 0 1px 0 var(--pal-gray-800),
-    0 8px 36px var(--pal-black);
-}
-
-/* ══════════════════════════════════════════
-   17. BUTTONS — Gradient
-   ══════════════════════════════════════════ */
+[data-theme="dark"] .grid-cell { background: var(--pal-gray-900); }
+[data-theme="dark"] .grid-cell:hover { opacity: 1; }
+/* ══════════════════════════════════════════ 12. FILE CARD — Panel ══════════════════════════════════════════ */
+[data-theme="dark"] .file-card { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-800); box-shadow: inset 0 1px 0 var(--pal-gray-900); }
+[data-theme="dark"] .file-card:hover { background: var(--pal-gray-900); border-color: var(--pal-legacy-2d2d33); }
+[data-theme="dark"] .file-dl { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); color: var(--blue2); box-shadow: inset 0 1px 0 var(--pal-gray-900); }
+[data-theme="dark"] .file-dl:hover { background: var(--pal-gray-900); border-color: #3a3a3a; }
+/* ══════════════════════════════════════════ 13. CHAT — Xabar pufakchalari ══════════════════════════════════... */
+[data-theme="dark"] .chat-row:hover { background: var(--pal-gray-900); }
+[data-theme="dark"] .chat-row:active { background: var(--pal-gray-900); }
+/* ══════════════════════════════════════════ 14. SEARCH OVERLAY — Qidiruv overlay ═══════════════════════════... */
+[data-theme="dark"] .search-overlay { background: var(--pal-black); }
+[data-theme="dark"] .search-overlay-box { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-legacy-2d2d33), 0 8px 40px var(--pal-black); }
+[data-theme="dark"] .search-overlay-close { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); color: var(--text2); box-shadow: inset 0 1px 0 var(--pal-gray-900); }
+[data-theme="dark"] .search-overlay-close:hover { background: var(--pal-gray-900); color: var(--text); }
+/* ══════════════════════════════════════════ 15. TOAST — Pill ══════════════════════════════════════════ */
+[data-theme="dark"] #toast { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-800); color: var(--text); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 8px 36px var(--pal-black); }
+/* ══════════════════════════════════════════ 17. BUTTONS — Gradient ══════════════════════════════════════════ */
 [data-theme="dark"] .del-btn { color: var(--text3); }
-[data-theme="dark"] .del-btn:hover {
-  color: var(--red);
-  background: var(--pal-gray-900);
-}
-
-[data-theme="dark"] .hdr-icon-btn:hover {
-  background: var(--pal-gray-900);
-}
-
-/* ══════════════════════════════════════════
-   18. DETAIL MODAL (#detailContent) — Panel
-   ══════════════════════════════════════════ */
-[data-theme="dark"] #detailContent {
-  background: var(--pal-black);
-  border: 0.5px solid var(--pal-gray-900);
-  box-shadow:
-    inset 0 1px 0 var(--pal-gray-800),
-    0 -12px 56px var(--pal-black);
-}
-
-[data-theme="dark"] .dm-act:hover {
-  background: var(--pal-gray-900);
-}
-
-[data-theme="dark"] .dm-close {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
-}
-
-[data-theme="dark"] .dm-close:hover {
-  background: var(--pal-gray-800);
-}
-
-/* ══════════════════════════════════════════
-   19. SKELETON LOADING — Shimmer
-   ══════════════════════════════════════════ */
-[data-theme="dark"] .skeleton-post {
-  background: var(--pal-black);
-  border: 0.5px solid var(--pal-gray-900);
-}
-
-[data-theme="dark"] .skel-avi,
-[data-theme="dark"] .skel-line,
-[data-theme="dark"] .skel-media {
-  background: var(--pal-gray-900);
-  background-size: 200% 100%;
-}
-
-/* ══════════════════════════════════════════
-   20. SPLASH SCREEN — Panel
-   ══════════════════════════════════════════ */
-[data-theme="dark"] #splash {
-  background: var(--pal-black);
-  
-}
-
+[data-theme="dark"] .del-btn:hover { color: var(--red); background: var(--pal-gray-900); }
+[data-theme="dark"] .hdr-icon-btn:hover { background: var(--pal-gray-900); }
+/* ══════════════════════════════════════════ 18. DETAIL MODAL (#detailContent) — Panel ══════════════════════... */
+[data-theme="dark"] #detailContent { background: var(--pal-black); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 -12px 56px var(--pal-black); }
+[data-theme="dark"] .dm-act:hover { background: var(--pal-gray-900); }
+[data-theme="dark"] .dm-close { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); }
+[data-theme="dark"] .dm-close:hover { background: var(--pal-gray-800); }
+/* ══════════════════════════════════════════ 19. SKELETON LOADING — Shimmer ═════════════════════════════════... */
+[data-theme="dark"] .skeleton-post { background: var(--pal-black); border: 0.5px solid var(--pal-gray-900); }
+[data-theme="dark"] .skel-avi, [data-theme="dark"] .skel-line, [data-theme="dark"] .skel-media { background: var(--pal-gray-900); background-size: 200% 100%; }
+/* ══════════════════════════════════════════ 20. SPLASH SCREEN — Panel ══════════════════════════════════════... */
+[data-theme="dark"] #splash { background: var(--pal-black); }
 [data-theme="dark"] .splash-wordmark { color: var(--text); }
-
-[data-theme="dark"] .splash-bar {
-  background: var(--pal-gray-900);
-  /* border → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-[data-theme="dark"] .splash-fill {
-  background: var(--blue2);
-  /* box-shadow → CSS/borderless.css'da belgilangan (keyinroq yuklanadi, g'olib chiqadi) */
-}
-
-/* ══════════════════════════════════════════
-   23. SCROLL — Thin glass
-   ══════════════════════════════════════════ */
+[data-theme="dark"] .splash-bar { background: var(--pal-gray-900); border-radius: 8px; overflow: hidden; }
+[data-theme="dark"] .splash-fill { background: var(--blue2); }
+/* ══════════════════════════════════════════ 23. SCROLL — Thin glass ══════════════════════════════════════════ */
 [data-theme="dark"] ::-webkit-scrollbar { width: 3px; height: 3px; }
 [data-theme="dark"] ::-webkit-scrollbar-track { background: transparent; }
-[data-theme="dark"] ::-webkit-scrollbar-thumb {
-  background: var(--pal-gray-900);
-  border-radius: 3px;
-}
-[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
-  background: var(--pal-gray-800);
-}
-
-/* ══════════════════════════════════════════
-   24. SELECTION
-   ══════════════════════════════════════════ */
-[data-theme="dark"] ::selection {
-  background: #3d3d3d;
-  color: var(--pal-white);
-}
-
-/* ══════════════════════════════════════════
-   25. REEL — Overlays
-   ══════════════════════════════════════════ */
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--pal-gray-900); border-radius: 3px; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: var(--pal-gray-800); }
+/* ══════════════════════════════════════════ 24. SELECTION ══════════════════════════════════════════ */
+[data-theme="dark"] ::selection { background: #3d3d3d; color: var(--pal-white); }
+/* ══════════════════════════════════════════ 25. REEL — Overlays ══════════════════════════════════════════ */
 [data-theme="dark"] .reel { background: var(--pal-black); }
-
-[data-theme="dark"] .reel-top-btn,
-[data-theme="dark"] .reel-vol-top {
-  background: var(--pal-black);
-  border: 0.5px solid var(--pal-gray-900);
-}
-
-/* ══════════════════════════════════════════
-   26. THEME BUTTON — Panel
-   ══════════════════════════════════════════ */
+[data-theme="dark"] .reel-top-btn, [data-theme="dark"] .reel-vol-top { background: var(--pal-black); border: 0.5px solid var(--pal-gray-900); }
+/* ══════════════════════════════════════════ 26. THEME BUTTON — Panel ══════════════════════════════════════════ */
 [data-theme="dark"] .theme-btn { color: var(--text2); }
-
-[data-theme="dark"] .theme-btn:hover {
-  background: var(--pal-gray-900);
-  color: var(--text);
-}
-
-/* ══════════════════════════════════════════
-   27. FLOATING UPLOAD BAR — Pill
-   ══════════════════════════════════════════ */
-[data-theme="dark"] .upload-float-bar {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
-  box-shadow:
-    inset 0 1px 0 var(--pal-gray-800),
-    0 8px 36px var(--pal-black);
-}
-
-[data-theme="dark"] .upload-drop {
-  background: var(--pal-black);
-  border: 1px dashed var(--pal-gray-900);
-}
-
-[data-theme="dark"] .upload-drop:hover {
-  border-color: var(--pal-white);
-  background: var(--pal-black);
-}
-
-[data-theme="dark"] .upload-drop.drag-over {
-  border-color: var(--blue);
-  background: var(--pal-gray-900);
-  box-shadow: 0 0 0 3px var(--pal-gray-900), inset 0 1px 0 var(--pal-gray-900);
-}
+[data-theme="dark"] .theme-btn:hover { background: var(--pal-gray-900); color: var(--text); }
+/* ══════════════════════════════════════════ 27. FLOATING UPLOAD BAR — Pill ═════════════════════════════════... */
+[data-theme="dark"] .upload-float-bar { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 8px 36px var(--pal-black); }
+[data-theme="dark"] .upload-drop { background: var(--pal-black); border: 1px dashed var(--pal-gray-900); }
+[data-theme="dark"] .upload-drop:hover { border-color: var(--pal-white); background: var(--pal-black); }
+[data-theme="dark"] .upload-drop.drag-over { border-color: var(--blue); background: var(--pal-gray-900); box-shadow: 0 0 0 3px var(--pal-gray-900), inset 0 1px 0 var(--pal-gray-900); }
 [data-theme="dark"] .empty { color: var(--text3); }
-
-[data-theme="dark"] .feed-empty-icon,
-[data-theme="dark"] .empty-icon,
-[data-theme="dark"] .empty-search-icon {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-700);
-  box-shadow: inset 0 1px 0 var(--pal-gray-900);
-}
-
-/* ══════════════════════════════════════════
-   30. COMMENTS MODAL — Panel
-   ══════════════════════════════════════════ */
-[data-theme="dark"] .cmt-body {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
-}
-
-[data-theme="dark"] .cmt-body:hover {
-  background: var(--pal-gray-900);
-  border-color: var(--pal-gray-900);
-}
-
-[data-theme="dark"] .cmt-input {
-  background: var(--pal-gray-900);
-  border: 0.5px solid var(--pal-gray-900);
-}
-
-[data-theme="dark"] .cmt-input:focus {
-  background: var(--pal-gray-900);
-  border-color: var(--pal-white);
-  box-shadow: 0 0 0 3px var(--pal-gray-900);
-}
-
-[data-theme="dark"] .cmt-input-row {
-  border-top: 0.5px solid var(--pal-gray-900);
-}
-
+[data-theme="dark"] .feed-empty-icon, [data-theme="dark"] .empty-icon, [data-theme="dark"] .empty-search-icon { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-700); box-shadow: inset 0 1px 0 var(--pal-gray-900); }
+/* ══════════════════════════════════════════ 30. COMMENTS MODAL — Panel ═════════════════════════════════════... */
+[data-theme="dark"] .cmt-body { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); }
+[data-theme="dark"] .cmt-body:hover { background: var(--pal-gray-900); border-color: var(--pal-gray-900); }
+[data-theme="dark"] .cmt-input { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); }
+[data-theme="dark"] .cmt-input:focus { background: var(--pal-gray-900); border-color: var(--pal-white); box-shadow: 0 0 0 3px var(--pal-gray-900); }
+[data-theme="dark"] .cmt-input-row { border-top: 0.5px solid var(--pal-gray-900); }

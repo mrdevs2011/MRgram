@@ -1,12 +1,6 @@
-/* ═══════════════════════════════════════════
-   POST COMPOSER — X.com uslubidagi post yaratish oynasi
-   Faqat #uploadOverlay ichida ishlaydi, boshqa .sheet/.overlay
-   modallariga (izoh, profil va h.k.) tegmaydi.
-   ═══════════════════════════════════════════ */
-
+/* ═══════════════════════════════════════════ POST COMPOSER — X.com uslubidagi post yaratish oynasi Faqat #up... */
 /* Orqa fon — to'liq qora emas, 0.8 shaffoflik (sahifa sal ko'rinadi) */
 #uploadOverlay { background: rgba(0,0,0,.8); }
-
 #uploadOverlay .composer-sheet {
   width: 100%;
   max-width: 500px;
@@ -21,72 +15,16 @@
   display: flex;
   flex-direction: column;
 }
-
-/* ── Top row: close (X) + Post btn ── */
-#uploadOverlay .composer-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 0 6px;
-}
-
-#uploadOverlay .composer-close {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-}
-
-#uploadOverlay .composer-post-btn {
-  width: auto;
-  margin: 0 0 0 auto;
-  padding: 7px 18px;
-  border-radius: 999px;
-  font-size: 14.5px;
-  font-weight: 700;
-}
-#uploadOverlay .composer-post-btn:disabled,
-#uploadOverlay .composer-post-btn:disabled * {
-  cursor: not-allowed;
-  opacity: 1;
-}
-
-/* ── Body: avatar + input/preview/visibility ── */
-#uploadOverlay .composer-body {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding-bottom: 10px;
-}
-
-#uploadOverlay .composer-avi {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-#uploadOverlay .composer-avi img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-#uploadOverlay .composer-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-
+/* Top row: close (X) + Post btn */
+#uploadOverlay .composer-top { display: flex; align-items: center; justify-content: space-between; padding: 0 0 6px; }
+#uploadOverlay .composer-close { width: 34px; height: 34px; border-radius: 999px; border: none; background: transparent; color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+#uploadOverlay .composer-post-btn { width: auto; margin: 0 0 0 auto; padding: 7px 18px; border-radius: 999px; font-size: 14.5px; font-weight: 700; }
+#uploadOverlay .composer-post-btn:disabled, #uploadOverlay .composer-post-btn:disabled * { cursor: not-allowed; opacity: 1; }
+/* Body: avatar + input/preview/visibility */
+#uploadOverlay .composer-body { display: flex; align-items: flex-start; gap: 12px; padding-bottom: 10px; }
+#uploadOverlay .composer-avi { width: 40px; height: 40px; border-radius: 999px; overflow: hidden; flex-shrink: 0; }
+#uploadOverlay .composer-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#uploadOverlay .composer-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 #uploadOverlay .composer-input {
   width: 100%;
   min-height: 64px;
@@ -102,21 +40,11 @@
   margin: 0;
 }
 #uploadOverlay .composer-input::placeholder { color: #6e6e6e; }
-
 #uploadOverlay #previewArea { margin: 4px 0 8px; }
 #uploadOverlay .preview-wrap { margin-bottom: 0; }
-
-/* ── Visibility: bitta matnli toggle (x.com "Everyone can reply" kabi) ── */
-
-/* ── Divider above toolbar (x.com'dagi kabi) ── */
-#uploadOverlay .composer-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding-top: 8px;
-  border-top: 1px solid var(--pal-gray-700);
-}
-
+/* Visibility: bitta matnli toggle (x.com "Everyone can reply" kabi) */
+/* Divider above toolbar (x.com'dagi kabi) */
+#uploadOverlay .composer-toolbar { display: flex; align-items: center; gap: 2px; padding-top: 8px; border-top: 1px solid var(--pal-gray-700); }
 /* Rasm/video tugmasi — endi katta dashed box emas, ixcham doira ikonka */
 #uploadOverlay .upload-drop {
   width: 34px;
@@ -132,33 +60,11 @@
   color: var(--blue3, var(--blue));
   cursor: pointer;
 }
-#uploadOverlay .upload-drop:hover {
-  background: #17384d;
-  box-shadow: none;
-}
-#uploadOverlay .upload-drop.drag-over {
-  background: #17384d;
-  transform: none;
-  box-shadow: none;
-}
-
+#uploadOverlay .upload-drop:hover { background: #17384d; box-shadow: none; }
+#uploadOverlay .upload-drop.drag-over { background: #17384d; transform: none; box-shadow: none; }
 @media (max-width: 480px) {
   #uploadOverlay { padding: 0; align-items: flex-end; }
-  #uploadOverlay .composer-sheet {
-    max-width: 100%;
-    max-height: 92dvh;
-    border-radius: 20px 20px 0 0;
-    border-bottom: none;
-  }
+  #uploadOverlay .composer-sheet { max-width: 100%; max-height: 92dvh; border-radius: 20px 20px 0 0; border-bottom: none; }
 }
-
 /* Fayl sahifaga sudralganda — yengil ko'rsatkich */
-body.file-dragging::after {
-  content: '';
-  position: fixed; inset: 8px;
-  border: 2px dashed var(--x-blue, var(--pal-blue));
-  border-radius: 16px;
-  background: rgba(29, 155, 240, .06);
-  pointer-events: none;
-  z-index: 9999;
-}
+body.file-dragging::after { content: ''; position: fixed; inset: 8px; border: 2px dashed var(--x-blue, var(--pal-blue)); border-radius: 16px; background: rgba(29, 155, 240, .06); pointer-events: none; z-index: 9999; }
