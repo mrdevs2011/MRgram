@@ -1,6 +1,5 @@
 /* MRspace app.css — build-css.mjs orqali avtomatik yig'ilgan. Qo'lda tahrirlamang! */
-
-/* ─── CSS/tokens.css ─── */
+/* CSS/tokens.css — tokens. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
 /* ═══════════════════════════════════════════════════════════ MRspace — tokens.css (DIET 4.2f: token e'lonlar... */
 :root {
   --pal-black: #000000;
@@ -104,8 +103,8 @@
   --ag-row-hover: var(--bg4);
   --ag-overlay: var(--pal-black);
 }
-
-/* ─── CSS/splash.css ─── */
+/* CSS/base.css — splash, loading. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
+/* ─── splash ─── */
 /* ═══════════════════════ SPLASH SCREEN — Minimal ═══════════════════════ */
 #splash { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: none; background-color: var(--pal-gray-900); }
 #splash.out { opacity: 0; pointer-events: none; }
@@ -115,8 +114,7 @@
 /* ═══════════════════════════════════════════ SPLASH — THEME AWARE (bg saqlanadi, o'zgarmagan) ══════════════... */
 [data-theme="dark"] #splash { background-color: var(--pal-gray-900); }
 /* [data-theme="dark"] .splash-wordmark → CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi) — b... */
-
-/* ─── CSS/loading.css ─── */
+/* ─── loading ─── */
 /* ═══════════════════════ AUTH SCREEN ═══════════════════════ */
 #authWrap { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; background-color: var(--pal-gray-900); }
 #authWrap.show { display: flex; }
@@ -204,8 +202,8 @@
   letter-spacing: -0.1px;
 }
 .pwd-warn-btn:hover { background: var(--pal-legacy-2e2e2e); }
-
-/* ─── CSS/feed.css ─── */
+/* CSS/features.css — feed, profile, nav, chat, groups. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
+/* ─── feed ─── */
 /* ═══════════════════════ APP SHELL ═══════════════════════ */
 #app { display: none; }
 #app.show { display: block; }
@@ -509,8 +507,7 @@
 /* Action button ripple effect */
 .act-btn { position: relative; }
 /* Avatar shimmer effect */
-
-/* ─── CSS/profile.css ─── */
+/* ─── profile ─── */
 /* ═══════════════════════ PROFILE VIEW ═══════════════════════ */
 /* Profile view layout fix (desktop: sidebar ostida emas, markazda) */
 #profileView { position: relative; z-index: 1; box-sizing: border-box; overflow-x: hidden; min-height: 100%; }
@@ -804,8 +801,7 @@
 }
 .up-grid-empty-title { font-size: 15px; font-weight: 600; color: var(--text, var(--pal-gray-100)); }
 .up-grid-empty-sub { font-size: 13px; color: var(--text3, var(--pal-gray-500)); max-width: 260px; line-height: 1.4; }
-
-/* ─── CSS/nav.css ─── */
+/* ─── nav ─── */
 /* ═══════════════════════════════════════════ MRspace — Nav, Modals, Sheets MRspace — Komponent Stillari ════... */
 /* Fields — Input ── * background/border-radius/color/transition (bazaviy) va border-color/ * background/box-s... */
 .field { width: 100%; padding: 13px 16px; font-family: var(--font); outline: none; margin-bottom: 10px; }
@@ -1268,8 +1264,7 @@
 .md-link { color: var(--pal-white); text-decoration: underline; text-underline-offset: 2px; word-break: break-word; }
 .md-del { opacity: .65; text-decoration: line-through; }
 .md-li-ol { font-variant-numeric: tabular-nums; }
-
-/* ─── CSS/chat.css ─── */
+/* ─── chat ─── */
 /* ═══════════════════════════════════════════ MRdatabase — Chats & Direct Messages ══════════════════════════... */
 /* Chats list (chatsView) */
 .chats-hdr { padding: 18px 16px 10px; font-size: 19px; font-weight: 700; color: var(--text); }
@@ -1902,8 +1897,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .vmp-progress-fill { height: 100%; width: 0%; background: var(--pal-white); border-radius: 2px; }
 .vmp-close { width: 26px; height: 26px; border-radius: 50%; border: none; background: transparent; color: var(--text2, #9aa0a6); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
 .vmp-close:hover { background: var(--pal-white-08); }
-
-/* ─── CSS/groups.css ─── */
+/* ─── groups ─── */
 /* ═══════════════════════════════════════════════════════════════ MRspace — Groups & Channels CSS ═══════════... */
 /* "+" button in chats header */
 .chats-hdr { display: flex !important; align-items: center; justify-content: space-between; }
@@ -2146,8 +2140,8 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   border-radius: 50%;
   box-shadow: 0 0 0 1px rgba(0, 0, 0,0.15);
 }
-
-/* ─── CSS/theme.css ─── */
+/* CSS/layers.css — theme, ui-improvements, local-utility, dark-theme-fix, borderless, chat-dark-redesign, 00-components.core, post-composer, card-sheets, sidebar-x, no-animations (F4.4), style (global reset). Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
+/* ─── theme ─── */
 /* ═══════════════════════════════════════════ MRspace — Theme System MRspace — Theme System ═════════════════... */
 /* PALITRA (primitivlar) — yagona manba. Boshqa fayllarda qattiq hex o'rniga shular ishlatiladi. */
 /* DARK theme — Telegram Dark Palette */
@@ -2245,8 +2239,7 @@ svg { color: inherit; }
 }
 .nav-btn.on, .nav-btn.active, .act-btn.liked, .act-btn.active, .profile-grid-tab.active, .tab-btn.active, .admin-tab.active, .chat-search-btn.active, .icon-btn.active, .icon-btn.selected { color: var(--tg-primary-blue); }
 .nav-center-btn, .btn-primary, .chat-voice-btn, .fab { color: var(--tg-text-main); }
-
-/* ─── CSS/ui-improvements.css ─── */
+/* ─── ui-improvements ─── */
 /* ═══════════════════════════════════════════ MRdatabase — UI Improvements & Polish Accessibility, Microinter... */
 /* ═══════════════════════════════════════════ 1. THEME TOGGLE — Enhanced Visual Feedback ════════════════════... */
 /* Smooth theme transition */
@@ -2622,8 +2615,7 @@ svg { color: inherit; }
 /* 19. @prefers-reduced-motion — ikkinchi blok o'chirildi, chunki transition-duration'ni 0.18s'ga qaytarib, bi... */
 /* 20. Global focus ring — accessibility uchun saqlandi, glow kamaytirildi (faqat bitta aniq ring, ikkinchi "g... */
 :focus-visible { box-shadow: 0 0 0 2px var(--blue); border-radius: inherit; }
-
-/* ─── CSS/local-utility.css ─── */
+/* ─── local-utility ─── */
 /* ═══════════════════════════════════════════ MRdatabase — Local Utility Classes DEVS UTILITY framework'da yo... */
 /* Display */
 .d-none { display: none; }
@@ -2677,8 +2669,7 @@ svg { color: inherit; }
 #grpInfoOverlay, #grpCreateChoiceOverlay, #grpCreateFormOverlay, #grpJoinLinkOverlay, #grpAddUserOverlay { z-index: 520 !important; }
 /* Chat thread ichidagi .overlay ham ustida tursin */
 #chatThreadModal .overlay { z-index: 520 !important; }
-
-/* ─── CSS/dark-theme-fix.css ─── */
+/* ─── dark-theme-fix ─── */
 /* ═══════════════════════════════════════════════════════════ MRspace — Solid UI Override dark-theme-fix.css... */
 /* ══════════════════════════════════════════ 1. DARK THEME — Rang Tokenlari ═════════════════════════════════... */
 /* ══════════════════════════════════════════ 1. Base palette (--bg, --text, --blue, --red...) is owned by the... */
@@ -2806,8 +2797,7 @@ svg { color: inherit; }
 [data-theme="dark"] .cmt-input { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); }
 [data-theme="dark"] .cmt-input:focus { background: var(--pal-gray-900); border-color: var(--pal-white); box-shadow: 0 0 0 3px var(--pal-gray-900); }
 [data-theme="dark"] .cmt-input-row { border-top: 0.5px solid var(--pal-gray-900); }
-
-/* ─── CSS/borderless.css ─── */
+/* ─── borderless ─── */
 /* ═══════════════════════════════════════════ MRspace — Borderless / Minimal Override Zamonaviy flat dizayn:... */
 /* CSS token override: border va shadow tokenlarini o'chiramiz */
 /* Dark: line tokenlar ham yo'qolsin */
@@ -2995,8 +2985,7 @@ svg { color: inherit; }
 .profile-grid-hdr, [data-theme="dark"] .profile-grid-hdr { background: transparent; border-top: none; border-bottom: none; }
 /* Chats list view header */
 .chats-hdr { background: transparent; border: none; box-shadow: none; }
-
-/* ─── CSS/chat-dark-redesign.css ─── */
+/* ─── chat-dark-redesign ─── */
 /* ══════════════════════════════════════════════════════════════════════ CHAT THREAD — DARK REDESIGN (Telegra... */
 /* Root theme vars (--bg, --bg2, --bg3...) are owned by theme.css. Do NOT re-declare them here — that was the... */
 #chatThreadModal {
@@ -3101,8 +3090,7 @@ svg { color: inherit; }
 #chatContextMenu .ctx-item:hover { background: var(--pal-white-06); }
 /* Lightbox backdrop */
 #chatLightbox { background: rgba(0, 0, 0,0.92); }
-
-/* ─── CSS/00-components.core.css ─── */
+/* ─── 00-components.core ─── */
 /* ═══════════════════════════════════════════════════════════════ MRspace — CORE COMPONENTS (single source of... */
 /* 1. Buttons */
 .btn-primary { width: 100%; border: none; color: var(--pal-white); font-family: var(--font); cursor: pointer; margin-top: 4px; transition: none; }
@@ -3186,8 +3174,7 @@ input::placeholder, textarea::placeholder, .field::placeholder { color: var(--te
 @media (min-width: 768px) {
   .post { border-radius: 16px; }
 }
-
-/* ─── CSS/post-composer.css ─── */
+/* ─── post-composer ─── */
 /* ═══════════════════════════════════════════ POST COMPOSER — X.com uslubidagi post yaratish oynasi Faqat #up... */
 /* Orqa fon — to'liq qora emas, 0.8 shaffoflik (sahifa sal ko'rinadi) */
 #uploadOverlay { background: rgba(0,0,0,.8); }
@@ -3258,8 +3245,7 @@ input::placeholder, textarea::placeholder, .field::placeholder { color: var(--te
 }
 /* Fayl sahifaga sudralganda — yengil ko'rsatkich */
 body.file-dragging::after { content: ''; position: fixed; inset: 8px; border: 2px dashed var(--x-blue, var(--pal-blue)); border-radius: 16px; background: rgba(29, 155, 240, .06); pointer-events: none; z-index: 9999; }
-
-/* ─── CSS/card-sheets.css ─── */
+/* ─── card-sheets ─── */
 /* ═══════════════════════════════════════════ CARD SHEETS — guruh/kanal yaratish oynalari post composer bilan... */
 #grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay { background: rgba(0,0,0,.8); align-items: center; justify-content: center; padding: 20px; }
 :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet {
@@ -3275,8 +3261,7 @@ body.file-dragging::after { content: ''; position: fixed; inset: 8px; border: 2p
   padding: 16px;
 }
 :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet-handle { display: none; }
-
-/* ─── CSS/sidebar-x.css ─── */
+/* ─── sidebar-x ─── */
 /* ═══════════════════════════════════════════════════════════════════════ SIDEBAR — X.com uslubi • ≥1100px :... */
 /* Umumiy: akkaunt bloki */
 .sb-account[hidden] { display: none !important; }
@@ -3467,12 +3452,10 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
   nav.bot-nav #createBtn.nav-center-btn { order: 1; margin: 12px 0 0; }
   nav.bot-nav .sb-bottom { order: 2; }
 }
-
-/* ─── DIET F4.4: no-animations.css o'rnidagi bitta qator (splash/loading animatsiyasi istisno) ─── */
+/* ─── no-animations (F4.4) ─── */
 *, *::before, *::after { animation-name: none !important; animation-duration: 0s !important; transition: none !important; scroll-behavior: auto !important; }
 #splash *, #splash, .spinner, [class*="splash-"] { animation-name: revert !important; animation-duration: revert !important; }
-
-/* ─── style.css (master, @imports ochilgan) ─── */
+/* ─── style (global reset) ─── */
 /* ═══════════════════════════════════════════
    MRspace — Master Stylesheet
    iOS 27 Liquid Glass Edition — Step 3
@@ -3607,8 +3590,8 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
   letter-spacing: -0.025em; /* SF Pro display — daha qalin harflar */
   font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
 }
-
-/* ─── CSS/devs-utility.css ─── */
+/* CSS/admin.css — devs-utility, admin, admin-plain. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
+/* ─── devs-utility ─── */
 /* ./utility/fonts/font-style.css */
 .fsi { font-style: italic; }
 .fw-500 { font-weight: 500; }
@@ -3787,8 +3770,7 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 .mt-95px { margin-top: 95px; }
 .mt-100px { margin-top: 100px; }
 .brr-10px { border-radius: 10px; }
-
-/* ─── CSS/admin.css ─── */
+/* ─── admin ─── */
 /* ═══════════════════════════════════════════════════════════════════════ ADMIN PANEL — Users bo'limi Barcha... */
 /* Header */
 .users-admin-hdr { padding: 20px 16px 12px; border-bottom: 1px solid var(--line); }
@@ -3946,8 +3928,7 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
   #actionsView .ua-row { background: var(--ag-glass); border: 0.5px solid var(--ag-border-side); border-radius: 16px; box-shadow: var(--ag-specular), 0 2px 12px var(--pal-black); margin-bottom: 8px; }
   #actionsView .ua-row:hover { background: var(--ag-glass-mid); border-color: var(--ag-border-top); box-shadow: var(--ag-specular), var(--ag-shadow-hover); }
 }
-
-/* ─── CSS/admin-plain.css ─── */
+/* ─── admin-plain ─── */
 /* ═══════════════════════════════════════════════════════════════════════ ADMIN PANEL — MRspace uslubida (odd... */
 #actionsView { font-size: 13px; font-family: var(--font); }
 /* Bo'lim sarlavhalari */
@@ -4030,8 +4011,8 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 #actionsView .bc-empty { background: transparent; border: 0; border-radius: 0; padding: 8px 0; text-align: left; font-size: 13px; color: var(--text3); }
 #actionsView .bc-empty::before { content: none; }
 #actionsView .bc-current-label, #actionsView .bc-history-label { font-size: 12px; color: var(--text2); }
-
-/* ─── CSS/mono.css ─── */
+/* CSS/mono-x.css — mono, x-design. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
+/* ─── mono ─── */
 /* ═══════════════════════════════════════════ MRspace — Monochrome (qora + oq) override Eng OXIRIDA yuklanadi... */
 meta[name="theme-color"] { color: var(--pal-black); }
 /* Oq (accent) fonli elementlarda matn/ikonka qora */
@@ -4045,8 +4026,7 @@ meta[name="theme-color"] { color: var(--pal-black); }
 /* Logo hech qaysi konteyner ichida qirqilmasin (bubble dumchasi ko'rinib tursin) */
 .splash-inner, .splash-logo-wrap, .splash-logo-glass, .auth-logo, .auth-logo-glass, .hdr-logo, .hdr-logo-glass, .sb-logo-row, .sb-logo-glass { overflow: visible !important; }
 .splash-svg, .auth-logo-glass img, .hdr-logo-glass img, .sb-logo-img { border-radius: 0 !important; }
-
-/* ─── CSS/x-design.css ─── */
+/* ─── x-design ─── */
 /* ═══════════════════════════════════════════════════════════════════════ MRspace — X uslubidagi minimalist d... */
 /* 1. Palitra */
 /* Aniq X (Twitter) ranglari. Dark = "Lights out", Light = standart oq. */

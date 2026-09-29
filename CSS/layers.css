@@ -1,0 +1,1450 @@
+/* CSS/layers.css — theme, ui-improvements, local-utility, dark-theme-fix, borderless, chat-dark-redesign, 00-components.core, post-composer, card-sheets, sidebar-x, no-animations (F4.4), style (global reset). Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
+/* ─── theme ─── */
+/* ═══════════════════════════════════════════ MRspace — Theme System MRspace — Theme System ═════════════════... */
+/* PALITRA (primitivlar) — yagona manba. Boshqa fayllarda qattiq hex o'rniga shular ishlatiladi. */
+/* DARK theme — Telegram Dark Palette */
+/* [data-theme="dark"] body/.app/.bot-nav/.sheet/.modal-content → hammasi CSS/dark-theme-fix.css'da (o'sha fay... */
+/* Dark — glass element overrides */
+[data-theme="dark"] .post { background: var(--pal-gray-800); border: 0.5px solid var(--pal-gray-700); box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
+/* Light mode brand text */
+/* ═══════════════════════════════════════════ Smooth Theme Transitions ══════════════════════════════════════... */
+body,
+.app,
+.post,
+.sheet,
+.modal-content,
+.bot-nav,
+.app-hdr,
+.profile-hdr,
+.grid-cell,
+.up-grid-cell,
+.field,
+.ta,
+.cmt-body,
+.cmt-input,
+.upload-drop,
+.file-card,
+.profile-avi,
+.up-avi,
+.dm-avi,
+.cmt-avi,
+.rcap-avi,
+.avatar-crop-container {
+  transition: none;
+}
+/* ═══════════════════════════════════════════ Theme Toggle Button ═══════════════════════════════════════════ */
+.theme-btn { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 14px; background: var(--glass); color: var(--text2); cursor: pointer; transition: none; padding: 0; flex-shrink: 0; }
+.theme-btn:hover { background: var(--glass-mid); color: var(--text); box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
+.theme-btn:active { transition: none; }
+.theme-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+@media (min-width: 768px) {
+  .theme-btn { position: relative; }
+  .theme-btn::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--glass-mid);
+    border: 0.5px solid var(--glass-border);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: none;
+    z-index: 200;
+    box-shadow: var(--liquid-shadow-sm);
+  }
+  .theme-btn:hover::after { opacity: 1; }
+}
+/* ═══════════════════════════════════════════ Global Solid Component Classes ════════════════════════════════... */
+/* Base glass class — use anywhere */
+.glass { background: var(--glass); border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top), var(--liquid-shadow-md); }
+.glass-heavy { background: var(--glass-heavy); border: 0.5px solid var(--glass-border-top); box-shadow: var(--specular-top), var(--liquid-shadow-lg); }
+/* Input fields */
+input, textarea { background: var(--glass); border: 0.5px solid var(--glass-border); color: var(--text); transition: none; }
+input:focus, textarea:focus { border-color: var(--blue); background: var(--glass-mid); box-shadow: 0 0 0 3px var(--blue-glow2), var(--specular-top); }
+input::placeholder, textarea::placeholder { color: var(--text3); }
+/* ═══════════════════════════════════════════ Unified Icon System — 2026 minimalist line icons All inline SVG... */
+svg { color: inherit; }
+.act-btn,
+.nav-btn,
+.hdr-icon-btn,
+.hdr-new-post-btn,
+.edit-btn,
+.del-btn,
+.dm-act,
+.dm-close,
+.chat-attach-btn,
+.chat-call-btn,
+.chat-search-btn,
+.chat-thread-back,
+.chat-voice-btn,
+.crb-close,
+.cfp-icon,
+.cfp-remove,
+.search-overlay-close,
+.profile-grid-tab,
+.tab-btn,
+.admin-tab,
+.icon-btn {
+  color: var(--tg-text-muted);
+}
+.nav-btn.on, .nav-btn.active, .act-btn.liked, .act-btn.active, .profile-grid-tab.active, .tab-btn.active, .admin-tab.active, .chat-search-btn.active, .icon-btn.active, .icon-btn.selected { color: var(--tg-primary-blue); }
+.nav-center-btn, .btn-primary, .chat-voice-btn, .fab { color: var(--tg-text-main); }
+/* ─── ui-improvements ─── */
+/* ═══════════════════════════════════════════ MRdatabase — UI Improvements & Polish Accessibility, Microinter... */
+/* ═══════════════════════════════════════════ 1. THEME TOGGLE — Enhanced Visual Feedback ════════════════════... */
+/* Smooth theme transition */
+[data-theme] body, [data-theme] .app, [data-theme] .post, [data-theme] .bot-nav, [data-theme] .app-hdr, [data-theme] .sheet, [data-theme] .overlay { transition: none; }
+/* ═══════════════════════════════════════════ 2. FEED IMPROVEMENTS — Gradient Border & Skeleton ═════════════... */
+/* Gradient border on post hover */
+.post { position: relative; }
+.post::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  padding: 1px;
+  background: var(--green);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: none;
+  pointer-events: none;
+}
+.post:hover::before { opacity: 1; }
+/* Avatar shimmer */
+.skel-avi { position: relative; overflow: hidden; }
+.skel-avi::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--pal-gray-800); animation: none; }
+/* ═══════════════════════════════════════════ 3. NAVIGATION BAR — Active State Enhancement ══════════════════... */
+/* Nav button icon bounce on tap */
+.nav-btn:active, .nav-btn.on { position: relative; }
+.nav-btn.on::before { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 20px; height: 3px; background: var(--blue); border-radius: 2px; box-shadow: 0 0 8px var(--blue); }
+/* Ripple effect on nav buttons */
+.nav-btn, .act-btn, .cmt-send { position: relative; overflow: hidden; }
+/* ═══════════════════════════════════════════ ACCESSIBILITY — Focus States ══════════════════════════════════... */
+/* Keyboard focus for interactive elements */
+.act-btn:focus-visible,
+.like-btn:focus-visible,
+.del-btn:focus-visible,
+.nav-btn:focus-visible,
+.hdr-icon-btn:focus-visible,
+.hdr-mute-btn:focus-visible,
+.theme-btn:focus-visible,
+.dm-close:focus-visible,
+.dm-act:focus-visible,
+.reel-act:focus-visible,
+.reel-follow:focus-visible,
+.file-dl:focus-visible,
+.cmt-modal-close:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+.btn-primary:focus-visible, .btn-ghost:focus-visible, .btn-danger:focus-visible, .cmt-send:focus-visible { outline: 2px solid var(--line); outline-offset: 2px; }
+/* Remove default focus outline for mouse users */
+:focus:not(:focus-visible) { outline: none; }
+/* ═══════════════════════════════════════════ SHIMMER LOADING ANIMATION ═════════════════════════════════════... */
+.skel, .skel-avi, .skel-line, .skel-media { background: var(--bg3); background-size: 200px 100%; animation: none; }
+/* Skeleton post cards */
+.skeleton-post { background: var(--bg2); border-radius: 18px; padding: 16px; margin-bottom: 12px; overflow: hidden; }
+.skeleton-post .skel-avi { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; }
+.skeleton-post .skel-line { height: 12px; border-radius: 6px; background: var(--bg3); background-size: 200px 100%; animation: none; }
+.skeleton-post .skel-media { width: 100%; height: 200px; border-radius: 12px; margin: 12px 0; background: var(--bg3); background-size: 200px 100%; animation: none; }
+.skeleton-post .skel-actions { display: flex; gap: 8px; margin-top: 12px; }
+.skeleton-post .skel-actions::before, .skeleton-post .skel-actions::after { content: ''; flex: 1; height: 36px; border-radius: 8px; background: var(--bg3); background-size: 200px 100%; animation: none; }
+/* ═══════════════════════════════════════════ POST CARD — Microinteractions ═════════════════════════════════... */
+/* POST CARD — Microinteractions o'chirildi: .post transition / .post:hover lift / box-shadow — barchasi CSS/0... */
+/* Like button hover animation */
+/* Delete button hover */
+.del-btn:hover { background: var(--red-glow); }
+/* Subscribe button pulse */
+/* ═══════════════════════════════════════════ BUTTONS — Ripple Effect & Tactile Feedback ════════════════════... */
+.btn-primary, .cmt-send { position: relative; overflow: hidden; }
+/* Ghost button hover */
+/* Danger button glow on hover */
+/* ═══════════════════════════════════════════ EMPTY STATES — Enhanced with CTA ══════════════════════════════... */
+.empty, .empty-search { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 48px 24px 56px; text-align: center; color: var(--text2); font-size: 14px; position: relative; }
+.empty--home { margin: 24px 12px; padding: 56px 28px 48px; border-radius: 20px; border: 1px solid var(--pal-white-06); background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%); overflow: hidden; }
+.empty-glow { position: absolute; top: -40%; left: 50%; transform: translateX(-50%); width: 280px; height: 180px; background: radial-gradient(ellipse, rgba(29,155,240,0.12) 0%, transparent 70%); pointer-events: none; }
+.empty-icon, .empty-search-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--pal-white-08);
+  color: var(--text2);
+  position: relative;
+  z-index: 1;
+}
+.empty-title { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -0.2px; position: relative; z-index: 1; }
+.empty-sub { font-size: 13.5px; line-height: 1.45; color: var(--text3); max-width: 280px; position: relative; z-index: 1; }
+.empty-search-hint { font-size: 12.5px; color: var(--text3); margin-top: 2px; }
+.empty-cta {
+  margin-top: 8px;
+  padding: 11px 22px;
+  border: none;
+  border-radius: 999px;
+  background: var(--pal-gray-100);
+  color: var(--pal-ink);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.empty-cta:hover { background: var(--pal-white); transform: translateY(-1px); }
+/* ═══════════════════════════════════════════ PROFILE GRID — Hover Effects ══════════════════════════════════... */
+.profile-grid, .up-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(72px, auto); grid-auto-flow: dense; gap: 2px; }
+.grid-cell, .up-grid-cell { position: relative; overflow: hidden; border-radius: 0; cursor: pointer; background: var(--bg3); min-height: 72px; }
+/* Rasm / video — katta (2 qator) */
+.grid-cell--media, .up-grid-cell--media { grid-row: span 2; min-height: 148px; aspect-ratio: 1 / 1.05; }
+/* Matn post — pastroq */
+.grid-cell--text, .up-grid-cell--text { grid-row: span 1; min-height: 72px; aspect-ratio: auto; }
+.grid-cell img, .grid-cell video, .up-grid-cell img, .up-grid-cell video { width: 100%; height: 100%; object-fit: cover; transition: none; }
+.grid-cell:hover img,
+.grid-cell:hover video,
+.up-grid-cell:hover img,
+.grid-cell-overlay,
+.up-grid-cell-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--pal-black-55) 0%, var(--pal-black-25) 45%, rgba(0,0,0,.12) 100%);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px 8px;
+  gap: 14px;
+  opacity: 0;
+  transition: opacity .15s ease;
+  pointer-events: none;
+}
+.grid-cell:hover .grid-cell-overlay, .up-grid-cell:hover .up-grid-cell-overlay { opacity: 1; }
+.grid-stat, .up-grid-stat { display: flex; align-items: center; gap: 4px; color: var(--pal-white); font-size: 12px; font-weight: 600; text-shadow: 0 1px 3px var(--pal-black); }
+.grid-play-badge { position: absolute; top: 6px; right: 6px; background: var(--pal-black); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: none; }
+.grid-cell:hover .grid-play-badge { opacity: 1; }
+/* Text-only post */
+.grid-cell-txt, .up-grid-cell-txt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.35;
+  height: 100%;
+  width: 100%;
+  background: var(--bg2);
+  word-break: break-word;
+}
+/* ═══════════════════════════════════════════ REELS — Enhanced Progress & Controls ══════════════════════════... */
+@media (min-width: 768px) {
+  .reel::after { content: ''; position: absolute; inset: 0; background: var(--pal-black); opacity: 0; transition: none; pointer-events: none; }
+  .reel:hover::after { opacity: 1; }
+}
+/* ═══════════════════════════════════════════ 6. COMMENTS — Enhanced Interactions ═══════════════════════════... */
+/* Swipe to reply indicator (mobile) */
+.cmt-swipe-indicator { position: absolute; left: 0; top: 0; bottom: 0; width: 60px; background: var(--blue-glow2); border-radius: 14px 0 0 14px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: none; }
+.cmt-swipe-icon { width: 20px; height: 20px; color: var(--blue); }
+/* Long-press copy indicator */
+.cmt-copy-hint {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg4);
+  color: var(--text);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+.cmt-body.long-press .cmt-copy-hint { opacity: 1; }
+/* Typing indicator */
+.cmt-typing { display: flex; gap: 4px; padding: 12px 16px; align-items: center; }
+.cmt-typing-dot { width: 6px; height: 6px; background: var(--text3); border-radius: 50%; animation: none; }
+.cmt-typing-dot:nth-child(1) { animation-delay: 0s; }
+.cmt-typing-dot:nth-child(2) { animation-delay: 0s; }
+.cmt-typing-dot:nth-child(3) { animation-delay: 0s; }
+/* Animated stat numbers */
+/* ═══════════════════════════════════════════ 8. UPLOAD FLOW — Enhanced ═════════════════════════════════════... */
+/* Drag and drop zone — flat, no spinning border / blue flash (owned by nav.css base) */
+.upload-drop { position: relative; }
+/* ═══════════════════════════════════════════ 9. TOAST NOTIFICATIONS — More Variants ════════════════════════... */
+/* Warning toast */
+#toast.toast-warning { border-color: var(--amber); box-shadow: 0 8px 32px var(--pal-gray-700); background: #131313; }
+/* Toast with icon */
+.toast-with-icon { display: flex; align-items: center; gap: 10px; }
+.toast-icon { width: 20px; height: 20px; flex-shrink: 0; }
+.toast-icon.success { color: var(--green); }
+.toast-icon.error { color: var(--red); }
+.toast-icon.warning { color: var(--amber); }
+.toast-icon.info { color: var(--blue); }
+/* Toast progress (for uploads) */
+.toast-progress { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--blue); border-radius: 0 0 50px 50px; transform-origin: left; animation: none; }
+/* ═══════════════════════════════════════════ 11. ACCESSIBILITY — Additional Features ═══════════════════════... */
+/* High contrast mode */
+[data-contrast="high"] { --line: var(--pal-legacy-525257); --line2: #848487; --line3: var(--pal-legacy-b5b5b7); --text: var(--pal-white); --text2: #e0e0e0; --text3: #b0b0b0; }
+[data-contrast="high"] .post, [data-contrast="high"] .sheet, [data-contrast="high"] .modal-content { border-width: 2px; }
+/* Font size adjustments */
+[data-font-size="large"] { font-size: 18px; }
+[data-font-size="large"] .post-name, [data-font-size="large"] .post-caption { font-size: 16px; }
+[data-font-size="large"] .stat-val { font-size: 22px; }
+.vid-controls { background: var(--pal-black); }
+.vc-play, .vc-mute, .vc-fs { background: var(--pal-gray-800); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: none; }
+.vc-play:hover, .vc-mute:hover, .vc-fs:hover { background: var(--pal-legacy-3a3a3f); }
+.vc-play:active, .vc-mute:active, .vc-bar { height: 4px; transition: none; }
+.vc-progress:hover .vc-bar { height: 6px; }
+.vc-fill { position: relative; }
+.vc-fill::after { content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: var(--pal-white); border-radius: 50%; opacity: 0; transition: none; }
+.vc-progress:hover .vc-fill::after { opacity: 1; }
+/* ═══════════════════════════════════════════ SEARCH OVERLAY — Suggestions ══════════════════════════════════... */
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: var(--bg2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px;
+  max-height: 320px;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px var(--pal-black);
+  z-index: 501;
+  display: none;
+}
+.search-suggestions.show { display: block; }
+.search-suggestion-item { padding: 10px 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: none; }
+.search-suggestion-item:hover { background: var(--bg3); }
+.search-suggestion-item.active { background: var(--blue-glow2); }
+.search-suggestion-icon { color: var(--text3); flex-shrink: 0; }
+.search-suggestion-text { flex: 1; }
+/* ═══════════════════════════════════════════ TOAST NOTIFICATIONS — Enhanced Animation ══════════════════════... */
+#toast {
+  position: fixed;
+  bottom: calc(var(--nav) + 20px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg2);
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.toast-success { border-color: var(--green); box-shadow: 0 8px 32px var(--pal-gray-800); }
+#toast.toast-error { border-color: var(--red); box-shadow: 0 8px 32px var(--pal-gray-800); }
+#toast.toast-info { border-color: var(--blue); box-shadow: 0 8px 32px var(--pal-gray-800); }
+/* ═══════════════════════════════════════════ NAV BADGE — Notification Pulsing ══════════════════════════════... */
+.nav-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  background: var(--tg-blue, var(--pal-white));
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--pal-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px var(--blue-glow, var(--pal-gray-700));
+}
+/* Nav icon no longer shakes continuously while unread — a badge with a * gentle pulse is enough of a cue with... */
+/* ═══════════════════════════════════════════ MODAL ANIMATIONS — Enhanced ═══════════════════════════════════... */
+/* Sheet modal bounce */
+/* Detail modal fade */
+/* Zoom modal */
+/* ═══════════════════════════════════════════ COMMENTS — Enhanced ═══════════════════════════════════════════ */
+.cmt-row:nth-child(1) { animation-delay: 0s; }
+.cmt-row:nth-child(2) { animation-delay: 0s; }
+.cmt-row:nth-child(3) { animation-delay: 0s; }
+.cmt-row:nth-child(4) { animation-delay: 0s; }
+.cmt-row:nth-child(5) { animation-delay: 0s; }
+/* Comment hover */
+.cmt-body:hover { border-color: var(--line2); }
+/* Send button pulse */
+/* ═══════════════════════════════════════════ USER PROFILE MODAL — Enhanced ═════════════════════════════════... */
+.up-avi { transition: none; }
+/* .up-follow-btn { position/overflow } → yuqorida (510-qator) aynan nusxa, o'chirildi */
+/* ═══════════════════════════════════════════ FLOAT UPLOAD BAR — Enhanced ═══════════════════════════════════... */
+.upload-float-bar, .ufb-fill.indeterminate { background: var(--blue3); background-size: 200% 100%; animation: none; }
+/* ═══════════════════════════════════════════ REDUCED MOTION SUPPORT ═══════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
+  .heart-burst, .upload-float-bar { animation: none !important; }
+}
+/* ═══════════════════════════════════════════ MOBILE OPTIMIZATIONS ═══════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .act-btn, .nav-btn, .hdr-icon-btn, .theme-btn { min-height: 44px; min-width: 44px; }
+  .post-caption, .reel-cap, .cmt-text { font-size: 14px; line-height: 1.6; }
+  .bot-nav { padding-bottom: max(env(safe-area-inset-bottom), 8px); }
+  .sheet { padding-bottom: max(env(safe-area-inset-bottom), 28px); }
+}
+/* ═══════════════════════════════════════════ DESKTOP ENHANCEMENTS ═══════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .bot-nav { transition: none; }
+  .feed { max-width: 580px; }
+  #detailModal { align-items: center; justify-content: center; }
+  #detailContent { max-width: 600px; max-height: 90dvh; border-radius: 20px; margin: 20px; }
+}
+/* ═══════════════════════════════════════════ PRINT STYLES ═══════════════════════════════════════════ */
+@media print {
+  .bot-nav, .app-hdr, .nav-btn, .upload-float-bar, #toast, .overlay, .reel-vol-top { display: none !important; }
+  body { background: var(--pal-white) !important; color: var(--pal-black) !important; }
+  .post { break-inside: avoid; page-break-inside: avoid; }
+}
+/* Desktop: upload float bar sidebar hisobga olinadi */
+@media (min-width: 768px) {
+  .upload-float-bar { left: calc(50% + var(--sidebar, 0px) / 2); }
+}
+/* ═══════════════════════════════════════════════════════════════════════ YAKUNIY POLISH — flat (X.com uslubi... */
+/* .app-hdr glow/shimmer bloki o'chirildi — CSS/00-components.core.css allaqachon flat .app-hdr'ni belgilaydi.... */
+/* header icon buttons — flat, oddiy hover */
+.hdr-icon-btn { border-radius: 12px; transition: none; }
+.hdr-icon-btn:hover { background: var(--glass-mid); border: 0.5px solid var(--glass-border); color: var(--text); }
+.hdr-icon-btn:active { opacity: 0.7; }
+/* 2. Nav-btn — flat, glow olib tashlandi */
+.nav-btn { transition: none; }
+.nav-btn:hover { background: var(--glass-mid); border: 0.5px solid var(--glass-border); }
+/* .nav-btn.on scale-pulse va svg glow o'chirildi — flat active holat CSS/00-components.core.css yoki nav.css... */
+/* .bot-nav glow bloki o'chirildi — CSS/00-components.core.css'da flat versiyasi belgilangan. AUDIT.md 2-bo'li... */
+/* 4. Sheet handle — oddiy hover */
+.sheet-handle { cursor: grab; transition: none; }
+.sheet-handle:hover { opacity: 1; }
+/* 5. Sheet — inner glow olib tashlandi, flat shadow */
+.sheet { box-shadow: 0 -2px 16px var(--pal-black-35); }
+/* .post glow/tilt bloki o'chirildi — CSS/00-components.core.css'da flat versiyasi belgilangan (transform: non... */
+/* 7. Input fields — flat focus ring (faqat .cmt-input/.ta/.sb-panel uchun, .field o'z fokus-ringini CSS/00-co... */
+.cmt-input:focus, .ta:focus, .sb-panel-input-wrap:focus-within { box-shadow: inset 0 0 0 1px var(--blue); }
+/* .btn-primary/.btn-ghost/.btn-danger spring-bounce o'chirildi — CSS/00-components.core.css flat hover'ni bel... */
+.cmt-send { transition: none; }
+/* 9. Avatar — flat ring, glow/scale olib tashlandi */
+.dm-avi, .cmt-avi, .cmt-my-avi { box-shadow: 0 0 0 1.5px var(--glass-border); }
+.dm-avi:hover, .cmt-avi:hover { box-shadow: 0 0 0 2px var(--blue); }
+/* 10. Zoom modal — oddiy fade, "liquid" animatsiya nomi va spring-easing olib tashlandi */
+/* 11. File card — flat hover, lift/scale olib tashlandi */
+.file-card { transition: none; }
+.file-card:hover { background: var(--glass-mid); }
+/* 13. Comment body — flat, glow/translateX olib tashlandi */
+.cmt-body { transition: none; }
+.cmt-body:hover { background: var(--glass-mid); }
+/* 14. Search overlay — flat panel */
+.search-overlay-inner { background: var(--glass-mid); border: 0.5px solid var(--glass-border-top); }
+/* 15. Scrollbar — solid style */
+/* 16. Upload drop zone — flat, owned by nav.css base (no inner-glow override) */
+/* 17. Detail modal — flat shadow, glass depth olib tashlandi */
+#detailContent { box-shadow: 0 -4px 24px var(--pal-black-35); }
+/* 18. Create button — pulse animatsiya butunlay o'chirildi (flat) */
+.nav-center-btn { transition: none; }
+/* .nav-center-btn::before pulse-glow pseudo-element olib tashlandi */
+.nav-center-btn:hover { opacity: 0.85; }
+/* Create (+) tugma — oddiy plus, fon/soya/highlight yo'q (id → boshqa temalardan ustun) */
+#createBtn.nav-center-btn { background: transparent; box-shadow: none; border-radius: 12px; overflow: visible; }
+#createBtn.nav-center-btn::before, #createBtn.nav-center-btn::after { display: none; }
+#createBtn.nav-center-btn:hover { background: transparent; box-shadow: none; opacity: .7; }
+#createBtn.nav-center-btn svg { stroke: var(--text); stroke-width: 2; width: 26px; height: 26px; }
+/* 19. @prefers-reduced-motion — ikkinchi blok o'chirildi, chunki transition-duration'ni 0.18s'ga qaytarib, bi... */
+/* 20. Global focus ring — accessibility uchun saqlandi, glow kamaytirildi (faqat bitta aniq ring, ikkinchi "g... */
+:focus-visible { box-shadow: 0 0 0 2px var(--blue); border-radius: inherit; }
+/* ─── local-utility ─── */
+/* ═══════════════════════════════════════════ MRdatabase — Local Utility Classes DEVS UTILITY framework'da yo... */
+/* Display */
+.d-none { display: none; }
+.d-block { display: block; }
+.d-grid { display: grid; }
+.d-inline-grid { display: inline-grid; }
+.d-inline { display: inline; }
+.d-inline-block { display: inline-block; }
+.gap-10px { gap: 10px; }
+/* Aspect Ratio */
+.aspect-1 { aspect-ratio: 1 / 1; }
+/* Width */
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+.w-screen { width: 100vw; }
+/* Height */
+.h-full { height: 100%; }
+/* Overflow */
+.overflow-hidden { overflow: hidden; }
+.overflow-scroll { overflow: scroll; }
+/* Flex utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-1 { flex: 1; }
+.flex-shrink-0 { flex-shrink: 0; }
+.items-center { align-items: center; }
+/* Cursor */
+.cursor-pointer { cursor: pointer; }
+/* Visibility */
+.visible { visibility: visible; }
+.opacity-30 { opacity: 1; }
+.opacity-60 { opacity: 1; }
+/* Transition */
+.transition { transition: none; }
+.shadow { box-shadow: 0 1px 3px rgba(0, 0, 0,0.1), 0 1px 2px rgba(0, 0, 0,0.06); }
+.shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0,0.1), 0 4px 6px rgba(0, 0, 0,0.05); }
+/* ═══════════════════════════════════════════════════════════════════ MODAL Z-INDEX TARTIB (global override)... */
+/* Chat thread modal */
+#chatThreadModal { z-index: 360 !important; }
+/* User profili — chat thread USTIDA ochilishi kerak */
+#userProfileModal { z-index: 500 !important; }
+/* Guruh info paneli — user profil ustida */
+/* Post detail */
+#detailModal { z-index: 550 !important; }
+/* Zoom / media viewer */
+#zoomModal { z-index: 600 !important; }
+/* Qo'ng'iroq — hamma narsadan yuqorida */
+#incomingCallModal, #activeCallModal { z-index: 999999 !important; }
+/* Guruh overlaylari chatThreadModal (360) ustida bo'lishi uchun */
+#grpInfoOverlay, #grpCreateChoiceOverlay, #grpCreateFormOverlay, #grpJoinLinkOverlay, #grpAddUserOverlay { z-index: 520 !important; }
+/* Chat thread ichidagi .overlay ham ustida tursin */
+#chatThreadModal .overlay { z-index: 520 !important; }
+/* ─── dark-theme-fix ─── */
+/* ═══════════════════════════════════════════════════════════ MRspace — Solid UI Override dark-theme-fix.css... */
+/* ══════════════════════════════════════════ 1. DARK THEME — Rang Tokenlari ═════════════════════════════════... */
+/* ══════════════════════════════════════════ 1. Base palette (--bg, --text, --blue, --red...) is owned by the... */
+/* ══════════════════════════════════════════ 2. DARK — Body wallopaper ══════════════════════════════════════... */
+[data-theme="dark"] body { background: var(--pal-black); background-color: var(--pal-black); }
+[data-theme="dark"] .app { background: transparent; }
+/* ══════════════════════════════════════════ 3. HEADER — owned by ui-improvements.css (glass bg/border/shadow... */
+[data-theme="dark"] .app-hdr::after { display: none; }
+[data-theme="dark"] .hdr-brand { background: var(--pal-white); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* ══════════════════════════════════════════ 4. POST CARD — owned by ui-improvements.css (glass bg/border/sha... */
+/* Post head subtle separator */
+[data-theme="dark"] .post-head { border-bottom: 0.5px solid var(--pal-gray-900); }
+/* Post gradient border on hover — more subtle */
+[data-theme="dark"] .post::before { opacity: 0; transition: none; }
+[data-theme="dark"] .post:hover::before { opacity: 1; }
+/* Post action buttons */
+[data-theme="dark"] .post-stats { border-top: 0.5px solid var(--pal-gray-900); border-bottom: 0.5px solid var(--pal-gray-900); color: var(--text3); }
+[data-theme="dark"] .act-btn { color: var(--text2); border-right: 0.5px solid var(--pal-gray-900); transition: none; }
+[data-theme="dark"] .act-btn:hover { background: var(--pal-gray-900); color: var(--text); }
+[data-theme="dark"] .act-btn.liked { color: var(--red); }
+/* ══════════════════════════════════════════ 5. AVATAR — Avatar halqasi ═════════════════════════════════════... */
+[data-theme="dark"] .avi { border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-900), 0 2px 8px var(--pal-black); background: var(--pal-gray-900); }
+[data-theme="dark"] .avi:hover { border-color: var(--pal-white); }
+/* ══════════════════════════════════════════ 6. BOTTOM NAV — Pastki navigatsiya paneli ══════════════════════... */
+[data-theme="dark"] .bot-nav { border-top: none; box-shadow: none; }
+/* .nav-btn:hover background/border owned by ui-improvements.css (glass hover state). Removed the competing ru... */
+[data-theme="dark"] .nav-btn.on { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 0 0 2px var(--pal-black); }
+/* ══════════════════════════════════════════ 7. SHEET — Panel ══════════════════════════════════════════ */
+[data-theme="dark"] .sheet { background: var(--pal-black); border-top: 0.5px solid var(--pal-gray-800); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 -12px 56px var(--pal-black); }
+[data-theme="dark"] .sheet-handle { background: var(--pal-gray-800); }
+[data-theme="dark"] .overlay { background: var(--pal-black); }
+/* ══════════════════════════════════════════ 9. INPUT FIELDS — Inputs ══════════════════════════════════════════ */
+[data-theme="dark"] .field,
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="dark"] textarea {
+  background: var(--pal-gray-800);
+  border: 0.5px solid var(--pal-gray-900);
+  box-shadow: inset 0 1px 0 var(--pal-gray-900);
+  color: var(--text);
+  caret-color: var(--blue);
+}
+[data-theme="dark"] .field:focus,
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):focus,
+[data-theme="dark"] textarea:focus {
+  background: var(--pal-gray-800);
+  border-color: var(--pal-white);
+  box-shadow: inset 0 1px 0 var(--pal-gray-900), 0 0 0 3px var(--pal-gray-900);
+  outline: none;
+  border-radius: 12px;
+}
+[data-theme="dark"] .field::placeholder, [data-theme="dark"] input::placeholder, [data-theme="dark"] textarea::placeholder { color: var(--text3); }
+/* ══════════════════════════════════════════ 10. AUTH CARD — Panel ══════════════════════════════════════════ */
+[data-theme="dark"] #authWrap { background: var(--pal-black); }
+[data-theme="dark"] .auth-card { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 24px 72px var(--pal-black); }
+[data-theme="dark"] .auth-brand { background: var(--pal-white); -webkit-background-clip: text; background-clip: text; color: transparent; }
+[data-theme="dark"] .auth-title { color: var(--text2); }
+/* ══════════════════════════════════════════ 11. PROFILE — Header ══════════════════════════════════════════ */
+[data-theme="dark"] .profile-hdr { background: transparent; border-bottom: none; }
+[data-theme="dark"] .profile-avi { border: 0.5px solid var(--pal-legacy-2d2d33); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 6px 20px var(--pal-black); }
+[data-theme="dark"] .profile-avi:hover { border-color: var(--pal-white); }
+[data-theme="dark"] .edit-btn { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-900); color: var(--text); }
+[data-theme="dark"] .edit-btn:hover { background: var(--pal-gray-900); border-color: var(--pal-gray-800); }
+/* Profile grid tabs */
+[data-theme="dark"] .profile-grid-hdr { background: transparent; border-color: transparent; }
+[data-theme="dark"] .profile-grid-tab { color: var(--text3); }
+[data-theme="dark"] .profile-grid-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+/* Profile grid cells */
+[data-theme="dark"] .grid-cell { background: var(--pal-gray-900); }
+[data-theme="dark"] .grid-cell:hover { opacity: 1; }
+/* ══════════════════════════════════════════ 12. FILE CARD — Panel ══════════════════════════════════════════ */
+[data-theme="dark"] .file-card { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-800); box-shadow: inset 0 1px 0 var(--pal-gray-900); }
+[data-theme="dark"] .file-card:hover { background: var(--pal-gray-900); border-color: var(--pal-legacy-2d2d33); }
+[data-theme="dark"] .file-dl { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); color: var(--blue2); box-shadow: inset 0 1px 0 var(--pal-gray-900); }
+[data-theme="dark"] .file-dl:hover { background: var(--pal-gray-900); border-color: #3a3a3a; }
+/* ══════════════════════════════════════════ 13. CHAT — Xabar pufakchalari ══════════════════════════════════... */
+[data-theme="dark"] .chat-row:hover { background: var(--pal-gray-900); }
+[data-theme="dark"] .chat-row:active { background: var(--pal-gray-900); }
+/* ══════════════════════════════════════════ 14. SEARCH OVERLAY — Qidiruv overlay ═══════════════════════════... */
+[data-theme="dark"] .search-overlay { background: var(--pal-black); }
+[data-theme="dark"] .search-overlay-box { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-legacy-2d2d33), 0 8px 40px var(--pal-black); }
+[data-theme="dark"] .search-overlay-close { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); color: var(--text2); box-shadow: inset 0 1px 0 var(--pal-gray-900); }
+[data-theme="dark"] .search-overlay-close:hover { background: var(--pal-gray-900); color: var(--text); }
+/* ══════════════════════════════════════════ 15. TOAST — Pill ══════════════════════════════════════════ */
+[data-theme="dark"] #toast { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-800); color: var(--text); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 8px 36px var(--pal-black); }
+/* ══════════════════════════════════════════ 17. BUTTONS — Gradient ══════════════════════════════════════════ */
+[data-theme="dark"] .del-btn { color: var(--text3); }
+[data-theme="dark"] .del-btn:hover { color: var(--red); background: var(--pal-gray-900); }
+[data-theme="dark"] .hdr-icon-btn:hover { background: var(--pal-gray-900); }
+/* ══════════════════════════════════════════ 18. DETAIL MODAL (#detailContent) — Panel ══════════════════════... */
+[data-theme="dark"] #detailContent { background: var(--pal-black); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 -12px 56px var(--pal-black); }
+[data-theme="dark"] .dm-act:hover { background: var(--pal-gray-900); }
+[data-theme="dark"] .dm-close { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); }
+[data-theme="dark"] .dm-close:hover { background: var(--pal-gray-800); }
+/* ══════════════════════════════════════════ 19. SKELETON LOADING — Shimmer ═════════════════════════════════... */
+[data-theme="dark"] .skeleton-post { background: var(--pal-black); border: 0.5px solid var(--pal-gray-900); }
+[data-theme="dark"] .skel-avi, [data-theme="dark"] .skel-line, [data-theme="dark"] .skel-media { background: var(--pal-gray-900); background-size: 200% 100%; }
+/* ══════════════════════════════════════════ 20. SPLASH SCREEN — Panel ══════════════════════════════════════... */
+[data-theme="dark"] #splash { background: var(--pal-black); }
+[data-theme="dark"] .splash-wordmark { color: var(--text); }
+[data-theme="dark"] .splash-bar { background: var(--pal-gray-900); border-radius: 8px; overflow: hidden; }
+[data-theme="dark"] .splash-fill { background: var(--blue2); }
+/* ══════════════════════════════════════════ 23. SCROLL — Thin glass ══════════════════════════════════════════ */
+[data-theme="dark"] ::-webkit-scrollbar { width: 3px; height: 3px; }
+[data-theme="dark"] ::-webkit-scrollbar-track { background: transparent; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--pal-gray-900); border-radius: 3px; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: var(--pal-gray-800); }
+/* ══════════════════════════════════════════ 24. SELECTION ══════════════════════════════════════════ */
+[data-theme="dark"] ::selection { background: #3d3d3d; color: var(--pal-white); }
+/* ══════════════════════════════════════════ 25. REEL — Overlays ══════════════════════════════════════════ */
+[data-theme="dark"] .reel { background: var(--pal-black); }
+[data-theme="dark"] .reel-top-btn, [data-theme="dark"] .reel-vol-top { background: var(--pal-black); border: 0.5px solid var(--pal-gray-900); }
+/* ══════════════════════════════════════════ 26. THEME BUTTON — Panel ══════════════════════════════════════════ */
+[data-theme="dark"] .theme-btn { color: var(--text2); }
+[data-theme="dark"] .theme-btn:hover { background: var(--pal-gray-900); color: var(--text); }
+/* ══════════════════════════════════════════ 27. FLOATING UPLOAD BAR — Pill ═════════════════════════════════... */
+[data-theme="dark"] .upload-float-bar { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); box-shadow: inset 0 1px 0 var(--pal-gray-800), 0 8px 36px var(--pal-black); }
+[data-theme="dark"] .upload-drop { background: var(--pal-black); border: 1px dashed var(--pal-gray-900); }
+[data-theme="dark"] .upload-drop:hover { border-color: var(--pal-white); background: var(--pal-black); }
+[data-theme="dark"] .upload-drop.drag-over { border-color: var(--blue); background: var(--pal-gray-900); box-shadow: 0 0 0 3px var(--pal-gray-900), inset 0 1px 0 var(--pal-gray-900); }
+[data-theme="dark"] .empty { color: var(--text3); }
+[data-theme="dark"] .feed-empty-icon, [data-theme="dark"] .empty-icon, [data-theme="dark"] .empty-search-icon { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-700); box-shadow: inset 0 1px 0 var(--pal-gray-900); }
+/* ══════════════════════════════════════════ 30. COMMENTS MODAL — Panel ═════════════════════════════════════... */
+[data-theme="dark"] .cmt-body { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); }
+[data-theme="dark"] .cmt-body:hover { background: var(--pal-gray-900); border-color: var(--pal-gray-900); }
+[data-theme="dark"] .cmt-input { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); }
+[data-theme="dark"] .cmt-input:focus { background: var(--pal-gray-900); border-color: var(--pal-white); box-shadow: 0 0 0 3px var(--pal-gray-900); }
+[data-theme="dark"] .cmt-input-row { border-top: 0.5px solid var(--pal-gray-900); }
+/* ─── borderless ─── */
+/* ═══════════════════════════════════════════ MRspace — Borderless / Minimal Override Zamonaviy flat dizayn:... */
+/* CSS token override: border va shadow tokenlarini o'chiramiz */
+/* Dark: line tokenlar ham yo'qolsin */
+/* ════════════════════════════════ GLOBAL — hamma border lar off ════════════════════════════════ */
+/* Post kartochkalar */
+.post, [data-theme="dark"] .post { box-shadow: none; }
+.post:hover, [data-theme="dark"] .post:hover { box-shadow: none; }
+/* Header — top bar */
+.app-hdr, [data-theme="dark"] .app-hdr { box-shadow: none; }
+/* Mobile: frosted glass blur */
+@media (max-width: 767px) {
+  .app-hdr, [data-theme="dark"] .app-hdr { background: rgba(16, 16, 16, 0.72); }
+}
+/* Desktop: shaffof qolsin */
+@media (min-width: 768px) {
+  .app-hdr, [data-theme="dark"] .app-hdr { background: transparent; }
+}
+/* Header gradient line o'chirish */
+.app-hdr::after, [data-theme="dark"] .app-hdr::after { display: none; }
+/* Bottom nav */
+.bot-nav, [data-theme="dark"] .bot-nav { border-top: none; border-right: none; box-shadow: none; }
+/* Mobile: solid dark bar (was semi-transparent frosted glass — looked washed-out over content) */
+@media (max-width: 767px) {
+  [data-theme="dark"] .bot-nav { background: var(--pal-black); }
+}
+/* Desktop: shaffof qolsin */
+@media (min-width: 768px) {
+  .bot-nav, [data-theme="dark"] .bot-nav { background: transparent; }
+}
+/* Desktop sidebar ::before gradient line o'chirish */
+@media (min-width: 768px) {
+  .bot-nav::before { display: none; background: none; }
+}
+/* Nav buttons */
+.nav-btn, [data-theme="dark"] .nav-btn:hover, [data-theme="dark"] .nav-btn.on { border: none; box-shadow: none; }
+/* Sheet (bottom panel) */
+.sheet, [data-theme="dark"] .sheet { border-top: none; box-shadow: none; }
+/* Glass components */
+.glass, .glass-heavy { border: none; box-shadow: none; }
+/* Theme button */
+.theme-btn, [data-theme="dark"] .theme-btn:hover { border: none; box-shadow: none; }
+/* Auth card */
+.auth-card, [data-theme="dark"] .auth-card { border: none; box-shadow: none; }
+/* Avatar (avi) */
+.avi, [data-theme="dark"] .avi { border: none; box-shadow: none; }
+[data-theme="dark"] .avi:hover { box-shadow: none; }
+/* Profile avatar */
+.profile-avi, [data-theme="dark"] .profile-avi { border: none; box-shadow: none; }
+[data-theme="dark"] .profile-avi:hover { box-shadow: none; }
+/* Edit button */
+.edit-btn, [data-theme="dark"] .edit-btn { border: none; box-shadow: none; }
+/* Profile header */
+/* Profile grid */
+[data-theme="dark"] .grid-cell { border: none; box-shadow: none; }
+[data-theme="dark"] .grid-cell:hover { box-shadow: none; }
+.up-stat { border-right: none; }
+/* Profile grid header */
+.profile-grid-hdr, [data-theme="dark"] .profile-grid-hdr { border-color: transparent; }
+/* Post stats separator */
+.post-stats, [data-theme="dark"] .post-stats { border-top: none; border-bottom: none; }
+/* Post action buttons */
+.act-btn, [data-theme="dark"] .act-btn { border-right: none; }
+/* Post head separator */
+.post-head, [data-theme="dark"] .post-head { border-bottom: none; }
+/* Input fields */
+.field, input:not([type="checkbox"]):not([type="radio"]), textarea, [data-theme="dark"] .field, [data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]), [data-theme="dark"] textarea { border: none; box-shadow: none; }
+.field:focus, input:focus, textarea:focus, [data-theme="dark"] .field:focus, [data-theme="dark"] input:focus, [data-theme="dark"] textarea:focus { border: none; box-shadow: none; outline: none; }
+/* Chat list rows */
+.chat-row, [data-theme="dark"] .chat-thread { border-bottom: 1px solid var(--line); }
+/* Chat thread header separator */
+/* File card */
+.file-card, [data-theme="dark"] .file-card { border: none; box-shadow: none; }
+[data-theme="dark"] .file-card:hover { box-shadow: none; }
+.file-dl, [data-theme="dark"] .file-dl, [data-theme="dark"] .file-dl:hover { border: none; }
+/* Toast */
+#toast, [data-theme="dark"] #toast { border: none; box-shadow: none; }
+/* Buttons */
+.btn-primary, .btn-primary:hover { box-shadow: none; }
+.btn-danger, .btn-danger:hover { box-shadow: none; }
+/* Search overlay */
+.search-overlay-box, [data-theme="dark"] .search-overlay-box { border: none; box-shadow: none; }
+.search-overlay-close, [data-theme="dark"] .search-overlay-close { border: none; box-shadow: none; }
+/* Upload float bar */
+.upload-float-bar, [data-theme="dark"] .upload-float-bar { border: none; box-shadow: none; }
+/* Upload drop zone — border/hover feedback owned by nav.css, no override here */
+/* Empty state icons */
+.feed-empty-icon, .empty-icon, .empty-search-icon, [data-theme="dark"] .feed-empty-icon, [data-theme="dark"] .empty-icon, [data-theme="dark"] .empty-search-icon { border: none; box-shadow: none; }
+/* Comments */
+.cmt-body, [data-theme="dark"] .cmt-body, [data-theme="dark"] .cmt-body:hover { border: none; box-shadow: none; }
+.cmt-input, [data-theme="dark"] .cmt-input, [data-theme="dark"] .cmt-input:focus { border: none; box-shadow: none; }
+.cmt-input-row, [data-theme="dark"] .cmt-input-row { border-top: none; }
+/* Detail modal */
+#detailContent, [data-theme="dark"] #detailContent { border: none; box-shadow: none; }
+.dm-close, [data-theme="dark"] .dm-close { border: none; }
+/* Skeleton */
+.skeleton-post, [data-theme="dark"] .skeleton-post { border: none; }
+.reel-top-btn, .reel-vol-top, [data-theme="dark"] .reel-top-btn, [data-theme="dark"] .reel-vol-top { border: none; }
+/* Sidebar desktop — chegarasiz */
+@media (min-width: 768px) {}
+/* Nav ring/glow animatsiyalari — shadow yo'q */
+.nav-btn:hover, .nav-btn.on { box-shadow: none; }
+/* Feed buttons */
+/* Story/reel ring */
+.story-ring, .reel-ring { box-shadow: none; }
+/* Splash bar */
+[data-theme="dark"] .splash-bar { border: none; }
+[data-theme="dark"] .splash-fill { box-shadow: none; }
+/* ════════════════════════════════════════════ LIGHT THEME — Xatolarni tuzatish ═════════════════════════════... */
+/* 1. act-btn hover — dark background light temada */
+/* 3. Sidebar nav-btn aktiv holat — dark styled light temada */
+/* Desktop sidebar nav-btn */
+/* 4. Visibility buttons (Private/Public) — light temada dark styled */
+/* 5. Input focus — light temada dark border/outline chiqib qolishi */
+/* 6. nav-center-btn (+ tugma) — light temada shadow o'chish */
+/* 7. Sidebar top/bottom border — light temada */
+/* 8. Sheet handle — light temada */
+/* ════════════════════════════════════════════ CHAT — Audio xabar (voice message) tuzatish ══════════════════... */
+/* Incoming (theirs) — play button light temada ko'rinsin */
+/* Incoming waveform bars — light temada ko'rinsin */
+/* Incoming duration text */
+/* Dark theme — incoming play button kontrast yaxshilash */
+[data-theme="dark"] .chat-msg.theirs .cvm-play { background: var(--bg4); color: var(--text); }
+[data-theme="dark"] .chat-msg.theirs .cvm-bar { background: var(--text3); }
+/* ════════════════════════════════════════════ THEME BUTTON — sidebar pastida border o'chish ════════════════... */
+.theme-btn { border: none; box-shadow: none; outline: none; }
+/* ════════════════════════════════════════════ AVATAR — light temada placeholder background ═════════════════... */
+/* avi base — shadow olib tashlash */
+.avi { box-shadow: none; border: none; }
+.avi:hover { box-shadow: none; }
+/* ════════════════════════════════════════════════════════════════ LIGHT THEME — GLOBAL DARK COLOR OVERRIDE B... */
+/* CHAT THREAD */
+/* Incoming bubble */
+/* Chat input area */
+/* Chat list row hover */
+/* Chat header */
+/* Chat back button */
+/* Reply preview */
+/* File preview bar */
+/* File message */
+/* Voice message bubble */
+/* Call modal */
+/* Chat photo viewer */
+/* FEED */
+/* Header search/mute hover */
+/* Follow/like buttons */
+/* Comment body */
+/* Reel overlays */
+/* Post gradient overlay (media) */
+/* PROFILE */
+/* Stats edit box */
+/* Profile grid cell */
+/* Profile actions bar */
+/* Profile tab header */
+/* NAV / SIDEBAR */
+/* Notification badge */
+/* Sidebar */
+/* Search overlay */
+/* Sheet */
+/* Modal */
+/* Upload drop zone */
+/* Upload float bar */
+/* Toast */
+/* Skeleton shimmer */
+/* File card */
+/* Empty state icons */
+/* Dm-close button */
+/* del-btn hover */
+/* cmt-del hover */
+/* Groups */
+/* Sidebar items active */
+/* hdr-icon-btn hover */
+/* nav-btn.on — active sidebar item */
+/* Post background */
+/* Reels dark gradient — light temada oq */
+/* ══════════════════════════════════════════ BARCHA BARLAR — TRANSPARENT (SEAMLESS) Top bar, bottom bar, left... */
+/* Chat thread header */
+.chat-thread-hdr, [data-theme="dark"] .chat-thread-hdr { background: transparent; border-bottom: none; box-shadow: none; }
+.chat-thread-hdr::after, [data-theme="dark"] .chat-thread-hdr::after { display: none; }
+/* Chat input row */
+.chat-thread-input-row, [data-theme="dark"] .chat-thread-input-row { background: transparent; box-shadow: none; border-top: none; }
+/* Profile header */
+.profile-hdr, [data-theme="dark"] .profile-hdr { background: transparent; border-bottom: none; }
+.profile-hdr::before, [data-theme="dark"] .profile-hdr::before { display: none; }
+/* Profile grid tab bar */
+.profile-grid-hdr, [data-theme="dark"] .profile-grid-hdr { background: transparent; border-top: none; border-bottom: none; }
+/* Chats list view header */
+.chats-hdr { background: transparent; border: none; box-shadow: none; }
+/* ─── chat-dark-redesign ─── */
+/* ══════════════════════════════════════════════════════════════════════ CHAT THREAD — DARK REDESIGN (Telegra... */
+/* Root theme vars (--bg, --bg2, --bg3...) are owned by theme.css. Do NOT re-declare them here — that was the... */
+#chatThreadModal {
+  --c-bg-chat: var(--bg, var(--pal-black));
+  --c-bg-pattern: var(--bg, var(--pal-black));
+  --c-bg-header: var(--bg3, var(--pal-gray-900));
+  --c-bg-input: var(--bg4, var(--pal-gray-900));
+  --c-bubble-in: var(--bg4, var(--pal-gray-900));
+  --c-bubble-out: var(--pal-gray-700);
+  --c-text-1: var(--pal-white);
+  --c-text-2: var(--text2, var(--pal-gray-500));
+  --c-text-time: var(--text2, var(--pal-gray-500));
+  --c-accent: var(--pal-white);
+  --c-accent-2: var(--pal-white);
+  --c-tick-read: var(--pal-white);
+  --c-divider: var(--pal-white-06);
+  --c-danger: #ec5e6f;
+  background: var(--c-bg-chat);
+}
+/* Header */
+/* Header — owned by CSS/chat.css .chat-thread-hdr (uses --c-bg-header/--c-divider directly) */
+#chatThreadModal .chat-thread-back { background: transparent; color: var(--c-accent); }
+#chatThreadModal .chat-thread-back:hover { background: var(--pal-white-06); }
+#chatThreadModal .chat-thread-avi { background: #ff7a45; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15); }
+#chatThreadModal .chat-thread-name { color: var(--c-text-1); font-weight: 600; }
+#chatThreadModal .chat-thread-typing { color: var(--c-accent-2); }
+#chatThreadModal #chatTypingStatus.online { color: var(--c-accent-2); }
+#chatThreadModal .chat-call-btn, #chatThreadModal .chat-search-btn { background: transparent; color: var(--c-accent); }
+#chatThreadModal .chat-call-btn:hover, #chatThreadModal .chat-search-btn:hover { background: var(--pal-white-06); color: var(--c-accent-2); }
+#chatThreadModal .chat-search-btn.active { background: rgba(255, 255, 255,0.16); color: var(--c-accent-2); }
+#chatThreadModal .chat-search-wrap { background: var(--c-bg-header); border-bottom: 1px solid var(--c-divider); }
+#chatThreadModal .chat-search-input { background: var(--pal-white-06); border-color: transparent; color: var(--c-text-1); }
+#chatThreadModal .chat-search-close { background: var(--pal-white-06); color: var(--c-text-2); }
+/* Thread background (subtle glow pattern like the demo) */
+#chatThreadModal .chat-thread-messages {
+  background-size: cover, cover;
+  background-position: center top, center top;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: scroll, scroll;
+  background-color: var(--c-bg-pattern);
+  padding: 14px 10px 10px;
+  scrollbar-width: none;
+}
+#chatThreadModal .chat-thread-messages::-webkit-scrollbar { display: none; }
+#chatThreadModal .chat-date-sep span { background: var(--pal-white-06); border-color: transparent; color: var(--c-text-2); }
+/* Bubbles */
+#chatThreadModal .chat-bubble { border-radius: 16px; padding: 7px 11px 8px; }
+/* Bubble tail — "dekor" tarafdagi burchak sal qirrali (Telegram/ * WhatsApp uslubi). mine — pastki-O'NG burch... */
+#chatThreadModal .chat-msg.mine .chat-bubble { border-bottom-right-radius: 5px; }
+#chatThreadModal .chat-msg.theirs .chat-bubble { border-bottom-left-radius: 5px; }
+#chatThreadModal .chat-msg-time { font-size: 11px; }
+#chatThreadModal .chat-msg.mine .chat-msg-time { color: rgba(255, 255, 255,0.75); }
+#chatThreadModal .chat-msg.theirs .chat-msg-time { color: var(--c-text-time); }
+#chatThreadModal .msg-ticks { color: rgba(255, 255, 255,0.6); }
+#chatThreadModal .msg-ticks.read { color: var(--c-tick-read); }
+/* Files & media inside bubble */
+#chatThreadModal .cfm-name { color: var(--c-text-1); }
+#chatThreadModal .chat-msg.theirs .cfm-name { color: var(--c-text-1); }
+#chatThreadModal .cfm-size, #chatThreadModal .chat-msg.theirs .cfm-size { color: var(--c-text-2); }
+#chatThreadModal .cfm-dl { background: var(--pal-white-14); color: var(--c-text-1); }
+#chatThreadModal .cfm-dl:hover { background: rgba(255,255,255,0.24); }
+/* Voice message bubble — circular play + waveform (demo look) */
+#chatThreadModal .chat-voice-msg { min-width: 210px; gap: 8px; }
+#chatThreadModal .chat-msg.mine .cvm-play { color: var(--pal-white); }
+#chatThreadModal .chat-msg.mine .cvm-play:hover { background: rgba(255,255,255,0.34); }
+#chatThreadModal .chat-msg.mine .cvm-bar { background: var(--pal-white-42); }
+#chatThreadModal .chat-msg.mine .cvm-bar.played { background: rgba(255,255,255,0.95); }
+#chatThreadModal .chat-msg.mine .cvm-dur { color: rgba(255,255,255,0.8); }
+#chatThreadModal .chat-msg.theirs .cvm-play { background: var(--c-accent); color: var(--c-bg-chat); }
+#chatThreadModal .chat-msg.theirs .cvm-play:hover { background: var(--c-accent-2); }
+#chatThreadModal .chat-msg.theirs .cvm-bar { background: var(--c-text-2); opacity: 0.5; }
+#chatThreadModal .chat-msg.theirs .cvm-bar.played { background: var(--pal-white); opacity: 1; }
+#chatThreadModal .chat-msg.theirs .cvm-dur { color: var(--c-text-2); }
+/* Composer / input row — skrinshotga 1:1 mos, tekis (flat) ko'rinish: * hech qanday pill/doira foni yo'q, iko... */
+#chatThreadModal .chat-thread-input-row { background: var(--c-bg-input); border-top: 1px solid var(--c-divider); padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px)); position: relative; }
+#chatThreadModal .chat-thread-input { background: transparent; border: none; border-radius: 0; color: var(--c-text-1); padding: 9px 4px; transition: none; }
+#chatThreadModal .chat-thread-input::placeholder { color: var(--c-text-2); }
+#chatThreadModal .chat-emoji-btn { background: transparent; color: var(--c-text-2); }
+#chatThreadModal .chat-emoji-btn:hover { background: transparent; color: var(--c-text-1); }
+#chatThreadModal .chat-attach-btn { background: transparent; color: var(--c-text-2); transition: none; }
+#chatThreadModal .chat-attach-btn:hover { background: transparent; color: var(--c-text-1); }
+#chatThreadModal .chat-voice-btn { background: transparent; box-shadow: none; color: var(--c-text-1); }
+#chatThreadModal .chat-voice-btn:hover { background: transparent; }
+/* Mikrofon tugmasi bosib turilganda — oddiy scale animatsiya. */
+#chatThreadModal .chat-voice-btn.active { transform: scale(1.2); transition: none; }
+/* Reply bar above input */
+#chatThreadModal .chat-reply-bar { background: var(--c-bg-input); border-top: 1px solid var(--c-divider); }
+#chatThreadModal .crb-name { color: var(--c-accent-2); }
+#chatThreadModal .crb-text { color: var(--c-text-2); }
+#chatThreadModal .crb-line { background: var(--c-accent); }
+#chatThreadModal .crb-close { background: var(--pal-white-08); color: var(--c-text-2); }
+#chatThreadModal .crb-close:hover { background: var(--pal-white-14); color: var(--c-text-1); }
+/* File preview above input */
+#chatThreadModal .chat-file-preview { background: var(--c-bg-input); border-top: 1px solid var(--c-divider); }
+#chatThreadModal .cfp-name { color: var(--c-text-1); }
+#chatThreadModal .cfp-size { color: var(--c-text-2); }
+#chatThreadModal .cfp-icon { background: var(--pal-white-08); color: var(--c-accent); }
+#chatThreadModal .cfp-remove { background: var(--pal-white-08); color: var(--c-text-2); }
+#chatThreadModal .cfp-remove:hover { background: rgba(255,75,75,0.18); color: var(--c-danger); }
+/* Context menu — align to same palette (sibling of #chatThreadModal) */
+#chatContextMenu { background: var(--c-bg-header, var(--pal-gray-900)); border: 1px solid var(--pal-white-06); }
+#chatContextMenu .ctx-item:hover { background: var(--pal-white-06); }
+/* Lightbox backdrop */
+#chatLightbox { background: rgba(0, 0, 0,0.92); }
+/* ─── 00-components.core ─── */
+/* ═══════════════════════════════════════════════════════════════ MRspace — CORE COMPONENTS (single source of... */
+/* 1. Buttons */
+.btn-primary { width: 100%; border: none; color: var(--pal-white); font-family: var(--font); cursor: pointer; margin-top: 4px; transition: none; }
+.btn-primary:active { opacity: 0.85; }
+.btn-ghost {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 0.5px solid var(--glass-border);
+  border-radius: 12px;
+  color: var(--text2);
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+  margin-top: 8px;
+  transition: none;
+}
+.btn-ghost:hover { color: var(--text); }
+.btn-ghost:active { opacity: 0.85; }
+.btn-danger {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 0.5px solid var(--pal-gray-700);
+  border-radius: 12px;
+  color: var(--red);
+  font-size: 13px;
+  font-family: var(--font);
+  cursor: pointer;
+  margin-top: 8px;
+  transition: none;
+}
+.btn-danger:active { opacity: 0.85; }
+/* 2. Bottom nav / sidebar */
+.bot-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav);
+  background: var(--bg2, var(--glass));
+  border-top: 0.5px solid var(--glass-border);
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+/* Desktop: bottom nav → left sidebar */
+@media (min-width: 768px) {
+  .bot-nav {
+    bottom: auto;
+    top: 0;
+    left: 0;
+    right: auto;
+    width: var(--sidebar);
+    height: 100dvh;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 4px;
+    padding: 16px 0;
+    border-top: none;
+    border-right: 0.5px solid var(--glass-border);
+    background: transparent;
+  }
+}
+/* 3. App header */
+.app-hdr { background: var(--bg2, var(--glass)); border-bottom: 0.5px solid var(--glass-border); box-shadow: none; }
+@media (min-width: 768px) {
+  .app-hdr { background: transparent; }
+}
+/* 4. Input fields */
+.field, input:not([type="checkbox"]):not([type="radio"]), textarea { color: var(--text); transition: none; }
+.field:focus, input:focus, textarea:focus { outline: none; }
+input::placeholder, textarea::placeholder, .field::placeholder { color: var(--text3); }
+/* 5. Post card (base) */
+.post { background: var(--bg2, var(--glass)); border: 0.5px solid var(--glass-border); border-radius: 14px; box-shadow: none; transition: none; }
+.post:hover { box-shadow: none; transform: none; }
+@media (min-width: 768px) {
+  .post { border-radius: 16px; }
+}
+/* ─── post-composer ─── */
+/* ═══════════════════════════════════════════ POST COMPOSER — X.com uslubidagi post yaratish oynasi Faqat #up... */
+/* Orqa fon — to'liq qora emas, 0.8 shaffoflik (sahifa sal ko'rinadi) */
+#uploadOverlay { background: rgba(0,0,0,.8); }
+#uploadOverlay .composer-sheet {
+  width: 100%;
+  max-width: 500px;
+  max-height: 90dvh;
+  margin: 0;
+  overflow-y: auto;
+  background: var(--pal-gray-900);
+  border: 1px solid var(--pal-gray-700);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px var(--pal-black-55);
+  padding: 10px 16px max(14px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+}
+/* Top row: close (X) + Post btn */
+#uploadOverlay .composer-top { display: flex; align-items: center; justify-content: space-between; padding: 0 0 6px; }
+#uploadOverlay .composer-close { width: 34px; height: 34px; border-radius: 999px; border: none; background: transparent; color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+#uploadOverlay .composer-post-btn { width: auto; margin: 0 0 0 auto; padding: 7px 18px; border-radius: 999px; font-size: 14.5px; font-weight: 700; }
+#uploadOverlay .composer-post-btn:disabled, #uploadOverlay .composer-post-btn:disabled * { cursor: not-allowed; opacity: 1; }
+/* Body: avatar + input/preview/visibility */
+#uploadOverlay .composer-body { display: flex; align-items: flex-start; gap: 12px; padding-bottom: 10px; }
+#uploadOverlay .composer-avi { width: 40px; height: 40px; border-radius: 999px; overflow: hidden; flex-shrink: 0; }
+#uploadOverlay .composer-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#uploadOverlay .composer-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+#uploadOverlay .composer-input {
+  width: 100%;
+  min-height: 64px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  color: var(--text);
+  font-size: 16px;
+  font-family: var(--font);
+  line-height: 1.4;
+  padding: 6px 0 8px;
+  margin: 0;
+}
+#uploadOverlay .composer-input::placeholder { color: #6e6e6e; }
+#uploadOverlay #previewArea { margin: 4px 0 8px; }
+#uploadOverlay .preview-wrap { margin-bottom: 0; }
+/* Visibility: bitta matnli toggle (x.com "Everyone can reply" kabi) */
+/* Divider above toolbar (x.com'dagi kabi) */
+#uploadOverlay .composer-toolbar { display: flex; align-items: center; gap: 2px; padding-top: 8px; border-top: 1px solid var(--pal-gray-700); }
+/* Rasm/video tugmasi — endi katta dashed box emas, ixcham doira ikonka */
+#uploadOverlay .upload-drop {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--blue3, var(--blue));
+  cursor: pointer;
+}
+#uploadOverlay .upload-drop:hover { background: #17384d; box-shadow: none; }
+#uploadOverlay .upload-drop.drag-over { background: #17384d; transform: none; box-shadow: none; }
+@media (max-width: 480px) {
+  #uploadOverlay { padding: 0; align-items: flex-end; }
+  #uploadOverlay .composer-sheet { max-width: 100%; max-height: 92dvh; border-radius: 20px 20px 0 0; border-bottom: none; }
+}
+/* Fayl sahifaga sudralganda — yengil ko'rsatkich */
+body.file-dragging::after { content: ''; position: fixed; inset: 8px; border: 2px dashed var(--x-blue, var(--pal-blue)); border-radius: 16px; background: rgba(29, 155, 240, .06); pointer-events: none; z-index: 9999; }
+/* ─── card-sheets ─── */
+/* ═══════════════════════════════════════════ CARD SHEETS — guruh/kanal yaratish oynalari post composer bilan... */
+#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay { background: rgba(0,0,0,.8); align-items: center; justify-content: center; padding: 20px; }
+:is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet {
+  width: 100%;
+  max-width: 420px;
+  max-height: 90dvh;
+  margin: 0;
+  overflow-y: auto;
+  background: var(--pal-gray-900);
+  border: 1px solid var(--pal-gray-700);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px var(--pal-black-55);
+  padding: 16px;
+}
+:is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet-handle { display: none; }
+/* ─── sidebar-x ─── */
+/* ═══════════════════════════════════════════════════════════════════════ SIDEBAR — X.com uslubi • ≥1100px :... */
+/* Umumiy: akkaunt bloki */
+.sb-account[hidden] { display: none !important; }
+.sb-account { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; background: none; border: none; border-radius: 999px; color: var(--text); font-family: var(--font); text-align: left; cursor: pointer; }
+.sb-acc-avi { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; overflow: hidden; background: var(--bg3, #222); }
+.sb-acc-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sb-acc-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.25; }
+.sb-acc-name { font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-acc-user { font-size: 15px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-acc-dots { flex-shrink: 0; color: var(--text); }
+/* Yozuvlar faqat keng rejimda */
+nav.bot-nav .nav-btn .nav-label { display: none; }
+/* Rail (mobil + planshet) umumiy */
+@media (max-width: 1099px) {
+  nav.bot-nav .sb-acc-meta, nav.bot-nav .sb-acc-dots { display: none; }
+  nav.bot-nav .sb-account { padding: 0; justify-content: center; border-radius: 50%; }
+  nav.bot-nav .sb-acc-avi { width: 36px; height: 36px; }
+  nav.bot-nav #createBtn.nav-center-btn { display: flex !important; align-items: center; justify-content: center; border-radius: 50%; padding: 0; flex-shrink: 0; background: var(--text); color: var(--bg); border: none; box-shadow: none; }
+  nav.bot-nav #createBtn.nav-center-btn::before, nav.bot-nav #createBtn.nav-center-btn::after { display: none !important; }
+  nav.bot-nav #createBtn.nav-center-btn svg { display: block; width: 22px; height: 22px; stroke: currentColor; }
+  nav.bot-nav #createBtn.nav-center-btn .sb-create-label { display: none; }
+}
+/* Mobil: chap rail */
+@media (max-width: 767px) {
+  :root { --nav: 0px; }
+  nav.bot-nav {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: var(--rail);
+    height: 100dvh;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2px;
+    padding: max(env(safe-area-inset-top), 10px) 0 max(env(safe-area-inset-bottom), 10px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+  }
+  nav.bot-nav::-webkit-scrollbar { display: none; }
+  nav.bot-nav .sb-top { display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 0 6px; margin: 0; border: none; }
+  nav.bot-nav .sb-logo-row { width: 44px; height: 44px; padding: 0; background: none; border: none; }
+  nav.bot-nav .sb-logo-glass { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: none; border: none; box-shadow: none; }
+  nav.bot-nav .sb-logo-img { width: 28px; height: 28px; }
+  nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; flex: 0 0 auto; border-radius: 14px; position: relative; }
+  nav.bot-nav .nav-btn.admin-only-btn.d-none { display: none !important; }
+  nav.bot-nav .nav-btn svg { width: 24px; height: 24px; }
+  nav.bot-nav .nav-btn.on { background: none; }
+  nav.bot-nav .sb-bottom { display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: auto; padding-top: 8px; border: none; }
+  #homeView, #followingView, #reelsView, #profileView, #chatsView, #actionsView { margin-left: var(--rail); }
+  .app-hdr { left: var(--rail); }
+}
+/* Keng sidebar (≥1100px) */
+@media (min-width: 1100px) {
+  :root { --sidebar: 260px; --content-left: 260px; }
+  nav.bot-nav { width: var(--sidebar); align-items: stretch; padding: 8px 12px 12px; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+  nav.bot-nav::-webkit-scrollbar { display: none; }
+  nav.bot-nav .sb-top { align-items: flex-start; padding: 0 0 4px 4px; margin: 0; border: none; }
+  nav.bot-nav .sb-logo-row { padding: 0 12px 0 4px; gap: 10px; justify-content: flex-start; }
+  nav.bot-nav .sb-brand-text { display: block; font-size: 20px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); white-space: nowrap; line-height: 1; }
+  nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { flex-direction: row; justify-content: flex-start; align-items: center; align-self: flex-start; width: auto; max-width: 100%; background: none; border: none; box-shadow: none; }
+  nav.bot-nav .nav-btn:hover { border: none; box-shadow: none; }
+  nav.bot-nav .nav-btn.on, nav.bot-nav #sbSearchToggle.search-active { background: none; border: none; box-shadow: none; }
+  nav.bot-nav .nav-btn svg { width: 26px; height: 26px; stroke: var(--text); flex-shrink: 0; }
+  nav.bot-nav .nav-btn.on svg, nav.bot-nav #sbSearchToggle.search-active svg { stroke: var(--text); stroke-width: 2.4; }
+  nav.bot-nav .nav-btn .nav-label { display: block; color: var(--text); white-space: nowrap; }
+  nav.bot-nav .nav-btn::after, #sbSearchToggle::after { display: none !important; }
+  nav.bot-nav .nav-badge { left: 30px; right: auto; top: 6px; }
+  nav.bot-nav #createBtn.nav-center-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    width: auto;
+    padding: 0;
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    box-shadow: none;
+  }
+  nav.bot-nav #createBtn.nav-center-btn::before, nav.bot-nav #createBtn.nav-center-btn::after { display: none !important; }
+  nav.bot-nav #createBtn.nav-center-btn svg { display: none; }
+  nav.bot-nav #createBtn.nav-center-btn .sb-create-label { display: block; color: var(--bg); }
+  nav.bot-nav .sb-bottom { display: flex; flex-direction: column; align-items: stretch; margin-top: auto; padding: 12px 0 0; border: none; }
+}
+/* Post tugma hover: ui-improvements.css dagi #createBtn:hover (transparent) ni bosib o'tadi */
+nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
+/* Akkaunt menyusi (faqat "Chiqish") */
+.sb-acc-menu {
+  position: fixed;
+  z-index: 400;
+  background: var(--bg, var(--pal-black));
+  border: 0.5px solid var(--glass-border, var(--pal-gray-700));
+  border-radius: 16px;
+  padding: 6px 0;
+  box-shadow: 0 0 12px var(--pal-white-12), 0 0 3px rgba(255, 255, 255, .1);
+}
+.sb-acc-item { display: block; width: 100%; padding: 12px 18px; background: none; border: none; text-align: left; white-space: nowrap; font-family: var(--font); font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer; }
+.sb-acc-item:hover { background: var(--pal-mid-16); }
+.sb-acc-logout { color: #f4212e; font-weight: 700; }
+.sb-acc-sep { height: 1px; margin: 4px 12px; background: var(--pal-white-08); }
+/* ═══════════════════════════════════════════════════════════════════════ CHATS — desktop'da X.com uslubi (ch... */
+.chats-filter-btn, .chats-x-pane, .chats-x-empty { display: none; }
+/* Filtr menyusi (body ga qo'shiladi, har qanday kenglikda xavfsiz) */
+.chats-x-menu {
+  position: fixed;
+  z-index: 400;
+  min-width: 150px;
+  padding: 6px 0;
+  background: var(--bg, var(--pal-black));
+  border: 0.5px solid var(--glass-border, var(--pal-gray-700));
+  border-radius: 14px;
+  box-shadow: 0 0 12px var(--pal-white-12), 0 0 3px rgba(255, 255, 255, .1);
+}
+.chats-x-item { display: block; width: 100%; padding: 12px 18px; text-align: left; background: none; border: none; cursor: pointer; font-family: var(--font); font-size: 15px; font-weight: 500; color: var(--text); }
+.chats-x-item.on { font-weight: 700; }
+.chats-x-item:hover { background: var(--pal-mid-16); }
+@media (min-width: 768px) {
+  :root { --chats-w: clamp(300px, 32vw, 400px); }
+  #chatsView.on {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: var(--sidebar);
+    width: var(--chats-w);
+    height: auto !important;
+    min-height: 0 !important;
+    margin-left: 0 !important;
+    padding: 0 !important;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--bg);
+    z-index: 2;
+    border-right: 0.5px solid var(--glass-border);
+    scrollbar-width: thin;
+  }
+  #chatsView .chats-hdr { position: sticky; top: 0; z-index: 3; max-width: none; margin: 0; padding: 14px 16px 8px; gap: 8px; font-size: 20px; font-weight: 800; background: var(--bg) !important; }
+  #chatsView .chats-hdr > span { flex: 1; }
+  #chatsView .chats-list { max-width: none; margin: 0; padding-bottom: 16px; }
+  .chats-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    padding: 0 12px 0 16px;
+    flex-shrink: 0;
+    background: none;
+    border: 1px solid var(--glass-border, var(--pal-gray-700));
+    border-radius: 999px;
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .chats-filter-btn:hover { background: var(--pal-mid-16); }
+  #chatsView .ulist-search-wrap { margin: 4px 16px 10px; padding: 0 16px; height: 44px; border: 1px solid var(--pal-gray-700); border-radius: 999px; background: transparent; }
+  #chatsView .ulist-search-wrap:focus-within { border-color: var(--x-blue, var(--pal-blue)); box-shadow: none; }
+  #chatsListWrap[data-filter="dm"] .grp-rows-section { display: none; }
+  #chatsListWrap[data-filter="groups"] #chatRowsWrap { display: none; }
+  .chats-x-empty.show { display: block; padding: 18vh 24px 0; text-align: center; }
+  .chats-x-empty-title { font-size: 28px; font-weight: 800; color: var(--text); }
+  .chats-x-empty-sub { margin-top: 8px; font-size: 15px; color: var(--text3); }
+  .chats-x-pane { display: flex; position: fixed; z-index: 1; top: 0; bottom: 0; right: 0; left: calc(var(--sidebar) + var(--chats-w)); align-items: center; justify-content: center; background: var(--bg); }
+  .chats-x-pane-in { display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 340px; padding: 0 24px; }
+  .chats-x-pane-ico { width: 96px; height: 96px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg3, var(--pal-gray-900)); color: var(--text); }
+  .chats-x-pane-title { margin-top: 24px; font-size: 22px; font-weight: 800; color: var(--text); }
+  .chats-x-pane-sub { margin-top: 8px; font-size: 15px; line-height: 1.35; color: var(--text3); }
+  .chats-x-newbtn { margin-top: 20px; padding: 0 22px; height: 40px; background: var(--text); color: var(--bg); border: none; border-radius: 999px; font-family: var(--font); font-size: 15px; font-weight: 700; cursor: pointer; }
+  .chats-x-newbtn:hover { opacity: .88; }
+  body:has(#chatsView.on) #chatThreadModal { left: calc(var(--sidebar) + var(--chats-w)); border-left: 0.5px solid var(--glass-border); }
+}
+/* Post tugma: desktop'da ro'yxat OSTIDA (More/Boshqaruv dan keyin), ikonka emas "Post" yozuvi */
+@media (min-width: 768px) {
+  nav.bot-nav #createBtn.nav-center-btn { order: 1; }
+  nav.bot-nav .sb-bottom { order: 2; }
+}
+@media (min-width: 768px) and (max-width: 1099px) {
+  nav.bot-nav #createBtn.nav-center-btn { width: 52px; height: 40px; margin: 12px 0; border-radius: 999px; }
+  nav.bot-nav #createBtn.nav-center-btn svg { display: none; }
+  nav.bot-nav #createBtn.nav-center-btn .sb-create-label { display: block; font-size: 14px; font-weight: 700; color: var(--bg); }
+}
+/* Mobil (<768px): Post ikonka tugma ro'yxat OSTIDA, akkaunt (avatar) undan pastda */
+@media (max-width: 767px) {
+  nav.bot-nav #createBtn.nav-center-btn { order: 1; margin: 12px 0 0; }
+  nav.bot-nav .sb-bottom { order: 2; }
+}
+/* ─── no-animations (F4.4) ─── */
+*, *::before, *::after { animation-name: none !important; animation-duration: 0s !important; transition: none !important; scroll-behavior: auto !important; }
+#splash *, #splash, .spinner, [class*="splash-"] { animation-name: revert !important; animation-duration: revert !important; }
+/* ─── style (global reset) ─── */
+/* ═══════════════════════════════════════════
+   MRspace — Master Stylesheet
+   iOS 27 Liquid Glass Edition — Step 3
+   ═══════════════════════════════════════════ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ── Global Reset ── */
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── CSS Variables — struktural, tema-neytral ── */
+:root {
+  --nav:         56px;
+  --content-left:   0px;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar-thumb:hover { background: var(--line3); }
+
+/* ── HTML root ── */
+html {
+  /* iOS 27 rubber-band overscroll — elastik, bloklash yo'q */
+  overscroll-behavior-y: auto;
+  scroll-behavior: auto;
+}
+
+/* ── Body — wallopaper ko'rinib tursin ── */
+body {
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100dvh;
+  -webkit-overflow-scrolling: touch;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Offline Indicator — liquid glass ── */
+#offlineIndicator {
+  position: fixed;
+  bottom: calc(var(--nav) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--glass-mid);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 0.5px solid var(--glass-border);
+  box-shadow: var(--specular-top), var(--liquid-shadow-md);
+}
+
+#offlineIndicator::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #f59e0b;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #96620D;
+}
+
+
+
+
+/* ── Cached Badge — liquid glass ── */
+.cached-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--pal-gray-700);
+  color: var(--blue2);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 10;
+  border: 0.5px solid #333333;
+  box-shadow: var(--specular-top);
+}
+
+.cached-badge::before {
+  content: '↓';
+  font-size: 10px;
+}
+
+/* ── Global interactive tap feedback ── */
+button:active,
+[role="button"]:active {
+  transition: none;
+}
+
+/* ── iOS 27 Haptic Flash — visual touch confirmation ── */
+
+/* ── iOS 27 Rubber-band pull-to-refresh hint ── */
+
+/* ── SF Pro letter-spacing — iOS native feel ── */
+body, button, input, textarea {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.015em;  /* SF Pro default tight spacing */
+}
+
+h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
+  letter-spacing: -0.025em; /* SF Pro display — daha qalin harflar */
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+}

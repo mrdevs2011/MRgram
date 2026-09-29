@@ -1,3 +1,184 @@
+/* CSS/admin.css — devs-utility, admin, admin-plain. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
+/* ─── devs-utility ─── */
+/* ./utility/fonts/font-style.css */
+.fsi { font-style: italic; }
+.fw-500 { font-weight: 500; }
+.fw-600 { font-weight: 600; }
+/* ./utility/texts/text-colors.css */
+.c-aliceblue { color: aliceblue; }
+.c-antiquewhite { color: antiquewhite; }
+.c-aqua { color: aqua; }
+.c-aquamarine { color: aquamarine; }
+.c-azure { color: azure; }
+.c-beige { color: beige; }
+.c-bisque { color: bisque; }
+.c-black { color: black; }
+.c-blanchedalmond { color: blanchedalmond; }
+.c-blue { color: blue; }
+.c-blueviolet { color: blueviolet; }
+.c-brown { color: brown; }
+.c-burlywood { color: burlywood; }
+.c-cadetblue { color: cadetblue; }
+.c-chartreuse { color: chartreuse; }
+.c-chocolate { color: chocolate; }
+.c-coral { color: coral; }
+.c-cornflowerblue { color: cornflowerblue; }
+.c-cornsilk { color: cornsilk; }
+.c-crimson { color: crimson; }
+.c-cyan { color: cyan; }
+.c-darkblue { color: darkblue; }
+.c-darkcyan { color: darkcyan; }
+.c-darkgoldenrod { color: darkgoldenrod; }
+.c-darkgray { color: darkgray; }
+.c-darkgrey { color: darkgrey; }
+.c-darkgreen { color: darkgreen; }
+.c-darkkhaki { color: darkkhaki; }
+.c-darkmagenta { color: darkmagenta; }
+.c-darkolivegreen { color: darkolivegreen; }
+.c-darkorange { color: darkorange; }
+.c-darkorchid { color: darkorchid; }
+.c-darkred { color: darkred; }
+.c-darksalmon { color: darksalmon; }
+.c-darkseagreen { color: darkseagreen; }
+.c-darkslateblue { color: darkslateblue; }
+.c-darkslategray { color: darkslategray; }
+.c-darkslategrey { color: darkslategrey; }
+.c-darkturquoise { color: darkturquoise; }
+.c-darkviolet { color: darkviolet; }
+.c-deeppink { color: deeppink; }
+.c-deepskyblue { color: deepskyblue; }
+.c-dimgray { color: dimgray; }
+.c-dimgrey { color: dimgrey; }
+.c-dodgerblue { color: dodgerblue; }
+.c-firebrick { color: firebrick; }
+.c-floralwhite { color: floralwhite; }
+.c-forestgreen { color: forestgreen; }
+.c-fuchsia { color: fuchsia; }
+.c-gainsboro { color: gainsboro; }
+.c-ghostwhite { color: ghostwhite; }
+.c-gold { color: gold; }
+.c-goldenrod { color: goldenrod; }
+.c-gray { color: gray; }
+.c-honeydew { color: honeydew; }
+.c-hotpink { color: hotpink; }
+.c-indianred { color: indianred; }
+.c-indigo { color: indigo; }
+.c-ivory { color: ivory; }
+.c-khaki { color: khaki; }
+.c-lavender { color: lavender; }
+.c-lavenderblush { color: lavenderblush; }
+.c-lawngreen { color: lawngreen; }
+.c-lemonchiffon { color: lemonchiffon; }
+.c-lightblue { color: lightblue; }
+.c-lightcoral { color: lightcoral; }
+.c-lightcyan { color: lightcyan; }
+.c-lightgoldenrodyellow { color: lightgoldenrodyellow; }
+.c-lightgray { color: lightgray; }
+.c-lightgrey { color: lightgrey; }
+.c-lightgreen { color: lightgreen; }
+.c-lightpink { color: lightpink; }
+.c-lightsalmon { color: lightsalmon; }
+.c-lightseagreen { color: lightseagreen; }
+.c-lightskyblue { color: lightskyblue; }
+.c-lightslategray { color: lightslategray; }
+.c-lightslategrey { color: lightslategrey; }
+.c-lightsteelblue { color: lightsteelblue; }
+.c-lightyellow { color: lightyellow; }
+.c-lime { color: lime; }
+.c-limegreen { color: limegreen; }
+.c-linen { color: linen; }
+.c-magenta { color: magenta; }
+.c-maroon { color: maroon; }
+.c-mediumaquamarine { color: mediumaquamarine; }
+.c-mediumblue { color: mediumblue; }
+.c-mediumorchid { color: mediumorchid; }
+.c-mediumpurple { color: mediumpurple; }
+.c-mediumseagreen { color: mediumseagreen; }
+.c-mediumturquoise { color: mediumturquoise; }
+.c-mediumvioletred { color: mediumvioletred; }
+.c-midnightblue { color: midnightblue; }
+.c-mintcream { color: mintcream; }
+.c-mistyrose { color: mistyrose; }
+.c-moccasin { color: moccasin; }
+.c-navajowhite { color: navajowhite; }
+.c-navy { color: navy; }
+.c-oldlace { color: oldlace; }
+.c-olive { color: olive; }
+.c-olivedrab { color: olivedrab; }
+.c-orange { color: orange; }
+.c-orangered { color: orangered; }
+.c-orchid { color: orchid; }
+.c-palegoldenrod { color: palegoldenrod; }
+.c-palegreen { color: palegreen; }
+.c-paleturquoise { color: paleturquoise; }
+.c-palevioletred { color: palevioletred; }
+.c-papayawhip { color: papayawhip; }
+.c-peachpuff { color: peachpuff; }
+.c-peru { color: peru; }
+.c-pink { color: pink; }
+.c-plum { color: plum; }
+.c-powderblue { color: powderblue; }
+.c-purple { color: purple; }
+.c-rebeccapurple { color: rebeccapurple; }
+.c-red { color: red; }
+.c-rosybrown { color: rosybrown; }
+.c-royalblue { color: royalblue; }
+.c-saddlebrown { color: saddlebrown; }
+.c-salmon { color: salmon; }
+.c-sandybrown { color: sandybrown; }
+.c-seagreen { color: seagreen; }
+.c-seashell { color: seashell; }
+.c-sienna { color: sienna; }
+.c-silver { color: silver; }
+.c-skyblue { color: skyblue; }
+.c-slateblue { color: slateblue; }
+.c-slategray { color: slategray; }
+.c-slategrey { color: slategrey; }
+.c-snow { color: snow; }
+.c-springgreen { color: springgreen; }
+.c-steelblue { color: steelblue; }
+.c-tan { color: tan; }
+.c-teal { color: teal; }
+.c-thistle { color: thistle; }
+.c-tomato { color: tomato; }
+.c-turquoise { color: turquoise; }
+.c-violet { color: violet; }
+.c-white { color: white; }
+.c-whitesmoke { color: whitesmoke; }
+.c-yellow { color: yellow; }
+.ttl { text-transform: lowercase; }
+/* ./utility/texts/text-align.css */
+.tal { text-align: left; }
+.tac { text-align: center; }
+.tar { text-align: right; }
+.p-10px { padding: 10px; }
+.pt-20px { padding-top: 20px; }
+.pt-60px { padding-top: 60px; }
+.pt-80px { padding-top: 80px; }
+.mb-20px { margin-bottom: 20px; }
+/* ./utility/margin/margin-top.css */
+.mt-5px { margin-top: 5px; }
+.mt-10px { margin-top: 10px; }
+.mt-15px { margin-top: 15px; }
+.mt-20px { margin-top: 20px; }
+.mt-25px { margin-top: 25px; }
+.mt-30px { margin-top: 30px; }
+.mt-35px { margin-top: 35px; }
+.mt-40px { margin-top: 40px; }
+.mt-45px { margin-top: 45px; }
+.mt-50px { margin-top: 50px; }
+.mt-55px { margin-top: 55px; }
+.mt-60px { margin-top: 60px; }
+.mt-65px { margin-top: 65px; }
+.mt-70px { margin-top: 70px; }
+.mt-75px { margin-top: 75px; }
+.mt-80px { margin-top: 80px; }
+.mt-85px { margin-top: 85px; }
+.mt-90px { margin-top: 90px; }
+.mt-95px { margin-top: 95px; }
+.mt-100px { margin-top: 100px; }
+.brr-10px { border-radius: 10px; }
+/* ─── admin ─── */
 /* ═══════════════════════════════════════════════════════════════════════ ADMIN PANEL — Users bo'limi Barcha... */
 /* Header */
 .users-admin-hdr { padding: 20px 16px 12px; border-bottom: 1px solid var(--line); }
@@ -155,3 +336,86 @@
   #actionsView .ua-row { background: var(--ag-glass); border: 0.5px solid var(--ag-border-side); border-radius: 16px; box-shadow: var(--ag-specular), 0 2px 12px var(--pal-black); margin-bottom: 8px; }
   #actionsView .ua-row:hover { background: var(--ag-glass-mid); border-color: var(--ag-border-top); box-shadow: var(--ag-specular), var(--ag-shadow-hover); }
 }
+/* ─── admin-plain ─── */
+/* ═══════════════════════════════════════════════════════════════════════ ADMIN PANEL — MRspace uslubida (odd... */
+#actionsView { font-size: 13px; font-family: var(--font); }
+/* Bo'lim sarlavhalari */
+#actionsView .actions-divider { display: block; margin: 16px 0 0; padding: 10px 16px 6px; background: transparent; border-top: 1px solid var(--line); border-bottom: none; }
+#actionsView .actions-divider::before, #actionsView .actions-divider::after { display: none; }
+#actionsView .actions-divider-label { font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text); background: none; padding: 0; }
+#actionsView .actions-divider-label::before { content: none; }
+/* Foydalanuvchilar sarlavhasi va qidiruv */
+#actionsView .users-admin-hdr { padding: 12px 16px; border-bottom: 1px solid var(--line); }
+#actionsView .users-admin-hdr h2 { font-size: 13px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--text); margin: 0 0 10px; }
+#actionsView .users-admin-hdr h2::before { content: none; }
+#actionsView .ua-search-row { margin-top: 0; gap: 8px; }
+#actionsView .ua-search-input, #actionsView .ua-status-filter { border-radius: 10px; padding: 8px 12px; font-size: 13px; background: var(--bg2); color: var(--text); border: 1px solid var(--line); font-family: var(--font); }
+#actionsView .ua-search-input:focus, #actionsView .ua-status-filter:focus { border-color: var(--blue); outline: none; }
+/* Ro'yxat */
+#actionsView .users-admin-list { padding-bottom: 40px; }
+#actionsView .ua-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+#actionsView .ua-row:hover { background: var(--bg2); }
+#actionsView .ua-info { flex: 1 1 200px; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; }
+#actionsView .ua-name { font-size: 14px; font-weight: 600; margin: 0; color: var(--text); }
+#actionsView .ua-uname { font-size: 12.5px; margin: 0; color: var(--text2); }
+#actionsView .ua-date { font-size: 12px; margin: 0; color: var(--text3); }
+#actionsView .ua-status { margin: 0; }
+#actionsView .ua-actions { flex-direction: row; flex-wrap: wrap; gap: 6px; margin: 0; }
+/* Badge */
+#actionsView .ua-badge { border-radius: 6px; padding: 2px 8px; font-size: 11.5px; font-weight: 600; }
+#actionsView .ua-badge::before, #actionsView .ua-badge::after { content: none; }
+/* Tugmalar */
+#actionsView .ua-actions button,
+#actionsView .ua-delete-btn,
+#actionsView .pmini-actions button,
+#actionsView .bc-send-btn,
+#actionsView .bc-del-btn,
+#actionsView .ua-unlock-banner-btn {
+  position: static;
+  transform: none;
+  opacity: 1;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  box-shadow: none;
+  background: var(--bg3);
+  color: var(--text);
+  border: 1px solid var(--line2);
+  cursor: pointer;
+  font-family: var(--font);
+}
+#actionsView .ua-actions button::before,
+#actionsView .ua-actions button::after,
+#actionsView .pmini-actions button::before,
+#actionsView .pmini-actions button::after,
+#actionsView .bc-send-btn::before,
+#actionsView .bc-send-btn::after,
+#actionsView .bc-del-btn::before,
+#actionsView .bc-del-btn::after,
+#actionsView .ua-unlock-banner-btn::before,
+#actionsView .ua-unlock-banner-btn::after {
+  content: none;
+}
+#actionsView .ua-actions button:hover, #actionsView .pmini-actions button:hover, #actionsView .bc-send-btn:hover, #actionsView .bc-del-btn:hover { background: var(--bg2); }
+#actionsView .ua-approve-btn, #actionsView .pmini-approve-btn, #actionsView .ua-unblock-btn { color: var(--green); border-color: color-mix(in srgb, var(--green) 35%, var(--line)); }
+#actionsView .ua-reject-btn, #actionsView .pmini-reject-btn, #actionsView .ua-block-btn, #actionsView .ua-delete-btn, #actionsView .bc-del-btn { color: var(--red); border-color: color-mix(in srgb, var(--red) 35%, var(--line)); }
+#actionsView .bc-send-btn { color: var(--text); }
+#actionsView .bc-send-btn svg, #actionsView .bc-del-btn svg { display: inline-block; }
+/* Kutayotganlar */
+#actionsView .pmini-wrap { margin: 0; gap: 0; }
+#actionsView .pmini-card, #actionsView .pmini-locked, #actionsView .pmini-empty { background: transparent; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 10px 16px; font-size: 13px; text-align: left; }
+#actionsView .pmini-name { font-size: 14px; }
+#actionsView .pmini-sub { font-size: 12px; margin: 0; color: var(--text3); }
+#actionsView .pmini-empty::before, #actionsView .pmini-locked::before { content: none; }
+/* Broadcast */
+#actionsView .bc-wrap { margin: 0; padding: 12px 16px; }
+#actionsView .bc-input, #actionsView .bc-select { border-radius: 10px; font-size: 13px; font-family: var(--font); background: var(--bg2); color: var(--text); border: 1px solid var(--line); }
+#actionsView .bc-input:focus { border-color: var(--blue); outline: none; }
+#actionsView .bc-current-wrap, #actionsView .bc-history-wrap { margin: 0; padding: 10px 16px; border-radius: 0; background: transparent; border: 0; border-top: 1px solid var(--line); }
+#actionsView .bc-history-item { border: 0; border-bottom: 1px solid var(--line); border-radius: 0; background: transparent; padding: 8px 0; }
+#actionsView .bc-empty { background: transparent; border: 0; border-radius: 0; padding: 8px 0; text-align: left; font-size: 13px; color: var(--text3); }
+#actionsView .bc-empty::before { content: none; }
+#actionsView .bc-current-label, #actionsView .bc-history-label { font-size: 12px; color: var(--text2); }

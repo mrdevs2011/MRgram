@@ -1,3 +1,15 @@
+/* CSS/base.css — splash, loading. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
+/* ─── splash ─── */
+/* ═══════════════════════ SPLASH SCREEN — Minimal ═══════════════════════ */
+#splash { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: none; background-color: var(--pal-gray-900); }
+#splash.out { opacity: 0; pointer-events: none; }
+.splash-inner { text-align: center; display: flex; flex-direction: column; align-items: center; }
+.splash-svg { width: 96px; height: 96px; border-radius: 0; overflow: visible; }
+.splash-wordmark { font-size: 22px; font-weight: 600; letter-spacing: 1px; color: var(--text); margin-top: 18px; }
+/* ═══════════════════════════════════════════ SPLASH — THEME AWARE (bg saqlanadi, o'zgarmagan) ══════════════... */
+[data-theme="dark"] #splash { background-color: var(--pal-gray-900); }
+/* [data-theme="dark"] .splash-wordmark → CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi) — b... */
+/* ─── loading ─── */
 /* ═══════════════════════ AUTH SCREEN ═══════════════════════ */
 #authWrap { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; background-color: var(--pal-gray-900); }
 #authWrap.show { display: flex; }

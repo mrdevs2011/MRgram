@@ -1,0 +1,1938 @@
+/* CSS/features.css — feed, profile, nav, chat, groups. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
+/* ─── feed ─── */
+/* ═══════════════════════ APP SHELL ═══════════════════════ */
+#app { display: none; }
+#app.show { display: block; }
+/* Header */
+.app-hdr { position: fixed; top: 0; left: 0; right: 0; height: var(--hdr); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; gap: 8px; z-index: 80; }
+/* .app-hdr::after gradient chizig'i o'chirildi — flat dizayn, chiziq kerak emas */
+.hdr-logo { display: flex; align-items: center; gap: 6px; flex-shrink: 0; background: none; border: none; padding: 6px 8px 6px 0; cursor: pointer; border-radius: 10px; transition: none; -webkit-tap-highlight-color: transparent; }
+.hdr-logo:active { opacity: 1; }
+.hdr-logo-glass { position: relative; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: none; border: none; box-shadow: none; }
+.hdr-logo-glass img { position: relative; z-index: 1; }
+.hdr-brand { font-weight: 700; font-size: 15px; letter-spacing: -0.2px; background: var(--blue2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* Header right group */
+.hdr-right { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
+/* Icon button (search, theme) in header */
+.hdr-icon-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: none; border: none; color: var(--text2); cursor: pointer; flex-shrink: 0; }
+.hdr-icon-btn svg { width: 17px; height: 17px; }
+/* Search Overlay (replaces old hdr-search-expand) */
+.search-overlay {
+  position: fixed;
+  top: var(--hdr);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 16px;
+  background: var(--pal-black);
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+.search-overlay.open { opacity: 1; pointer-events: all; }
+/* Search ochilganda header yashiriladi */
+.search-overlay.open ~ .app-hdr, body:has(.search-overlay.open) .app-hdr { display: none !important; }
+.search-overlay-inner { width: min(580px, calc(100vw - 24px)); display: flex; flex-direction: column; gap: 8px; transform: translateY(-8px); transition: none; }
+.search-overlay.open .search-overlay-inner { transform: translateY(0); }
+.search-overlay-box { display: flex; align-items: center; gap: 10px; background: var(--bg2); border: 1.5px solid var(--line3); border-radius: 14px; padding: 12px 14px; }
+.search-overlay-icon { flex-shrink: 0; }
+.search-overlay-box input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-size: 15px; font-family: var(--font); caret-color: var(--blue); }
+.search-overlay-box input::placeholder { color: var(--text3); }
+.search-overlay-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--bg4);
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: none;
+}
+.search-overlay-close:hover { background: var(--bg5); color: var(--text); }
+/* old hdr-search kept for desktop */
+.hdr-search { flex: 1; max-width: 400px; display: none; align-items: center; gap: 6px; background: var(--pal-gray-900); border: 1px solid var(--line); border-radius: 50px; padding: 6px 10px; transition: none; margin: 0 auto; }
+.hdr-search:focus-within { border-color: var(--pal-gray-700); background: var(--pal-gray-900); box-shadow: 0 0 0 3px var(--pal-gray-900); }
+.hdr-search input { background: none; border: none; color: var(--text); font-size: 13px; font-family: var(--font); outline: none; width: 100%; min-width: 100px; }
+.hdr-search input::placeholder { color: var(--text3); font-size: 12px; }
+/* Global mute button */
+.hdr-mute-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: none; background: none; color: var(--text2); cursor: pointer; flex-shrink: 0; transition: none; }
+.hdr-mute-btn:hover { background: var(--pal-gray-800); color: var(--text); }
+.hdr-mute-btn.is-unmuted { color: var(--blue); }
+/* Header New Post Button (Mobile) */
+.hdr-new-post-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: var(--text2);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: none;
+}
+.hdr-new-post-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+.hdr-new-post-btn:hover { background: var(--bg3); color: var(--text); }
+.hdr-new-post-btn:active { opacity: 0.7; }
+/* Desktop: hide header new post button (sidebar used instead) */
+@media (min-width: 768px) {
+  .hdr-new-post-btn { display: none !important; }
+}
+/* hdr-theme-btn → now uses .hdr-icon-btn.theme-btn */
+/* ═══════════════════════ VIEWS ═══════════════════════ */
+/* ══════════════════════════════════════════════ VIEW SYSTEM — 1 vaqtda faqat 1 ta view Har bir view to'liq e... */
+/* Yashirin view — hech qanday joy olmaydi */
+.view { display: none !important; visibility: hidden; position: absolute; pointer-events: none; height: 0; overflow: hidden; }
+/* Aktiv view — to'liq erkin */
+.view.on {
+  display: block !important;
+  visibility: visible;
+  position: static;
+  pointer-events: auto;
+  height: auto;
+  overflow: visible;
+  padding-top: calc(var(--hdr) + 10px);
+  padding-bottom: calc(var(--nav) + env(safe-area-inset-bottom, 0px) + 16px);
+  min-height: calc(100dvh - var(--hdr));
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+/* Desktop: content offset — nav.css dagi margin-left boshqaradi */
+.feed { max-width: 500px; margin: 0 auto; padding: 0 10px; }
+/* ═══════════════════════ POST CARD — Solid UI ═══════════════════════ */
+.post { margin-bottom: 16px; overflow: hidden; isolation: isolate; }
+/* .post:hover cosmetics → CSS/00-components.core.css'da (flat, glow yo'q) */
+.avi {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--glass-mid);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: none;
+}
+.avi:hover { border-color: var(--pal-legacy-464646); }
+.avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.post-meta { cursor: pointer; }
+.post-time { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+.post-badge { font-size: 9px; font-family: var(--mono); padding: 3px 8px; border-radius: 20px; font-weight: 500; }
+.del-btn { background: none; border: none; color: var(--text3); cursor: pointer; padding: 6px; border-radius: 8px; transition: none; display: flex; }
+.del-btn:hover { color: var(--red); }
+/* Media */
+.post-media { cursor: pointer; background: var(--pal-black); position: relative; width: 100%; min-height: 180px; }
+.post-media img { width: 100%; height: auto; display: block; background: var(--pal-black); filter: blur(0); }
+.post-media video { width: 100%; height: auto; max-height: 70vh; display: block; background: var(--pal-black); object-fit: contain; filter: blur(0); transition: none; }
+/* Media hali to'liq yuklanmagan holat: o'lchami saqlanadi, faqat blur bilan. Post matni buldMedia'dan alohida... */
+.post-media.pm-loading { background: var(--pal-gray-800); }
+.post-media.pm-loading img, .post-media.pm-loading video { filter: blur(22px); transform: scale(1.08); }
+.post-media.pm-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2.5px solid var(--pal-white-25);
+  border-top-color: rgba(255,255,255,0.85);
+  animation: none;
+  pointer-events: none;
+}
+.vid-wrap { position: relative; width: 100%; background: var(--pal-black); overflow: hidden; }
+.vid-overlay { position: absolute; inset: 0; bottom: 36px; cursor: pointer; z-index: 1; }
+.vid-controls { position: absolute; bottom: 0; left: 0; right: 0; height: 36px; display: flex; align-items: center; gap: 6px; padding: 0 8px; z-index: 2; }
+.vc-play, .vc-mute, .vc-fs { border: none; color: var(--pal-white); cursor: pointer; padding: 4px; flex-shrink: 0; }
+.vc-play svg, .vc-mute svg, .vc-fs svg { width: 16px; height: 16px; }
+.vc-progress { flex: 1; cursor: pointer; padding: 8px 0; }
+.vc-bar { height: 3px; background: var(--pal-legacy-525257); border-radius: 2px; overflow: hidden; }
+.vc-fill { height: 100%; background: var(--pal-white); width: 0%; border-radius: 2px; transition: none; }
+.vc-time { font-size: 11px; color: var(--pal-white); flex-shrink: 0; min-width: 28px; }
+/* Caption */
+.cap-more { color: var(--text3); font-size: 12px; cursor: pointer; font-weight: 500; margin-left: 2px; transition: none; }
+.cap-more:hover { color: var(--text2); }
+.cap-collapsed .cap-full { display: none; }
+.cap-expanded .cap-short { display: none; }
+.cap-expanded .cap-full { display: inline; }
+/* File Card */
+/* .file-card bazaviy blok → CSS/nav.css'ga ko'chirilgan (yagona manba, borderless.css bilan ziddiyatsiz) */
+/* legacy – kept for old posts */
+.file-icon { width: 42px; height: 42px; border-radius: 12px; background: var(--blue-glow2); border: 1px solid var(--pal-gray-700); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.file-info { flex: 1; min-width: 0; }
+.file-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-size { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+.file-dl {
+  padding: 7px 14px;
+  background: var(--blue-glow2);
+  border: 1px solid var(--pal-gray-800);
+  border-radius: 10px;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: none;
+  flex-shrink: 0;
+}
+.file-dl:hover { background: var(--pal-gray-700); }
+/* Stats & Actions */
+.post-stats { padding: 8px 14px; display: flex; gap: 16px; font-size: 11px; color: var(--text3); border-top: 0.5px solid var(--glass-border); border-bottom: 0.5px solid var(--glass-border); font-family: var(--mono); }
+.act-btn { justify-content: center; cursor: pointer; transition: none; border-right: 0.5px solid var(--glass-border); }
+.act-btn:last-child { border-right: none; }
+.act-btn:active { transition: none; }
+/* Reel Caption Sheet */
+#reelCapSheet .sheet { background: var(--pal-gray-900); }
+.rcap-user-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.rcap-text { font-size: 14px; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+/* ═══════════════════════ HEART BURST ANIMATION ═══════════════════════ */
+.heart-burst { position: absolute; width: 52px; height: 52px; pointer-events: none; z-index: 10; transform: translate(-50%, -50%); }
+.heart-burst svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 8px var(--pal-black-35)); }
+/* ═══════════════════════ LIKE POP ANIMATION ═══════════════════════ */
+/* Hide header completely in reels on mobile */
+.app-hdr.force-hide { display: none !important; }
+/* Mobile: reels da to'liq ekran (sidebar yo'q paytda) */
+/* Header button visibility control */
+.hdr-hidden { display: none !important; }
+/* Hide search btn when not on home/following */
+.hdr-search-wrap.search-hidden { display: none !important; }
+/* Video player mute btn: mobile faqat */
+@media (min-width: 768px) {
+  .vc-mute { display: none !important; }
+}
+/* Reel vol btn: mobile = top-right absolute, desktop = top bar ichida */
+.reel-vol-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  transition: none;
+  flex-shrink: 0;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 20;
+  background: var(--pal-black);
+}
+.reel-vol-top:hover { background: var(--pal-black); }
+.reel-vol-top svg { width: 18px; height: 18px; }
+/* Desktop: top bar ichida — position reset */
+@media (min-width: 768px) {
+  .reel-vol-top { position: static; background: var(--pal-black); width: 36px; height: 36px; }
+}
+/* Feed Subscribe Button */
+/* ═══════════════════════════════════════════════ FLOATING UPLOAD PROGRESS BAR ══════════════════════════════... */
+.upload-float-bar {
+  position: fixed;
+  bottom: calc(var(--content-bottom, var(--nav)) + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  margin-left: calc(var(--content-left, 0px) / 2);
+  background: var(--bg2);
+  border: 1px solid var(--line2);
+  border-radius: 50px;
+  padding: 8px 14px 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 9999;
+  box-shadow: 0 4px 20px var(--pal-black);
+  min-width: 200px;
+  max-width: calc(100vw - 32px);
+}
+.ufb-icon { width: 28px; height: 28px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--pal-white); }
+.ufb-icon.done { animation: none; background: #16a34a; }
+.ufb-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.ufb-name { font-size: 11px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ufb-track { height: 3px; background: var(--bg4); border-radius: 99px; overflow: hidden; }
+.ufb-fill { height: 100%; background: var(--blue); border-radius: 99px; transition: none; width: 0%; }
+/* Indeterminate animation when stuck */
+.ufb-fill.indeterminate { width: 40% !important; animation: none; }
+.ufb-pct { font-size: 11px; font-weight: 600; color: var(--blue); flex-shrink: 0; min-width: 32px; text-align: right; }
+/* ═══════════════════════════════════════════ THEME AWARE ENHANCEMENTS ══════════════════════════════════════... */
+/* Dark mode: stronger borders and shadows */
+[data-theme="dark"] .post:hover { box-shadow: 0 4px 20px var(--pal-black); }
+/* Light mode: softer shadows */
+/* box-shadow o'chirildi — borderless.css:43 (.post guruhida) bir xil specificity bilan keyinroq yuklanadi, bo... */
+/* Video controls - theme aware */
+[data-theme="dark"] .vid-controls { background: var(--pal-black); }
+/* File card hover - theme aware */
+/* [data-theme="dark"] .file-card:hover → CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi, g'o... */
+/* Badge styles - theme aware */
+/* Search overlay - theme aware */
+/* [data-theme="dark"] .search-overlay-box → CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi,... */
+/* Empty states - theme aware */
+[data-theme="dark"] .empty-icon, [data-theme="dark"] .empty-search-icon { background: var(--blue-glow2); }
+/* Skeleton loading - theme aware shimmer */
+.skeleton-post { border: 1px solid var(--line); position: relative; animation: none; }
+.skel-avi { width: 38px; height: 38px; border-radius: 50%; background: var(--bg3); background-size: 200% 100%; animation: none; flex-shrink: 0; }
+.skel-line { height: 12px; border-radius: 4px; background: var(--bg3); background-size: 200% 100%; animation: none; }
+.skel-media { width: 100%; height: 200px; border-radius: 8px; background: var(--bg3); background-size: 200% 100%; animation: none; margin: 0; }
+.skel-actions { display: flex; gap: 8px; margin-top: 8px; }
+.skel-actions .skel-line { height: 32px; flex: 1; border-radius: 6px; }
+[data-theme="dark"] .skeleton-post { border-color: var(--pal-gray-800); }
+/* Like button pop animation */
+/* ═══════════════════════════════════════════ ENHANCED POST CARD STYLES ═════════════════════════════════════... */
+/* Gradient border hover + zoom o'chirildi (flat X.com uslubi, 2026) */
+.post-media { overflow: hidden; }
+.post-media img { transition: none; }
+/* Video post indicator */
+.post-is-video::after { content: ''; position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: var(--pal-black); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.post-is-video::before { content: '▶'; position: absolute; top: 10px; right: 10px; color: var(--pal-white); font-size: 12px; z-index: 2; }
+/* Post badge animation */
+/* Action button ripple effect */
+.act-btn { position: relative; }
+/* Avatar shimmer effect */
+/* ─── profile ─── */
+/* ═══════════════════════ PROFILE VIEW ═══════════════════════ */
+/* Profile view layout fix (desktop: sidebar ostida emas, markazda) */
+#profileView { position: relative; z-index: 1; box-sizing: border-box; overflow-x: hidden; min-height: 100%; }
+#profileView.on { display: block; }
+@media (min-width: 768px) {
+  #profileView.on { margin-left: var(--content-left, var(--sidebar, 68px)) !important; width: calc(100% - var(--content-left, var(--sidebar, 68px))); max-width: 680px; padding-top: 0 !important; }
+  #profileView .profile-hdr { padding-top: 20px; padding-left: 16px; padding-right: 16px; }
+  #profileView .profile-avi-row { margin-top: 0; }
+}
+@media (min-width: 1200px) {
+  #profileView.on { width: var(--center-w, 600px) !important; max-width: var(--center-w, 600px) !important; margin-right: 0; }
+}
+/* profileView padding — .view.on orqali boshqariladi (feed.css) */
+.profile-hdr { padding: 68px 16px 16px; }
+.profile-grid-hdr { margin: 0; }
+.profile-grid-tab { display: flex; align-items: center; gap: 6px; padding: 11px 16px; font-size: 12px; font-weight: 500; color: var(--text3); cursor: pointer; transition: none; }
+/* .profile-hdr::before (blue-halo pseudo-element) butunlay o'chirildi 2026-08-30 — bu yerdagi top/left-only q... */
+.profile-top { display: flex; gap: 16px; align-items: center; margin-bottom: 14px; position: relative; z-index: 1; }
+/* profile-info: ism, bio, tugma */
+.profile-info { padding-top: 4px; }
+.profile-avi { width: 76px; height: 76px; border-radius: 50%; position: relative; cursor: pointer; flex-shrink: 0; transition: none; }
+/* .profile-avi:hover border-color → --pg-* blok belgilaydi (pastda). Glow shadow va scale(1.05) 2026-08-30'da... */
+.profile-avi img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.avi-edit-badge { position: absolute; bottom: 2px; right: 2px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.profile-stats { display: flex; gap: 0; flex: 1; }
+.stat { text-align: center; flex: 1; padding: 6px 0; }
+.stat-val { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+.stat-lbl { font-size: 10px; color: var(--text3); margin-top: 3px; font-family: var(--mono); letter-spacing: 0.3px; }
+.profile-name { font-size: 15.5px; font-weight: 600; margin-bottom: 3px; letter-spacing: -0.3px; }
+.profile-bio { font-size: 13px; color: var(--text2); line-height: 1.45; }
+.profile-actions-row { display: flex; align-items: stretch; gap: 8px; margin-top: 14px; }
+.profile-actions-row .edit-btn { flex: 1; margin-top: 0; }
+.settings-section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; margin: 6px 0 10px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 2px 14px; }
+.settings-row-text { min-width: 0; }
+.settings-row-title { font-size: 13px; font-weight: 500; color: var(--text); }
+.settings-row-hint { font-size: 11px; color: var(--text3); margin-top: 3px; line-height: 1.4; }
+.switch-toggle { flex-shrink: 0; width: 44px; height: 26px; padding: 0; border-radius: 14px; background: var(--pal-legacy-2e2e2e); border: 1px solid var(--line2); position: relative; cursor: pointer; transition: none; }
+.switch-toggle .switch-knob { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--pal-white); box-shadow: 0 1px 3px var(--pal-black-35); transition: none; }
+.switch-toggle.on { background: var(--blue); border-color: transparent; }
+.switch-toggle.on .switch-knob { transform: translateX(18px); }
+.switch-toggle.disabled { opacity: 0.5; cursor: not-allowed; }
+.settings-more-row { display: flex; justify-content: flex-end; margin-top: 16px; position: relative; }
+.settings-more-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; border-radius: 8px; color: var(--text3); cursor: pointer; transition: none; }
+.settings-more-btn:hover { background: var(--pal-gray-900); color: var(--text2); }
+.settings-more-menu {
+  position: absolute;
+  bottom: 40px;
+  right: 0;
+  min-width: 220px;
+  padding: 4px;
+  background: var(--pal-gray-900);
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0,0.45);
+  display: none;
+  z-index: 5;
+}
+.settings-more-menu.show { display: block; }
+.settings-more-menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 12px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: var(--font);
+  font-weight: 500;
+  color: var(--red);
+  cursor: pointer;
+  transition: none;
+}
+.settings-more-menu-item:hover { background: var(--red-glow); }
+.edit-btn { width: 100%; padding: 10px; color: var(--text); font-size: 13px; font-weight: 500; font-family: var(--font); cursor: pointer; margin-top: 14px; }
+.profile-grid { margin-top: 4px; padding: 0 0 12px; }
+/* .grid-cell, .grid-cell img/video, .grid-cell:hover img/video → to'liq ui-improvements.css:610-635 tomonidan... */
+.grid-cell-overlay { align-items: center; border-radius: 6px; }
+/* .grid-cell:hover .grid-cell-overlay { opacity:1 } → ui-improvements.css:651 bilan bir xil qiymat, o'lik, o'... */
+.grid-cell-txt { height: 100%; background: var(--bg2); }
+.grid-play-badge { padding: 3px 5px; }
+/* ═══════════════════════ USER PROFILE MODAL ═══════════════════════ */
+#userProfileModal { position: fixed; inset: 0; background: var(--bg); display: none; overflow-y: auto; scrollbar-width: none; }
+#userProfileModal.show { display: block; }
+.up-back {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  background: var(--pal-black);
+  border: 1px solid var(--pal-legacy-26262c);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 351;
+  transition: none;
+  color: var(--pal-white);
+}
+.up-back:hover { background: var(--pal-black); }
+.up-body { padding-bottom: 60px; }
+.up-head { display: flex; justify-content: center; padding-top: 64px; }
+.up-avi-wrap { position: relative; z-index: 2; }
+.up-avi { width: 90px; height: 90px; border-radius: 50%; background: var(--bg4); overflow: hidden; border: 3.5px solid var(--bg); box-shadow: 0 4px 20px var(--pal-black); display: flex; align-items: center; justify-content: center; }
+.up-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.up-info { padding: 14px 20px 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.up-name { font-size: 19px; font-weight: 700; letter-spacing: -0.4px; }
+.up-bio { font-size: 13px; color: var(--text2); line-height: 1.5; margin-top: 5px; max-width: 260px; }
+.up-stats { display: flex; gap: 0; margin: 18px 0 16px; width: 100%; border: 1px solid var(--line); border-radius: 16px; background: var(--bg2); overflow: hidden; }
+.up-stat { flex: 1; text-align: center; padding: 13px 0; }
+.up-stat:last-child { border-right: none; }
+.up-stat-val { font-size: 17px; font-weight: 700; letter-spacing: -0.5px; }
+.up-stat-lbl { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+.up-divider { display: none; }
+.up-posts-tab { display: flex; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin: 16px -20px 0; width: calc(100% + 40px); background: var(--bg); }
+.up-grid { margin: 0 -20px; width: calc(100% + 40px); padding-bottom: 8px; }
+.up-grid-cell { transition: none; }
+.up-grid-cell-overlay { align-items: center; border-radius: 4px; }
+/* .up-grid-cell:hover .up-grid-cell-overlay { opacity:1 } → ui-improvements.css:651 bilan bir xil qiymat, o'l... */
+/* .up-grid-cell img/video → to'liq ui-improvements.css:620 tomonidan yopiladi, o'lik, o'chirildi */
+.up-grid-cell-txt { height: 100%; background: var(--bg2); }
+/* ═══════════════════════════════════════════ PROFILE — THEME AWARE ENHANCEMENTS ════════════════════════════... */
+/* Dark mode profile */
+/* [data-theme="dark"] .profile-hdr/.profile-avi/.profile-avi:hover → to'liq CSS/dark-theme-fix.css'da qayta b... */
+[data-theme="dark"] .profile-stat { background: var(--pal-gray-900); border: 1px solid var(--pal-gray-800); }
+[data-theme="dark"] .profile-stat:hover { background: var(--pal-gray-800); border-color: var(--pal-legacy-2d2d33); }
+/* Light mode profile */
+/* Profile grid tabs */
+/* [data-theme="dark"] .profile-grid-tab (color) → CSS/dark-theme-fix.css'da qayta belgilangan — bu yerdagi qo... */
+[data-theme="dark"] .profile-grid-tab.active { background: var(--pal-gray-900); }
+/* User profile modal */
+[data-theme="dark"] .up-back { background: var(--pal-black); border: 1px solid var(--pal-legacy-2d2d33); }
+[data-theme="dark"] .up-back:hover { background: var(--pal-black); }
+/* Grid cell overlay — engil qorayish, to'liq qora emas */
+[data-theme="dark"] .grid-cell-overlay, [data-theme="dark"] .up-grid-cell-overlay { background: linear-gradient(to top, var(--pal-black-55) 0%, var(--pal-black-25) 45%, rgba(0,0,0,.12) 100%); }
+/* ═══════════════════════════════════════════ PROFILE STATS — Animated Numbers ══════════════════════════════... */
+/* Stat value animation on page load */
+.stat-val { display: inline-block; }
+/* Stagger animation for each stat */
+.stat:nth-child(1) .stat-val.animate { animation-delay: 0s; }
+.stat:nth-child(2) .stat-val.animate { animation-delay: 0s; }
+.stat:nth-child(3) .stat-val.animate { animation-delay: 0s; }
+.stat:nth-child(4) .stat-val.animate { animation-delay: 0s; }
+/* ═══════════════════════════════════════════ USER PROFILE MODAL ═══════════════════════════════════════════ */
+/* User stats animation */
+.up-stat-val { display: inline-block; }
+.up-stat:nth-child(1) .up-stat-val.animate { animation-delay: 0s; }
+.up-stat:nth-child(2) .up-stat-val.animate { animation-delay: 0s; }
+.up-stat:nth-child(3) .up-stat-val.animate { animation-delay: 0s; }
+/* ═══════════════════════════════════════════════════════════════════════ PROFILE PAGE — SOLID UI ═══════════... */
+/* Profile variables */
+/* Profile header — flat (2026-08-30 tozalandi, halo/glow olib tashlandi) */
+.profile-hdr { background: var(--pg-hdr-bg); border-bottom: none; position: relative; }
+/* .profile-hdr::before blue-halo pseudo-element butunlay o'chirildi — flat dizaynda header ustida gradient ha... */
+.profile-hdr::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 0.5px; background: var(--pg-border-top); pointer-events: none; }
+/* Avatar — flat ring, glow olib tashlandi */
+.profile-avi { background: var(--pg-glass-mid); }
+.profile-avi:hover { border-color: var(--pal-legacy-464646); }
+/* Stat blocks — flat chips */
+.stat { background: var(--pg-glass); border-radius: 14px; border: 0.5px solid var(--pg-border-side); transition: none; margin: 0 3px; }
+.stat:hover { background: var(--pg-glass-mid); }
+/* Edit button — flat */
+.edit-btn { background: var(--pg-glass-mid); border-radius: 14px; transition: none; }
+.edit-btn:hover { background: var(--pg-glass-strong); border-color: var(--pg-border-top); }
+/* Follow/unfollow button — icon only, circle */
+/* Grid tab header — flat strip. background/border-top/border-bottom → borderless.css:1124 (.profile-grid-hdr... */
+/* Profile grid items — flat hover, scale olib tashlandi */
+.profile-grid-item { transition: none; }
+.profile-grid-item:hover { z-index: 2; }
+/* Avi edit badge — flat */
+.avi-edit-badge { background: var(--pal-white); border: 1px solid var(--pal-legacy-525257); }
+/* Avatar Zoom Modal ichidagi Tahrirlash tugmasi */
+.avi-zoom-edit-btn {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: 100px;
+  background: var(--pal-legacy-26262c);
+  border: 1px solid var(--pal-legacy-3f3f44);
+  color: var(--pal-white);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  z-index: 10;
+  transition: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 24px var(--pal-black);
+}
+.avi-zoom-edit-btn:hover { background: var(--pal-gray-700); border-color: var(--pal-white); transform: translateX(-50%) scale(1.04); }
+.avi-zoom-edit-btn:active { transform: translateX(-50%) scale(0.97); }
+/* up-avi hover ring — boshqa user profili */
+#upAviImg { transition: none; }
+#upAviImg:hover { box-shadow: 0 0 0 4px var(--pal-gray-700), 0 6px 24px var(--pal-black); }
+/* ═══════════════════════════════════════════════════════════════════════ PROFILE EDIT — avi, fields (qo'shil... */
+/* Avatar row */
+.profile-avi-row { display: flex; align-items: flex-end; gap: 16px; margin-top: 0; padding: 0 0 12px; position: relative; z-index: 2; }
+/* Username & meta */
+.profile-username { font-size: 13px; color: var(--text3); margin-top: 2px; font-weight: 500; }
+/* Avatar picker in edit sheet */
+.pe-avi-wrap { position: relative; width: 68px; height: 68px; margin: 8px 0 12px 16px; flex-shrink: 0; }
+.pe-avi-img { width: 68px; height: 68px; border-radius: 50%; overflow: hidden; border: 3px solid var(--bg); background: var(--bg3); cursor: pointer; }
+.pe-avi-img img { width: 100%; height: 100%; object-fit: cover; }
+.pe-avi-edit-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid var(--bg);
+}
+/* Fields wrapper */
+.pe-fields { display: flex; flex-direction: column; gap: 4px; padding: 0 0 12px; }
+.pe-field-label { font-size: 11.5px; font-weight: 600; color: var(--text3); margin: 10px 0 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.pe-field-prefix-wrap { position: relative; display: flex; align-items: center; }
+.pe-prefix { position: absolute; left: 14px; color: var(--text3); font-size: 15px; font-weight: 500; pointer-events: none; }
+/* !important shart — .field'ning shorthand padding (nav.css) @import zanjirida profile.css'dan KEYIN yuklanad... */
+.pe-prefix-field { padding-left: 28px !important; }
+/* Group edit avatar */
+.grp-edit-avi-wrap { position: relative; width: 80px; height: 80px; margin: 0 auto 16px; }
+.grp-edit-avi { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: var(--bg3); border: 3px solid var(--glass-border); }
+.grp-edit-avi img { width: 100%; height: 100%; object-fit: cover; }
+.grp-edit-avi-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid var(--bg);
+}
+/* ═══════════════════════════════════════════════════════════════════ SETTINGS — alohida fullscreen sahifa (T... */
+#settingsOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 150; display: none; flex-direction: column; }
+#settingsOverlay.show { display: flex; }
+.settings-hdr { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+.settings-back { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg4); border: none; cursor: pointer; color: var(--text); flex-shrink: 0; transition: none; }
+.settings-back:hover { background: var(--bg5); }
+.settings-hdr-title { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; flex: 1; }
+.settings-hdr-spacer { width: 34px; flex-shrink: 0; }
+.settings-body { flex: 1; overflow-y: auto; padding: 16px 20px max(28px, env(safe-area-inset-bottom)); }
+/* Profil kartasi — Sozlamalar sahifasi tepasida, bosilganda Profilni tahrirlash varag'i ochiladi (Telegram'da... */
+.settings-profile-card { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 4px; background: none; border: none; cursor: pointer; text-align: left; font-family: var(--font); transition: none; border-radius: 12px; }
+.settings-profile-card:hover { background: var(--pal-gray-900); }
+.settings-profile-avi { width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0; background: var(--bg4); overflow: hidden; }
+.settings-profile-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.settings-profile-info { flex: 1; min-width: 0; }
+.settings-profile-name { font-size: 15.5px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.settings-profile-username { font-size: 13px; color: var(--text3); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.settings-profile-chevron { flex-shrink: 0; color: var(--text3); }
+/* Profil post tablar */
+.profile-grid-hdr { display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.profile-grid-hdr::-webkit-scrollbar { display: none; }
+.profile-grid-tab { background: none; border: none; border-bottom: 2px solid transparent; font-family: var(--font); white-space: nowrap; }
+.profile-grid-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+/* Filterlangan tablar — bir xil kvadrat katak */
+.profile-grid--uniform { grid-auto-flow: row; grid-auto-rows: auto; }
+.profile-grid--uniform .grid-cell--media, .profile-grid--uniform .grid-cell--text { grid-row: span 1; aspect-ratio: 1; min-height: 0; }
+/* Profile grid empty state */
+.up-grid-empty {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 48px 20px;
+  text-align: center;
+  border-radius: 16px;
+  border: 1px solid var(--pal-white-06);
+  background: rgba(255,255,255,0.02);
+  margin: 8px 0 16px;
+}
+.up-grid-empty-title { font-size: 15px; font-weight: 600; color: var(--text, var(--pal-gray-100)); }
+.up-grid-empty-sub { font-size: 13px; color: var(--text3, var(--pal-gray-500)); max-width: 260px; line-height: 1.4; }
+/* ─── nav ─── */
+/* ═══════════════════════════════════════════ MRspace — Nav, Modals, Sheets MRspace — Komponent Stillari ════... */
+/* Fields — Input ── * background/border-radius/color/transition (bazaviy) va border-color/ * background/box-s... */
+.field { width: 100%; padding: 13px 16px; font-family: var(--font); outline: none; margin-bottom: 10px; }
+.field::placeholder { color: var(--text3); }
+/* .btn-primary / .btn-ghost / .btn-danger → CSS/00-components.core.css'ga ko'chirildi */
+.auth-switch { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text2); }
+/* Auth error */
+.err-msg { min-height: 18px; font-size: 12px; color: var(--red); margin: -4px 0 8px; padding: 0 4px; line-height: 1.4; font-family: var(--mono); letter-spacing: 0.1px; }
+.field.input-error { border-color: var(--red) !important; background: var(--pal-gray-900) !important; box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-900) !important; }
+.field.input-error:focus { border-color: var(--red) !important; box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-800) !important; }
+#authErr { color: var(--red); font-size: 12.5px; font-weight: 500; min-height: 18px; margin-top: -4px; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+#authErr:not(:empty)::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' stroke='%23f04060' stroke-width='2.5' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E") center/contain no-repeat;
+  flex-shrink: 0;
+}
+.auth-link { color: var(--blue); cursor: pointer; font-weight: 500; transition: none; }
+.auth-link:hover { color: var(--blue2); text-decoration: underline; }
+/* .bot-nav → CSS/00-components.core.css'ga ko'chirildi (.bot-nav::before shimmer chizig'i ataylab olib tashla... */
+/* Nav buttons */
+.nav-btn { position: relative; background: none; border: none; display: flex; flex-direction: column; align-items: center; gap: 0; cursor: pointer; padding: 8px 16px; border-radius: 14px; -webkit-tap-highlight-color: transparent; }
+/* .nav-btn:hover { background: var(--glass); } — butunlay o'chirildi: ui-improvements.css 'var(--glass-mid)'... */
+.nav-btn:active { transition: none; }
+.nav-btn svg { width: 22px; height: 22px; stroke: var(--text3); stroke-width: 1.8; fill: none; transition: none; }
+.nav-btn span { display: none; }
+/* Active nav button — solid pill */
+.nav-btn.on { background: var(--glass-mid); border: 0.5px solid var(--glass-border); }
+.nav-btn.on svg { stroke: var(--blue); filter: drop-shadow(0 0 6px var(--blue-glow)); }
+.nav-btn.on::after { display: none; }
+.nav-btn:not(.on)::after { display: none; }
+/* Center Create Button */
+.nav-center-btn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--blue3);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 var(--pal-legacy-525257), inset 0 -1px 0 var(--pal-black);
+  flex-shrink: 0;
+}
+@media (max-width: 767px) {
+  .nav-center-btn { display: none !important; }
+  .bot-nav { justify-content: space-around; padding-bottom: max(env(safe-area-inset-bottom), 8px); }
+}
+/* Specular highlight on create button */
+.nav-center-btn::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 55%; background: var(--pal-legacy-3f3f44); border-radius: 50% 50% 0 0; pointer-events: none; }
+.nav-center-btn:hover { box-shadow: inset 0 1px 0 var(--pal-legacy-525257); }
+.nav-center-btn:active { transition: none; }
+.nav-center-btn svg { width: 22px; height: 22px; stroke: var(--pal-white); stroke-width: 2.5; fill: none; position: relative; z-index: 1; }
+/* ═══════════════════════ OVERLAY — Frosted ═══════════════════════ */
+.overlay { position: fixed; inset: 0; background: var(--pal-black); z-index: 200; display: none; align-items: flex-end; }
+.overlay.show { display: flex; }
+/* ═══════════════════════ SHEET — Solid UI ═══════════════════════ */
+.sheet {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  background: var(--glass-mid);
+  border: 0.5px solid var(--glass-border);
+  border-bottom: none;
+  border-radius: 28px 28px 0 0;
+  padding: 8px 20px max(28px, env(safe-area-inset-bottom));
+  max-height: 90dvh;
+  overflow-y: auto;
+  position: relative;
+}
+/* Top specular shimmer */
+.sheet::before { content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 0.5px; background: var(--pal-legacy-9c9c9f); border-radius: 28px 28px 0 0; pointer-events: none; }
+.sheet-handle { width: 40px; height: 4px; background: var(--line3); border-radius: 4px; margin: 12px auto 20px; opacity: 1; }
+.sheet-title { font-size: 16px; font-weight: 600; margin-bottom: 18px; letter-spacing: -0.3px; }
+/* Upload Overlay */
+#uploadOverlay { align-items: center; justify-content: center; padding: 20px; }
+#uploadOverlay .sheet { margin: 0; max-width: 500px; border-radius: 28px; }
+/* Upload Drop Zone */
+.upload-drop { border: 1px dashed var(--glass-border); border-radius: 20px; padding: 30px 20px; text-align: center; cursor: pointer; margin-bottom: 14px; transition: none; background: var(--glass); }
+.upload-drop:hover { border-color: var(--pal-white); background: #151515; box-shadow: var(--specular-top); }
+.upload-drop.drag-over { border-color: var(--blue); background: var(--pal-gray-900); transform: scale(1.02); box-shadow: 0 0 0 3px var(--blue-glow2), var(--specular-top); }
+/* Upload progress bar */
+.upload-progress { display: none; position: relative; height: 28px; background: var(--glass); border: 0.5px solid var(--glass-border); border-radius: 50px; overflow: hidden; margin-bottom: 10px; align-items: center; }
+.upload-progress.active { display: flex; }
+.upload-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--blue); border-radius: 50px; width: 0%; transition: none; box-shadow: inset 0 1px 0 var(--pal-legacy-46464b); }
+.upload-progress-pct { position: relative; z-index: 1; width: 100%; text-align: center; font-size: 11px; font-weight: 600; font-family: var(--mono); color: var(--text); letter-spacing: 0.2px; }
+/* File card */
+.file-card { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--glass); border-radius: 16px; margin: 10px 0 2px; cursor: pointer; text-decoration: none; }
+.file-card:hover { border-color: var(--glass-border-top); box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
+.file-card:active { transition: none; }
+.file-card-icon { width: 44px; height: 44px; flex-shrink: 0; }
+.file-card-icon svg { width: 44px; height: 44px; display: block; }
+.preview-file-icon svg { width: 44px; height: 44px; display: block; }
+.preview-wrap { margin-bottom: 14px; text-align: center; position: relative; }
+.preview-wrap img, .preview-wrap video { max-width: 100%; max-height: 180px; border-radius: 16px; display: block; margin: 0 auto; }
+.preview-file { background: var(--glass); border: 0.5px solid var(--glass-border); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.preview-clear {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: var(--pal-black);
+  border: 0.5px solid #2B2B31;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--pal-white);
+  transition: none;
+  box-shadow: inset 0 1px 0 var(--pal-legacy-35353b);
+}
+.preview-clear:hover { background: #B6324C; }
+.preview-clear:active { transition: none; }
+/* Textarea */
+.ta {
+  width: 100%;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font);
+  resize: none;
+  outline: none;
+  margin-bottom: 14px;
+  transition: none;
+  line-height: 1.5;
+  box-shadow: var(--specular-top);
+}
+.ta:focus { border-color: var(--pal-legacy-464646); background: var(--glass-mid); box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-900); border-radius: 14px; }
+.ta::placeholder { color: var(--text3); }
+/* Toggle — iOS style */
+.toggle { position: relative; width: 48px; height: 28px; }
+.toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+.size-limit { font-size: 11px; color: var(--text3); text-align: center; margin-bottom: 12px; font-family: var(--mono); }
+/* ═══════════════════════ COMMENTS MODAL ═══════════════════════ */
+.cmt-modal-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-shrink: 0; }
+.cmt-modal-title { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+.cmt-modal-close {
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: none;
+  box-shadow: var(--specular-top);
+}
+.cmt-modal-close:hover { background: var(--glass-mid); color: var(--text); }
+.cmt-modal-close:active { transition: none; }
+.cmt-modal-list { flex: 1; overflow-y: auto; padding-bottom: 8px; }
+.cmt-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+.cmt-avi {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--glass-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  border: 0.5px solid var(--glass-border);
+  box-shadow: var(--specular-top);
+}
+.cmt-avi img { width: 100%; height: 100%; object-fit: cover; }
+.cmt-body { flex: 1; background: var(--glass); border: 0.5px solid var(--glass-border); border-radius: 16px; padding: 9px 13px; box-shadow: var(--specular-top); }
+.cmt-name { font-size: 11px; font-weight: 600; color: var(--blue); font-family: var(--mono); }
+.cmt-text { font-size: 13px; margin-top: 3px; line-height: 1.45; }
+.cmt-del { background: none; border: none; color: var(--text3); cursor: pointer; padding: 6px; border-radius: 10px; align-self: flex-start; margin-top: 4px; transition: none; flex-shrink: 0; }
+.cmt-del:hover { color: var(--red); background: var(--pal-legacy-171717); }
+.cmt-del:active { transition: none; }
+.cmt-input-row { display: flex; align-items: center; gap: 8px; padding-top: 12px; border-top: 0.5px solid var(--glass-border); flex-shrink: 0; }
+.cmt-my-avi { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--glass-mid); border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top); }
+.cmt-my-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cmt-char-count { font-size: 11px; color: var(--text3); font-family: var(--mono); flex-shrink: 0; min-width: 26px; text-align: right; transition: none; }
+.cmt-char-count.warn { color: var(--amber); }
+.cmt-char-count.over { color: var(--red); }
+.cmt-input {
+  flex: 1;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  border-radius: 32px;
+  padding: 11px 16px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font);
+  outline: none;
+  transition: none;
+  box-shadow: var(--specular-top);
+}
+.cmt-input:focus { border-color: var(--pal-legacy-464646); background: var(--glass-mid); box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-900); }
+.cmt-input::placeholder { color: var(--text3); }
+.cmt-send {
+  background: var(--blue3);
+  border: none;
+  border-radius: 32px;
+  padding: 0 18px;
+  color: var(--pal-white);
+  font-weight: 600;
+  font-family: var(--font);
+  font-size: 13px;
+  cursor: pointer;
+  flex-shrink: 0;
+  min-height: 44px;
+  box-shadow: 0 4px 14px var(--blue-glow), inset 0 1px 0 var(--pal-legacy-46464b);
+}
+.cmt-send:hover { box-shadow: 0 8px 24px var(--blue-glow), inset 0 1px 0 var(--pal-legacy-46464b); }
+.cmt-send:active { transition: none; }
+.cmt-empty { padding: 32px 0; text-align: center; color: var(--text3); font-size: 13px; }
+/* ═══════════════════════ ZOOM MODAL ═══════════════════════ */
+#zoomModal { position: fixed; inset: 0; background: var(--pal-black); display: none; align-items: center; justify-content: center; }
+#zoomModal.show { display: flex; }
+#zoomImg { max-width: 96%; max-height: 96dvh; object-fit: contain; border-radius: 12px; }
+#zoomVideo { max-width: 96%; max-height: 96dvh; border-radius: 12px; }
+.zoom-x {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--glass-mid);
+  border: 0.5px solid var(--glass-border);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: none;
+  box-shadow: var(--specular-top), var(--liquid-shadow-sm);
+}
+.zoom-x:hover { background: var(--glass-heavy); }
+.zoom-x:active { transition: none; }
+/* ═══════════════════════ DETAIL MODAL ═══════════════════════ */
+#detailModal { position: fixed; inset: 0; display: none; align-items: flex-end; justify-content: center; background: var(--pal-black); }
+#detailModal.show { display: flex; }
+#detailContent {
+  width: 100%;
+  max-width: 500px;
+  max-height: 92dvh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  background: var(--glass-mid);
+  border: 0.5px solid var(--glass-border);
+  border-bottom: none;
+  border-radius: 28px 28px 0 0;
+  position: relative;
+}
+.dm-handle { width: 40px; height: 4px; background: var(--line3); border-radius: 2px; margin: 12px auto 0; opacity: 1; }
+.dm-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px; }
+.dm-avi { width: 38px; height: 38px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--glass-mid); cursor: pointer; border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top); }
+.dm-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dm-meta { flex: 1; }
+.dm-name { font-size: 13.5px; font-weight: 600; cursor: pointer; transition: none; }
+.dm-name:hover { color: var(--blue); }
+.dm-time { font-size: 11px; color: var(--text3); margin-top: 1px; }
+.dm-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--glass);
+  border: 0.5px solid var(--glass-border);
+  color: var(--text2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: none;
+  flex-shrink: 0;
+  box-shadow: var(--specular-top);
+}
+.dm-close:hover { background: var(--glass-mid); color: var(--text); }
+.dm-close:active { transition: none; }
+.dm-media { width: 100%; background: var(--pal-black); position: relative; overflow: hidden; }
+.dm-media img, .dm-media video { width: 100%; display: block; max-height: 60dvh; object-fit: contain; }
+.dm-caption { padding: 10px 16px 6px; font-size: 13.5px; line-height: 1.5; color: var(--text); }
+.dm-stats { padding: 6px 16px 10px; display: flex; gap: 14px; font-size: 12px; color: var(--text3); }
+.dm-stat-item { display: flex; align-items: center; gap: 4px; }
+.dm-actions { display: flex; border-top: 0.5px solid var(--glass-border); padding: 2px 0 max(env(safe-area-inset-bottom), 8px); }
+.dm-act {
+  flex: 1;
+  background: none;
+  border: none;
+  border-right: 0.5px solid var(--glass-border);
+  color: var(--text2);
+  padding: 13px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  transition: none;
+}
+.dm-act:last-child { border-right: none; }
+.dm-act:hover { background: var(--glass); color: var(--text); }
+.dm-act:active { transition: none; }
+.dm-act.liked { color: var(--red); }
+.dm-act .dm-act-count { font-size: 13px; font-weight: 500; }
+/* Divider */
+.divider { height: 0.5px; background: var(--glass-border); margin: 4px 0; }
+/* ═══════════════════════════════════════════════ DESKTOP SIDEBAR — Solid ═══════════════════════════════════... */
+.sb-top, .sb-search-row, .sb-bottom, .sb-create-label { display: none; }
+.sb-search-toggle { display: none; }
+#sbSearchPanel { display: none !important; }
+.sb-panel-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); }
+.sb-panel-input-wrap { display: flex; align-items: center; gap: 8px; background: var(--glass); border: 0.5px solid var(--glass-border); border-radius: 14px; padding: 9px 12px; transition: none; box-shadow: var(--specular-top); }
+.sb-panel-input-wrap:focus-within { border-color: var(--pal-legacy-464646); background: var(--glass-mid); box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-900); }
+.sb-panel-input-wrap svg { flex-shrink: 0; color: var(--text3); }
+.sb-panel-input { background: none; border: none; outline: none; color: var(--text); font-family: var(--font); font-size: 14px; width: 100%; }
+.sb-panel-input::placeholder { color: var(--text3); }
+@media (min-width: 768px) {
+  :root { --sidebar: 68px; --content-left: var(--sidebar); }
+  .app-hdr { display: none !important; }
+  .sb-search-toggle { display: flex; }
+  #sbSearchToggle.search-active { background: var(--pal-gray-800); box-shadow: var(--specular-top); }
+  #sbSearchToggle.search-active svg { stroke: var(--blue); }
+  #sbSearchToggle { position: relative; }
+  #sbSearchToggle::after {
+    content: 'Search';
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--glass-mid);
+    border: 0.5px solid var(--glass-border);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: none;
+    z-index: 200;
+    box-shadow: var(--specular-top), var(--liquid-shadow-sm);
+  }
+  #sbSearchToggle:hover::after { opacity: 1; }
+  .sb-top { display: flex; flex-direction: column; align-items: center; padding-bottom: 12px; margin-bottom: 8px; width: 100%; border-bottom: 0.5px solid var(--glass-border); gap: 10px; }
+  .sb-logo-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sb-logo-glass { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; background: none; border: none; box-shadow: none; }
+  .sb-logo-img { width: 30px; height: 30px; position: relative; z-index: 1; }
+  .sb-brand-text { display: none; }
+  .nav-btn { flex-direction: column; justify-content: center; align-items: center; width: 44px; height: 44px; padding: 0; gap: 0; border-radius: 14px; flex-shrink: 0; }
+  .nav-btn::after { display: none !important; }
+  .nav-btn span { display: none; }
+  .nav-btn svg { width: 22px; height: 22px; }
+  .nav-btn:hover { transform: none; background: var(--glass); border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top); }
+  .nav-btn.on { background: var(--pal-gray-800); border: 0.5px solid #333333; box-shadow: var(--specular-top), 0 0 0 2px var(--pal-gray-900); }
+  .nav-btn.on svg { stroke: var(--blue); }
+  .nav-center-btn { width: 48px; height: 48px; border-radius: 50%; margin: 8px 0; flex-shrink: 0; }
+  .sb-create-label { display: none; }
+  .sb-bottom { display: flex; flex-direction: column; align-items: center; margin-top: auto; padding-top: 12px; width: 100%; border-top: 0.5px solid var(--glass-border); gap: 4px; }
+  .nav-btn[data-v], .nav-center-btn, .sb-mute-btn { position: relative; }
+  .nav-btn[data-v]::after, .nav-center-btn::after, .sb-mute-btn::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: calc(100% + 12px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--glass-mid);
+    border: 0.5px solid var(--glass-border);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: none;
+    z-index: 200;
+    box-shadow: var(--specular-top), var(--liquid-shadow-sm);
+  }
+  .nav-btn[data-v]:hover::after, .nav-center-btn:hover::after, .sb-mute-btn:hover::after { opacity: 1; }
+  .nav-center-btn::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: var(--pal-legacy-3a3a3f); border-radius: 50% 50% 0 0; pointer-events: none; }
+  #homeView, #followingView, #reelsView, #profileView, #chatsView, #actionsView { margin-left: var(--sidebar); position: relative; z-index: 1; }
+  .view.on { padding-top: 16px !important; padding-bottom: 24px !important; }
+  .feed { margin: 0 auto; padding: 0 16px; }
+  .post { border: 0.5px solid var(--glass-border); background: var(--glass); margin-bottom: 16px; padding: 14px; box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
+  .post-media { margin: 10px -14px; border-radius: 0; }
+  #detailContent { margin-bottom: 20px; }
+  #detailModal { padding-left: var(--sidebar); }
+  #userProfileModal { left: var(--sidebar); }
+  #grpInfoOverlay { left: var(--sidebar); }
+  .up-back { left: calc(var(--sidebar) + 14px); }
+  .bot-nav { display: flex !important; position: fixed !important; }
+}
+/* ═══════════════════════════════════════════ DESKTOP SEARCH PANEL — Solid ══════════════════════════════════... */
+#sbSearchPanel {
+  position: fixed;
+  top: calc(var(--hdr) + 8px);
+  left: calc(var(--sidebar) + 16px);
+  width: 320px;
+  background: var(--glass-mid);
+  border: 0.5px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 16px;
+  z-index: 500;
+  display: none;
+  box-shadow: var(--specular-top), var(--liquid-shadow-lg);
+}
+#sbSearchPanel.show { display: block; }
+/* Theme-aware overrides */
+[data-theme="dark"] .nav-btn.on { border-color: var(--pal-gray-700); }
+[data-theme="dark"] .nav-center-btn { box-shadow: inset 0 1px 0 var(--pal-legacy-4d4d52), inset 0 -1px 0 var(--pal-black); }
+/* ═══════════════════════════════════════════ Markdown kontent — chat, post tavsifi, izohlar (modules/utils.j... */
+.md-h1, .md-h2, .md-h3 { font-weight: 700; line-height: 1.3; margin: 6px 0 4px; }
+.md-h1 { font-size: 1.15em; }
+.md-h2 { font-size: 1.08em; }
+.md-h3 { font-size: 1.02em; opacity: .92; }
+.md-li { padding-left: 2px; margin: 2px 0; line-height: 1.45; }
+.md-code { background: var(--glass, var(--pal-white-08)); border: 0.5px solid var(--glass-border, var(--pal-white-12)); border-radius: 5px; padding: 1px 6px; font-family: 'SF Mono', 'Menlo', 'Consolas', monospace; font-size: 0.92em; }
+.md-codeblock {
+  background: var(--glass, var(--pal-white-06));
+  border: 0.5px solid var(--glass-border, var(--pal-white-12));
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 6px 0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.md-codeblock code { font-family: 'SF Mono', 'Menlo', 'Consolas', monospace; font-size: 0.88em; background: none; border: none; padding: 0; }
+.md-quote { border-left: 3px solid var(--glass-border, var(--pal-white-25)); padding: 2px 0 2px 10px; margin: 4px 0; opacity: .82; font-style: italic; line-height: 1.4; }
+.md-link { color: var(--pal-white); text-decoration: underline; text-underline-offset: 2px; word-break: break-word; }
+.md-del { opacity: .65; text-decoration: line-through; }
+.md-li-ol { font-variant-numeric: tabular-nums; }
+/* ─── chat ─── */
+/* ═══════════════════════════════════════════ MRdatabase — Chats & Direct Messages ══════════════════════════... */
+/* Chats list (chatsView) */
+.chats-hdr { padding: 18px 16px 10px; font-size: 19px; font-weight: 700; color: var(--text); }
+.chats-list { padding-bottom: 70px; }
+/* Canonical chat-row definition (merged from 3 previously conflicting * declarations later in this file). Fla... */
+.chat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--line2);
+  box-shadow: none;
+  margin: 0;
+  position: relative;
+  transition: none;
+}
+.chat-row:hover { background: var(--glass); transform: translateX(2px); }
+.chat-row:active { background: var(--glass-mid); }
+.chat-avi { width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; background: var(--glass-mid); border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top); }
+.chat-avi img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+.chat-row-body { flex: 1; min-width: 0; }
+.chat-row-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-row-preview { font-size: 12.5px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.chat-row-preview.chat-row-empty { color: var(--text3); font-style: italic; }
+.chat-row-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.chat-row-time { font-size: 11px; color: var(--text3); flex-shrink: 0; white-space: nowrap; }
+/* Unread row — badge with +N count (per-conversation). Uses the app's * own blue accent rather than alarm-red... */
+.chat-row-badge {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: var(--tg-blue, var(--pal-white));
+  border-radius: 11px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--pal-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px #652024;
+}
+.chat-row.unread .chat-row-name { font-weight: 800; }
+.chat-row.unread .chat-row-preview { color: var(--text); font-weight: 600; }
+.chat-row.unread .chat-row-preview.chat-row-empty { color: var(--text3); font-weight: 400; }
+/* Chat thread (full screen overlay) */
+#chatThreadModal { position: fixed; inset: 0; display: none; flex-direction: column; overscroll-behavior: contain; }
+#chatThreadModal.show { display: flex; }
+.chat-thread-hdr {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--c-bg-header, var(--bg3, var(--pal-gray-900)));
+  border-bottom: 1px solid var(--c-divider, var(--pal-white-06));
+  flex-shrink: 0;
+  position: relative;
+}
+.chat-thread-back { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg4); border: none; cursor: pointer; color: var(--text); flex-shrink: 0; }
+.chat-thread-back:hover { background: var(--bg5); }
+.chat-thread-avi { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; background: var(--bg4); }
+.chat-thread-avi img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+.chat-thread-name { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-thread-messages { flex: 1; overflow-y: auto; overscroll-behavior-y: contain; padding: 12px 12px 8px; display: flex; flex-direction: column; }
+/* Sana ajratuvchi — Telegram uslubidagi suzuvchi pill ("Bugun"/"Kecha") */
+.chat-date-sep { margin: 10px 0 8px; }
+.chat-date-sep span { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+/* Message layout */
+.chat-msg { display: flex; position: relative; max-width: 72%; margin: 0; }
+.chat-msg + .chat-msg { margin-top: 2px; }
+.chat-msg.mine + .chat-msg.theirs, .chat-msg.theirs + .chat-msg.mine { margin-top: 8px; }
+.chat-msg.mine { align-self: flex-end; justify-content: flex-end; }
+.chat-msg.theirs { align-self: flex-start; }
+/* Bubble — Telegram compact style */
+.chat-bubble { position: relative; padding: 7px 12px 7px 12px; border-radius: 18px; font-size: 14px; line-height: 1.45; word-break: break-word; max-width: 100%; display: inline-block; }
+.chat-msg.mine .chat-bubble { background: #454545; color: var(--pal-white); border-bottom-right-radius: 5px; }
+.chat-msg.theirs .chat-bubble { background: var(--pal-gray-800); color: var(--text); border-bottom-left-radius: 5px; }
+/* Text + meta inline (Telegram trick) */
+.chat-bubble-text { white-space: pre-wrap; word-break: break-word; padding-right: 0; }
+/* Wrap text & meta together — meta floats to bottom-right */
+.chat-bubble-wrap { display: block; }
+/* Clearfix: .chat-msg-meta ichida float:right bor (yuqoridagi * "Telegram trick"). Matnli xabarlarda bu muamm... */
+.chat-bubble-wrap::after { content: ''; display: table; clear: both; }
+.chat-bubble-text::after { content: '\00a0\00a0\00a0\00a0\00a0\00a0\00a0\00a0'; display: inline; }
+/* MUHIM (dumli/tail xato tuzatildi): avval bu yerda `margin-bottom:-2px` * VA `position:relative; bottom:-2px... */
+.chat-msg-meta { display: inline-flex; align-items: center; gap: 3px; float: right; margin-left: 6px; margin-top: 2px; line-height: 1; }
+.chat-msg-time { font-size: 11px; font-weight: 400; white-space: nowrap; }
+.chat-msg.mine .chat-msg-time { color: #C1C1C3; }
+.chat-msg.theirs .chat-msg-time { color: var(--text3); }
+/* Read-receipt ticks */
+.msg-ticks { flex-shrink: 0; display: inline-block; vertical-align: middle; color: var(--pal-legacy-909093); }
+/* read = 2 chek, ko'k-moviy */
+.msg-ticks.read { color: var(--pal-white); }
+.chat-thread-input-row { display: flex; align-items: center; padding-bottom: max(10px, env(safe-area-inset-bottom)); flex-shrink: 0; }
+.chat-thread-input { flex: 1; font-family: var(--font); outline: none; }
+.chat-thread-input::placeholder { color: var(--text3); }
+/* Emoji tugmasi — alohida, input pastidan TASHQARIDA, eng chapda * (Telegram tartibi: emoji — pill — attach —... */
+.chat-emoji-wrap { position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.chat-emoji-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: none;
+}
+.chat-emoji-btn:hover { color: var(--text2); background: var(--bg4); }
+.chat-emoji-quickpick {
+  display: none;
+  flex-wrap: wrap;
+  gap: 2px;
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  width: 236px;
+  max-height: 160px;
+  overflow-y: auto;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 0 6px 24px var(--pal-black);
+  z-index: 50;
+}
+.chat-emoji-quickpick.show { display: flex; }
+.chat-emoji-quickpick button { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: none; border: none; font-size: 19px; line-height: 1; border-radius: 8px; cursor: pointer; transition: none; }
+.chat-emoji-quickpick button:hover { background: var(--bg4); }
+/* Desktop */
+@media (min-width: 768px) {
+  .chats-hdr, .chats-list { max-width: 560px; margin-left: auto; margin-right: auto; }
+  .chats-hdr { padding-left: 0; padding-right: 0; }
+  #chatThreadModal { left: var(--sidebar); }
+}
+/* New input row with blur & voice */
+.chat-thread-input-row { position: relative; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+/* Attach button */
+.chat-attach-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: none; }
+/* Voice / Send button */
+.chat-voice-wrap { position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+/* Ovoz balandligiga qarab JS orqali (modules/chat.js, _startPulse) * scale/opacity real-vaqtda yangilanadigan... */
+.cv-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--blue);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform, opacity;
+}
+.chat-voice-btn { position: relative; z-index: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--pal-white); cursor: pointer; flex-shrink: 0; transition: none; }
+/* .chat-voice-btn.recording lives in the "VOICE BTN — amplitude-based * smooth pulse" section below, which is... */
+/* File preview above input */
+.chat-file-preview { display: none; padding: 8px 12px; background: var(--bg); border-top: 1px solid var(--line); flex-shrink: 0; }
+.chat-file-preview.active { display: block; }
+.cfp-inner { display: flex; align-items: center; gap: 10px; background: var(--bg4); border-radius: 12px; padding: 8px 12px; border: 1px solid var(--line2); }
+.cfp-icon { width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.cfp-icon svg { width: 36px; height: 36px; }
+.cfp-info { flex: 1; min-width: 0; }
+.cfp-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cfp-size { font-size: 11.5px; color: var(--text3); margin-top: 1px; }
+.cfp-remove { width: 24px; height: 24px; border-radius: 50%; background: var(--bg5); border: none; display: flex; align-items: center; justify-content: center; color: var(--text2); cursor: pointer; flex-shrink: 0; transition: none; }
+.cfp-remove:hover { background: var(--pal-gray-900); color: var(--pal-red); }
+/* Voice message bubble */
+/* File message (non-image, non-video) */
+.chat-file-msg { display: flex; align-items: center; gap: 10px; min-width: 180px; max-width: 260px; padding: 2px 0; }
+.cfm-icon { width: 38px; height: 38px; flex-shrink: 0; }
+.cfm-icon svg { width: 38px; height: 38px; }
+.cfm-info { flex: 1; min-width: 0; }
+.cfm-name { font-size: 12.5px; font-weight: 600; color: var(--pal-white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-msg.theirs .cfm-name { color: var(--text); }
+.cfm-size { font-size: 11px; color: var(--pal-legacy-b5b5b7); margin-top: 1px; }
+.chat-msg.theirs .cfm-size { color: var(--text3); }
+.cfm-dl {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.22);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pal-white);
+  cursor: pointer;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: none;
+}
+.chat-msg.theirs .cfm-dl { background: var(--bg5, #e3e3e3); color: var(--text); }
+.cfm-dl:hover { background: rgba(255,255,255,0.35); }
+.chat-msg.theirs .cfm-dl:hover { background: var(--bg4, #d4d4d4); }
+/* Reply bar (above input) */
+.chat-reply-bar { display: none; padding: 8px 12px; background: var(--bg); border-top: 1px solid var(--line); flex-shrink: 0; }
+.chat-reply-bar.active { display: flex; align-items: center; gap: 10px; }
+.crb-line { width: 3px; min-height: 32px; border-radius: 2px; background: var(--blue); flex-shrink: 0; }
+.crb-body { flex: 1; min-width: 0; }
+.crb-name { font-size: 12px; font-weight: 700; color: var(--blue); margin-bottom: 1px; }
+.crb-text { font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.crb-close { width: 26px; height: 26px; border-radius: 50%; background: var(--bg4); border: none; display: flex; align-items: center; justify-content: center; color: var(--text2); cursor: pointer; flex-shrink: 0; }
+.crb-close:hover { background: var(--bg5); color: var(--text); }
+/* Context menu */
+#chatContextMenu { position: fixed; display: none; border-radius: 14px; padding: 6px; min-width: 170px; box-shadow: 0 8px 30px var(--pal-black); z-index: 500; overflow: hidden; }
+.ctx-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; font-size: 14px; color: var(--text); cursor: pointer; border-radius: 10px; border: none; background: none; width: 100%; text-align: left; }
+.ctx-item:hover { background: var(--bg4); }
+.ctx-item.danger { color: var(--pal-red); }
+.ctx-item svg { flex-shrink: 0; }
+.ctx-divider { height: 0.5px; background: var(--line); margin: 4px 0; }
+/* Lightbox */
+#chatLightbox { position: fixed; inset: 0; z-index: 600; display: none; align-items: center; justify-content: center; }
+#chatLightbox.show { display: flex; }
+#chatLightboxImg { max-width: 95vw; max-height: 90vh; border-radius: 8px; object-fit: contain; display: block; }
+#chatLightboxClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--pal-legacy-2d2d33);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pal-white);
+  cursor: pointer;
+  font-size: 20px;
+  transition: none;
+}
+#chatLightboxClose:hover { background: var(--pal-legacy-46464b); }
+/* Highlight (reply scroll) */
+/* ════════════════════════════════════════════════════════════════════ FEATURE 1: Typing Indicator — "Ivan yo... */
+/* Header info column (name + typing status) */
+.chat-thread-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+/* Typing status under name in header */
+.chat-thread-typing { font-size: 11.5px; color: var(--blue); height: 0; overflow: hidden; opacity: 0; transition: none; white-space: nowrap; }
+/* Floating typing bubble above input */
+.chat-typing-indicator { flex-shrink: 0; padding: 0 14px; max-height: 0; overflow: hidden; transition: none; pointer-events: none; }
+.chat-typing-indicator.active { max-height: 42px; }
+/* Search button in header */
+.chat-search-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg4); border: none; display: flex; align-items: center; justify-content: center; color: var(--text2); cursor: pointer; flex-shrink: 0; transition: none; }
+.chat-search-btn:hover { background: var(--bg5); color: var(--text); }
+.chat-search-btn.active { background: var(--pal-gray-800); color: var(--blue); }
+/* ════════════════════════════════════════════════════════════════════ FEATURE 3: Chat ichida qidiruv (Search... */
+.chat-search-wrap { flex-shrink: 0; background: var(--bg); border-bottom: 1px solid var(--line); max-height: 0; overflow: hidden; transition: none; }
+.chat-search-wrap.active { max-height: 56px; }
+.chat-search-inner { display: flex; align-items: center; gap: 8px; padding: 10px 14px; color: var(--text3); }
+.chat-search-input { flex: 1; background: var(--bg4); border: 1px solid var(--line); border-radius: 10px; padding: 7px 12px; font-size: 14px; color: var(--text); outline: none; transition: none; }
+.chat-search-input:focus { border-color: var(--blue); }
+.chat-search-input::placeholder { color: var(--text3); }
+.chat-search-close { width: 28px; height: 28px; border-radius: 50%; background: var(--bg4); border: none; display: flex; align-items: center; justify-content: center; color: var(--text2); cursor: pointer; flex-shrink: 0; transition: none; }
+.chat-search-close:hover { background: var(--bg5); color: var(--text); }
+/* ════════════════════════════════════════════════════════════════════ FEATURE 4: Sana Ajratgichlari — Date S... */
+.chat-date-sep { display: flex; align-items: center; justify-content: center; padding: 8px 0 4px; pointer-events: none; user-select: none; }
+.chat-date-sep span { display: inline-block; background: var(--bg4); border: 1px solid var(--line2, var(--line)); border-radius: 20px; padding: 3px 12px; font-size: 11.5px; font-weight: 600; color: var(--text3); letter-spacing: 0.01em; }
+/* ════════════════════════════════════════════════════════════════════ CALL BUTTONS IN CHAT HEADER ══════════... */
+.chat-call-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--bg4); border: none; display: flex; align-items: center; justify-content: center; color: var(--text2); cursor: pointer; flex-shrink: 0; transition: none; }
+.chat-call-btn:hover { background: var(--pal-gray-900); color: var(--pal-green); }
+/* ════════════════════════════════════════════════════════════════════ INCOMING CALL MODAL ══════════════════... */
+#incomingCallModal { position: fixed; inset: 0; z-index: 1000000; display: none; }
+#incomingCallModal.show { display: flex; }
+.incoming-call-inner { display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; height: 100dvh; padding: calc(env(safe-area-inset-top, 0px) + 28px) 24px calc(env(safe-area-inset-bottom, 0px) + 36px); }
+/* Yuqori qism — kichik sarlavha (holat satridan pastroqda) */
+.incoming-call-top { flex-shrink: 0; width: 100%; text-align: center; }
+.incoming-call-subtitle { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; color: #7a8a84; text-transform: uppercase; }
+/* O'rta qism — avatar + ism + tur, ekranning yuqori-yarmida markazlashgan */
+.incoming-call-center { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding-bottom: 8vh; }
+/* Pastki qism — Accept/Decline har doim ekran tagida */
+.incoming-call-btns { flex-shrink: 0; width: 100%; max-width: 360px; display: flex; align-items: flex-start; justify-content: space-between; padding: 0 8px; }
+/* Ring animation (3 pulsing rings) */
+.incoming-call-ring-anim { position: absolute; width: 150px; height: 150px; pointer-events: none; }
+.incoming-call-ring-anim span { position: absolute; inset: 0; border-radius: 50%; }
+.incoming-call-avi { width: 128px; height: 128px; border-radius: 50%; overflow: hidden; background: var(--bg4); flex-shrink: 0; position: relative; z-index: 1; }
+.incoming-call-avi img { width: 100%; height: 100%; object-fit: cover; }
+.incoming-call-name { font-size: 26px; font-weight: 700; color: var(--pal-white); text-align: center; }
+.incoming-call-type { font-size: 15px; color: var(--pal-legacy-b5b5b7); }
+.inc-call-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.inc-call-btn { width: 66px; height: 66px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.inc-call-btn.reject { color: var(--pal-white); }
+.inc-call-btn.accept { color: var(--pal-white); }
+.inc-call-btn:hover { box-shadow: 0 4px 20px var(--pal-black); }
+.inc-call-label { font-size: 13px; font-weight: 500; color: #D6D6D8; }
+/* ════════════════════════════════════════════════════════════════════ ACTIVE CALL MODAL ════════════════════... */
+#callActiveModal { position: fixed; inset: 0; z-index: 999999; display: none; flex-direction: column; align-items: center; justify-content: space-between; padding: 60px 24px 48px; transition: none; }
+#callActiveModal.show { display: flex; }
+#callActiveModal.video-mode { padding: 0; background: var(--pal-black); }
+/* Stage — voice va video qatlamlari bir joyda ustma-ust turadi, shu sababli ular orasida smooth crossfade qil... */
+.call-stage { position: relative; flex: 1; width: 100%; min-height: 0; }
+.call-voice-wrap, .call-video-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.94); pointer-events: none; transition: none; }
+.call-voice-wrap.cs-active, .call-video-wrap.cs-active { opacity: 1; transform: scale(1); pointer-events: auto; }
+/* Voice mode */
+.call-voice-wrap { flex-direction: column; gap: 16px; }
+.call-voice-avi { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; }
+.call-voice-avi img { width: 100%; height: 100%; object-fit: cover; }
+.call-avi-initial { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 700; color: var(--pal-white); background: var(--pal-green); }
+.incoming-call-avi .call-avi-initial { font-size: 52px; }
+.call-voice-name { font-size: 24px; font-weight: 700; color: var(--pal-white); }
+/* Video mode */
+.call-video-wrap { background: var(--pal-black); border-radius: inherit; overflow: hidden; }
+#callRemoteVideo { width: 100%; height: 100%; object-fit: cover; }
+.call-local-pip {
+  position: absolute;
+  bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  right: 16px;
+  width: 92px;
+  height: 128px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid var(--pal-legacy-525257);
+  z-index: 2;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: none;
+}
+.call-local-pip.cs-active { opacity: 1; transform: scale(1); }
+.call-status { font-size: 14px; color: var(--pal-legacy-9c9c9f); text-align: center; transition: none; }
+.call-timer { font-size: 32px; font-weight: 300; color: var(--pal-white); font-variant-numeric: tabular-nums; letter-spacing: 2px; transition: none; }
+#callActiveModal.video-mode .call-status, #callActiveModal.video-mode .call-timer { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3; }
+#callActiveModal.video-mode .call-timer { top: 42px; }
+/* Control buttons — icon + label, kabi reference (Discord/FaceTime) */
+.call-active-btns { display: flex; gap: 20px; align-items: flex-start; justify-content: center; padding-bottom: env(safe-area-inset-bottom, 0); transition: none; }
+.call-ctrl-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.call-ctrl-label { font-size: 12px; font-weight: 500; color: #C7C7CA; text-align: center; }
+/* Default (voice) tartib: Video, Mikrofon, Karnay, Tugatish — Flip yashirin */
+#callSwitchCol { order: 0; display: none; }
+#callCamCol { order: 1; }
+#callMicCol { order: 2; }
+#callSpeakerCol { order: 3; }
+#callEndCol { order: 4; }
+/* Video rejimida tartib: Flip, Video, Mikrofon, Tugatish — Karnay yashirin (video chog'ida ovoz avtomatik din... */
+#callActiveModal.video-mode #callSwitchCol { order: 1; }
+#callActiveModal.video-mode #callCamCol { order: 2; }
+#callActiveModal.video-mode #callMicCol { order: 3; }
+#callActiveModal.video-mode #callSpeakerCol { display: none; }
+#callActiveModal.video-mode #callEndCol { order: 4; }
+#callActiveModal.video-mode .call-active-btns { position: absolute; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); z-index: 3; gap: 10px; padding: 7px 10px; max-width: calc(100vw - 24px); }
+.call-ctrl-btn {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--pal-gray-800);
+  border: 0.5px solid var(--pal-legacy-35353b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pal-white);
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 var(--pal-legacy-3a3a3f);
+  transition: none;
+}
+.call-ctrl-btn:hover { background: var(--pal-legacy-35353b); box-shadow: inset 0 1px 0 #48484E; }
+.call-ctrl-btn.muted { background: #313131; border-color: #591D22; color: var(--pal-red); }
+.call-ctrl-btn.active { background: #2c2c2c; border-color: var(--pal-gray-700); color: var(--pal-white); }
+.call-ctrl-btn.end-btn { background: #dc2626; border-color: var(--pal-legacy-3a3a3f); width: 62px; height: 62px; }
+.call-ctrl-btn.end-btn:hover { background: var(--pal-red); }
+.call-ctrl-btn.end-btn svg { transform: rotate(135deg); }
+/* qabul svg'ini burab — "tugatish" belgisi */
+/* Video rejimida — tugmalar kichikroq, kam joy egallaydi */
+#callActiveModal.video-mode .call-ctrl-btn { width: 42px; height: 42px; }
+#callActiveModal.video-mode .call-ctrl-btn svg { width: 17px; height: 17px; transition: none; }
+#callActiveModal.video-mode .call-ctrl-btn.end-btn { width: 48px; height: 48px; }
+#callActiveModal.video-mode .call-ctrl-btn.end-btn svg { width: 19px; height: 19px; }
+/* ═══════════════════════════════════════════════════════════════════════ CHAT — SOLID UI ═══════════════════... */
+/* Chat glass variables — removed (unused, was old Telegram-blue palette; all consumers migrated to pure-black... */
+/* .chat-row styling now lives in one place, near the top of this file. */
+/* Avatar in chat rows — owned by base .chat-avi definition (no override needed) */
+/* Chat thread header — owned by base definition above (single source) */
+/* Back button — background/color owned by chat-dark-redesign.css; transition/hover-scale kept here */
+.chat-thread-back { transition: none; }
+/* Messages — bubble background/color/border owned by chat-dark-redesign.css. O'chirildi: bu yerdagi border (0... */
+/* Bubble ichidagi kod bloki/kod — .md-codeblock/.md-code odatda var(--glass) = --bg3 fonini ishlatadi, bu esa... */
+.chat-bubble .md-codeblock, .chat-bubble .md-code { background: rgba(0, 0, 0, .22); border-color: var(--pal-white-14); }
+.chat-msg.mine .chat-bubble .md-codeblock, .chat-msg.mine .chat-bubble .md-code { background: rgba(0, 0, 0, .28); border-color: rgba(255, 255, 255, .18); }
+/* .chat-thread-input-row / .chat-thread-input / .chat-attach-btn skins * now live only in the "CLEAN CHAT RED... */
+/* Voice button — hover/press feedback */
+/* .chat-voice-btn base look + .recording pulse now live only in the * "VOICE BTN — amplitude-based smooth pul... */
+/* Audio message bubble */
+.chats-hdr { background: transparent !important; position: relative; }
+/* Openable file name (zip/pdf) — clickable link */
+a.cfm-name--link {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--pal-white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: #77777B;
+  cursor: pointer;
+  transition: none;
+}
+a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
+.chat-msg.theirs a.cfm-name--link { color: var(--blue); text-decoration-color: var(--pal-legacy-464646); }
+.chat-msg.theirs a.cfm-name--link:hover { text-decoration-color: var(--blue); }
+/* Inline image / video preview */
+.cfm-media-wrap { display: flex; flex-direction: column; gap: 4px; max-width: 260px; }
+.cfm-img-link { display: block; border-radius: 14px; overflow: hidden; line-height: 0; transition: none; }
+.cfm-img-link:hover { opacity: 1; }
+.cfm-img-preview { display: block; width: 100%; max-width: 260px; max-height: 320px; object-fit: cover; border-radius: 14px; background: var(--pal-gray-900); }
+.cfm-video-preview { display: block; width: 100%; max-width: 260px; max-height: 300px; border-radius: 14px; background: var(--pal-black); outline: none; }
+.cfm-media-meta { font-size: 10.5px; color: var(--pal-legacy-909093); padding: 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-msg.theirs .cfm-media-meta { color: var(--text3); }
+/* mine bubble — rasmlar uchun padding olib tashlanadi */
+.chat-msg.mine .chat-bubble:has(.cfm-media-wrap) { padding: 4px 4px 6px; }
+.chat-msg.theirs .chat-bubble:has(.cfm-media-wrap) { padding: 4px 4px 6px; }
+/* ═══════════════════════════════════════════════════════════════════════ VOICE BTN — amplitude-based smooth... */
+.chat-voice-btn.recording {
+  border: 0.5px solid #5F5F63 !important;
+  animation: none !important;
+  transform: scale(var(--rec-scale, 1.0)) !important;
+  box-shadow: inset 0 1px 0 var(--pal-legacy-525257), 0 0 0 calc((var(--rec-scale, 1.0) - 1) * 28px) #232323, 0 0 calc(var(--rec-glow, 0) * 0.4px) var(--pal-gray-700), 0 4px 16px var(--pal-legacy-2e2e2e) !important;
+  transition: none !important;
+}
+/* ═══════════════════════════════════════════════════════════════════════ PENDING UPLOAD BUBBLE ═════════════... */
+.cpb-wrap { margin-bottom: 4px; }
+.cpb-bubble { min-width: 200px; max-width: 280px; padding: 12px 14px 10px !important; }
+.cpb-voice, .cpb-file { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.cpb-mic-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--pal-legacy-35353b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pal-white);
+  flex-shrink: 0;
+  border: 0.5px solid var(--pal-legacy-4d4d52);
+}
+.cpb-file-icon svg { width: 36px; height: 36px; }
+.cpb-info { flex: 1; min-width: 0; }
+.cpb-label { font-size: 13px; font-weight: 600; color: var(--pal-white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cpb-size { font-size: 11px; color: var(--pal-legacy-9c9c9f); margin-top: 1px; }
+/* Progress bar */
+.cpb-progress-bar { height: 4px; background: var(--pal-legacy-35353b); border-radius: 4px; overflow: hidden; margin-bottom: 5px; }
+.cpb-progress-fill { height: 100%; width: 0%; background: var(--pal-white); border-radius: 4px; transition: none; box-shadow: 0 0 8px #848487; }
+.cpb-pct { font-size: 11px; font-weight: 700; color: #C1C1C3; text-align: right; font-variant-numeric: tabular-nums; }
+/* ═══════════════════════════════════════════════════════════════════════ CALL MODALS — SOLID UI ════════════... */
+/* Incoming call — true edge-to-edge fullscreen (Telegram-style), no card box */
+#incomingCallModal { background: radial-gradient(circle at 50% 0%, var(--pal-gray-800) 0%, var(--pal-black) 55%), var(--pal-black) !important; }
+/* .incoming-call-inner intentionally left un-boxed — it already spans 100% width/height via the base rule abo... */
+/* Ring animation — green glass rings */
+.incoming-call-ring-anim span { box-shadow: 0 0 12px var(--pal-gray-900) !important; }
+/* Avatar glass border */
+.incoming-call-avi { border: 2.5px solid #1A8C46 !important; box-shadow: inset 0 1px 0 var(--pal-legacy-3a3a3f), 0 0 0 4px var(--pal-gray-900), 0 0 32px var(--pal-gray-800), 0 8px 24px var(--pal-black) !important; }
+/* Buttons — glass */
+.inc-call-btn { border: 0.5px solid var(--pal-legacy-3f3f44) !important; box-shadow: inset 0 1px 0 var(--pal-legacy-4d4d52), 0 6px 24px var(--pal-black) !important; transition: none !important; }
+.inc-call-btn.reject { background: #CC3B3C !important; box-shadow: inset 0 1px 0 var(--pal-legacy-3f3f44), 0 6px 24px #652024 !important; }
+.inc-call-btn.accept { background: #1EA852 !important; box-shadow: inset 0 1px 0 var(--pal-legacy-3f3f44), 0 6px 24px #13542F !important; }
+/* Active call modal — deep space glass */
+#callActiveModal { background: var(--pal-black) !important; }
+#callActiveModal::before { content: ''; position: fixed; inset: 0; background: var(--pal-gray-900), var(--pal-black); pointer-events: none; z-index: 0; }
+/* Voice avatar — glass sphere */
+.call-voice-avi {
+  border: 2px solid var(--pal-legacy-35353b) !important;
+  box-shadow: inset 0 2px 0 var(--pal-legacy-35353b), 0 0 0 8px var(--pal-gray-900), 0 0 60px var(--pal-gray-700), 0 16px 48px var(--pal-black) !important;
+  background: var(--pal-gray-900) !important;
+}
+/* Control buttons — consolidated into single definition above */
+/* Video mode — controls glass bar */
+#callActiveModal.video-mode .call-active-btns {
+  background: var(--pal-black) !important;
+  border: 0.5px solid var(--pal-legacy-26262c) !important;
+  box-shadow: inset 0 1px 0 #2B2B31, 0 4px 24px var(--pal-black) !important;
+  border-radius: 60px !important;
+}
+/* Message sender avatar (DM & Group) */
+.msg-avi-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 6px;
+  margin-top: auto;
+  border: none;
+  padding: 0;
+  background: var(--bg3, var(--pal-gray-700));
+  cursor: pointer;
+  transition: none;
+  position: relative;
+  align-self: flex-end;
+}
+.msg-avi-btn img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+.msg-avi-btn:hover { box-shadow: 0 2px 12px #404040; opacity: 1; }
+/* "theirs" bubble — avatar yo'q, to'g'ridan boshlanadi */
+.chat-msg.theirs { align-items: flex-end; gap: 0; }
+.chat-msg.mine .msg-avi-btn { display: none; }
+/* ════════════════════════════════════════════════════════════════════ ANIMATIONS PACK ══════════════════════... */
+/* 1. Xabar bubble — spring pop-in */
+/* Mine xabarlari o'ngdan, theirs chapdan */
+.chat-msg.mine.anim-in { transform-origin: bottom right; }
+.chat-msg.theirs.anim-in { transform-origin: bottom left; }
+/* 4. Call modal — scale+blur in */
+/* 5. Incoming call modal — slide up */
+/* 6. Incoming call — avatar pulsing rings (kattaroq, ko'proq) */
+.incoming-call-ring-anim span { animation: none !important; border: 2.5px solid #18793E !important; }
+.incoming-call-ring-anim span:nth-child(2) { animation-delay: 0s !important; }
+.incoming-call-ring-anim span:nth-child(3) { animation-delay: 0s !important; }
+/* 7. Online dot pulse */
+/* 8. Tab switch — view fade+slide */
+/* 9. Rasm lazy-load blur → clear */
+.cfm-img-preview { transition: none; }
+/* 12b. Voice message play button — buffering/loading spinner */
+.cvm-spin { animation: none; }
+/* 12. Voice waveform — bar balandliklari endi HAQIQIY audio * amplitudasidan olinadi (bar sun'iy ravishda o'y... */
+/* ════════════════════════════════════════════════════════════════════ CHAT EFFECTS PACK v2 ═════════════════... */
+/* 1. Context menu — spring scale-in */
+#chatContextMenu.show { display: block; transform-origin: top left; }
+.ctx-item { transition: none !important; }
+.ctx-item.danger:hover { background: var(--pal-legacy-171717) !important; }
+/* 11. Emoji picker — bounce in */
+/* 12. Input area focus glow */
+#chatThreadInput { transition: none !important; }
+#chatThreadInput:focus { box-shadow: 0 0 0 3px var(--pal-gray-800) !important; border-color: #4c4c4c !important; outline: none; }
+/* ═══════════════════════════════════════════ CLEAN CHAT REDESIGN — Telegram/Instagram style Chegrasiz, minim... */
+/* #chatThreadModal foni → CSS/chat-dark-redesign.css'da belgilangan (bir xil selector, o'sha fayl keyinroq yu... */
+/* Messages container ── padding/background → CSS/chat-dark-redesign.css'da belgilangan (bu yerdagi eski qator... */
+.chat-thread-messages { gap: 2px !important; background: transparent !important; }
+/* Message row */
+/* Bubble — chegrasiz (padding/border-radius/font-size/line-height → o'chirildi, chunki CSS/chat-dark-redesign... */
+.chat-bubble { border: none !important; box-shadow: none !important; }
+/* mine — background/color/border-bottom-right-radius o'chirildi (o'lik edi, CSS/chat-dark-redesign.css g'olib... */
+.chat-msg.mine .chat-bubble { box-shadow: none !important; border: none !important; }
+/* theirs — background/color/border-bottom-left-radius o'chirildi (o'lik edi, CSS/chat-dark-redesign.css g'oli... */
+.chat-msg.theirs .chat-bubble { box-shadow: none !important; border: none !important; }
+.chat-msg.mine .chat-bubble:has(.chat-img-msg), .chat-msg.theirs .chat-bubble:has(.chat-img-msg) { padding: 3px !important; border-radius: 16px !important; }
+/* Input row — clean, chegrasiz */
+.chat-thread-input-row { background: var(--bg); border-top: none; box-shadow: none; padding: 8px 10px; padding-bottom: max(8px, env(safe-area-inset-bottom)); gap: 6px; }
+.chat-thread-input { background: var(--bg3); border: none; border-radius: 22px; padding: 10px 16px; font-size: 14px; color: var(--text); }
+.chat-thread-input:focus { outline: none; }
+/* Attach & voice buttons — clean */
+.chat-attach-btn { background: transparent; border: none; color: var(--text2); box-shadow: none; }
+.chat-attach-btn:hover { background: transparent; color: var(--text); }
+.chat-voice-btn { background: var(--pal-white); border: none; box-shadow: none; width: 36px; height: 36px; }
+/* msg-avi-btn — completely hidden in 1v1 */
+.msg-avi-btn { display: none !important; }
+/* ═══════════════════════════════════════════ VOICE MESSAGE — Final Clean Style mine: ko'k bubble, oq element... */
+/* Base structure */
+.chat-voice-msg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 200px;
+  max-width: 240px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+/* MINE — ko'k bubble ichida oq elementlar */
+.chat-msg.mine .cvm-play {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.28) !important;
+  color: var(--pal-white) !important;
+}
+.chat-msg.mine .cvm-play:hover { background: var(--pal-white-42) !important; }
+.chat-msg.mine .cvm-waveform { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 1.5px; cursor: pointer; overflow: hidden; }
+.chat-msg.mine .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--pal-white-42) !important; transition: none; }
+/* Eshitilmagan qism — muted (past intensivlik); eshitilgan qism — * to'liq yorqin oq bilan ajralib turadi (Te... */
+.chat-msg.mine .cvm-bar.played { background: rgba(255,255,255,0.95) !important; }
+.chat-msg.mine .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: rgba(255,255,255,0.72) !important; }
+/* THEIRS — kulrang bubble ichida to'q elementlar */
+.chat-msg.theirs .cvm-play {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--pal-white) !important;
+  color: var(--pal-white) !important;
+}
+.chat-msg.theirs .cvm-play:hover { background: var(--pal-white) !important; }
+.chat-msg.theirs .cvm-waveform { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 1.5px; cursor: pointer; overflow: hidden; }
+.chat-msg.theirs .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--text3) !important; opacity: 0.5; transition: none; }
+/* Eshitilgan qism — Telegram Primary Blue (#ffffff) bilan to'liq * to'ldiriladi, eshitilmagan qism muted kulr... */
+.chat-msg.theirs .cvm-bar.played { background: var(--blue) !important; opacity: 1; }
+.chat-msg.theirs .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: var(--text3) !important; }
+/* Voice mini-player — chat almashtirilganda/thread yopilganda ham * ovozli xabar ijrosi davom etayotganini ko... */
+.voice-mini-player {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  padding-top: calc(8px + env(safe-area-inset-top, 0px));
+  background: var(--bg3, var(--pal-gray-900));
+  border-bottom: 1px solid var(--line, #232428);
+  box-shadow: 0 2px 10px var(--pal-black-25);
+  cursor: pointer;
+}
+.voice-mini-player.show { display: flex; }
+.vmp-play { width: 30px; height: 30px; border-radius: 50%; border: none; flex-shrink: 0; background: var(--pal-white); color: var(--pal-white); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.vmp-info { flex: 1; min-width: 0; }
+.vmp-title { font-size: 13px; font-weight: 600; color: var(--text, #e8e8ea); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vmp-progress { margin-top: 4px; height: 3px; border-radius: 2px; background: var(--pal-white-12); overflow: hidden; }
+.vmp-progress-fill { height: 100%; width: 0%; background: var(--pal-white); border-radius: 2px; }
+.vmp-close { width: 26px; height: 26px; border-radius: 50%; border: none; background: transparent; color: var(--text2, #9aa0a6); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
+.vmp-close:hover { background: var(--pal-white-08); }
+/* ─── groups ─── */
+/* ═══════════════════════════════════════════════════════════════ MRspace — Groups & Channels CSS ═══════════... */
+/* "+" button in chats header */
+.chats-hdr { display: flex !important; align-items: center; justify-content: space-between; }
+.chats-add-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg4, var(--pal-gray-900));
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: none;
+  flex-shrink: 0;
+}
+.chats-add-btn:hover { background: color-mix(in srgb, var(--blue) 18%, var(--bg4)); }
+/* Group row badge (type icon on avi) */
+.grp-avi-badge--group { background: var(--blue, var(--pal-white)); color: var(--pal-white); }
+.grp-avi-badge--channel { background: var(--pal-white); color: var(--pal-white); }
+.chat-row-grp-badge--group { background: var(--blue); color: var(--pal-white); }
+/* Create form */
+.grp-form-title { margin-bottom: 16px !important; }
+.grp-form-avi-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 18px; cursor: pointer; }
+.grp-form-avi {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--bg4, var(--pal-gray-900));
+  border: 1.5px dashed var(--line2, var(--pal-legacy-2d2d33));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  transition: none;
+}
+.grp-form-avi:hover { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 8%, var(--bg4)); }
+.grp-form-avi-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.grp-form-avi-hint { font-size: 12.5px; color: var(--blue); font-weight: 500; }
+.grp-form-desc-hint { font-size: 12px; color: var(--text3); margin: -6px 0 14px; line-height: 1.4; }
+.grp-form-section-title { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin: 4px 0 8px; }
+.grp-form-actions { display: flex; gap: 10px; margin-top: 16px; }
+.grp-form-actions .btn-ghost { flex: 1; }
+.grp-form-actions .btn-primary { flex: 2; }
+/* Member picker */
+.grp-picker-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg4, var(--pal-gray-900));
+  border: 1px solid var(--line, var(--pal-gray-800));
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  color: var(--text3);
+}
+.grp-picker-search { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 14px; }
+.grp-picker-search::placeholder { color: var(--text3); }
+.grp-picker-list { max-height: 200px; overflow-y: auto; border-radius: 10px; border: 0.5px solid var(--line, var(--pal-gray-800)); }
+.grp-picker-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; border-bottom: 0.5px solid var(--line, var(--pal-gray-900)); transition: none; }
+.grp-picker-row:last-child { border-bottom: none; }
+.grp-picker-row:hover { background: var(--bg4, var(--pal-gray-900)); }
+.grp-picker-row.selected { background: color-mix(in srgb, var(--blue) 10%, transparent); }
+.grp-picker-avi { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; background: var(--bg3); flex-shrink: 0; }
+.grp-picker-avi img { width: 100%; height: 100%; object-fit: cover; }
+.grp-picker-name { font-size: 14px; font-weight: 500; }
+.grp-picker-user { font-size: 12px; color: var(--text3); }
+.grp-picker-info { flex: 1; }
+.grp-picker-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--line2, var(--pal-legacy-35353b));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: none;
+  color: transparent;
+}
+.grp-picker-check.on { background: var(--blue); border-color: var(--blue); color: var(--pal-white); }
+.grp-sel-count { font-size: 12px; color: var(--text3); text-align: right; margin-top: 6px; }
+.grp-empty-users { font-size: 13px; color: var(--text3); padding: 12px 0; }
+.grp-members-list { max-height: 250px; overflow-y: auto; margin-bottom: 16px; border-radius: 10px; border: 0.5px solid var(--line, var(--pal-gray-800)); }
+.grp-member-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 0.5px solid var(--line, var(--pal-gray-900)); }
+.grp-member-row:last-child { border-bottom: none; }
+.grp-member-avi { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; background: var(--bg3); flex-shrink: 0; }
+.grp-member-avi img { width: 100%; height: 100%; object-fit: cover; }
+.grp-member-name { font-size: 14px; font-weight: 500; }
+.grp-member-role { font-size: 11.5px; color: var(--blue); font-weight: 500; }
+.grp-member-info { flex: 1; }
+.grp-member-kick {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: color-mix(in srgb, var(--red) 14%, transparent);
+  color: var(--red, var(--pal-red));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: none;
+}
+.grp-member-kick:hover { background: color-mix(in srgb, var(--red) 24%, transparent); }
+.c-red { color: var(--red, var(--pal-red)) !important; }
+/* Sender name in group messages */
+.grp-sender-name { font-size: 11.5px; font-weight: 600; color: var(--blue); margin-bottom: 2px; }
+/* Chat list group/channel divider label */
+.chats-section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; padding: 14px 16px 4px; }
+/* mt-12px helper */
+.mt-12px { margin-top: 12px; }
+/* Badge overflow fix */
+/* chat-avi va chat-thread-avi border-radius:50% bilan overflow:hidden */
+/* qilishi mumkin — badge tashqariga chiqishi uchun visible qilamiz */
+.chat-avi { position: relative; overflow: visible !important; }
+.chat-thread-avi { position: relative; overflow: visible !important; }
+/* Badge o'lchami va joylashuvi aniqroq */
+.chat-row-grp-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg);
+  z-index: 2;
+  pointer-events: none;
+}
+.grp-avi-badge { position: absolute; bottom: -2px; right: -2px; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--bg); z-index: 2; pointer-events: none; }
+/* ═══════════════════════════════════════════════════════════════════════ GROUP / CHANNEL INFO OVERLAY — rede... */
+/* Sheet fills screen like a profile page */
+/* Group/Channel Info — full-screen page (like userProfileModal) */
+#grpInfoOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 370; display: none; overflow-y: auto; scrollbar-width: none; }
+#grpInfoOverlay::-webkit-scrollbar { display: none; }
+#grpInfoOverlay.show { display: block; }
+/* Back button (top-left, like userProfileModal .up-back) */
+.gi-back-btn {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top));
+  left: 16px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--pal-black);
+  color: var(--pal-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: none;
+}
+.gi-back-btn:hover { background: var(--pal-black); }
+/* Scrollable body */
+.gi-body { display: flex; flex-direction: column; min-height: 100%; padding-bottom: max(32px, env(safe-area-inset-bottom)); }
+/* Avatar header */
+.gi-head { display: flex; justify-content: center; padding-top: 64px; flex-shrink: 0; }
+.gi-avi-wrap { position: relative; z-index: 3; }
+.gi-avi { width: 90px; height: 90px; border-radius: 50%; overflow: hidden; background: var(--bg3); box-shadow: 0 4px 24px var(--pal-black); border: 3.5px solid var(--bg, var(--pal-gray-900)); transition: none; cursor: pointer; }
+.gi-avi:hover { box-shadow: 0 6px 32px var(--pal-gray-700); }
+.gi-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Info section */
+.gi-info { padding: 14px 20px 18px; display: flex; flex-direction: column; align-items: center; text-align: center; border-bottom: 0.5px solid var(--line, var(--pal-gray-800)); margin-bottom: 4px; }
+.gi-name { font-size: 19px; font-weight: 700; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+.gi-type-badge {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--blue, var(--pal-white));
+  background: color-mix(in srgb, var(--blue, var(--pal-white)) 14%, transparent);
+  border-radius: 20px;
+  padding: 2px 10px;
+  margin-bottom: 8px;
+}
+/* Public link row */
+.gi-link-row { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--blue, var(--pal-white)); margin-bottom: 8px; cursor: pointer; transition: none; }
+.gi-link-row:hover { opacity: .75; }
+.gi-desc { font-size: 13px; color: var(--text2); line-height: 1.55; margin-bottom: 12px; max-width: 320px; }
+/* Stats row */
+.gi-stats-row { display: flex; gap: 28px; margin-top: 8px; }
+.gi-stat { text-align: center; }
+.gi-stat-val { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.gi-stat-lbl { font-size: 11.5px; color: var(--text3); margin-top: 1px; }
+/* Action buttons row */
+.gi-actions { display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 12px 16px; border-bottom: 0.5px solid var(--line, var(--pal-gray-800)); }
+.gi-action-btn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: none;
+  background: var(--bg3, var(--pal-gray-900));
+  color: var(--text2);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: none;
+  min-width: 64px;
+}
+.gi-action-btn:hover { background: var(--bg4); color: var(--text); }
+.gi-action-icon { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; background: var(--bg4, var(--pal-gray-800)); color: var(--blue, var(--pal-white)); }
+.gi-action-btn.gi-action-danger .gi-action-icon { color: var(--red, var(--pal-red)); }
+.gi-action-btn.gi-action-delete .gi-action-icon { color: var(--red, var(--pal-red)); }
+.gi-action-btn.gi-action-danger { color: var(--red, var(--pal-red)); }
+.gi-action-btn.gi-action-delete { color: var(--red, var(--pal-red)); }
+/* Sections (media, members) */
+.gi-section { padding: 14px 16px 0; }
+.gi-section-title { display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+/* Media grid (3-column) */
+.gi-media-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; border-radius: 12px; overflow: hidden; margin-bottom: 16px; min-height: 80px; }
+.gi-media-cell { aspect-ratio: 1; overflow: hidden; background: var(--bg3); cursor: pointer; position: relative; transition: none; }
+.gi-media-cell:hover { opacity: .82; }
+.gi-media-cell img, .gi-media-cell video { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+.gi-media-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--pal-black); }
+.gi-media-spin { grid-column: 1/-1; display: flex; align-items: center; justify-content: center; padding: 24px 0; }
+.gi-empty { grid-column: 1/-1; text-align: center; padding: 20px; font-size: 13px; color: var(--text3); }
+/* Members list sits inside .gi-section */
+#grpMembersSection .grp-members-list { max-height: 280px; overflow-y: auto; border-radius: 12px; border: 0.5px solid var(--line, var(--pal-gray-800)); margin-bottom: 16px; }
+/* Onlayn holat (presence) — a'zolar ro'yxati uchun */
+.grp-member-avi-wrap { position: relative; flex-shrink: 0; }
+.grp-member-avi-wrap .presence-dot {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 10px;
+  height: 10px;
+  background: #3ecf8e;
+  border: 2px solid var(--bg1, var(--pal-gray-900));
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0,0.15);
+}

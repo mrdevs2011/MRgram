@@ -1,3 +1,19 @@
+/* CSS/mono-x.css — mono, x-design. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
+/* ─── mono ─── */
+/* ═══════════════════════════════════════════ MRspace — Monochrome (qora + oq) override Eng OXIRIDA yuklanadi... */
+meta[name="theme-color"] { color: var(--pal-black); }
+/* Oq (accent) fonli elementlarda matn/ikonka qora */
+.btn-primary, .btn-primary * { color: var(--pal-black) !important; }
+.btn-primary:hover, .btn-primary:hover * { color: var(--pal-black) !important; }
+::selection { color: var(--pal-black) !important; }
+/* Toggle/switch: oq trek ustida tugma qora */
+.toggle input:checked + .toggle-track::after, .switch-toggle.on .switch-knob { box-shadow: none; }
+/* Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan */
+[data-theme="dark"] .post, .post { background: var(--pal-black); border-bottom: 1px solid var(--pal-gray-900); }
+/* Logo hech qaysi konteyner ichida qirqilmasin (bubble dumchasi ko'rinib tursin) */
+.splash-inner, .splash-logo-wrap, .splash-logo-glass, .auth-logo, .auth-logo-glass, .hdr-logo, .hdr-logo-glass, .sb-logo-row, .sb-logo-glass { overflow: visible !important; }
+.splash-svg, .auth-logo-glass img, .hdr-logo-glass img, .sb-logo-img { border-radius: 0 !important; }
+/* ─── x-design ─── */
 /* ═══════════════════════════════════════════════════════════════════════ MRspace — X uslubidagi minimalist d... */
 /* 1. Palitra */
 /* Aniq X (Twitter) ranglari. Dark = "Lights out", Light = standart oq. */
