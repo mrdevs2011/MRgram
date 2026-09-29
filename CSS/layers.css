@@ -513,20 +513,20 @@ svg { color: inherit; }
 .shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0,0.1), 0 4px 6px rgba(0, 0, 0,0.05); }
 /* ═══════════════════════════════════════════════════════════════════ MODAL Z-INDEX TARTIB (global override)... */
 /* Chat thread modal */
-#chatThreadModal { z-index: 360 !important; }
+#chatThreadModal { z-index: 360; }
 /* User profili — chat thread USTIDA ochilishi kerak */
-#userProfileModal { z-index: 500 !important; }
+#userProfileModal { z-index: 500; }
 /* Guruh info paneli — user profil ustida */
 /* Post detail */
-#detailModal { z-index: 550 !important; }
+#detailModal { z-index: 550; }
 /* Zoom / media viewer */
-#zoomModal { z-index: 600 !important; }
+#zoomModal { z-index: 600; }
 /* Qo'ng'iroq — hamma narsadan yuqorida */
-#incomingCallModal, #activeCallModal { z-index: 999999 !important; }
+#incomingCallModal, #activeCallModal { z-index: 999999; }
 /* Guruh overlaylari chatThreadModal (360) ustida bo'lishi uchun */
-#grpInfoOverlay, #grpCreateChoiceOverlay, #grpCreateFormOverlay, #grpJoinLinkOverlay, #grpAddUserOverlay { z-index: 520 !important; }
+#grpInfoOverlay, #grpCreateChoiceOverlay, #grpCreateFormOverlay, #grpJoinLinkOverlay, #grpAddUserOverlay { z-index: 520; }
 /* Chat thread ichidagi .overlay ham ustida tursin */
-#chatThreadModal .overlay { z-index: 520 !important; }
+#chatThreadModal .overlay { z-index: 520; }
 /* ─── dark-theme-fix ─── */
 /* ═══════════════════════════════════════════════════════════ MRspace — Solid UI Override dark-theme-fix.css... */
 /* ══════════════════════════════════════════ 1. DARK THEME — Rang Tokenlari ═════════════════════════════════... */
