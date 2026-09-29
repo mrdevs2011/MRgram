@@ -88,7 +88,7 @@ a { color: var(--link); }
 .cc-btn--apply, .cc-btn--apply * { color: var(--pal-white) !important; }
 .bc-send-btn, .bc-send-btn * { color: var(--pal-white) !important; }
 /* Sidebar tuzatishlari ─────────────────────────────────────────────── Faol tugma ostidagi chiziq/nur (ui-imp... */
-.nav-btn.on::before, nav.bot-nav .nav-btn.on::before { content: none !important; display: none !important; }
+.nav-btn.on::before, nav.bot-nav .nav-btn.on::before { content: none; display: none; }
 /* Logotip markazi ikonkalar markaziga tushsin */
 @media (min-width: 1100px) {
   nav.bot-nav .sb-top { padding-left: 0; }
@@ -97,7 +97,7 @@ a { color: var(--link); }
 .overlay, [data-theme] .overlay, #uploadOverlay, :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) { background: var(--overlay); }
 .sheet, [data-theme] .sheet, #uploadOverlay .composer-sheet, :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet { background: var(--bg); }
 /* sheet ustidagi yorqin "specular" chiziq (nav.css) — olib tashlandi */
-.sheet::before, [data-theme] .sheet::before { display: none !important; }
+.sheet::before, [data-theme] .sheet::before { display: none; }
 /* Composer ichki qismlari */
 #uploadOverlay .composer-avi { background: var(--bg4); }
 #uploadOverlay .composer-post-btn:disabled, #uploadOverlay .composer-post-btn:disabled * { background: var(--bg5) !important; color: var(--text4) !important; }
