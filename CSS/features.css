@@ -1572,9 +1572,9 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* 4. Call modal — scale+blur in */
 /* 5. Incoming call modal — slide up */
 /* 6. Incoming call — avatar pulsing rings (kattaroq, ko'proq) */
-.incoming-call-ring-anim span { animation: none !important; border: 2.5px solid #18793E !important; }
-.incoming-call-ring-anim span:nth-child(2) { animation-delay: 0s !important; }
-.incoming-call-ring-anim span:nth-child(3) { animation-delay: 0s !important; }
+.incoming-call-ring-anim span { animation: none; border: 2.5px solid #18793E; }
+.incoming-call-ring-anim span:nth-child(2) { animation-delay: 0s; }
+.incoming-call-ring-anim span:nth-child(3) { animation-delay: 0s; }
 /* 7. Online dot pulse */
 /* 8. Tab switch — view fade+slide */
 /* 9. Rasm lazy-load blur → clear */
