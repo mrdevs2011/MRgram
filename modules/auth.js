@@ -77,7 +77,7 @@ function _verifiedKey(uid) { return `mrg_verified_${uid}`; }
 
 function _saveVerifiedState(uid, data) {
   try {
-    const blockedUntilMs = data.blockedUntil?.toMillis ? data.blockedUntil.toMillis() : (data.blockedUntil || null);
+    const blockedUntilMs = data.blockedUntil || null;
     localStorage.setItem(_verifiedKey(uid), JSON.stringify({
       blocked:      data.blocked === true,
       blockedUntil: blockedUntilMs,
@@ -548,7 +548,7 @@ function _buildMe(user, p) {
 }
 
 function _blockedUntilMs(p) {
-  return p?.blockedUntil?.toMillis ? p.blockedUntil.toMillis() : null;
+  return p?.blockedUntil || null;
 }
 
 /** blocked=true, lekin muddati o'tgan bo'lsa — bloklanmagan hisoblanadi
@@ -929,8 +929,8 @@ export function listenPosts() {
 
   const render = async () => {
     const newPosts = [...byId.values()].sort((a, b) => {
-      const at = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-      const bt = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+      const at = a.createdAt || 0;
+      const bt = b.createdAt || 0;
       return bt - at;
     });
 

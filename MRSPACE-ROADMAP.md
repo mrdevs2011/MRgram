@@ -79,7 +79,7 @@
 | 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.1 (main'da, sinalmagan), 3.2, 3.3, 3.4 ✅, 3.5 deyarli ✅; 3.6 ❌ |
 | 4 | CSS konsolidatsiya | o'rta–yuqori (vizual) | 2–3 kun | 3 (oldin nima qolishi aniq bo'lsin) | 🔶 4.4/4.5 ✅ (bitta `app.css`); 23 fayl/12.1k qator (partiya 1–3 keyin), 288 `!important` |
 | 5 | Realtime va presence | o'rta | 1 kun | 3 | 🔶 5.1/5.2 ✅; 5.3 deyarli ✅ (doimiy kanallar ~8 → 5, sinov MR) |
-| 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya, network-first, yangilanish toast'i ✅; `Ts` adapteri, vendored supabase ✅ |
+| 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya, network-first, yangilanish toast'i ✅; vendored supabase ✅, `Ts` adapteri ✅ |
 | 7 | Family-grade mustahkamlash | o'rta | 1–2 kun | 2 | 🔶 7.1 ✅, 7.2 limit ✅; 7.7 ❌, 7.8 ✅ |
 | 8 | Hujjat va smoke test | past | 0.5 kun | hammasi | ✅ README, SMOKE, archive, migrations (000_schema jonli bazadan qayta yig'ilmagan; Playwright ixtiyoriy) |
 
@@ -241,7 +241,9 @@ drop table if exists public.follows;
 
 ## FAZA 6 — Data qatlami va Service Worker 🔶 (2026-09-29)
 
-### 6.1 Firestore adapterini olib tashlash — ❌
+### 6.1 Firestore adapterini olib tashlash — ✅ (2026-09-29, `diet/06-drop-ts`)
+- `Ts` klassi o'chirildi: `ts()` endi oddiy epoch-ms (number|null), `toIso()` soddalashdi; barcha `.toMillis()`/`.toDate()` chaqiruvlari (auth, chat, groups, explore, utils, view-users, local-cache) number bilan ishlaydi. Yon foyda: keshdan (number) o'qilganda `toMillis?.() || 0` 0 qaytarib saralashni buzadigan yashirin xato ham yo'qoldi. Tekshiruv: `node --check` 33 modul, mapper testi (mapProfile/Chat/Group/Message/Post — Ts obyekti yo'q), headless-chromium yuklanishi. Onlayn (chat tartibi, blok tugashi, oxirgi faollik) — MR sinovi.
+- (eski holat, tarixiy):
 - `config.js`: `Ts` klassi (`config.js:32`), `ts()`, `toIso()`, mapperlar — 8 modul ishlatadi (`auth`, `call`, `chat`, `explore`, `groups`, `local-cache`, `view-users`, `config`).
 - Bosqichma-bosqich: avval mapperlar oddiy `number` qaytarsin, keyin modul-modul ko'chir. Ustuvorlik: **past** (foya: soddalik, xavf: yuqori).
 

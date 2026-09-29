@@ -42,7 +42,7 @@ let _groupsTick = null;
 function _isActiveUser(u) {
   if (u.approval !== 'approved') return false;
   if (!u.blocked) return true;
-  return !!(u.blockedUntil && u.blockedUntil.toMillis() < Date.now());
+  return !!(u.blockedUntil && u.blockedUntil < Date.now());
 }
 
 /** id lar bo'yicha profillar: { uid: mapProfile(...) } — bitta so'rov */

@@ -403,7 +403,7 @@ function _renderPendingMini(users) {
     const uid  = u.uid || u.id;
     const name = u.fullName || u.username || uid;
     const uname = u.username ? `@${u.username}` : (u.email || '');
-    const created = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleString('uz-UZ') : '';
+    const created = u.createdAt ? new Date(u.createdAt).toLocaleString('uz-UZ') : '';
     return `
       <div class="pmini-card" data-uid="${uid}">
         <div class="pmini-info">
@@ -437,8 +437,8 @@ function _render(wrap, users) {
     const uname     = u.username ? `@${u.username}` : '';
     const uid       = u.uid || u.id;
     const isBlocked = u.blocked === true;
-    const created   = u.createdAt?.toDate ? u.createdAt.toDate().toLocaleDateString('uz-UZ') : '';
-    const blockedUntil = u.blockedUntil?.toDate ? u.blockedUntil.toDate().toLocaleString('uz-UZ') : '';
+    const created   = u.createdAt ? new Date(u.createdAt).toLocaleDateString('uz-UZ') : '';
+    const blockedUntil = u.blockedUntil ? new Date(u.blockedUntil).toLocaleString('uz-UZ') : '';
     const blockBtnLabel = isBlocked ? 'Blokdan chiqarish' : 'Bloklash';
     const blockBtnClass = isBlocked ? 'ua-unblock-btn' : 'ua-block-btn';
 

@@ -212,8 +212,8 @@ function _paintUserRows(users, animate = false) {
   }
   const rows = users.map(u => ({ u, c: chatMap[u.uid] || null }));
   rows.sort((a, b) => {
-    const ta = a.c?.lastMessageAt?.toMillis?.() || 0;
-    const tb = b.c?.lastMessageAt?.toMillis?.() || 0;
+    const ta = a.c?.lastMessageAt || 0;
+    const tb = b.c?.lastMessageAt || 0;
     if (ta !== tb) return tb - ta;
     return (a.u.fullName || '').localeCompare(b.u.fullName || '');
   });
@@ -301,7 +301,7 @@ const _UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
 function _isActiveUser(u) {
   if (u.approval !== 'approved') return false;
   if (!u.blocked) return true;
-  return !!(u.blockedUntil && u.blockedUntil.toMillis() < Date.now());
+  return !!(u.blockedUntil && u.blockedUntil < Date.now());
 }
 async function _fetchChatUsers() {
   const rows = await fetchAllRows('profiles', '*', 'created_at');
@@ -1091,7 +1091,7 @@ let _seenMsgIdsChatId = null;
 /* ── Sana ajratuvchi (Telegram uslubida "Bugun" / "Kecha" / "12-iyul") ── */
 export function _toDateSafe(ts) {
   if (!ts) return null;
-  return ts.toDate ? ts.toDate() : new Date(ts);
+  return new Date(ts);
 }
 export function _isSameDay(a, b) {
   if (!a || !b) return false;

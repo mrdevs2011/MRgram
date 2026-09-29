@@ -22,7 +22,7 @@ function _k(key) { return PREFIX + key; }
 
 /**
  * Firestore Timestamp obyektlari (va ichma-ich joylashganlari ham) oddiy
- * JSON.stringify orqali to'g'ri saqlanmaydi — toDate() metodi yo'qoladi.
+ * JSON.stringify orqali to'g'ri saqlanmaydi — Date obyektlari yo'qoladi.
  * Shuning uchun keshga yozishdan oldin ularni epoch-millisekundga
  * aylantiramiz; keyin fmt()/fmtTime() `new Date(millis)` orqali to'g'ri
  * o'qiy oladi (ular avval ts.toDate borligini tekshiradi, yo'q bo'lsa
@@ -30,7 +30,6 @@ function _k(key) { return PREFIX + key; }
  */
 function _serialize(value) {
   if (value == null) return value;
-  if (typeof value.toMillis === 'function') return value.toMillis();
   if (Array.isArray(value)) return value.map(_serialize);
   if (typeof value === 'object') {
     const out = {};

@@ -1,7 +1,7 @@
 /**
  * MRspace — config.js (Supabase)
  * Bitta Supabase client + state + Firestore-uslubidagi ma'lumotni
- * (camelCase, createdAt.toMillis()) Supabase qatorlaridan yasovchi mapperlar.
+ * (camelCase, createdAt = epoch-ms number) Supabase qatorlaridan yasovchi mapperlar.
  * Mapperlar qolgan modullarni bosqichma-bosqich ko'chirish imkonini beradi.
  */
 
@@ -28,26 +28,17 @@ export const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   realtime: { params: { eventsPerSecond: 10 } },
 });
 
-/* ── Vaqt: Firestore Timestamp'ga o'xshash (toMillis/toDate) ────────── */
-class Ts {
-  constructor(ms) {
-    this.seconds = Math.floor(ms / 1000);
-    this.nanoseconds = (ms % 1000) * 1e6;
-  }
-  toMillis() { return this.seconds * 1000 + Math.floor(this.nanoseconds / 1e6); }
-  toDate()   { return new Date(this.toMillis()); }
-  toISOString() { return new Date(this.toMillis()).toISOString(); }
-}
-/** ISO string | ms | Date → Ts (yoki null) */
+/* ── Vaqt: hamma joyda oddiy epoch-millisekund (number) ─────────────── */
+/** ISO string | ms | Date → ms (yoki null) */
 export function ts(v) {
   if (v == null || v === '') return null;
   const ms = typeof v === 'number' ? v : (v instanceof Date ? v.getTime() : Date.parse(v));
-  return Number.isNaN(ms) ? null : new Ts(ms);
+  return Number.isNaN(ms) ? null : ms;
 }
-/** Ts | ms | Date | ISO → ISO string (DB'ga yozish uchun) */
+/** ms | Date | ISO → ISO string (DB'ga yozish uchun) */
 export function toIso(v) {
-  const t = ts(typeof v === 'object' && v?.toMillis ? v.toMillis() : v);
-  return t ? t.toISOString() : null;
+  const ms = ts(v);
+  return ms == null ? null : new Date(ms).toISOString();
 }
 
 /* ── Storage ─────────────────────────────────────────────────────────── */

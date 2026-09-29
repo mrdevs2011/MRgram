@@ -18,7 +18,7 @@ let users = [];
 let usersOk = false;
 
 /* ── Ma'lumot ────────────────────────────────────────────────────────── */
-const ms = p => p?.createdAt?.toMillis?.() || 0;
+const ms = p => p?.createdAt || 0;
 
 function visiblePosts() {
   const me = state.me?.uid;

@@ -98,14 +98,14 @@ export function renderMarkdown(rawText) {
 
 export const fmt  = ts => {
   if (!ts) return '';
-  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  const d = new Date(ts);
   return new Intl.DateTimeFormat('en', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }).format(d);
 };
 
 /* Faqat soat:minut (chat xabarlari ostidagi vaqt uchun, masalan "11:55") */
 export const fmtTime = ts => {
   if (!ts) return '';
-  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  const d = new Date(ts);
   return new Intl.DateTimeFormat('en', { hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
 };
 
@@ -121,7 +121,7 @@ export const ONLINE_THRESHOLD_MS = 70 * 1000; // heartbeat ~25s, shuning uchun b
 
 export function isOnline(lastSeenAt) {
   if (!lastSeenAt) return false;
-  const d = lastSeenAt.toDate ? lastSeenAt.toDate() : new Date(lastSeenAt);
+  const d = new Date(lastSeenAt);
   return (Date.now() - d.getTime()) < ONLINE_THRESHOLD_MS;
 }
 
@@ -129,7 +129,7 @@ export function formatLastSeen(lastSeenAt) {
   if (!lastSeenAt) return "faollik ma'lumoti yo'q";
   if (isOnline(lastSeenAt)) return 'onlayn';
 
-  const d = lastSeenAt.toDate ? lastSeenAt.toDate() : new Date(lastSeenAt);
+  const d = new Date(lastSeenAt);
   const diffMs = Date.now() - d.getTime();
   const min = Math.floor(diffMs / 60000);
   const hour = Math.floor(min / 60);
