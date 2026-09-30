@@ -38,7 +38,7 @@ if (view && wrap) {
   const syncEmpty = () => {
     const rows = [...wrap.querySelectorAll('.chat-row')];
     const hasVisible = rows.some(r => r.offsetParent !== null);
-    const loading = !!wrap.querySelector('.spinner, .chat-row-skeleton');
+    const loading = !!wrap.querySelector('.spinner');
     empty.classList.toggle('show', !hasVisible && !loading);
   };
   new MutationObserver(syncEmpty).observe(wrap, { childList: true, subtree: true });

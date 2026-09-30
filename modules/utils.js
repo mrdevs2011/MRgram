@@ -179,27 +179,6 @@ export function showConfirm(msg, onOk, title = 'Aniqmi?') {
   cancel.onclick = close;
 }
 
-/* ── Skeleton cards with shimmer animation ───────────────────────────── */
-export function buildSkeletons(n = 3) {
-  const delayClass = i => `delay-${i * 80}ms`;
-  return Array.from({ length: n }, (_, i) => `
-    <div class="skeleton-post ${delayClass(i)}">
-      <div class="d-flex items-center gap-10px mb-14px">
-        <div class="skel-avi"></div>
-        <div class="flex-1 d-flex flex-col gap-7px">
-          <div class="skel-line w-42pct"></div>
-          <div class="skel-line w-26pct h-9px opacity-60"></div>
-        </div>
-      </div>
-      <div class="skel-media"></div>
-      <div class="p-12px-0 d-flex flex-col gap-7px">
-        <div class="skel-line w-88pct"></div>
-        <div class="skel-line w-65pct"></div>
-      </div>
-      <div class="skel-actions"></div>
-    </div>`).join('');
-}
-
 /* ── Heart burst animation ────────────────────────────────────────────── */
 export function showHeartBurst(x, y, container) {
   const el = document.createElement('div');

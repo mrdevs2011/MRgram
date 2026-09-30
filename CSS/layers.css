@@ -70,7 +70,7 @@ svg { color: inherit; }
 }
 .nav-btn.on, .nav-btn.active, .act-btn.liked, .act-btn.active, .profile-grid-tab.active, .tab-btn.active, .admin-tab.active, .chat-search-btn.active, .icon-btn.active, .icon-btn.selected { color: var(--tg-primary-blue); }
 .nav-center-btn, .btn-primary, .chat-voice-btn, .fab { color: var(--tg-text-main); }
-/* ═══════════════════════════════════════════ 2. FEED IMPROVEMENTS — Gradient Border & Skeleton ═════════════... */
+/* ═══════════════════════════════════════════ 2. FEED IMPROVEMENTS — Gradient Border ═════════════... */
 /* Gradient border on post hover */
 .post { position: relative; }
 .post::before {
@@ -89,9 +89,6 @@ svg { color: inherit; }
   pointer-events: none;
 }
 .post:hover::before { opacity: 1; }
-/* Avatar shimmer */
-.skel-avi { position: relative; overflow: hidden; }
-.skel-avi::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--pal-gray-800);  }
 /* ═══════════════════════════════════════════ 3. NAVIGATION BAR — Active State Enhancement ══════════════════... */
 /* Nav button icon bounce on tap */
 .nav-btn:active, .nav-btn.on { position: relative; }
@@ -119,15 +116,6 @@ svg { color: inherit; }
 .btn-primary:focus-visible, .btn-ghost:focus-visible, .btn-danger:focus-visible, .cmt-send:focus-visible { outline: 2px solid var(--line); outline-offset: 2px; }
 /* Remove default focus outline for mouse users */
 :focus:not(:focus-visible) { outline: none; }
-/* ═══════════════════════════════════════════ SHIMMER LOADING ANIMATION ═════════════════════════════════════... */
-.skel, .skel-avi, .skel-line, .skel-media { background: var(--bg3); background-size: 200px 100%;  }
-/* Skeleton post cards */
-.skeleton-post { background: var(--bg2); border-radius: 18px; padding: 16px; margin-bottom: 12px; overflow: hidden; }
-.skeleton-post .skel-avi { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; }
-.skeleton-post .skel-line { height: 12px; border-radius: 6px; background: var(--bg3); background-size: 200px 100%;  }
-.skeleton-post .skel-media { width: 100%; height: 200px; border-radius: 12px; margin: 12px 0; background: var(--bg3); background-size: 200px 100%;  }
-.skeleton-post .skel-actions { display: flex; gap: 8px; margin-top: 12px; }
-.skeleton-post .skel-actions::before, .skeleton-post .skel-actions::after { content: ''; flex: 1; height: 36px; border-radius: 8px; background: var(--bg3); background-size: 200px 100%;  }
 /* ═══════════════════════════════════════════ POST CARD — Microinteractions ═════════════════════════════════... */
 /* POST CARD — Microinteractions o'chirildi: .post transition / .post:hover lift / box-shadow — barchasi CSS/0... */
 /* Like button hover animation */
@@ -359,7 +347,6 @@ svg { color: inherit; }
 }
 /* ═══════════════════════════════════════════ DESKTOP ENHANCEMENTS ═══════════════════════════════════════════ */
 @media (min-width: 1100px) {
-  .bot-nav {  }
   .feed { max-width: 580px; }
   #detailModal { align-items: center; justify-content: center; }
   #detailContent { max-width: 600px; max-height: 90dvh; border-radius: 20px; margin: 20px; }
@@ -558,9 +545,6 @@ svg { color: inherit; }
 [data-theme="dark"] .dm-act:hover { background: var(--pal-gray-900); }
 [data-theme="dark"] .dm-close { background: var(--pal-gray-900); border: 0.5px solid var(--pal-gray-900); }
 [data-theme="dark"] .dm-close:hover { background: var(--pal-gray-800); }
-/* ══════════════════════════════════════════ 19. SKELETON LOADING — Shimmer ═════════════════════════════════... */
-[data-theme="dark"] .skeleton-post { background: var(--pal-black); border: 0.5px solid var(--pal-gray-900); }
-[data-theme="dark"] .skel-avi, [data-theme="dark"] .skel-line, [data-theme="dark"] .skel-media { background: var(--pal-gray-900); background-size: 200% 100%; }
 /* ══════════════════════════════════════════ 20. SPLASH SCREEN — Panel ══════════════════════════════════════... */
 [data-theme="dark"] #splash { background: var(--pal-black); }
 [data-theme="dark"] .splash-wordmark { color: var(--text); }
@@ -687,8 +671,6 @@ svg { color: inherit; }
 /* Detail modal */
 #detailContent, [data-theme="dark"] #detailContent { border: none; box-shadow: none; }
 .dm-close, [data-theme="dark"] .dm-close { border: none; }
-/* Skeleton */
-.skeleton-post, [data-theme="dark"] .skeleton-post { border: none; }
 .reel-top-btn, .reel-vol-top, [data-theme="dark"] .reel-top-btn, [data-theme="dark"] .reel-vol-top { border: none; }
 /* Nav ring/glow animatsiyalari — shadow yo'q */
 .nav-btn:hover, .nav-btn.on { box-shadow: none; }
@@ -753,7 +735,6 @@ svg { color: inherit; }
 /* Upload drop zone */
 /* Upload float bar */
 /* Toast */
-/* Skeleton shimmer */
 /* File card */
 /* Empty state icons */
 /* Dm-close button */
@@ -842,16 +823,9 @@ svg { color: inherit; }
 #chatThreadModal .cfm-dl:hover { background: rgba(255,255,255,0.24); }
 /* Voice message bubble — circular play + waveform (demo look) */
 #chatThreadModal .chat-voice-msg { min-width: 210px; gap: 8px; }
-#chatThreadModal .chat-msg.mine .cvm-play { color: var(--pal-white); }
 #chatThreadModal .chat-msg.mine .cvm-play:hover { background: rgba(255,255,255,0.34); }
-#chatThreadModal .chat-msg.mine .cvm-bar { background: var(--pal-white-42); }
-#chatThreadModal .chat-msg.mine .cvm-bar.played { background: rgba(255,255,255,0.95); }
 #chatThreadModal .chat-msg.mine .cvm-dur { color: rgba(255,255,255,0.8); }
-#chatThreadModal .chat-msg.theirs .cvm-play { background: var(--c-accent); color: var(--c-bg-chat); }
-#chatThreadModal .chat-msg.theirs .cvm-play:hover { background: var(--c-accent-2); }
-#chatThreadModal .chat-msg.theirs .cvm-bar { background: var(--c-text-2); opacity: 0.5; }
-#chatThreadModal .chat-msg.theirs .cvm-bar.played { background: var(--pal-white); opacity: 1; }
-#chatThreadModal .chat-msg.theirs .cvm-dur { color: var(--c-text-2); }
+#chatThreadModal .chat-msg.theirs .cvm-play { color: var(--c-bg-chat); }
 /* Composer / input row — skrinshotga 1:1 mos, tekis (flat) ko'rinish: * hech qanday pill/doira foni yo'q, iko... */
 #chatThreadModal .chat-thread-input-row { background: var(--c-bg-input); border-top: 1px solid var(--c-divider); padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px)); position: relative; }
 #chatThreadModal .chat-thread-input { background: transparent; border: none; border-radius: 0; color: var(--c-text-1); padding: 9px 4px;  }

@@ -1,7 +1,7 @@
 import { sb, state, CAP_LIMIT, getMediaUrl, isAdmin, mapProfile, MEDIA_BUCKET } from './config.js';
 import { $, esc, renderMarkdown, fmt, fmtSz, defAvi,
          initVidWrap, showConfirm,
-         buildSkeletons, dlFile, openZoom, showHeartBurst, fmtCount } from './utils.js';
+         dlFile, openZoom, showHeartBurst, fmtCount } from './utils.js';
 import { toast }                            from './toast.js';
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
@@ -595,7 +595,7 @@ export function patchCounts(posts) {
   });
 }
 
-/* ── FIX: Skeleton faqat birinchi render da ──────────────────────────── */
+/* ── Birinchi render da spinner ──────────────────────────── */
 let _feedFirstRender = true;
 let _hashPostHandled = false; // link orqali kelingan postni faqat bir marta moslashtiramiz
 
@@ -625,7 +625,7 @@ export async function renderFeed() {
 
   const posts  = filtered().slice(0, state.visibleN);
 
-  // Show skeleton on first render while loading
+  // Birinchi renderda spinner
   if (_feedFirstRender && !feedEl.querySelector('.post')) {
     feedEl.innerHTML = '<div class="spin-wrap"><div class="spinner"></div></div>';
   }

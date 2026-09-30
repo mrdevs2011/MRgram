@@ -34,6 +34,9 @@ function fit() {
     window.matchMedia('(min-width: 1200px)').matches &&
     !!state.me?.uid
   );
+  // Sozlamalar tugmasi: faqat profil sahifasida, rail pastida qotib turadi
+  const sw = $('rrSettingsWrap');
+  if (sw) sw.hidden = view !== 'profile';
 }
 
 /** Router navigatsiyasidan chaqiriladi */
@@ -172,6 +175,7 @@ export function startRightRail() {
   if (_started) return;
   _started = true;
   rail()?.addEventListener('click', onClick);
+  $('rrSettingsBtn')?.addEventListener('click', () => $('settingsBtn')?.click());
   window.addEventListener('resize', fit);
   document.addEventListener('groupsUpdated', () => { if (!cmtOpen()) loadGroups(); });
   document.addEventListener('profilesPreloaded', () => scheduleRefresh(50));

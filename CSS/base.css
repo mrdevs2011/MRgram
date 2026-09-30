@@ -26,14 +26,9 @@
 .empty { padding: 60px 20px; text-align: center; color: var(--text3); font-size: 14px; }
 .empty-icon { font-size: 34px; margin-bottom: 12px; opacity: 1; }
 .spin-wrap { text-align: center; }
-.spinner { width: 28px; height: 28px; border: 2px solid var(--line2); border-radius: 50%; margin: 0 auto;  }
+.spinner { width: 28px; height: 28px; border: 2px solid var(--line2); border-radius: 50%; margin: 0 auto; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* ═══════════════════════ SKELETON LOADING ═══════════════════════ */
-.skel { background: var(--bg4); border-radius: 8px; position: relative; overflow: hidden; flex-shrink: 0; }
-.skel::after { content: ''; position: absolute; inset: 0; background: var(--pal-gray-800);  }
-.skel-actions { height: 42px; border-radius: 10px; }
-/* Comment skeleton rows */
-.cmt-skel-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px;  }
 /* ═══════════════════════ TOAST - Base styles only Types defined in ui-improvements.css ═══════════════════════ */
 #toast { border: 1px solid var(--glass-border); visibility: hidden; white-space: nowrap; box-shadow: 0 8px 32px var(--pal-black); letter-spacing: -0.1px; }
 #toast.show { visibility: visible; }

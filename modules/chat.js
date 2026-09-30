@@ -58,21 +58,6 @@ function _injectSearchCSS() {
 .ulist-search-result { margin: 0 18px 10px; font-size: 12.5px; font-weight: 500; color: var(--text3, #767676); }
 .ulist-search-result.not-found { color: var(--red, #ef4444); }
 
-/* ── Skeleton (statik, animatsiyasiz) ── */
-.chat-row-skeleton {
-  display: flex; align-items: center; gap: 12px;
-  padding: 11px 16px;
-}
-.skel-avi {
-  width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
-  background: var(--bg2,#262626);
-}
-.skel-body { flex: 1; display: flex; flex-direction: column; gap: 7px; }
-.skel-name, .skel-preview {
-  height: 11px; border-radius: 7px;
-  background: var(--bg2,#262626);
-}
-.skel-name { height: 13px; }
 `;
   document.head.appendChild(s);
 }
@@ -120,7 +105,7 @@ function _renderSearchBox(container) {
       return;
     }
     _searchQuery = raw;
-    _paintSearchSkeleton();
+    _paintSearchSpinner();
     res.textContent = 'Qidirilmoqda...';
     res.className = 'ulist-search-result';
     res.classList.remove('d-none');
@@ -157,8 +142,8 @@ function _renderSearchBox(container) {
   });
 }
 
-/* ── Skeleton loading for search ─────────────────────────────────────── */
-function _paintSearchSkeleton() {
+/* ── Spinner (qidiruv yuklanishi) ─────────────────────────────────────── */
+function _paintSearchSpinner() {
   const root = $('chatsListWrap');
   if (!root) return;
   let rowsWrap = document.getElementById('chatRowsWrap');
@@ -167,15 +152,7 @@ function _paintSearchSkeleton() {
     rowsWrap.id = 'chatRowsWrap';
     root.appendChild(rowsWrap);
   }
-  rowsWrap.innerHTML = [1,2,3].map((_, i) => `
-    <div class="chat-row-skeleton">
-      <div class="skel-avi"></div>
-      <div class="skel-body">
-        <div class="skel-name" style="width:${55+i*12}%"></div>
-        <div class="skel-preview" style="width:${40+i*8}%"></div>
-      </div>
-    </div>
-  `).join('');
+  rowsWrap.innerHTML = '<div class="spin-wrap"><div class="spinner"></div></div>';
 }
 
 /* ── Paint only user rows (for search results / contacts) ────────────── */
@@ -268,6 +245,8 @@ import {
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLastSeen } from './utils.js';
 import { toast }            from './toast.js';
 import { rateOk }           from './rate-limit.js';
+import { initEmojiPicker } from './emoji-picker.js';
+import { emojiOnlyClass } from './emoji-only.js';
 import {
   startGroupsWatcher, stopGroupsWatcher, bindGroupsRealtime,
   openGroupThread, closeGroupThread,
@@ -1152,6 +1131,7 @@ function paintMessages(msgs) {
     const mine = m.senderId === state.me?.uid;
     const time = fmtTime(m.createdAt);
     let bubbleContent = '';
+    let emoCls = '';
 
     if (m.type === 'voice') {
       /* ── Voice message ── */
@@ -1211,6 +1191,7 @@ function paintMessages(msgs) {
     } else {
       /* ── Text message ── */
       bubbleContent = `<div class="chat-bubble-text">${renderMarkdown(m.text || '')}</div>`;
+      emoCls = emojiOnlyClass(m.text);
     }
 
     // ID asosida "yangi"lik: shu xabar ID'si ilgari chizilmagan bo'lsagina
@@ -1228,7 +1209,7 @@ function paintMessages(msgs) {
       dateSep = `<div class="chat-date-sep"><span>${_dateSepLabel(m.createdAt)}</span></div>`;
     }
 
-    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}" data-msg-id="${m.id || ''}">
+    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}${emoCls}" data-msg-id="${m.id || ''}">
 
       <div class="chat-bubble">
         <div class="chat-bubble-wrap">
@@ -1970,48 +1951,7 @@ $('chatThreadInput').addEventListener('keydown', e => {
 /* ── Composer emoji tugmasi — matn maydoni ichida chapda (Telegram
  * uslubi). Kompakt quick-picker: keng tarqalgan emojilardan iborat
  * ro'yxat, bosilganda kursor turgan joyga qo'shiladi. ── */
-const CHAT_QUICK_EMOJIS = [
-  '😀','😂','🥰','😍','😊','🙂','😉','😎','🤔','😴',
-  '😭','😢','😡','🥳','😱','🤗','🙄','😅','🤝','👍',
-  '👎','👏','🙏','💪','🔥','✨','🎉','❤️','💔','💯',
-  '👌','✅','❌','⭐','☺️','😇','🤣','😘','😜','🤷',
-];
-(function _initChatEmojiQuickpick() {
-  const btn  = $('chatEmojiBtn');
-  const pop  = $('chatEmojiQuickpick');
-  const inp  = $('chatThreadInput');
-  if (!btn || !pop || !inp) return;
-
-  if (!pop.childElementCount) {
-    pop.innerHTML = CHAT_QUICK_EMOJIS
-      .map(em => `<button type="button">${em}</button>`)
-      .join('');
-  }
-
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    pop.classList.toggle('show');
-  });
-
-  pop.addEventListener('click', (e) => {
-    const b = e.target.closest('button');
-    if (!b) return;
-    const emoji = b.textContent;
-    const start = inp.selectionStart ?? inp.value.length;
-    const end   = inp.selectionEnd ?? inp.value.length;
-    inp.value = inp.value.slice(0, start) + emoji + inp.value.slice(end);
-    const caret = start + emoji.length;
-    inp.focus();
-    inp.setSelectionRange(caret, caret);
-    inp.dispatchEvent(new Event('input', { bubbles: true }));
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!pop.classList.contains('show')) return;
-    if (e.target === btn || pop.contains(e.target)) return;
-    pop.classList.remove('show');
-  });
-})();
+initEmojiPicker({ btn: $('chatEmojiBtn'), pop: $('chatEmojiQuickpick'), input: $('chatThreadInput') });
 
 // Mikrofon/yuborish tugmasi — bitta tugma, uch xil holat:
 //  1) Matn/fayl bor bo'lsa — tap = yuborish.

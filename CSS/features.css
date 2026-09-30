@@ -140,9 +140,7 @@
 .post-media { cursor: pointer; background: var(--pal-black); position: relative; width: 100%; min-height: 180px; }
 .post-media img { width: 100%; height: auto; display: block; background: var(--pal-black); filter: blur(0); }
 .post-media video { width: 100%; height: auto; max-height: 70vh; display: block; background: var(--pal-black); object-fit: contain; filter: blur(0);  }
-/* Media hali to'liq yuklanmagan holat: o'lchami saqlanadi, faqat blur bilan. Post matni buldMedia'dan alohida... */
-.post-media.pm-loading { background: var(--pal-gray-800); }
-.post-media.pm-loading img, .post-media.pm-loading video { filter: blur(22px); transform: scale(1.08); }
+/* Media yuklanayotganda: oddiy aylanuvchi spinner (blur/skeleton yo'q) */
 .post-media.pm-loading::after {
   content: '';
   position: absolute;
@@ -153,7 +151,7 @@
   border-radius: 50%;
   border: 2.5px solid var(--pal-white-25);
   border-top-color: rgba(255,255,255,0.85);
-  
+  animation: spin .8s linear infinite;
   pointer-events: none;
 }
 .vid-wrap { position: relative; width: 100%; background: var(--pal-black); overflow: hidden; }
@@ -282,14 +280,6 @@
 /* [data-theme="dark"] .search-overlay-box → CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi,... */
 /* Empty states - theme aware */
 [data-theme="dark"] .empty-icon, [data-theme="dark"] .empty-search-icon { background: var(--blue-glow2); }
-/* Skeleton loading - theme aware shimmer */
-.skeleton-post { border: 1px solid var(--line); position: relative;  }
-.skel-avi { width: 38px; height: 38px; border-radius: 50%; background: var(--bg3); background-size: 200% 100%;  flex-shrink: 0; }
-.skel-line { height: 12px; border-radius: 4px; background: var(--bg3); background-size: 200% 100%;  }
-.skel-media { width: 100%; height: 200px; border-radius: 8px; background: var(--bg3); background-size: 200% 100%;  margin: 0; }
-.skel-actions { display: flex; gap: 8px; margin-top: 8px; }
-.skel-actions .skel-line { height: 32px; flex: 1; border-radius: 6px; }
-[data-theme="dark"] .skeleton-post { border-color: var(--pal-gray-800); }
 /* Like button pop animation */
 /* ═══════════════════════════════════════════ ENHANCED POST CARD STYLES ═════════════════════════════════════... */
 /* Gradient border hover + zoom o'chirildi (flat X.com uslubi, 2026) */
@@ -1153,24 +1143,43 @@
 .chat-emoji-btn:hover { color: var(--text2); background: var(--bg4); }
 .chat-emoji-quickpick {
   display: none;
-  flex-wrap: wrap;
-  gap: 2px;
+  flex-direction: column;
   position: absolute;
   left: 0;
   bottom: calc(100% + 8px);
-  width: 236px;
-  max-height: 160px;
-  overflow-y: auto;
+  width: min(344px, calc(100vw - 24px));
+  height: min(380px, 60vh);
   background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 8px;
+  border-radius: 16px;
   box-shadow: 0 6px 24px var(--pal-black);
+  overflow: hidden;
   z-index: 50;
 }
 .chat-emoji-quickpick.show { display: flex; }
-.chat-emoji-quickpick button { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: none; border: none; font-size: 19px; line-height: 1; border-radius: 8px; cursor: pointer;  }
-.chat-emoji-quickpick button:hover { background: var(--bg4); }
+.chat-emoji-quickpick [hidden] { display: none !important; }
+.chat-emoji-quickpick .ep-loading, .chat-emoji-quickpick .ep-empty { padding: 28px 12px; text-align: center; color: var(--text3); font-size: 13px; }
+.ep-top, .ep-search { display: flex; align-items: center; gap: 4px; padding: 8px 8px 6px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+.ep-tabs { display: flex; flex: 1; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.ep-tabs::-webkit-scrollbar { display: none; }
+.ep-tab { width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: none; border: none; border-radius: 50%; color: var(--text3); cursor: pointer; padding: 0; }
+.ep-tab:hover { background: var(--bg4); color: var(--text2); }
+.ep-tab.on { background: var(--bg4); color: var(--text); }
+.ep-search { padding: 8px; }
+.ep-search-wrap { position: relative; flex: 1; width: 100%; }
+.ep-search-inp { display: block; width: 100%; box-sizing: border-box; height: 30px; padding: 0 30px 0 12px; border-radius: 15px; border: 1px solid transparent; background: rgba(255,255,255,.06); color: var(--text); font: inherit; font-size: 13px; outline: none; transition: background .15s, border-color .15s; }
+.ep-search-inp::placeholder { color: var(--text3); }
+.ep-search-inp:focus { background: rgba(255,255,255,.09); border-color: var(--line); }
+.ep-clear { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; background: none; border: none; border-radius: 50%; color: var(--text3); cursor: pointer; padding: 0; }
+.ep-clear:hover { color: var(--text); background: rgba(255,255,255,.08); }
+/* Gorizontal: har bir kategoriya = alohida sahifa (tab). Vertikal: sahifa ichidagi emojilar. Telefonda chapga/o'ngga surish, desktopda touchpad 2 barmoq bilan. */
+.ep-body { position: relative; flex: 1; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
+.ep-body::-webkit-scrollbar { display: none; }
+.ep-body section { flex: 0 0 100%; min-width: 0; box-sizing: border-box; padding: 0 8px 8px; overflow-y: auto; overflow-x: hidden; scroll-snap-align: start; scroll-snap-stop: always; overscroll-behavior-y: contain; overscroll-behavior-x: auto; }
+.ep-body h4 { margin: 12px 4px 6px; font-size: 12px; font-weight: 500; color: var(--text3); }
+.ep-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; }
+.ep-e { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: none; border: none; border-radius: 10px; font-size: 22px; line-height: 1; padding: 0; cursor: pointer; font-family: "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif; }
+.ep-e:hover { background: var(--bg4); }
 /* Desktop */
 @media (min-width: 1100px) {
   .chats-hdr, .chats-list { max-width: 560px; margin-left: auto; margin-right: auto; }
@@ -1604,27 +1613,14 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 }
 .chat-msg.mine .cvm-play:hover { background: var(--pal-white-42); }
 .chat-msg.mine .cvm-waveform { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 1.5px; cursor: pointer; overflow: hidden; }
-.chat-msg.mine .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--pal-white-42);  }
+.chat-msg.mine .cvm-bar { width: 1.5px; border-radius: 10px; background: var(--pal-white-42); }
 /* Eshitilmagan qism — muted (past intensivlik); eshitilgan qism — * to'liq yorqin oq bilan ajralib turadi (Te... */
 .chat-msg.mine .cvm-bar.played { background: rgba(255,255,255,0.95); }
 .chat-msg.mine .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: rgba(255,255,255,0.72); }
 /* THEIRS — kulrang bubble ichida to'q elementlar */
-.chat-msg.theirs .cvm-play {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--pal-white);
-  color: var(--pal-white);
-}
-.chat-msg.theirs .cvm-play:hover { background: var(--pal-white); }
+.chat-msg.theirs .cvm-play { width: 34px; height: 34px; border-radius: 50%; border: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: var(--pal-white); }
 .chat-msg.theirs .cvm-waveform { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 1.5px; cursor: pointer; overflow: hidden; }
-.chat-msg.theirs .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--text3); opacity: 0.5;  }
+.chat-msg.theirs .cvm-bar { width: 1.5px; border-radius: 10px; background: var(--text3); opacity: 0.5; }
 /* Eshitilgan qism — Telegram Primary Blue (#ffffff) bilan to'liq * to'ldiriladi, eshitilmagan qism muted kulr... */
 .chat-msg.theirs .cvm-bar.played { background: var(--blue); opacity: 1; }
 .chat-msg.theirs .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: var(--text3); }

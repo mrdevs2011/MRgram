@@ -56,10 +56,8 @@ function ensureStoriesCss() {
   font-family: var(--font);
   position: relative;
 }
-.story-item--skel {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: var(--bg3); opacity: 0.6;
-}
+.story-loading { display: flex; align-items: center; padding: 18px 16px; }
+.story-loading .spinner { width: 24px; height: 24px; margin: 0; }
 .story-ring {
   width: 64px; height: 64px; border-radius: 50%;
   padding: 2px;
@@ -293,7 +291,7 @@ export async function loadStories() {
   const track = $('storiesTrack');
   if (!track || !state.me?.uid) return;
 
-  track.innerHTML = `<div class="story-item story-item--skel"></div>`.repeat(5);
+  track.innerHTML = '<div class="story-loading"><div class="spinner"></div></div>';
 
   try {
     const nowIso = new Date().toISOString();

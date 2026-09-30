@@ -16,11 +16,9 @@ function syncSend(inp, btn) {
   if (btn) btn.disabled = !inp?.value?.trim();
 }
 
-/* ── Shared: skeleton HTML ────────────────────────────────────────────── */
-function skelHtml() {
-  return `
-    <div class="cmt-skel-row"><div class="skel skel-avi w-32px h-32px flex-shrink-0"></div><div class="flex-1 d-flex flex-col gap-6px"><div class="skel skel-line w-45pct"></div><div class="skel skel-line w-75pct h-9px opacity-60"></div></div></div>
-    <div class="cmt-skel-row delay-60ms"><div class="skel skel-avi w-32px h-32px flex-shrink-0"></div><div class="flex-1 d-flex flex-col gap-6px"><div class="skel skel-line w-35pct"></div><div class="skel skel-line w-60pct h-9px opacity-60"></div></div></div>`;
+/* ── Shared: yuklanish spinneri ───────────────────────────────────────── */
+function loadingHtml() {
+  return '<div class="spin-wrap"><div class="spinner"></div></div>';
 }
 
 function emptyHtml() {
@@ -156,7 +154,7 @@ async function openInlineCmt(postId) {
       <span class="cmt-char-count" id="inlineCmtCharCount">300</span>
       <button class="cmt-send" id="inlineCmtSend" type="button" disabled>Yuborish</button>
     </div>
-    <div class="post-cmt-list" id="inlineCmtList">${skelHtml()}</div>
+    <div class="post-cmt-list" id="inlineCmtList">${loadingHtml()}</div>
   `;
 
   // Insert after post-actions (inside post-main if present)
@@ -211,7 +209,7 @@ async function openRailCmt(postId) {
   panel.hidden = false;
 
   const list = $('rrCmtList');
-  if (list) list.innerHTML = skelHtml();
+  if (list) list.innerHTML = loadingHtml();
 
   const inp = $('rrCmtInput');
   if (inp) {
