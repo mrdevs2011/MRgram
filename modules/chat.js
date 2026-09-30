@@ -58,31 +58,21 @@ function _injectSearchCSS() {
 .ulist-search-result { margin: 0 18px 10px; font-size: 12.5px; font-weight: 500; color: var(--text3, #767676); }
 .ulist-search-result.not-found { color: var(--red, #ef4444); }
 
-/* ── Skeleton ── */
-
+/* ── Skeleton (statik, animatsiyasiz) ── */
 .chat-row-skeleton {
   display: flex; align-items: center; gap: 12px;
   padding: 11px 16px;
-  opacity: 0;
-
 }
-
 .skel-avi {
   width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
   background: var(--bg2,#262626);
-  background-size: 400px 100%;
-
 }
 .skel-body { flex: 1; display: flex; flex-direction: column; gap: 7px; }
 .skel-name, .skel-preview {
   height: 11px; border-radius: 7px;
   background: var(--bg2,#262626);
-  background-size: 400px 100%;
-
 }
 .skel-name { height: 13px; }
-
-/* ── Row slide-in animation ── */
 `;
   document.head.appendChild(s);
 }
@@ -178,7 +168,7 @@ function _paintSearchSkeleton() {
     root.appendChild(rowsWrap);
   }
   rowsWrap.innerHTML = [1,2,3].map((_, i) => `
-    <div class="chat-row-skeleton" style="{i*0.08}s">
+    <div class="chat-row-skeleton">
       <div class="skel-avi"></div>
       <div class="skel-body">
         <div class="skel-name" style="width:${55+i*12}%"></div>
@@ -1237,7 +1227,7 @@ function paintMessages(msgs) {
       dateSep = `<div class="chat-date-sep"><span>${_dateSepLabel(m.createdAt)}</span></div>`;
     }
 
-    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}" data-msg-id="${m.id || ''}" style="${isNew ? `{Math.min(idx * 0.04, 0.3)}s` : ''}">
+    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}" data-msg-id="${m.id || ''}">
 
       <div class="chat-bubble">
         <div class="chat-bubble-wrap">
