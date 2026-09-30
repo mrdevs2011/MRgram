@@ -16,13 +16,13 @@ export function emojiOnlyClass(text) {
   return n ? ` emoji-only emo-${Math.min(n, 4)}` : '';
 }
 
-/* ── Emoji ustiga bosilganda Telegram uslubidagi animatsiya: sakrab-tebranish + uchib chiqadigan emojilar ── */
+/* ── Faqat 1 ta emoji bo'lsa, ustiga bosilganda elastik animatsiya + uchib chiqadigan emojilar ── */
 let _tapInit = false;
 export function initEmojiTap() {
   if (_tapInit || typeof document === 'undefined') return;
   _tapInit = true;
   document.addEventListener('click', (e) => {
-    const t = e.target.closest?.('.chat-msg.emoji-only .chat-bubble-text');
+    const t = e.target.closest?.('.chat-msg.emoji-only.emo-1 .chat-bubble-text');
     if (t) playEmojiTap(t);
   });
 }
