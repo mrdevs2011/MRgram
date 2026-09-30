@@ -4639,3 +4639,10 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
   background: var(--bg);
 }
 #chatThreadModal:has(.chat-emoji-quickpick.show) .chat-thread-messages { padding-bottom: calc(var(--ep-h) + 8px); }
+
+/* Emoji paneli: emojilar bir-biriga yaqin (ustun soni kenglikka qarab), qidiruv inputi #000 + ingichka border */
+.chat-emoji-quickpick .ep-grid { grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); gap: 0; }
+.chat-emoji-quickpick .ep-e { font-size: 22px; border-radius: 8px; }
+.chat-emoji-quickpick .ep-search-inp,
+.chat-emoji-quickpick .ep-search-inp:focus { background: #000; border: 1px solid rgba(255,255,255,.14); box-shadow: none; }
+.chat-emoji-quickpick .ep-search-inp:focus { border-color: rgba(255,255,255,.28); }
