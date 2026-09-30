@@ -34,10 +34,10 @@ body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
 .post:hover { background: var(--bg3); border-color: var(--line); }
 /* 5. Header va navigatsiya: ingichka chiziq */
 .app-hdr, [data-theme="dark"] .app-hdr { background: var(--bg); border-bottom: 1px solid var(--line); }
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .bot-nav { border-top: 1px solid var(--line); }
 }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   nav.bot-nav { border-right: 1px solid var(--line); }
 }
 /* Sidebar Post tugmasi va hover: yangi palitraga moslash */
@@ -105,12 +105,12 @@ a { color: var(--link); }
 /* Post: kartasiz qator (hamma kenglikda) */
 .post, [data-theme] .post { margin-bottom: 0; box-shadow: none; }
 /* Mobil: chap rail + to'liq kenglikdagi lenta */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .feed, #followingView .feed { max-width: none; margin: 0; padding: 0; border: none; }
-  nav.bot-nav { border: none; border-right: 1px solid var(--line); }
+  nav.bot-nav { border: none; border-top: 1px solid var(--line); }
 }
 /* Desktop/planshet: markaz ustun */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   :root { --center-w: 600px; }
   #homeView.on, #followingView.on { padding-top: 0 !important; padding-bottom: 0 !important; }
   .feed, #followingView .feed { max-width: var(--center-w); padding: 0; border-left: 1px solid var(--line); border-right: 1px solid var(--line); min-height: 100dvh; }
@@ -160,8 +160,8 @@ nav.bot-nav .nav-btn.on svg, nav.bot-nav #sbSearchToggle.search-active svg { str
   nav.bot-nav #createBtn.nav-center-btn { width: 52px; height: 52px; margin: 12px 0 0; }
   nav.bot-nav .sb-account { width: 50px; height: 50px; }
 }
-@media (max-width: 767px) {
-  :root { --rail: 64px; --sidebar: 64px; --content-left: 64px; }
+@media (max-width: 1099px) {
+  :root { --nav: calc(56px + env(safe-area-inset-bottom, 0px)); --rail: 0px; --sidebar: 0px; --content-left: 0px; }
 }
 /* Keng sidebar (>=1100px) */
 @media (min-width: 1100px) {
@@ -267,7 +267,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 }
 .search-overlay.open { top: 0; }
 [data-theme] .search-overlay-inner { position: relative; width: 100%; max-width: var(--center-w, 600px); margin: 0 auto; gap: 0; padding: 0; transform: none; background: transparent; border: none; box-shadow: none; }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   [data-theme] .search-overlay-inner { border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
 }
 @media (min-width: 1260px) {
@@ -609,3 +609,8 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 /* Filterlangan tab — bir xil kvadrat katak (o'z profilidagi .profile-grid--uniform kabi) */
 .up-grid--uniform { grid-auto-flow: row; grid-auto-rows: auto; }
 .up-grid--uniform .up-grid-cell--media, .up-grid--uniform .up-grid-cell--text { grid-row: span 1; aspect-ratio: 1; min-height: 0; }
+
+/* Mobil + planshet (<1100px): Post tugmasi pastki navning o'rtasida, dumaloq (eski order/margin ni bekor qiladi) */
+@media (max-width: 1099px) {
+  nav.bot-nav #createBtn.nav-center-btn { order: 0; width: 46px; height: 46px; margin: 0 4px; }
+}

@@ -87,7 +87,7 @@
 .hdr-new-post-btn:hover { background: var(--bg3); color: var(--text); }
 .hdr-new-post-btn:active { opacity: 0.7; }
 /* Desktop: hide header new post button (sidebar used instead) */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .hdr-new-post-btn { display: none; }
 }
 /* hdr-theme-btn → now uses .hdr-icon-btn.theme-btn */
@@ -213,7 +213,7 @@
 /* Hide search btn when not on home/following */
 .hdr-search-wrap.search-hidden { display: none; }
 /* Video player mute btn: mobile faqat */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .vc-mute { display: none !important; }
 }
 /* Reel vol btn: mobile = top-right absolute, desktop = top bar ichida */
@@ -237,7 +237,7 @@
 .reel-vol-top:hover { background: var(--pal-black); }
 .reel-vol-top svg { width: 18px; height: 18px; }
 /* Desktop: top bar ichida — position reset */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .reel-vol-top { position: static; background: var(--pal-black); width: 36px; height: 36px; }
 }
 /* Feed Subscribe Button */
@@ -308,7 +308,7 @@
 /* Profile view layout fix (desktop: sidebar ostida emas, markazda) */
 #profileView { position: relative; z-index: 1; box-sizing: border-box; overflow-x: hidden; min-height: 100%; }
 #profileView.on { display: block; }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   #profileView.on { margin-left: var(--content-left, var(--sidebar, 68px)); width: calc(100% - var(--content-left, var(--sidebar, 68px))); max-width: 680px; padding-top: 0; }
   #profileView .profile-hdr { padding-top: 20px; padding-left: 16px; padding-right: 16px; }
   #profileView .profile-avi-row { margin-top: 0; }
@@ -648,7 +648,7 @@
   box-shadow: inset 0 1px 0 var(--pal-legacy-525257), inset 0 -1px 0 var(--pal-black);
   flex-shrink: 0;
 }
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .nav-center-btn { display: none; }
   .bot-nav { justify-content: space-around; padding-bottom: max(env(safe-area-inset-bottom), 8px); }
 }
@@ -927,7 +927,7 @@
 .sb-panel-input-wrap svg { flex-shrink: 0; color: var(--text3); }
 .sb-panel-input { background: none; border: none; outline: none; color: var(--text); font-family: var(--font); font-size: 14px; width: 100%; }
 .sb-panel-input::placeholder { color: var(--text3); }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   :root { --sidebar: 68px; --content-left: var(--sidebar); }
   .app-hdr { display: none; }
   .sb-search-toggle { display: flex; }
@@ -1199,7 +1199,7 @@
 .chat-emoji-quickpick button { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: none; border: none; font-size: 19px; line-height: 1; border-radius: 8px; cursor: pointer; transition: none; }
 .chat-emoji-quickpick button:hover { background: var(--bg4); }
 /* Desktop */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .chats-hdr, .chats-list { max-width: 560px; margin-left: auto; margin-right: auto; }
   .chats-hdr { padding-left: 0; padding-right: 0; }
   #chatThreadModal { left: var(--sidebar); }

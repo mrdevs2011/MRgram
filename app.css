@@ -291,7 +291,7 @@
 .hdr-new-post-btn:hover { background: var(--bg3); color: var(--text); }
 .hdr-new-post-btn:active { opacity: 0.7; }
 /* Desktop: hide header new post button (sidebar used instead) */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .hdr-new-post-btn { display: none; }
 }
 /* hdr-theme-btn → now uses .hdr-icon-btn.theme-btn */
@@ -417,7 +417,7 @@
 /* Hide search btn when not on home/following */
 .hdr-search-wrap.search-hidden { display: none; }
 /* Video player mute btn: mobile faqat */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .vc-mute { display: none !important; }
 }
 /* Reel vol btn: mobile = top-right absolute, desktop = top bar ichida */
@@ -441,7 +441,7 @@
 .reel-vol-top:hover { background: var(--pal-black); }
 .reel-vol-top svg { width: 18px; height: 18px; }
 /* Desktop: top bar ichida — position reset */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .reel-vol-top { position: static; background: var(--pal-black); width: 36px; height: 36px; }
 }
 /* Feed Subscribe Button */
@@ -512,7 +512,7 @@
 /* Profile view layout fix (desktop: sidebar ostida emas, markazda) */
 #profileView { position: relative; z-index: 1; box-sizing: border-box; overflow-x: hidden; min-height: 100%; }
 #profileView.on { display: block; }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   #profileView.on { margin-left: var(--content-left, var(--sidebar, 68px)); width: calc(100% - var(--content-left, var(--sidebar, 68px))); max-width: 680px; padding-top: 0; }
   #profileView .profile-hdr { padding-top: 20px; padding-left: 16px; padding-right: 16px; }
   #profileView .profile-avi-row { margin-top: 0; }
@@ -852,7 +852,7 @@
   box-shadow: inset 0 1px 0 var(--pal-legacy-525257), inset 0 -1px 0 var(--pal-black);
   flex-shrink: 0;
 }
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .nav-center-btn { display: none; }
   .bot-nav { justify-content: space-around; padding-bottom: max(env(safe-area-inset-bottom), 8px); }
 }
@@ -1131,7 +1131,7 @@
 .sb-panel-input-wrap svg { flex-shrink: 0; color: var(--text3); }
 .sb-panel-input { background: none; border: none; outline: none; color: var(--text); font-family: var(--font); font-size: 14px; width: 100%; }
 .sb-panel-input::placeholder { color: var(--text3); }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   :root { --sidebar: 68px; --content-left: var(--sidebar); }
   .app-hdr { display: none; }
   .sb-search-toggle { display: flex; }
@@ -1403,7 +1403,7 @@
 .chat-emoji-quickpick button { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: none; border: none; font-size: 19px; line-height: 1; border-radius: 8px; cursor: pointer; transition: none; }
 .chat-emoji-quickpick button:hover { background: var(--bg4); }
 /* Desktop */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .chats-hdr, .chats-list { max-width: 560px; margin-left: auto; margin-right: auto; }
   .chats-hdr { padding-left: 0; padding-right: 0; }
   #chatThreadModal { left: var(--sidebar); }
@@ -2184,7 +2184,7 @@ body,
 .theme-btn:hover { background: var(--glass-mid); color: var(--text); box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
 .theme-btn:active { transition: none; }
 .theme-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .theme-btn { position: relative; }
   .theme-btn::after {
     content: attr(data-tip);
@@ -2399,7 +2399,7 @@ svg { color: inherit; }
   word-break: break-word;
 }
 /* ═══════════════════════════════════════════ REELS — Enhanced Progress & Controls ══════════════════════════... */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .reel::after { content: ''; position: absolute; inset: 0; background: var(--pal-black); opacity: 0; transition: none; pointer-events: none; }
   .reel:hover::after { opacity: 1; }
 }
@@ -2548,14 +2548,14 @@ svg { color: inherit; }
   .heart-burst, .upload-float-bar { animation: none !important; }
 }
 /* ═══════════════════════════════════════════ MOBILE OPTIMIZATIONS ═══════════════════════════════════════════ */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .act-btn, .nav-btn, .hdr-icon-btn, .theme-btn { min-height: 44px; min-width: 44px; }
   .post-caption, .reel-cap, .cmt-text { font-size: 14px; line-height: 1.6; }
   .bot-nav { padding-bottom: max(env(safe-area-inset-bottom), 8px); }
   .sheet { padding-bottom: max(env(safe-area-inset-bottom), 28px); }
 }
 /* ═══════════════════════════════════════════ DESKTOP ENHANCEMENTS ═══════════════════════════════════════════ */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .bot-nav { transition: none; }
   .feed { max-width: 580px; }
   #detailModal { align-items: center; justify-content: center; }
@@ -2568,7 +2568,7 @@ svg { color: inherit; }
   .post { break-inside: avoid; page-break-inside: avoid; }
 }
 /* Desktop: upload float bar sidebar hisobga olinadi */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .upload-float-bar { left: calc(50% + var(--sidebar, 0px) / 2); }
 }
 /* ═══════════════════════════════════════════════════════════════════════ YAKUNIY POLISH — flat (X.com uslubi... */
@@ -2813,11 +2813,11 @@ svg { color: inherit; }
 /* Header — top bar */
 .app-hdr, [data-theme="dark"] .app-hdr { box-shadow: none; }
 /* Mobile: frosted glass blur */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .app-hdr, [data-theme="dark"] .app-hdr { background: rgba(16, 16, 16, 0.72); }
 }
 /* Desktop: shaffof qolsin */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .app-hdr, [data-theme="dark"] .app-hdr { background: transparent; }
 }
 /* Header gradient line o'chirish */
@@ -2825,15 +2825,15 @@ svg { color: inherit; }
 /* Bottom nav */
 .bot-nav, [data-theme="dark"] .bot-nav { border-top: none; border-right: none; box-shadow: none; }
 /* Mobile: solid dark bar (was semi-transparent frosted glass — looked washed-out over content) */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   [data-theme="dark"] .bot-nav { background: var(--pal-black); }
 }
 /* Desktop: shaffof qolsin */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .bot-nav, [data-theme="dark"] .bot-nav { background: transparent; }
 }
 /* Desktop sidebar ::before gradient line o'chirish */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .bot-nav::before { display: none; background: none; }
 }
 /* Nav buttons */
@@ -2901,7 +2901,7 @@ svg { color: inherit; }
 .skeleton-post, [data-theme="dark"] .skeleton-post { border: none; }
 .reel-top-btn, .reel-vol-top, [data-theme="dark"] .reel-top-btn, [data-theme="dark"] .reel-vol-top { border: none; }
 /* Sidebar desktop — chegarasiz */
-@media (min-width: 768px) {}
+@media (min-width: 1100px) {}
 /* Nav ring/glow animatsiyalari — shadow yo'q */
 .nav-btn:hover, .nav-btn.on { box-shadow: none; }
 /* Feed buttons */
@@ -3146,7 +3146,7 @@ svg { color: inherit; }
   padding-bottom: env(safe-area-inset-bottom);
 }
 /* Desktop: bottom nav → left sidebar */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .bot-nav {
     bottom: auto;
     top: 0;
@@ -3166,7 +3166,7 @@ svg { color: inherit; }
 }
 /* 3. App header */
 .app-hdr { background: var(--bg2, var(--glass)); border-bottom: 0.5px solid var(--glass-border); box-shadow: none; }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .app-hdr { background: transparent; }
 }
 /* 4. Input fields */
@@ -3176,7 +3176,7 @@ input::placeholder, textarea::placeholder, .field::placeholder { color: var(--te
 /* 5. Post card (base) */
 .post { background: var(--bg2, var(--glass)); border: 0.5px solid var(--glass-border); border-radius: 14px; box-shadow: none; transition: none; }
 .post:hover { box-shadow: none; transform: none; }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .post { border-radius: 16px; }
 }
 /* ─── post-composer ─── */
@@ -3289,37 +3289,24 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav #createBtn.nav-center-btn svg { display: block; width: 22px; height: 22px; stroke: currentColor; }
   nav.bot-nav #createBtn.nav-center-btn .sb-create-label { display: none; }
 }
-/* Mobil: chap rail */
-@media (max-width: 767px) {
-  :root { --nav: 0px; }
+/* Mobil + planshet (<1100px): PASTKI navigatsiya paneli. Chap rail/sidebar faqat desktop (>=1100px) da. */
+@media (max-width: 1099px) {
+  :root { --nav: calc(56px + env(safe-area-inset-bottom, 0px)); --rail: 0px; --sidebar: 0px; --content-left: 0px; }
   nav.bot-nav {
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: auto;
-    width: var(--rail);
-    height: 100dvh;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 2px;
-    padding: max(env(safe-area-inset-top), 10px) 0 max(env(safe-area-inset-bottom), 10px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
+    top: auto; bottom: 0; left: 0; right: 0;
+    width: 100%; height: var(--nav);
+    box-sizing: border-box;
+    flex-direction: row; justify-content: space-around; align-items: center;
+    gap: 0; padding: 0 8px env(safe-area-inset-bottom, 0px);
+    overflow: visible;
   }
-  nav.bot-nav::-webkit-scrollbar { display: none; }
-  nav.bot-nav .sb-top { display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 0 6px; margin: 0; border: none; }
-  nav.bot-nav .sb-logo-row { width: 44px; height: 44px; padding: 0; background: none; border: none; }
-  nav.bot-nav .sb-logo-glass { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: none; border: none; box-shadow: none; }
-  nav.bot-nav .sb-logo-img { width: 28px; height: 28px; }
-  nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; flex: 0 0 auto; border-radius: 14px; position: relative; }
+  nav.bot-nav .sb-top, nav.bot-nav .sb-bottom { display: none; }
+  nav.bot-nav #createBtn.nav-center-btn { display: flex; flex: 0 0 auto; width: 46px; height: 46px; margin: 0 4px; order: 0; }
+  nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { display: flex; flex: 1 1 0; flex-direction: column; align-items: center; justify-content: center; width: auto; max-width: 96px; height: 100%; min-height: 48px; padding: 0; border-radius: 0; position: relative; background: none; }
   nav.bot-nav .nav-btn.admin-only-btn.d-none { display: none !important; }
-  nav.bot-nav .nav-btn svg { width: 24px; height: 24px; }
-  nav.bot-nav .nav-btn.on { background: none; }
-  nav.bot-nav .sb-bottom { display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: auto; padding-top: 8px; border: none; }
-  #homeView, #followingView, #reelsView, #profileView, #chatsView, #actionsView { margin-left: var(--rail); }
-  .app-hdr { left: var(--rail); }
+  nav.bot-nav .nav-btn svg { width: 26px; height: 26px; }
+  nav.bot-nav .nav-btn.on svg { stroke-width: 2.4; }
+  nav.bot-nav .nav-badge { top: 6px; left: calc(50% + 6px); right: auto; }
 }
 /* Keng sidebar (≥1100px) */
 @media (min-width: 1100px) {
@@ -3387,7 +3374,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
 .chats-x-item { display: block; width: 100%; padding: 12px 18px; text-align: left; background: none; border: none; cursor: pointer; font-family: var(--font); font-size: 15px; font-weight: 500; color: var(--text); }
 .chats-x-item.on { font-weight: 700; }
 .chats-x-item:hover { background: var(--pal-mid-16); }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   :root { --chats-w: clamp(300px, 32vw, 400px); }
   #chatsView.on {
     position: fixed !important;
@@ -3443,17 +3430,13 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
   body:has(#chatsView.on) #chatThreadModal { left: calc(var(--sidebar) + var(--chats-w)); border-left: 0.5px solid var(--glass-border); }
 }
 /* Post tugma: desktop'da ro'yxat OSTIDA (More/Boshqaruv dan keyin), ikonka emas "Post" yozuvi */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   nav.bot-nav #createBtn.nav-center-btn { order: 1; }
   nav.bot-nav .sb-bottom { order: 2; }
 }
-@media (min-width: 768px) and (max-width: 1099px) {
-  nav.bot-nav #createBtn.nav-center-btn { width: 52px; height: 40px; margin: 12px 0; border-radius: 999px; }
-  nav.bot-nav #createBtn.nav-center-btn svg { display: none; }
-  nav.bot-nav #createBtn.nav-center-btn .sb-create-label { display: block; font-size: 14px; font-weight: 700; color: var(--bg); }
-}
+
 /* Mobil (<768px): Post ikonka tugma ro'yxat OSTIDA, akkaunt (avatar) undan pastda */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   nav.bot-nav #createBtn.nav-center-btn { order: 1; margin: 12px 0 0; }
   nav.bot-nav .sb-bottom { order: 2; }
 }
@@ -3889,7 +3872,7 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 #actionsView .ua-actions { margin-right: 48px; }
 #actionsView .ua-approve-btn, #actionsView .ua-reject-btn, #actionsView .ua-block-btn, #actionsView .ua-unblock-btn, #actionsView .ua-history-btn { padding: 9px 14px; font-size: 0.8rem; }
 /* ═══════════════════════════════════════════════════════════════════════ ACTIONS VIEW — DESKTOP (≥1024px) Ik... */
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
   #actionsView { display: grid; grid-template-columns: minmax(0, 1fr) 400px; grid-template-rows: auto 1fr; column-gap: 28px; padding: 28px 32px 28px 0; align-items: start; }
   #actionsView .users-admin-hdr { grid-column: 2; grid-row: 1; padding: 0 0 14px; border-bottom: 1px solid var(--line); }
   #actionsView #usersAdminList { grid-column: 2; grid-row: 2; padding: 10px 4px 24px 0; }
@@ -3929,7 +3912,7 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 .ua-badge--approved { box-shadow: 0 0 12px var(--pal-gray-800); }
 .ua-badge--blocked { box-shadow: 0 0 12px var(--pal-gray-800); }
 /* Actions view desktop — solid cards */
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
   #actionsView .ua-row { background: var(--ag-glass); border: 0.5px solid var(--ag-border-side); border-radius: 16px; box-shadow: var(--ag-specular), 0 2px 12px var(--pal-black); margin-bottom: 8px; }
   #actionsView .ua-row:hover { background: var(--ag-glass-mid); border-color: var(--ag-border-top); box-shadow: var(--ag-specular), var(--ag-shadow-hover); }
 }
@@ -4052,10 +4035,10 @@ body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
 .post:hover { background: var(--bg3); border-color: var(--line); }
 /* 5. Header va navigatsiya: ingichka chiziq */
 .app-hdr, [data-theme="dark"] .app-hdr { background: var(--bg); border-bottom: 1px solid var(--line); }
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .bot-nav { border-top: 1px solid var(--line); }
 }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   nav.bot-nav { border-right: 1px solid var(--line); }
 }
 /* Sidebar Post tugmasi va hover: yangi palitraga moslash */
@@ -4123,12 +4106,12 @@ a { color: var(--link); }
 /* Post: kartasiz qator (hamma kenglikda) */
 .post, [data-theme] .post { margin-bottom: 0; box-shadow: none; }
 /* Mobil: chap rail + to'liq kenglikdagi lenta */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .feed, #followingView .feed { max-width: none; margin: 0; padding: 0; border: none; }
-  nav.bot-nav { border: none; border-right: 1px solid var(--line); }
+  nav.bot-nav { border: none; border-top: 1px solid var(--line); }
 }
 /* Desktop/planshet: markaz ustun */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   :root { --center-w: 600px; }
   #homeView.on, #followingView.on { padding-top: 0 !important; padding-bottom: 0 !important; }
   .feed, #followingView .feed { max-width: var(--center-w); padding: 0; border-left: 1px solid var(--line); border-right: 1px solid var(--line); min-height: 100dvh; }
@@ -4178,8 +4161,8 @@ nav.bot-nav .nav-btn.on svg, nav.bot-nav #sbSearchToggle.search-active svg { str
   nav.bot-nav #createBtn.nav-center-btn { width: 52px; height: 52px; margin: 12px 0 0; }
   nav.bot-nav .sb-account { width: 50px; height: 50px; }
 }
-@media (max-width: 767px) {
-  :root { --rail: 64px; --sidebar: 64px; --content-left: 64px; }
+@media (max-width: 1099px) {
+  :root { --nav: calc(56px + env(safe-area-inset-bottom, 0px)); --rail: 0px; --sidebar: 0px; --content-left: 0px; }
 }
 /* Keng sidebar (>=1100px) */
 @media (min-width: 1100px) {
@@ -4285,7 +4268,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 }
 .search-overlay.open { top: 0; }
 [data-theme] .search-overlay-inner { position: relative; width: 100%; max-width: var(--center-w, 600px); margin: 0 auto; gap: 0; padding: 0; transform: none; background: transparent; border: none; box-shadow: none; }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   [data-theme] .search-overlay-inner { border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
 }
 @media (min-width: 1260px) {
@@ -4627,3 +4610,8 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 /* Filterlangan tab — bir xil kvadrat katak (o'z profilidagi .profile-grid--uniform kabi) */
 .up-grid--uniform { grid-auto-flow: row; grid-auto-rows: auto; }
 .up-grid--uniform .up-grid-cell--media, .up-grid--uniform .up-grid-cell--text { grid-row: span 1; aspect-ratio: 1; min-height: 0; }
+
+/* Mobil + planshet (<1100px): Post tugmasi pastki navning o'rtasida, dumaloq (eski order/margin ni bekor qiladi) */
+@media (max-width: 1099px) {
+  nav.bot-nav #createBtn.nav-center-btn { order: 0; width: 46px; height: 46px; margin: 0 4px; }
+}

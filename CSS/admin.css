@@ -292,7 +292,7 @@
 #actionsView .ua-actions { margin-right: 48px; }
 #actionsView .ua-approve-btn, #actionsView .ua-reject-btn, #actionsView .ua-block-btn, #actionsView .ua-unblock-btn, #actionsView .ua-history-btn { padding: 9px 14px; font-size: 0.8rem; }
 /* ═══════════════════════════════════════════════════════════════════════ ACTIONS VIEW — DESKTOP (≥1024px) Ik... */
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
   #actionsView { display: grid; grid-template-columns: minmax(0, 1fr) 400px; grid-template-rows: auto 1fr; column-gap: 28px; padding: 28px 32px 28px 0; align-items: start; }
   #actionsView .users-admin-hdr { grid-column: 2; grid-row: 1; padding: 0 0 14px; border-bottom: 1px solid var(--line); }
   #actionsView #usersAdminList { grid-column: 2; grid-row: 2; padding: 10px 4px 24px 0; }
@@ -332,7 +332,7 @@
 .ua-badge--approved { box-shadow: 0 0 12px var(--pal-gray-800); }
 .ua-badge--blocked { box-shadow: 0 0 12px var(--pal-gray-800); }
 /* Actions view desktop — solid cards */
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
   #actionsView .ua-row { background: var(--ag-glass); border: 0.5px solid var(--ag-border-side); border-radius: 16px; box-shadow: var(--ag-specular), 0 2px 12px var(--pal-black); margin-bottom: 8px; }
   #actionsView .ua-row:hover { background: var(--ag-glass-mid); border-color: var(--ag-border-top); box-shadow: var(--ag-specular), var(--ag-shadow-hover); }
 }

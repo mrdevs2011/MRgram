@@ -37,7 +37,7 @@ body,
 .theme-btn:hover { background: var(--glass-mid); color: var(--text); box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
 .theme-btn:active { transition: none; }
 .theme-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .theme-btn { position: relative; }
   .theme-btn::after {
     content: attr(data-tip);
@@ -252,7 +252,7 @@ svg { color: inherit; }
   word-break: break-word;
 }
 /* ═══════════════════════════════════════════ REELS — Enhanced Progress & Controls ══════════════════════════... */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .reel::after { content: ''; position: absolute; inset: 0; background: var(--pal-black); opacity: 0; transition: none; pointer-events: none; }
   .reel:hover::after { opacity: 1; }
 }
@@ -401,14 +401,14 @@ svg { color: inherit; }
   .heart-burst, .upload-float-bar { animation: none !important; }
 }
 /* ═══════════════════════════════════════════ MOBILE OPTIMIZATIONS ═══════════════════════════════════════════ */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .act-btn, .nav-btn, .hdr-icon-btn, .theme-btn { min-height: 44px; min-width: 44px; }
   .post-caption, .reel-cap, .cmt-text { font-size: 14px; line-height: 1.6; }
   .bot-nav { padding-bottom: max(env(safe-area-inset-bottom), 8px); }
   .sheet { padding-bottom: max(env(safe-area-inset-bottom), 28px); }
 }
 /* ═══════════════════════════════════════════ DESKTOP ENHANCEMENTS ═══════════════════════════════════════════ */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .bot-nav { transition: none; }
   .feed { max-width: 580px; }
   #detailModal { align-items: center; justify-content: center; }
@@ -421,7 +421,7 @@ svg { color: inherit; }
   .post { break-inside: avoid; page-break-inside: avoid; }
 }
 /* Desktop: upload float bar sidebar hisobga olinadi */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .upload-float-bar { left: calc(50% + var(--sidebar, 0px) / 2); }
 }
 /* ═══════════════════════════════════════════════════════════════════════ YAKUNIY POLISH — flat (X.com uslubi... */
@@ -666,11 +666,11 @@ svg { color: inherit; }
 /* Header — top bar */
 .app-hdr, [data-theme="dark"] .app-hdr { box-shadow: none; }
 /* Mobile: frosted glass blur */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   .app-hdr, [data-theme="dark"] .app-hdr { background: rgba(16, 16, 16, 0.72); }
 }
 /* Desktop: shaffof qolsin */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .app-hdr, [data-theme="dark"] .app-hdr { background: transparent; }
 }
 /* Header gradient line o'chirish */
@@ -678,15 +678,15 @@ svg { color: inherit; }
 /* Bottom nav */
 .bot-nav, [data-theme="dark"] .bot-nav { border-top: none; border-right: none; box-shadow: none; }
 /* Mobile: solid dark bar (was semi-transparent frosted glass — looked washed-out over content) */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   [data-theme="dark"] .bot-nav { background: var(--pal-black); }
 }
 /* Desktop: shaffof qolsin */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .bot-nav, [data-theme="dark"] .bot-nav { background: transparent; }
 }
 /* Desktop sidebar ::before gradient line o'chirish */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .bot-nav::before { display: none; background: none; }
 }
 /* Nav buttons */
@@ -754,7 +754,7 @@ svg { color: inherit; }
 .skeleton-post, [data-theme="dark"] .skeleton-post { border: none; }
 .reel-top-btn, .reel-vol-top, [data-theme="dark"] .reel-top-btn, [data-theme="dark"] .reel-vol-top { border: none; }
 /* Sidebar desktop — chegarasiz */
-@media (min-width: 768px) {}
+@media (min-width: 1100px) {}
 /* Nav ring/glow animatsiyalari — shadow yo'q */
 .nav-btn:hover, .nav-btn.on { box-shadow: none; }
 /* Feed buttons */
@@ -999,7 +999,7 @@ svg { color: inherit; }
   padding-bottom: env(safe-area-inset-bottom);
 }
 /* Desktop: bottom nav → left sidebar */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .bot-nav {
     bottom: auto;
     top: 0;
@@ -1019,7 +1019,7 @@ svg { color: inherit; }
 }
 /* 3. App header */
 .app-hdr { background: var(--bg2, var(--glass)); border-bottom: 0.5px solid var(--glass-border); box-shadow: none; }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .app-hdr { background: transparent; }
 }
 /* 4. Input fields */
@@ -1029,7 +1029,7 @@ input::placeholder, textarea::placeholder, .field::placeholder { color: var(--te
 /* 5. Post card (base) */
 .post { background: var(--bg2, var(--glass)); border: 0.5px solid var(--glass-border); border-radius: 14px; box-shadow: none; transition: none; }
 .post:hover { box-shadow: none; transform: none; }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   .post { border-radius: 16px; }
 }
 /* ─── post-composer ─── */
@@ -1142,37 +1142,24 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav #createBtn.nav-center-btn svg { display: block; width: 22px; height: 22px; stroke: currentColor; }
   nav.bot-nav #createBtn.nav-center-btn .sb-create-label { display: none; }
 }
-/* Mobil: chap rail */
-@media (max-width: 767px) {
-  :root { --nav: 0px; }
+/* Mobil + planshet (<1100px): PASTKI navigatsiya paneli. Chap rail/sidebar faqat desktop (>=1100px) da. */
+@media (max-width: 1099px) {
+  :root { --nav: calc(56px + env(safe-area-inset-bottom, 0px)); --rail: 0px; --sidebar: 0px; --content-left: 0px; }
   nav.bot-nav {
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: auto;
-    width: var(--rail);
-    height: 100dvh;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 2px;
-    padding: max(env(safe-area-inset-top), 10px) 0 max(env(safe-area-inset-bottom), 10px);
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
+    top: auto; bottom: 0; left: 0; right: 0;
+    width: 100%; height: var(--nav);
+    box-sizing: border-box;
+    flex-direction: row; justify-content: space-around; align-items: center;
+    gap: 0; padding: 0 8px env(safe-area-inset-bottom, 0px);
+    overflow: visible;
   }
-  nav.bot-nav::-webkit-scrollbar { display: none; }
-  nav.bot-nav .sb-top { display: flex; flex-direction: column; align-items: center; width: 100%; padding: 0 0 6px; margin: 0; border: none; }
-  nav.bot-nav .sb-logo-row { width: 44px; height: 44px; padding: 0; background: none; border: none; }
-  nav.bot-nav .sb-logo-glass { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: none; border: none; box-shadow: none; }
-  nav.bot-nav .sb-logo-img { width: 28px; height: 28px; }
-  nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; flex: 0 0 auto; border-radius: 14px; position: relative; }
+  nav.bot-nav .sb-top, nav.bot-nav .sb-bottom { display: none; }
+  nav.bot-nav #createBtn.nav-center-btn { display: flex; flex: 0 0 auto; width: 46px; height: 46px; margin: 0 4px; order: 0; }
+  nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { display: flex; flex: 1 1 0; flex-direction: column; align-items: center; justify-content: center; width: auto; max-width: 96px; height: 100%; min-height: 48px; padding: 0; border-radius: 0; position: relative; background: none; }
   nav.bot-nav .nav-btn.admin-only-btn.d-none { display: none !important; }
-  nav.bot-nav .nav-btn svg { width: 24px; height: 24px; }
-  nav.bot-nav .nav-btn.on { background: none; }
-  nav.bot-nav .sb-bottom { display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: auto; padding-top: 8px; border: none; }
-  #homeView, #followingView, #reelsView, #profileView, #chatsView, #actionsView { margin-left: var(--rail); }
-  .app-hdr { left: var(--rail); }
+  nav.bot-nav .nav-btn svg { width: 26px; height: 26px; }
+  nav.bot-nav .nav-btn.on svg { stroke-width: 2.4; }
+  nav.bot-nav .nav-badge { top: 6px; left: calc(50% + 6px); right: auto; }
 }
 /* Keng sidebar (≥1100px) */
 @media (min-width: 1100px) {
@@ -1240,7 +1227,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
 .chats-x-item { display: block; width: 100%; padding: 12px 18px; text-align: left; background: none; border: none; cursor: pointer; font-family: var(--font); font-size: 15px; font-weight: 500; color: var(--text); }
 .chats-x-item.on { font-weight: 700; }
 .chats-x-item:hover { background: var(--pal-mid-16); }
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   :root { --chats-w: clamp(300px, 32vw, 400px); }
   #chatsView.on {
     position: fixed !important;
@@ -1296,17 +1283,13 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
   body:has(#chatsView.on) #chatThreadModal { left: calc(var(--sidebar) + var(--chats-w)); border-left: 0.5px solid var(--glass-border); }
 }
 /* Post tugma: desktop'da ro'yxat OSTIDA (More/Boshqaruv dan keyin), ikonka emas "Post" yozuvi */
-@media (min-width: 768px) {
+@media (min-width: 1100px) {
   nav.bot-nav #createBtn.nav-center-btn { order: 1; }
   nav.bot-nav .sb-bottom { order: 2; }
 }
-@media (min-width: 768px) and (max-width: 1099px) {
-  nav.bot-nav #createBtn.nav-center-btn { width: 52px; height: 40px; margin: 12px 0; border-radius: 999px; }
-  nav.bot-nav #createBtn.nav-center-btn svg { display: none; }
-  nav.bot-nav #createBtn.nav-center-btn .sb-create-label { display: block; font-size: 14px; font-weight: 700; color: var(--bg); }
-}
+
 /* Mobil (<768px): Post ikonka tugma ro'yxat OSTIDA, akkaunt (avatar) undan pastda */
-@media (max-width: 767px) {
+@media (max-width: 1099px) {
   nav.bot-nav #createBtn.nav-center-btn { order: 1; margin: 12px 0 0; }
   nav.bot-nav .sb-bottom { order: 2; }
 }
