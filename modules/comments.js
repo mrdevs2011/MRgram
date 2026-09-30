@@ -1,6 +1,7 @@
 import { sb, state, isAdmin, getMediaUrl, mapProfile } from './config.js';
 import { $, esc, renderMarkdown, defAvi, fmtCount, fmt }     from './utils.js';
 import { toast }                   from './toast.js';
+import { rateOk }                   from './rate-limit.js';
 
 /* ── Duplicate load oldini olish ──────────────────────────────────────── */
 let _loading = false;
@@ -346,6 +347,7 @@ async function sendComment(mode) {
 
   const text = inp?.value?.trim();
   if (!text || !state.cmtPostId || !state.me) return;
+  if (!rateOk('cmt', 6, 20000)) return;
 
   if (sendBtn) sendBtn.disabled = true;
 

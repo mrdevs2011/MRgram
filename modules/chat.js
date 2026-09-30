@@ -267,6 +267,7 @@ import {
 } from './config.js';
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLastSeen } from './utils.js';
 import { toast }            from './toast.js';
+import { rateOk }           from './rate-limit.js';
 import {
   startGroupsWatcher, stopGroupsWatcher, bindGroupsRealtime,
   openGroupThread, closeGroupThread,
@@ -1390,6 +1391,7 @@ export async function sendChatMessage() {
   const inp  = $('chatThreadInput');
   const text = inp?.value?.trim();
   if (!text || !state.currentChatId || !state.me) return;
+  if (!rateOk('msg', 8, 10000)) return;
 
   const chatId   = state.currentChatId;
   const otherUid = state.currentChatUid;
@@ -1756,6 +1758,7 @@ function _stopPulse() {
 
 async function sendVoiceMessage(blob, duration) {
   if (!state.currentChatId || !state.me) return;
+  if (!rateOk('msg', 8, 10000)) return;
   const chatId   = state.currentChatId;
   const otherUid = state.currentChatUid;
 
@@ -1818,6 +1821,7 @@ export function updateVoiceSendBtn() {
 
 async function sendChatFile() {
   if (!_chatSelFile || !state.me) return;
+  if (!rateOk('file', 5, 30000)) return;
   // Route to group file send if in group mode
   if (state.currentChatKind && state.currentChatKind !== 'dm') {
     const file = _chatSelFile;

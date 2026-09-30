@@ -23,6 +23,7 @@
 import { sb, state, uploadViaController, isAdmin, fetchAllRows, mapProfile, mapGroup, mapMessage, ts } from './config.js';
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, lockScroll, unlockScroll, isOnline } from './utils.js';
 import { toast }                                    from './toast.js';
+import { rateOk }                                   from './rate-limit.js';
 import { updateVoiceSendBtn, _toDateSafe, _isSameDay, _dateSepLabel } from './chat.js';
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -421,6 +422,7 @@ export async function sendGroupMessage() {
   const inp  = $('chatThreadInput');
   const text = inp?.value?.trim();
   if (!text) return;
+  if (!rateOk('msg', 8, 10000)) return;
   inp.value = '';
   updateVoiceSendBtn();
 

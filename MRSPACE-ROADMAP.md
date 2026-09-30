@@ -107,7 +107,7 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 | 1.1 | `follows` jadvali va policy'lari | ✅ | `schema.sql`dan olib tashlandi; bazaga drop uchun idempotent `supabase/patch-diet-01.sql` tayyor (3-qoida: 1 hafta kuzatuvdan keyin ishlatiladi) |
 | 1.2 | `vercel.json` o'lik rewrite'lar | ✅ | `/api`, `/img`, `/.well-known` rewrite/headerlari o'chirildi (papkalar yo'q, TWA/assetlinks hech qayerda ishlatilmaydi — grep tasdiqlangan); JSON validatsiyadan o'tdi |
 | 1.3 | Test izohlari | ✅ | README oxiridagi 4 ta `# test`/`redeploy` va `local-cache.js`dagi `// test 6...` o'chirildi |
-| 1.4 | `shortcuts.js` (91 qator) | ❌ qoldi | Tekshiruv: Esc/klaviatura ro'yxati faol ishlatilmoqda — "keraksiz" taxmini chiqmadi. Qisqartirish ixtiyoriy, F8 oldidan |
+| 1.4 | `shortcuts.js` (89 qator) | ✅ tekshirildi | 2026-09-30: `CLOSERS` va shortcut'lardagi 25 ta element id'sining hammasi `index.html`/modullarda bor (o'lik id yo'q). Qisqartirish xatti-harakatni yo'qotadi — **o'zgartirilmadi**, yopildi |
 | 1.5 | `view-actions.js` kim import qiladi? | ✅ tekshirildi | O'LIK EMAS: `router.js:186` dinamik `import('./view-' + routeName)` orqali `actions` routida yuklanadi (broadcast/e'lon). Saqlab qolindi |
 | 1.6 | `view-*.js` mayda modullar | ✅ tekshirildi | Hammasi shu dinamik router orqali ishlaydi, bo'sh o'ram emas. Birlashtirish — F3/F4ga qoldi |
 | 1.7 | README qayta yozish belgisi | ✅ | Bu fayl ro'yxat sifatida repoda saqlandi; asl yozish F8da |
@@ -272,7 +272,7 @@ drop table if exists public.follows;
 | 7.2 | Storage kvotasi | limit 25 MB ✅ (2026-09-29: avval kodda 50/30 MB edi, endi `MAX_FILE`/`STORY_MAX` = 25 MB, `diet/08-docs`), `compress.js` bor; admin sarf-ko'rsatkichi ✅ kod (2026-09-30, `modules/admin-storage.js`, admin panelda bitta qator + chiziq; DB: `unfulfilled/015_diet-07-storage-usage.sql` RPC — MR ishga tushiradi, yo'q bo'lsa jim ishlaydi) | ✅ kod / 🔶 015 SQL |
 | 7.4 | TURN | Env quvuri (`build-env.mjs:19-21`) bor; Vercel'da `TURN_*` env qo'yilganini MR tekshirsin `[TEKSHIR]` | 🔶 |
 | 7.5 | Media maxfiyligi | `[QAROR Q7]` public bucket hozircha qolsin, rasmiy qaror sifatida yozilsin | ✅ README "Qarorlar" bo'limiga yozildi |
-| 7.6 | Rate limit | Past ustuvorlik; faqat yuborish tezligi | ❌ |
+| 7.6 | Rate limit | Past ustuvorlik; faqat yuborish tezligi | ✅ (2026-09-30, `modules/rate-limit.js`: sirpanuvchi oyna, mijoz tomonida — xabar 8/10 s, fayl 5/30 s, izoh 6/20 s; `chat.js`, `groups.js`, `comments.js` da bittadan qator. Xavfsizlik chegarasi EMAS, faqat bosib qolish/spamdan) |
 | 7.7 | Xatolarni ko'rish | `window.onerror` + ixtiyoriy `client_errors` jadvali. Overengineering'ga qaytma | ✅ (2026-09-30, `modules/error-log.js`: oxirgi 20 xato localStorage'da — konsolda `__mrErrors()`; jadval bo'lsa sessiyada ≤5 ta `client_errors`ga; DB: `unfulfilled/014_diet-07-client-errors.sql`, ixtiyoriy, istalgan vaqtda) |
 | 7.8 | Onboarding matni | admin reset bor → "unutsangiz admin (MR) yangi parol beradi" | ✅ (`a3d0e14`) |
 

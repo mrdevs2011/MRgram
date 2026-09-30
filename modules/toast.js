@@ -1,4 +1,3 @@
-// test: diff uchun izoh
 /**
  * Toast notification module with queue system.
  * Rapid successive toasts don't overlap.
