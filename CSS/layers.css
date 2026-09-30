@@ -348,7 +348,7 @@ svg { color: inherit; }
 .upload-float-bar, .ufb-fill.indeterminate { background: var(--blue3); background-size: 200% 100%;  }
 /* ═══════════════════════════════════════════ REDUCED MOTION SUPPORT ═══════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {    scroll-behavior: auto !important; }
+  *, *::before, *::after {    scroll-behavior: auto; }
 }
 /* ═══════════════════════════════════════════ MOBILE OPTIMIZATIONS ═══════════════════════════════════════════ */
 @media (max-width: 1099px) {
@@ -366,7 +366,7 @@ svg { color: inherit; }
 }
 /* ═══════════════════════════════════════════ PRINT STYLES ═══════════════════════════════════════════ */
 @media print {
-  .bot-nav, .app-hdr, .nav-btn, .upload-float-bar, #toast, .overlay, .reel-vol-top { display: none !important; }
+  .bot-nav, .app-hdr, .nav-btn, .upload-float-bar, #toast, .overlay, .reel-vol-top { display: none; }
   body { background: var(--pal-white); color: var(--pal-black); }
   .post { break-inside: avoid; page-break-inside: avoid; }
 }
@@ -1057,7 +1057,7 @@ body.file-dragging::after { content: ''; position: fixed; inset: 8px; border: 2p
 /* ─── sidebar-x ─── */
 /* ═══════════════════════════════════════════════════════════════════════ SIDEBAR — X.com uslubi • ≥1100px :... */
 /* Umumiy: akkaunt bloki */
-.sb-account[hidden] { display: none !important; }
+.sb-account[hidden] { display: none; }
 .sb-account { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; background: none; border: none; border-radius: 999px; color: var(--text); font-family: var(--font); text-align: left; cursor: pointer; }
 .sb-acc-avi { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; overflow: hidden; background: var(--bg3, #222); }
 .sb-acc-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -1091,7 +1091,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav .sb-top, nav.bot-nav .sb-bottom { display: none; }
   nav.bot-nav #createBtn.nav-center-btn { display: flex; flex: 0 0 auto; width: 46px; height: 46px; margin: 0 4px; order: 0; }
   nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { display: flex; flex: 1 1 0; flex-direction: column; align-items: center; justify-content: center; width: auto; max-width: 96px; height: 100%; min-height: 48px; padding: 0; border-radius: 0; position: relative; background: none; }
-  nav.bot-nav .nav-btn.admin-only-btn.d-none { display: none !important; }
+  nav.bot-nav .nav-btn.admin-only-btn.d-none { display: none; }
   nav.bot-nav .nav-btn svg { width: 26px; height: 26px; }
   nav.bot-nav .nav-btn.on svg { stroke-width: 2.4; }
   nav.bot-nav .nav-badge { top: 6px; left: calc(50% + 6px); right: auto; }
@@ -1165,15 +1165,15 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
 @media (min-width: 1100px) {
   :root { --chats-w: clamp(300px, 32vw, 400px); }
   #chatsView.on {
-    position: fixed !important;
+    position: fixed;
     top: 0;
     bottom: 0;
     left: var(--sidebar);
     width: var(--chats-w);
-    height: auto !important;
-    min-height: 0 !important;
-    margin-left: 0 !important;
-    padding: 0 !important;
+    height: auto;
+    min-height: 0;
+    margin-left: 0;
+    padding: 0;
     overflow-y: auto;
     overflow-x: hidden;
     background: var(--bg);
@@ -1181,7 +1181,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
     border-right: 0.5px solid var(--glass-border);
     scrollbar-width: thin;
   }
-  #chatsView .chats-hdr { position: sticky; top: 0; z-index: 3; max-width: none; margin: 0; padding: 14px 16px 8px; gap: 8px; font-size: 20px; font-weight: 800; background: var(--bg) !important; }
+  #chatsView .chats-hdr { position: sticky; top: 0; z-index: 3; max-width: none; margin: 0; padding: 14px 16px 8px; gap: 8px; font-size: 20px; font-weight: 800; background: var(--bg); }
   #chatsView .chats-hdr > span { flex: 1; }
   #chatsView .chats-list { max-width: none; margin: 0; padding-bottom: 16px; }
   .chats-filter-btn {
