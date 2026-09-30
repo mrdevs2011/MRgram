@@ -682,7 +682,7 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 .post-cmt-panel .post-cmt-input-row { order: 2; border-top: 1px solid var(--line); }
 .post-cmt-panel .post-cmt-input-row .cmt-input { min-width: 0; flex: 1; }
 /* Sodda ko'rinish: ajratuvchi (dekorativ) chiziqlarsiz. Faol tab chizig'i, input va avatar halqalari saqlanadi. */
-[data-theme] .post, .post, [data-theme] .chat-row, .chat-row, [data-theme] .chat-thread, .exp-head, #storiesBar, [data-theme] :is(.post-cmt-list, .rr-cmt-list) .cmt-row, [data-theme] :is(.post-cmt-list, .rr-cmt-list) .cmt-empty, .post-cmt-panel, .post-cmt-panel .post-cmt-input-row, .rr-cmt-panel .rr-cmt-input-row { border-top: none; border-bottom: none; }
+[data-theme] .post, .post, [data-theme] .chat-row, .chat-row, [data-theme] .chat-thread, .exp-head, #storiesBar, [data-theme] :is(.post-cmt-list, .rr-cmt-list) .cmt-row, [data-theme] :is(.post-cmt-list, .rr-cmt-list) .cmt-empty, :is(.post-cmt-list, .rr-cmt-list) .cmt-skel-row, .post-cmt-panel, .post-cmt-panel .post-cmt-input-row, .rr-cmt-panel .rr-cmt-input-row { border-top: none; border-bottom: none; }
 
 /* Faqat emojidan iborat xabarlar: bubble yo'q; 1 ta eng katta, 2 > 3 > 4 kichrayadi, 4+ bir xil */
 .chat-msg.emoji-only .chat-bubble { background: none !important; box-shadow: none !important; border: none !important; padding: 0 !important; border-radius: 0 !important; }
