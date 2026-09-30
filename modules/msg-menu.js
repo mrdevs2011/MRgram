@@ -31,6 +31,21 @@ const isDM = () => !state.currentChatKind || state.currentChatKind === 'dm';
 const msgOf = id => (api?.getMsgs() || []).find(m => m.id === id);
 const isMine = m => m && m.senderId === state.me?.uid;
 const rowOf = el => el?.closest?.('.chat-msg[data-msg-id]:not([data-msg-id=""])') || null;
+/** Xabar qatori: pufakning o'zi yoki uning yonidagi bo'sh joy (qator bo'ylab) — ikkalasi ham xabarga tegishli */
+function rowAtPoint(target, y) {
+  const r = rowOf(target);
+  if (r) return r;
+  if (target !== box) return null; // sana belgisi va h.k. emas, faqat ro'yxatning bo'sh joyi
+  let best = null, bd = 1e9;
+  for (const row of box.querySelectorAll('.chat-msg[data-msg-id]:not([data-msg-id=""])')) {
+    const b = row.getBoundingClientRect();
+    const d = y < b.top ? b.top - y : y > b.bottom ? y - b.bottom : 0;
+    if (d < bd) { bd = d; best = row; }
+  }
+  return bd <= 3 ? best : null;
+}
+// Mobilda bitta bosish menyu ochadi — lekin bu elementlar o'z ishini qiladi (play, havola, rasm/video, avatar)
+const TAP_KEEP = 'a, button, video, audio, input, textarea, [data-cm-open], .msg-avi-btn';
 const coarse = () => window.matchMedia('(pointer: coarse)').matches;
 const pad = n => String(n).padStart(2, '0');
 
@@ -374,7 +389,7 @@ export function initMsgMenu(opts) {
 
   // Desktop: o'ng tugma. Sensorli qurilmada brauzerning o'z menyusini bostiramiz (long-press o'zimiz ushlaymiz).
   box.addEventListener('contextmenu', e => {
-    const row = rowOf(e.target);
+    const row = rowAtPoint(e.target, e.clientY);
     if (!row || !isDM()) return;
     e.preventDefault();
     if (coarse() || selMode) return;
@@ -384,9 +399,9 @@ export function initMsgMenu(opts) {
   // Mobil: bosib turish -> belgilash, suring -> oradagilar ham belgilanadi
   box.addEventListener('touchstart', e => {
     if (!isDM() || e.touches.length !== 1) return;
-    const row = rowOf(e.target);
-    if (!row) return;
     const t = e.touches[0];
+    const row = rowAtPoint(e.target, t.clientY);
+    if (!row) return;
     cancelLp();
     lp = { row, x: t.clientX, y: t.clientY };
     lpTimer = setTimeout(() => {
@@ -415,7 +430,7 @@ export function initMsgMenu(opts) {
   box.addEventListener('mousedown', e => {
     if (e.button !== 0 || coarse() || !isDM()) return;
     if (!selMode && e.target.closest('a,button,input,textarea,audio,video,[contenteditable]')) return;
-    const row = rowOf(e.target);
+    const row = rowAtPoint(e.target, e.clientY);
     if (!row) return;
     clearTimeout(msTimer);
     ms = { row, x: e.clientX, y: e.clientY };
@@ -439,8 +454,19 @@ export function initMsgMenu(opts) {
   // Bosib turgandan keyingi "click" (masalan play tugmasi) va tanlash rejimidagi bosishlar
   box.addEventListener('click', e => {
     if (Date.now() < suppressUntil) { e.stopPropagation(); e.preventDefault(); return; }
-    if (!selMode) return;
-    const row = rowOf(e.target);
+    if (!selMode) {
+      // Mobil: xabar (yoki uning qatori) ustiga bitta bosish -> menyu
+      if (!coarse() || !isDM()) return;
+      const r = rowAtPoint(e.target, e.clientY);
+      if (!r) return;
+      const keep = e.target.closest?.(TAP_KEEP);
+      if (keep && box.contains(keep)) return; // play tugmasi, havola, rasm/video...
+      if (e.target.closest?.('.chat-msg.emoji-only.emo-1 .chat-bubble-text')) return; // bitta emoji — faqat animatsiya
+      e.stopPropagation(); e.preventDefault();
+      openMenu(r, null, null);
+      return;
+    }
+    const row = rowAtPoint(e.target, e.clientY);
     if (!row) return;
     e.stopPropagation(); e.preventDefault();
     toggleSel(row.dataset.msgId);
