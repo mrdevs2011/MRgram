@@ -4478,7 +4478,8 @@ html, body, #app, .app { background: var(--pal-black) !important; background-col
 @media (min-width: 1200px) {
   :root { --center-w: 600px; }
   #homeView.on, #followingView.on, #profileView.on { margin-left: var(--content-left, var(--sidebar, 260px)); margin-right: 0; width: var(--center-w); max-width: var(--center-w); box-sizing: border-box; }
-  .feed, #followingView .feed, #profileView.on { max-width: var(--center-w); width: 100%; margin: 0; border-right: 1px solid var(--pal-gray-700); }
+  .feed, #followingView .feed { max-width: var(--center-w); width: 100%; margin: 0; border-right: 1px solid var(--pal-gray-700); }
+  #profileView.on { border-right: 1px solid var(--pal-gray-700); }
   [data-theme] .search-overlay, [data-theme="dark"] .search-overlay, .search-overlay {
     left: var(--content-left, var(--sidebar, 260px)) !important;
     right: auto !important;
