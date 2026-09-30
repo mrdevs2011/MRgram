@@ -1712,8 +1712,8 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 #callActiveModal.video-mode .call-active-btns {
   background: var(--pal-black);
   border: 0.5px solid var(--pal-legacy-26262c);
-  box-shadow: inset 0 1px 0 #2B2B31, 0 4px 24px var(--pal-black) !important;
-  border-radius: 60px !important;
+  box-shadow: inset 0 1px 0 #2B2B31, 0 4px 24px var(--pal-black);
+  border-radius: 60px;
 }
 /* Message sender avatar (DM & Group) */
 .msg-avi-btn {
@@ -1751,12 +1751,12 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* ════════════════════════════════════════════════════════════════════ CHAT EFFECTS PACK v2 ═════════════════... */
 /* 1. Context menu — spring scale-in */
 #chatContextMenu.show { display: block; transform-origin: top left; }
-.ctx-item.danger:hover { background: var(--pal-legacy-171717) !important; }
-#chatThreadInput:focus { box-shadow: 0 0 0 3px var(--pal-gray-800) !important; border-color: #4c4c4c !important; outline: none; }
+.ctx-item.danger:hover { background: var(--pal-legacy-171717); }
+#chatThreadInput:focus { box-shadow: 0 0 0 3px var(--pal-gray-800); border-color: #4c4c4c; outline: none; }
 /* ═══════════════════════════════════════════ CLEAN CHAT REDESIGN — Telegram/Instagram style Chegrasiz, minim... */
 /* #chatThreadModal foni → CSS/chat-dark-redesign.css'da belgilangan (bir xil selector, o'sha fayl keyinroq yu... */
 /* Messages container ── padding/background → CSS/chat-dark-redesign.css'da belgilangan (bu yerdagi eski qator... */
-.chat-thread-messages { gap: 2px !important; background: transparent !important; }
+.chat-thread-messages { gap: 2px; background: transparent !important; }
 /* Message row */
 /* Bubble — chegrasiz (padding/border-radius/font-size/line-height → o'chirildi, chunki CSS/chat-dark-redesign... */
 .chat-bubble { border: none; box-shadow: none; }
@@ -1764,7 +1764,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .chat-msg.mine .chat-bubble { box-shadow: none; border: none; }
 /* theirs — background/color/border-bottom-left-radius o'chirildi (o'lik edi, CSS/chat-dark-redesign.css g'oli... */
 .chat-msg.theirs .chat-bubble { box-shadow: none; border: none; }
-.chat-msg.mine .chat-bubble:has(.chat-img-msg), .chat-msg.theirs .chat-bubble:has(.chat-img-msg) { padding: 3px !important; border-radius: 16px !important; }
+.chat-msg.mine .chat-bubble:has(.chat-img-msg), .chat-msg.theirs .chat-bubble:has(.chat-img-msg) { padding: 3px; border-radius: 16px; }
 /* Input row — clean, chegrasiz */
 .chat-thread-input-row { background: var(--bg); border-top: none; box-shadow: none; padding: 8px 10px; padding-bottom: max(8px, env(safe-area-inset-bottom)); gap: 6px; }
 .chat-thread-input { background: var(--bg3); border: none; border-radius: 22px; padding: 10px 16px; font-size: 14px; color: var(--text); }
@@ -1774,7 +1774,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .chat-attach-btn:hover { background: transparent; color: var(--text); }
 .chat-voice-btn { background: var(--pal-white); border: none; box-shadow: none; width: 36px; height: 36px; }
 /* msg-avi-btn — completely hidden in 1v1 */
-.msg-avi-btn { display: none !important; }
+.msg-avi-btn { display: none; }
 /* ═══════════════════════════════════════════ VOICE MESSAGE — Final Clean Style mine: ko'k bubble, oq element... */
 /* Base structure */
 .chat-voice-msg {
@@ -1786,9 +1786,9 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 /* MINE — ko'k bubble ichida oq elementlar */
 .chat-msg.mine .cvm-play {
@@ -1801,15 +1801,15 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.28) !important;
-  color: var(--pal-white) !important;
+  background: rgba(255,255,255,0.28);
+  color: var(--pal-white);
 }
-.chat-msg.mine .cvm-play:hover { background: var(--pal-white-42) !important; }
+.chat-msg.mine .cvm-play:hover { background: var(--pal-white-42); }
 .chat-msg.mine .cvm-waveform { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 1.5px; cursor: pointer; overflow: hidden; }
-.chat-msg.mine .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--pal-white-42) !important;  }
+.chat-msg.mine .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--pal-white-42);  }
 /* Eshitilmagan qism — muted (past intensivlik); eshitilgan qism — * to'liq yorqin oq bilan ajralib turadi (Te... */
-.chat-msg.mine .cvm-bar.played { background: rgba(255,255,255,0.95) !important; }
-.chat-msg.mine .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: rgba(255,255,255,0.72) !important; }
+.chat-msg.mine .cvm-bar.played { background: rgba(255,255,255,0.95); }
+.chat-msg.mine .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: rgba(255,255,255,0.72); }
 /* THEIRS — kulrang bubble ichida to'q elementlar */
 .chat-msg.theirs .cvm-play {
   width: 34px;
@@ -1821,14 +1821,14 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--pal-white) !important;
-  color: var(--pal-white) !important;
+  background: var(--pal-white);
+  color: var(--pal-white);
 }
-.chat-msg.theirs .cvm-play:hover { background: var(--pal-white) !important; }
+.chat-msg.theirs .cvm-play:hover { background: var(--pal-white); }
 .chat-msg.theirs .cvm-waveform { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 1.5px; cursor: pointer; overflow: hidden; }
 .chat-msg.theirs .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--text3); opacity: 0.5;  }
 /* Eshitilgan qism — Telegram Primary Blue (#ffffff) bilan to'liq * to'ldiriladi, eshitilmagan qism muted kulr... */
-.chat-msg.theirs .cvm-bar.played { background: var(--blue) !important; opacity: 1; }
+.chat-msg.theirs .cvm-bar.played { background: var(--blue); opacity: 1; }
 .chat-msg.theirs .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: var(--text3); }
 /* Voice mini-player — chat almashtirilganda/thread yopilganda ham * ovozli xabar ijrosi davom etayotganini ko... */
 .voice-mini-player {
@@ -2482,7 +2482,7 @@ svg { color: inherit; }
 .upload-float-bar, .ufb-fill.indeterminate { background: var(--blue3); background-size: 200% 100%;  }
 /* ═══════════════════════════════════════════ REDUCED MOTION SUPPORT ═══════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {    scroll-behavior: auto !important; }
+  *, *::before, *::after {    scroll-behavior: auto; }
 }
 /* ═══════════════════════════════════════════ MOBILE OPTIMIZATIONS ═══════════════════════════════════════════ */
 @media (max-width: 1099px) {
@@ -2500,7 +2500,7 @@ svg { color: inherit; }
 }
 /* ═══════════════════════════════════════════ PRINT STYLES ═══════════════════════════════════════════ */
 @media print {
-  .bot-nav, .app-hdr, .nav-btn, .upload-float-bar, #toast, .overlay, .reel-vol-top { display: none !important; }
+  .bot-nav, .app-hdr, .nav-btn, .upload-float-bar, #toast, .overlay, .reel-vol-top { display: none; }
   body { background: var(--pal-white); color: var(--pal-black); }
   .post { break-inside: avoid; page-break-inside: avoid; }
 }
@@ -3191,7 +3191,7 @@ body.file-dragging::after { content: ''; position: fixed; inset: 8px; border: 2p
 /* ─── sidebar-x ─── */
 /* ═══════════════════════════════════════════════════════════════════════ SIDEBAR — X.com uslubi • ≥1100px :... */
 /* Umumiy: akkaunt bloki */
-.sb-account[hidden] { display: none !important; }
+.sb-account[hidden] { display: none; }
 .sb-account { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px; background: none; border: none; border-radius: 999px; color: var(--text); font-family: var(--font); text-align: left; cursor: pointer; }
 .sb-acc-avi { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; overflow: hidden; background: var(--bg3, #222); }
 .sb-acc-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -3225,7 +3225,7 @@ nav.bot-nav .nav-btn .nav-label { display: none; }
   nav.bot-nav .sb-top, nav.bot-nav .sb-bottom { display: none; }
   nav.bot-nav #createBtn.nav-center-btn { display: flex; flex: 0 0 auto; width: 46px; height: 46px; margin: 0 4px; order: 0; }
   nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { display: flex; flex: 1 1 0; flex-direction: column; align-items: center; justify-content: center; width: auto; max-width: 96px; height: 100%; min-height: 48px; padding: 0; border-radius: 0; position: relative; background: none; }
-  nav.bot-nav .nav-btn.admin-only-btn.d-none { display: none !important; }
+  nav.bot-nav .nav-btn.admin-only-btn.d-none { display: none; }
   nav.bot-nav .nav-btn svg { width: 26px; height: 26px; }
   nav.bot-nav .nav-btn.on svg { stroke-width: 2.4; }
   nav.bot-nav .nav-badge { top: 6px; left: calc(50% + 6px); right: auto; }
@@ -3299,15 +3299,15 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
 @media (min-width: 1100px) {
   :root { --chats-w: clamp(300px, 32vw, 400px); }
   #chatsView.on {
-    position: fixed !important;
+    position: fixed;
     top: 0;
     bottom: 0;
     left: var(--sidebar);
     width: var(--chats-w);
-    height: auto !important;
-    min-height: 0 !important;
-    margin-left: 0 !important;
-    padding: 0 !important;
+    height: auto;
+    min-height: 0;
+    margin-left: 0;
+    padding: 0;
     overflow-y: auto;
     overflow-x: hidden;
     background: var(--bg);
@@ -3315,7 +3315,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
     border-right: 0.5px solid var(--glass-border);
     scrollbar-width: thin;
   }
-  #chatsView .chats-hdr { position: sticky; top: 0; z-index: 3; max-width: none; margin: 0; padding: 14px 16px 8px; gap: 8px; font-size: 20px; font-weight: 800; background: var(--bg) !important; }
+  #chatsView .chats-hdr { position: sticky; top: 0; z-index: 3; max-width: none; margin: 0; padding: 14px 16px 8px; gap: 8px; font-size: 20px; font-weight: 800; background: var(--bg); }
   #chatsView .chats-hdr > span { flex: 1; }
   #chatsView .chats-list { max-width: none; margin: 0; padding-bottom: 16px; }
   .chats-filter-btn {
@@ -3918,8 +3918,8 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 meta[name="theme-color"] { color: var(--pal-black); }
 /* Oq (accent) fonli elementlarda matn/ikonka qora */
 .btn-primary, .btn-primary * { color: var(--pal-black); }
-.btn-primary:hover, .btn-primary:hover * { color: var(--pal-black) !important; }
-::selection { color: var(--pal-black) !important; }
+.btn-primary:hover, .btn-primary:hover * { color: var(--pal-black); }
+::selection { color: var(--pal-black); }
 /* Toggle/switch: oq trek ustida tugma qora */
 .toggle input:checked + .toggle-track::after, .switch-toggle.on .switch-knob { box-shadow: none; }
 /* Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan */
@@ -3969,38 +3969,38 @@ nav.bot-nav .nav-btn:hover, nav.bot-nav .sb-account:hover { background: var(--bg
 /* matn maydonlari: radius saqlanadi, outline emas */
 input:focus-visible, textarea:focus-visible, select:focus-visible { outline: none; }
 a { color: var(--link); }
-.ua-approve-btn, .ua-approve-btn * { color: var(--pal-white) !important; }
-#chatThreadModal .chat-msg.theirs .cvm-bar.played, #chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: var(--pal-white) !important; }
-.chat-row-badge, .chat-row-badge * { color: var(--pal-white) !important; }
+.ua-approve-btn, .ua-approve-btn * { color: var(--pal-white); }
+#chatThreadModal .chat-msg.theirs .cvm-bar.played, #chatThreadModal .chat-msg.theirs .cvm-bar.played * { color: var(--pal-white); }
+.chat-row-badge, .chat-row-badge * { color: var(--pal-white); }
 .cv-pulse, .cv-pulse * { color: var(--pal-white); }
 .chat-voice-btn, .chat-voice-btn * { color: var(--pal-white) !important; }
 .crb-line, .crb-line * { color: var(--pal-white); }
-.chat-voice-btn.recording, .chat-voice-btn.recording * { color: var(--pal-white) !important; }
+.chat-voice-btn.recording, .chat-voice-btn.recording * { color: var(--pal-white); }
 .chat-msg.theirs .cvm-play, .chat-msg.theirs .cvm-play * { color: var(--pal-white); }
-.chat-msg.theirs .cvm-play:hover, .chat-msg.theirs .cvm-play:hover * { color: var(--pal-white) !important; }
-.chat-msg.theirs .cvm-bar.played, .chat-msg.theirs .cvm-bar.played * { color: var(--pal-white) !important; }
-.vmp-play, .vmp-play * { color: var(--pal-white) !important; }
-.vmp-progress-fill, .vmp-progress-fill * { color: var(--pal-white) !important; }
+.chat-msg.theirs .cvm-play:hover, .chat-msg.theirs .cvm-play:hover * { color: var(--pal-white); }
+.chat-msg.theirs .cvm-bar.played, .chat-msg.theirs .cvm-bar.played * { color: var(--pal-white); }
+.vmp-play, .vmp-play * { color: var(--pal-white); }
+.vmp-progress-fill, .vmp-progress-fill * { color: var(--pal-white); }
 [data-theme="dark"] .splash-fill, [data-theme="dark"] .splash-fill * { color: var(--pal-white); }
 .ufb-icon, .ufb-icon * { color: var(--pal-white); }
 .ufb-fill, .ufb-fill * { color: var(--pal-white); }
-.grp-avi-badge--group, .grp-avi-badge--group * { color: var(--pal-white) !important; }
-.grp-avi-badge--channel, .grp-avi-badge--channel * { color: var(--pal-white) !important; }
-.chat-row-grp-badge--group, .chat-row-grp-badge--group * { color: var(--pal-white) !important; }
-.grp-picker-check.on, .grp-picker-check.on * { color: var(--pal-white) !important; }
+.grp-avi-badge--group, .grp-avi-badge--group * { color: var(--pal-white); }
+.grp-avi-badge--channel, .grp-avi-badge--channel * { color: var(--pal-white); }
+.chat-row-grp-badge--group, .chat-row-grp-badge--group * { color: var(--pal-white); }
+.grp-picker-check.on, .grp-picker-check.on * { color: var(--pal-white); }
 .nav-center-btn, .nav-center-btn * { color: var(--pal-white); }
 .upload-progress-fill, .upload-progress-fill * { color: var(--pal-white); }
-.cmt-send, .cmt-send * { color: var(--pal-white) !important; }
-.switch-toggle.on, .switch-toggle.on * { color: var(--pal-white) !important; }
+.cmt-send, .cmt-send * { color: var(--pal-white); }
+.switch-toggle.on, .switch-toggle.on * { color: var(--pal-white); }
 .avi-edit-badge, .avi-edit-badge * { color: var(--pal-white); }
 .nav-btn.on::before { color: var(--pal-white); }
-.empty-cta, .empty-cta * { color: var(--pal-white) !important; }
-.toast-progress, .toast-progress * { color: var(--pal-white) !important; }
+.empty-cta, .empty-cta * { color: var(--pal-white); }
+.toast-progress, .toast-progress * { color: var(--pal-white); }
 .nav-badge, .nav-badge * { color: var(--pal-white); }
 .upload-float-bar, .upload-float-bar * { color: var(--pal-white); }
-.ufb-fill.indeterminate, .ufb-fill.indeterminate * { color: var(--pal-white) !important; }
-.cc-btn--apply, .cc-btn--apply * { color: var(--pal-white) !important; }
-.bc-send-btn, .bc-send-btn * { color: var(--pal-white) !important; }
+.ufb-fill.indeterminate, .ufb-fill.indeterminate * { color: var(--pal-white); }
+.cc-btn--apply, .cc-btn--apply * { color: var(--pal-white); }
+.bc-send-btn, .bc-send-btn * { color: var(--pal-white); }
 /* Sidebar tuzatishlari ─────────────────────────────────────────────── Faol tugma ostidagi chiziq/nur (ui-imp... */
 .nav-btn.on::before, nav.bot-nav .nav-btn.on::before { content: none; display: none; }
 /* Logotip markazi ikonkalar markaziga tushsin */
@@ -4014,7 +4014,7 @@ a { color: var(--link); }
 .sheet::before, [data-theme] .sheet::before { display: none; }
 /* Composer ichki qismlari */
 #uploadOverlay .composer-avi { background: var(--bg4); }
-#uploadOverlay .composer-post-btn:disabled, #uploadOverlay .composer-post-btn:disabled * { background: var(--bg5) !important; color: var(--text4) !important; }
+#uploadOverlay .composer-post-btn:disabled, #uploadOverlay .composer-post-btn:disabled * { background: var(--bg5); color: var(--text4); }
 /* ═══════════════════════════════════════════════════════════════════════ MAKET — X.com kabi: desktop 3 ustun... */
 /* Post: kartasiz qator (hamma kenglikda) */
 .post, [data-theme] .post { margin-bottom: 0; box-shadow: none; }
@@ -4026,7 +4026,7 @@ a { color: var(--link); }
 /* Desktop/planshet: markaz ustun */
 @media (min-width: 1100px) {
   :root { --center-w: 600px; }
-  #homeView.on, #followingView.on { padding-top: 0 !important; padding-bottom: 0 !important; }
+  #homeView.on, #followingView.on { padding-top: 0; padding-bottom: 0; }
   .feed, #followingView .feed { max-width: var(--center-w); padding: 0; border-left: 1px solid var(--line); border-right: 1px solid var(--line); min-height: 100dvh; }
 }
 /* Keng ekran (≥1260px): sidebar + markaz + o'ng ustun, butun guruh markazda */
@@ -4091,7 +4091,7 @@ nav.bot-nav .nav-btn.on svg, nav.bot-nav #sbSearchToggle.search-active svg { str
   nav.bot-nav .sb-acc-name, nav.bot-nav .sb-acc-user { font-size: 15px; line-height: 20px; }
 }
 /* ═══════════════════════════════════════════════════════════════════════ X 1:1 — aniq X ranglari va komponen... */
-::selection { color: inherit !important; }
+::selection { color: inherit; }
 /* Asosiy CTA: X'dagi kabi teskari pill (dark: oq/qora matn, light: qora/oq matn) */
 .btn-primary { background: var(--x-inv-bg); }
 .btn-primary:hover { background: var(--x-inv-bg-hover); }
@@ -4099,8 +4099,8 @@ nav.bot-nav .nav-btn.on svg, nav.bot-nav #sbSearchToggle.search-active svg { str
 /* Post / Reply tugmalari: X ko'ki, matn oq, o'chiq holatda 50% */
 #uploadOverlay .composer-post-btn, #uploadBtn.composer-post-btn { background: var(--x-blue); }
 #uploadBtn.composer-post-btn:hover:not(:disabled) { background: var(--x-blue-hover); }
-#uploadOverlay .composer-post-btn, #uploadOverlay .composer-post-btn *, #uploadOverlay .composer-post-btn:disabled, #uploadOverlay .composer-post-btn:disabled * { color: var(--pal-white) !important; }
-#uploadOverlay .composer-post-btn:disabled { background: var(--x-blue) !important; }
+#uploadOverlay .composer-post-btn, #uploadOverlay .composer-post-btn *, #uploadOverlay .composer-post-btn:disabled, #uploadOverlay .composer-post-btn:disabled * { color: var(--pal-white); }
+#uploadOverlay .composer-post-btn:disabled { background: var(--x-blue); }
 /* Sidebar: X hover (10% shaffof) va ko'k Post */
 nav.bot-nav .nav-btn:hover, nav.bot-nav .sb-search-toggle:hover, nav.bot-nav .sb-account:hover { background: var(--hover-strong); }
 nav.bot-nav #createBtn.nav-center-btn { background: var(--x-blue); }
@@ -4119,11 +4119,11 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 /* Fokus / drop: X ko'ki (dark-theme-fix.css dagi oq chegara o'rniga) */
 [data-theme] textarea:focus, [data-theme] input:focus, [data-theme] .chat-input-wrap:focus-within, [data-theme] .cmt-input:focus, [data-theme] .upload-drop:hover, .upload-drop:hover { border-color: var(--x-blue); }
 /* Toggle: ko'k trek, oq tugma */
-.toggle input:checked + .toggle-track::after, .switch-toggle.on .switch-knob { background: var(--pal-white) !important; }
+.toggle input:checked + .toggle-track::after, .switch-toggle.on .switch-knob { background: var(--pal-white); }
 /* Progress / ovoz: oq o'rniga X ko'ki */
 .cpb-progress-fill, .vmp-progress-fill, .vmp-play, .vc-fill, .vc-fill::after, .chat-voice-btn, #chatThreadModal .chat-msg.theirs .cvm-bar.played { background: var(--x-blue) !important; }
-.chat-voice-btn.recording { background: var(--red) !important; }
-#chatThreadModal .chat-msg.theirs .cvm-play, #chatThreadModal .chat-msg.theirs .cvm-play:hover { background: var(--x-blue) !important; }
+.chat-voice-btn.recording { background: var(--red); }
+#chatThreadModal .chat-msg.theirs .cvm-play, #chatThreadModal .chat-msg.theirs .cvm-play:hover { background: var(--x-blue); }
 /* Suhbat (DM): yuborilgan = X ko'ki, kelgan = #2f3336 / #eff3f4, 22px yumaloq */
 #chatThreadModal, [data-theme] #chatThreadModal {
   --c-bg-chat: var(--bg);
@@ -4150,10 +4150,10 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 #chatThreadModal .chat-msg.mine .chat-bubble { background: var(--x-blue); color: var(--pal-white); border-radius: 22px 22px 4px 22px; }
 #chatThreadModal .chat-msg.theirs .chat-bubble { background: var(--line); color: var(--text); border-radius: 22px 22px 22px 4px; }
 #chatThreadModal .chat-msg.mine .chat-bubble a { color: var(--pal-white); text-decoration: underline; }
-#chatThreadModal .chat-msg.mine .cvm-play { background: var(--pal-white-25) !important; }
+#chatThreadModal .chat-msg.mine .cvm-play { background: var(--pal-white-25); }
 /* ═══════════════════════════════════════════════════════════════════════ X 1:1 — tuzatish (haqiqiy X bilan s... */
 nav.bot-nav #createBtn.nav-center-btn, #uploadOverlay .composer-post-btn, #uploadBtn.composer-post-btn, #uploadOverlay .composer-post-btn:disabled { background: var(--x-inv-bg) !important; }
-nav.bot-nav #createBtn.nav-center-btn:hover, #uploadBtn.composer-post-btn:hover:not(:disabled) { background: var(--x-inv-bg-hover) !important; }
+nav.bot-nav #createBtn.nav-center-btn:hover, #uploadBtn.composer-post-btn:hover:not(:disabled) { background: var(--x-inv-bg-hover); }
 nav.bot-nav #createBtn.nav-center-btn,
 nav.bot-nav #createBtn.nav-center-btn *,
 #uploadOverlay .composer-post-btn,
@@ -4218,12 +4218,12 @@ nav.bot-nav #createBtn.nav-center-btn *,
 [data-theme] .search-suggestion-item.active { background: var(--hover-strong); }
 .search-suggestion-text { font-size: 15px; font-weight: 700; color: var(--text); }
 .search-suggestion-icon { width: 20px; height: 20px; }
-.search-suggestion-avatar, .search-suggestion-avatar-fallback { width: 40px !important; height: 40px !important; }
-.search-suggestion-avatar-fallback { background: var(--bg5) !important; color: var(--text) !important; font-weight: 700; }
+.search-suggestion-avatar, .search-suggestion-avatar-fallback { width: 40px; height: 40px; }
+.search-suggestion-avatar-fallback { background: var(--bg5); color: var(--text); font-weight: 700; }
 .search-results-hint:not(:empty) { padding: 8px 16px 10px; font-size: 13px; color: var(--text3); }
 /* Qidiruv ochiqda o'ng ustundagi qidiruv pill ortiqcha (X'da ham markazga ko'chadi) */
 /* Yuklanish: skeleton yo'q — X'dagidek oddiy ko'k spinner */
-.skeleton-post { display: none !important; }
+.skeleton-post { display: none; }
 .spin-wrap { padding: 32px; }
 .spinner { border-color: var(--line); border-top-color: var(--x-blue); }
 /* ═══════════════════════════════════════════════════════════════════════ Oyna/card orqa foni: ko'kish-kulran... */
@@ -4345,8 +4345,8 @@ nav.bot-nav #createBtn.nav-center-btn *,
   -webkit-appearance: none;
   appearance: none;
 }
-#authWrap .field::placeholder, #authWrap input::placeholder { color: var(--pal-gray-500) !important; }
-#authWrap .field:focus, #authWrap input.field:focus { border-color: var(--pal-blue) !important; background: var(--pal-gray-800) !important; }
+#authWrap .field::placeholder, #authWrap input::placeholder { color: var(--pal-gray-500); }
+#authWrap .field:focus, #authWrap input.field:focus { border-color: var(--pal-blue); background: var(--pal-gray-800); }
 #authWrap .btn-primary, #authWrap #authBtn {
   display: block;
   width: 100%;
@@ -4365,7 +4365,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
   -webkit-appearance: none;
   appearance: none;
 }
-#authWrap .btn-primary:hover, #authWrap #authBtn:hover { background: #d7dbdc !important; }
+#authWrap .btn-primary:hover, #authWrap #authBtn:hover { background: #d7dbdc; }
 /* DIET force dark canvas — oq fonni yo'qotish */
 html, body, #app, .app { background: var(--pal-black); background-color: var(--pal-black); color: var(--pal-gray-100); }
 .view.on, .feed, #homeView, #followingView, #reelsView, #profileView, #chatsView { background: transparent; }
@@ -4377,10 +4377,10 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
   #homeView.on, #followingView.on, #profileView.on { margin-left: var(--content-left, var(--sidebar, 260px)); margin-right: 0; width: var(--center-w); max-width: var(--center-w); box-sizing: border-box; }
   .feed, #followingView .feed { max-width: var(--center-w); width: 100%; margin: 0; }
   [data-theme] .search-overlay, [data-theme="dark"] .search-overlay, .search-overlay {
-    left: var(--content-left, var(--sidebar, 260px)) !important;
-    right: auto !important;
-    width: var(--center-w) !important;
-    max-width: var(--center-w) !important;
+    left: var(--content-left, var(--sidebar, 260px));
+    right: auto;
+    width: var(--center-w);
+    max-width: var(--center-w);
   }
   .right-rail {
     display: flex;
@@ -4403,21 +4403,21 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
     border-radius: 0;
     scrollbar-width: thin;
   }
-  .right-rail[hidden] { display: none !important; }
+  .right-rail[hidden] { display: none; }
   #chatsView, #reelsView, #actionsView { margin-right: 0; }
 
   /* ── CHAT (≥1200px): suhbat MARKAZDA (feed kabi), ro'yxat + qidiruv O'NG ustunda (rail kabi) ── */
   #chatsView.on {
-    position: fixed !important;
-    top: 12px !important;
-    bottom: auto !important;
-    left: calc(var(--content-left, var(--sidebar, 260px)) + var(--center-w) + 16px) !important;
-    right: max(12px, var(--gutter, 0px)) !important;
-    width: auto !important;
+    position: fixed;
+    top: 12px;
+    bottom: auto;
+    left: calc(var(--content-left, var(--sidebar, 260px)) + var(--center-w) + 16px);
+    right: max(12px, var(--gutter, 0px));
+    width: auto;
     min-width: 260px;
-    height: calc(100dvh - 24px) !important;
-    margin: 0 !important;
-    padding: 4px 20px 20px !important;
+    height: calc(100dvh - 24px);
+    margin: 0;
+    padding: 4px 20px 20px;
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
@@ -4426,7 +4426,7 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
     border-radius: 0;
     z-index: 40;
   }
-  #chatsView .chats-hdr { padding: 12px 0 8px; background: var(--pal-black) !important; font-size: 18px; font-weight: 700; }
+  #chatsView .chats-hdr { padding: 12px 0 8px; background: var(--pal-black); font-size: 18px; font-weight: 700; }
   #chatsView .ulist-search-wrap { margin: 4px 0 10px; }
   #chatsView .chats-list { padding-bottom: 8px; }
   body:has(#chatsView.on) #chatThreadModal {
