@@ -4478,14 +4478,12 @@ html, body, #app, .app { background: var(--pal-black) !important; background-col
 @media (min-width: 1200px) {
   :root { --center-w: 600px; }
   #homeView.on, #followingView.on, #profileView.on { margin-left: var(--content-left, var(--sidebar, 260px)); margin-right: 0; width: var(--center-w); max-width: var(--center-w); box-sizing: border-box; }
-  .feed, #followingView .feed { max-width: var(--center-w); width: 100%; margin: 0; border-right: 1px solid var(--pal-gray-700); }
-  #profileView.on { border-right: 1px solid var(--pal-gray-700); }
+  .feed, #followingView .feed { max-width: var(--center-w); width: 100%; margin: 0; }
   [data-theme] .search-overlay, [data-theme="dark"] .search-overlay, .search-overlay {
     left: var(--content-left, var(--sidebar, 260px)) !important;
     right: auto !important;
     width: var(--center-w) !important;
     max-width: var(--center-w) !important;
-    border-right: 1px solid var(--pal-gray-700);
   }
   .right-rail {
     display: flex;
@@ -4504,8 +4502,8 @@ html, body, #app, .app { background: var(--pal-black) !important; background-col
     overflow-x: hidden;
     z-index: 40;
     background: var(--pal-black);
-    border: 1px solid var(--pal-gray-700);
-    border-radius: 16px;
+    border: 0;
+    border-radius: 0;
     scrollbar-width: thin;
   }
   .right-rail[hidden] { display: none !important; }
