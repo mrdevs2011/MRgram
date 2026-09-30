@@ -132,20 +132,22 @@ export function formatLastSeen(lastSeenAt) {
   const d = new Date(lastSeenAt);
   const diffMs = Date.now() - d.getTime();
   const min = Math.floor(diffMs / 60000);
-  const hour = Math.floor(min / 60);
-
   if (min < 1)  return 'hozirgina faol edi';
   if (min < 60) return `${min} daqiqa oldin faol edi`;
-  if (hour < 24) return `${hour} soat oldin faol edi`;
 
-  const isToday = d.toDateString() === new Date().toDateString();
+  // 1 soatdan oshgan: aniq vaqt — bugun "23:45", kecha "kecha 23:45", undan oldin "23-avgust 22:45"
+  const pad = n => String(n).padStart(2, '0');
+  const timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const now = new Date();
+  const isToday = d.toDateString() === now.toDateString();
   const y = new Date(); y.setDate(y.getDate() - 1);
   const isYesterday = d.toDateString() === y.toDateString();
-  const timeStr = new Intl.DateTimeFormat('en', { hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
 
-  if (isToday)      return `bugun soat ${timeStr} da faol edi`;
-  if (isYesterday)  return `kecha soat ${timeStr} da faol edi`;
-  return `${fmt(lastSeenAt)} da faol edi`;
+  if (isToday)     return `oxirgi marta ${timeStr} da faol edi`;
+  if (isYesterday) return `oxirgi marta kecha ${timeStr} da faol edi`;
+  const MONTHS = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr'];
+  const yr = d.getFullYear() !== now.getFullYear() ? ` ${d.getFullYear()}` : '';
+  return `oxirgi marta ${d.getDate()}-${MONTHS[d.getMonth()]}${yr} ${timeStr} da faol edi`;
 }
 export const initL  = n  => (n && n[0] ? n[0].toUpperCase() : 'U');
 export const uToEmail = u => `${u.toLowerCase().replace(/[^a-z0-9_]/g,'')}@gmail.com`;
