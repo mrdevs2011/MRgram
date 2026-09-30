@@ -114,7 +114,7 @@ function _paintTabs() {
 
 const _cellMedia = (m, i) => m.kind === 'video'
   ? `<div class="up-grid-cell up-grid-cell--media" data-cm-open="${i}"><video src="${_url(m)}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play-badge">${ICON_PLAY_SM}</div></div>`
-  : `<div class="up-grid-cell up-grid-cell--media" data-cm-open="${i}"><img class="w-full h-full object-cover" src="${_url(m)}" loading="lazy" alt=""></div>`;
+  : `<div class="up-grid-cell up-grid-cell--media" data-cm-open="${i}"><img class="w-full h-full object-cover" src="${_url(m)}" alt="" decoding="async" onerror="this.onerror=null;this.style.display='none';this.parentNode.classList.add('cm-broken')"></div>`;
 
 function _rowsAudio() {
   return _data.audio.map((m, i) => `

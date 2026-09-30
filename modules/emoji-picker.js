@@ -172,10 +172,26 @@ export function initEmojiPicker({ btn, pop, input }) {
     if (searchRow?.hidden !== false) paintRecent();
   }
 
+  /* Panel input qatori tepasida (mobil va desktop). Mobil (<1100px): klaviatura o'rnida ochiladi (Telegram kabi) — tizim klaviaturasi chiqmaydi,
+     xabarlar ro'yxati panel ostida qolmasligi uchun pastga suriladi. */
+  const isMobile = () => window.matchMedia('(max-width: 1099px)').matches;
+  function dock(open) {
+    if (isMobile()) {
+      if (open) { input.setAttribute('inputmode', 'none'); input.blur(); input.focus({ preventScroll: true }); }
+      else input.removeAttribute('inputmode');
+    } else if (open) input.focus({ preventScroll: true });
+    const msgs = pop.closest('#chatThreadModal')?.querySelector('.chat-thread-messages');
+    if (msgs) requestAnimationFrame(() => { msgs.scrollTop = msgs.scrollHeight; });
+  }
+  const closePanel = () => { if (pop.classList.contains('show')) { pop.classList.remove('show'); dock(false); } };
+  input.addEventListener('focus', () => { if (isMobile() && !pop.classList.contains('show')) input.removeAttribute('inputmode'); });
+  input.addEventListener('pointerdown', () => { if (isMobile() && pop.classList.contains('show')) closePanel(); });
+
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
     const open = pop.classList.toggle('show');
     if (open) { await build(); recent = loadRecent(); if (built && body) { paintRecent(); } }
+    dock(open);
   });
   pop.addEventListener('mousedown', e => { if (!e.target.closest('.ep-search-inp')) e.preventDefault(); });
   pop.addEventListener('click', (e) => {
@@ -188,7 +204,8 @@ export function initEmojiPicker({ btn, pop, input }) {
   document.addEventListener('click', (e) => {
     if (!pop.classList.contains('show')) return;
     if (btn.contains(e.target) || pop.contains(e.target)) return;
-    pop.classList.remove('show');
+    if (input.contains(e.target)) return; // mobil: input bosilsa pointerdown yopadi; desktop: yozayotganda panel ochiq qoladi
+    closePanel();
   });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') pop.classList.remove('show'); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
 }

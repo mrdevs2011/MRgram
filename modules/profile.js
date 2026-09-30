@@ -1,4 +1,4 @@
-import { sb, state, getMediaUrl, uploadViaController, mapProfile } from './config.js';
+import { sb, state, getMediaUrl, uploadViaController, mapProfile, mapPost } from './config.js';
 import { $, esc, fmt, fmtSz, defAvi,
          initVidWrap, openZoom }         from './utils.js';
 import { toast }                         from './toast.js';
@@ -9,6 +9,27 @@ async function _loadProfile(uid) {
   return mapProfile(data) || {};
 }
 import { cacheProfile, getCachedProfile } from './local-cache.js';
+
+/** Foydalanuvchi postlari: state.allPosts (feed keshi, ba'zan faqat oxirgi 80 ta) ga tayanmasdan,
+ *  bazadan to'g'ridan-to'g'ri olinadi. Xato bo'lsa — keshdagi ro'yxatga qaytadi. */
+async function _fetchUserPosts(uid, onlyPublic) {
+  const local = state.allPosts.filter(p => p.userId === uid && (!onlyPublic || p.isPublic === true));
+  try {
+    let q = sb.from('posts').select('*').eq('user_id', uid);
+    if (onlyPublic) q = q.eq('is_public', true);
+    const { data, error } = await q.order('created_at', { ascending: false }).limit(500);
+    if (error) throw error;
+    const rows = (data || []).map(r => { try { return mapPost(r); } catch { return null; } }).filter(Boolean);
+    // Bazada hali ko'rinmagan (yangi yuklangan) lokal postlarni ham qo'shamiz
+    const ids = new Set(rows.map(p => p.id));
+    for (const p of local) if (!ids.has(p.id)) rows.push(p);
+    rows.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    return rows;
+  } catch (e) {
+    console.warn('[Profile] postlarni yuklashda xato:', e?.message || e);
+    return local;
+  }
+}
 
 /* ── My profile ──────────────────────────────────────────────────────── */
 
@@ -90,7 +111,7 @@ async function _paintProfile(ud) {
 
   $('profileBio').textContent  = ud.bio || '';
 
-  const myP = state.allPosts.filter(p => p.userId === state.me.uid);
+  const myP = await _fetchUserPosts(state.me.uid, false);
   $('statPosts').textContent     = myP.length;
   $('statLikes').textContent     = myP.reduce((s,p) => s+(p.likes||0), 0);
 
@@ -355,7 +376,7 @@ export async function renderUserProfileModal(uid) {
   let av      = ud.avatar;
   if (!av || av === '' || av === 'undefined') av = defAvi(ud.fullName || 'U');
 
-  const userPublicPosts = state.allPosts.filter(p => p.userId === uid && p.isPublic === true);
+  const userPublicPosts = await _fetchUserPosts(uid, true);
   state.currentViewingUserPosts = userPublicPosts;
 
   // Multi-Supabase: mediaUrl yaratish (backward compatibility)
