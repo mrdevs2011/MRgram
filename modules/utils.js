@@ -130,12 +130,11 @@ export function formatLastSeen(lastSeenAt) {
   if (isOnline(lastSeenAt)) return 'onlayn';
 
   const d = new Date(lastSeenAt);
-  const diffMs = Date.now() - d.getTime();
-  const min = Math.floor(diffMs / 60000);
-  if (min < 1)  return 'hozirgina faol edi';
-  if (min < 60) return `${min} daqiqa oldin faol edi`;
+  // Soat daqiqalari bo'yicha: hozir 12:45 bo'lsa, 12:44 (yoki 12:45) — "hozirgina"; 12:43 va undan oldin — aniq vaqt
+  const minAgo = Math.floor(Date.now() / 60000) - Math.floor(d.getTime() / 60000);
+  if (minAgo <= 1) return 'hozirgina faol edi';
 
-  // 1 soatdan oshgan: aniq vaqt — bugun "23:45", kecha "kecha 23:45", undan oldin "23-avgust 22:45"
+  // Aniq vaqt — bugun "23:45", kecha "kecha 23:45", undan oldin "23-avgust 22:45"
   const pad = n => String(n).padStart(2, '0');
   const timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
   const now = new Date();
