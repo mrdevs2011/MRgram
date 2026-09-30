@@ -444,14 +444,14 @@ main  (816e98b, 2026-09-30)
 
 > **2026-09-30:** brauzer/qurilma tekshiruvlari (2-band F4 to'xtash nuqtasi, F0 smoke, F5/F6 qurilma sinovi) MR tomonidan o'tkazildi. Keyingi qadamlar: Vercel Preview + TURN_*, F4 4.3/4.4/4.8, DB contract (013: 2026-10-06 dan keyin), Q9/Q11.
 
-### Yakuniy holat (2026-09-30 kech)
+### Yakuniy holat (2026-09-30 kech) — ESKI, hammasi 2026-10-01 da yopildi (pastga qarang)
 
 **Kod tomoni tugadi.** Roadmapda faqat quyidagilar ochiq, ularni AI o'zi yopa olmaydi (ro'yxat: `docs/MR-QOLGAN.md`):
 
-- [ ] Vercel Preview + TURN sinovi (Wi-Fi ↔ mobil qo'ng'iroq).
-- [ ] 013 contract (`posts.views`, `increment_post_view()`): 2026-10-06 dan keyin, `supabase db dump` zaxirasi bilan. 007/008/009/010/011/012 — no-op, `migrations/` ga ko'chirish yoki o'chirish (MR tasdig'i).
-- [ ] Qarorlar: Q5 (parol reset: majburiy almashtirish), Q9 (splash animatsiya), Q10 (Pro'ga o'tish, hozir dolzarb emas), Q11 (mono `#000` accent matn), F2 `[QAROR]`; Q2/Q8 — MR tasdig'i.
-- [ ] Ixtiyoriy: 4.8, 5.3 (`profile-<uid>` birlashtirish), 5.4 (Q8), Playwright post/chat qadamlari (`TEST_EMAIL`/`TEST_PASSWORD`).
+- [x] Vercel Preview + TURN sinovi (Wi-Fi ↔ mobil qo'ng'iroq).
+- [x] 013 contract (`posts.views`, `increment_post_view()`): 2026-10-06 dan keyin, `supabase db dump` zaxirasi bilan. 007/008/009/010/011/012 — no-op, `migrations/` ga ko'chirish yoki o'chirish (MR tasdig'i). — YURGIZILDI (2026-10-01)
+- [x] Qarorlar: Q5 (parol reset: majburiy almashtirish), Q9 (splash animatsiya), Q10 (Pro'ga o'tish, hozir dolzarb emas), Q11 (mono `#000` accent matn), F2 `[QAROR]`; Q2/Q8 — MR tasdig'i.
+- [x] Ixtiyoriy: 4.8, 5.3 (`profile-<uid>` birlashtirish), 5.4 (Q8), Playwright post/chat qadamlari (`TEST_EMAIL`/`TEST_PASSWORD`). — BEKOR (2026-10-01)
 
 > Qoida: **avval kes, keyin tartibla, oxirida chiroy.** Va C11 saboqi: **ko'z tekshiruviga qadar "tozalandi" dema.**
 
