@@ -1,29 +1,31 @@
 # MR uchun qolgan ishlar (faqat panel / DB / qaror)
 
-2026-09-30 holati: kod tomoni yopilgan (F4 CSS qoldig'idan tashqari). Quyidagilarni AI qila olmaydi:
-Supabase/Vercel'ga kirish yo'q (`supabase` CLI login qilinmagan, `vercel` o'rnatilmagan), kalitlar repo'da saqlanmaydi.
+2026-09-30 holati: kod tomoni yopilgan (F4 CSS qoldig'idan tashqari). Quyidagilarni AI qila olmaydi yoki MR qarori kerak.
+Kalitlar repo'da saqlanmaydi. Supabase CLI login MR ning keyring'ida (CMC orqali `DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1001/bus` bilan ishlaydi).
 
-## 1. Bugunoq (5–10 daqiqa)
+## 1. Bugunoq
 
-- [ ] **Vercel deploy tekshirish:** `main` = `b5e9f89` chiqdi. Dashboard → Deployments → oxirgisi "Ready", Build Logs'da
-      `✅ modules/env.js yozildi` bor. Keyin `docs/SMOKE.md` ni telefonda o'tkaz (ayniqsa: admin panel, chat, izohlar).
-- [ ] **TURN (qo'ng'iroq Wi-Fi ↔ mobil tarmoqda ishonchli bo'lishi uchun):** Vercel → Project → Settings → Environment Variables,
-      Production (va Preview) uchun:
-      `TURN_URLS` (vergul bilan: `turn:host:3478,turns:host:443`), `TURN_USERNAME`, `TURN_CREDENTIAL`.
-      Qiymatlarni TURN provayderingdan olasan. Yo'q bo'lsa ilova umumiy OpenRelay'ga tushadi (beqaror). Env qo'shgach **Redeploy**.
-- [x] **SQL 014 + 015 (2026-09-30 yurgizildi, `migrations/` ga ko'chirildi; admin panelda "Storage: X / 1 GB" ni ko'z bilan tasdiqlash qoldi) (expand — xavfsiz, istalgan vaqtda):** Supabase → SQL Editor → `supabase/unfulfilled/014_diet-07-client-errors.sql`
-      va `015_diet-07-storage-usage.sql` ni ketma-ket yurgiz. Tekshiruv: admin panelda "Storage: X / 1 GB" qatori chiqadi
-      (yurgizmasang "hisoblanmadi" deb turadi). Ishga tushgach ikkalasini `migrations/` ga keyingi raqam bilan ko'chir.
-- [x] **3.6 eski shaxsiy postlar (2026-09-30: 7 post, hammasi ochiq, shaxsiy 0 -> Q4 kerak emas):** `supabase/queries/3.6-private-posts.sql` ni SQL Editor'da yurgiz (faqat select),
-      natijani menga/AI ga ko'rsat → Q4 qarori.
+- [ ] **Vercel deploy tekshirish:** Dashboard -> Deployments -> oxirgisi "Ready", Build Logs'da `modules/env.js yozildi` bor.
+      Keyin `docs/SMOKE.md` ni telefonda o'tkaz (ayniqsa: admin panel, chat, izohlar).
+- [ ] **TURN sinovi:** Cloudflare TURN. Vercel Production'da `TURN_KEY_ID` va `TURN_KEY_API_TOKEN` bor (2026-09-30 tasdiqlandi, `api/turn.js` shularni o'qiydi).
+      Sinov: Wi-Fi'dagi telefondan mobil tarmoqdagi telefonga qo'ng'iroq. Ulanmasa: Deployments -> Redeploy (env deploy'dan keyin qo'shilgan bo'lishi mumkin).
+      Preview'da ham kerak bo'lsa, ikkala env'ga Preview belgisini qo'sh. Yo'q bo'lsa ilova umumiy OpenRelay'ga tushadi (beqaror).
+- [x] **SQL 014 + 015** (2026-09-30 yurgizildi, `migrations/` ga ko'chirildi).
+- [x] **Admin panel "Storage: X / 1 GB"** (2026-09-30 tasdiqlandi: "3 MB / 1.00 GB (0%)").
+- [x] **3.6 eski shaxsiy postlar** (2026-09-30: 7 post, hammasi ochiq, shaxsiy 0 -> Q4 kerak emas).
 
-## 2. 2026-10-06 dan keyin (kod deploydan >= 1 hafta)
+## 2. Contract patchlar (`supabase/unfulfilled/`)
 
-Faqat shu vaqtdan keyin, `supabase db dump` bilan zaxira olib, `supabase/unfulfilled/CHECKLIST.md` tartibida:
-007/008 (follows), 009 (admin jadvallari), 010 (guruhlar), 012 (typing_until), 013 (views). **011 (kanal→guruh) — kutmoqda**
-(5.3 kanal ishi tugaguncha). Contract SQL'larni erta yurgizma: roadmap 3-qoida (kod va `drop` bir vaqtda emas).
+2026-09-30 jonli dump (`migrations/000_schema.sql`) bo'yicha holat:
+
+- **007 / 008 / 009 / 012:** `follows`, `admin_actions`, `broadcast_history`, `login_history`, `chat_members.typing_until`, `last_seen_at` bazada ALLAQACHON YO'Q.
+  Patchlar idempotent, qayta yurgizish zararsiz (no-op). Aniqlik uchun: kim/qachon drop qilganini MR biladi. Tasdiqlangach `migrations/` ga ko'chirish yoki o'chirish.
+- **010:** `join_group_by_code()` allaqachon yo'q. `update groups set is_private = true` qismi holati noma'lum (jonli ma'lumotni tekshirish kerak).
+- **011 (kanal -> guruh):** kutmoqda (5.3 kanal ishi tugaguncha).
+- **013 (`posts.views`, `increment_post_view()`):** bazada HALI BOR. Eng erta 2026-10-06 dan keyin, `supabase db dump` bilan zaxira olib.
+  Contract SQL'larni erta yurgizma: roadmap 3-qoida (kod va `drop` bir vaqtda emas). Tartib: `supabase/unfulfilled/CHECKLIST.md`.
 
 ## 3. Bir marta
 
-- [ ] `supabase db dump --schema-only` → `supabase/migrations/000_schema.sql` (hozirgi fayl jonli bazadan qayta yig'ilmagan).
-- [ ] Qarorlar jurnali (roadmap 8-bo'lim): Q4 (3.6 natijasidan keyin), Q10 (Storage 1 GB dan oshsa — admin panelda endi ko'rinadi).
+- [x] `000_schema.sql` jonli dump bilan almashtirildi (2026-09-30, `ed8c6a3`; webhook siri `__WEBHOOK_SECRET__` bilan yashirilgan).
+- [ ] Qarorlar jurnali (roadmap 8-bo'lim): Q9, Q11. Q4 yopildi (kerak emas). Q10 (Storage 1 GB dan oshsa) hozir dolzarb emas, panelda kuzatiladi.
