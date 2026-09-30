@@ -4526,8 +4526,8 @@ html, body, #app, .app { background: var(--pal-black) !important; background-col
     overflow-y: auto;
     overflow-x: hidden;
     background: var(--pal-black);
-    border: 1px solid var(--pal-gray-700);
-    border-radius: 16px;
+    border: 0;
+    border-radius: 0;
     z-index: 40;
   }
   #chatsView .chats-hdr { padding: 12px 0 8px; background: var(--pal-black) !important; font-size: 18px; font-weight: 700; }
@@ -4539,15 +4539,14 @@ html, body, #app, .app { background: var(--pal-black) !important; background-col
     width: var(--center-w);
     max-width: var(--center-w);
     box-sizing: border-box;
-    border-left: 0;
-    border-right: 1px solid var(--pal-gray-700);
+    border: 0;
   }
   .chats-x-pane {
     left: var(--content-left, var(--sidebar, 260px));
     right: auto;
     width: var(--center-w);
     box-sizing: border-box;
-    border-right: 1px solid var(--pal-gray-700);
+    border: 0;
   }
 }
 .rr-card { background: transparent; border: none; border-radius: 0; padding: 16px 0 8px; border-bottom: 1px solid var(--pal-gray-700); }
