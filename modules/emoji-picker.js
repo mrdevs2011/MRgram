@@ -66,6 +66,7 @@ export function initEmojiPicker({ btn, pop, input }) {
     tabRow = pop.querySelector('.ep-top');
     paintRecent();
     body.addEventListener('scroll', spy, { passive: true });
+    initSwipe();
     searchInp.addEventListener('input', onSearch);
     setActive(recent.length ? 'recent' : cats[0].id);
   }
@@ -94,6 +95,52 @@ export function initEmojiPicker({ btn, pop, input }) {
   function goTo(id) {
     const s = body.querySelector(`[data-sec="${id}"]`);
     if (s) body.scrollTo({ left: s.offsetLeft, behavior: 'smooth' });
+  }
+  /* Surish: sezgirlik past — sahifa almashishi uchun kenglikning ~30% qadar surish (yoki tez flick) kerak.
+     Telefon: barmoq bilan (sekin ergashadi). Desktop: touchpad 2 barmoq (yig'ilgan deltaX > WHEEL_MIN). */
+  const SWIPE_FRAC = 0.3, WHEEL_MIN = 160;
+  const curIdx = () => Math.round(body.scrollLeft / (body.clientWidth || 1));
+  function step(dir, base = curIdx()) {
+    if (searchRow && !searchRow.hidden && searchInp.value) return;
+    const ps = [...body.querySelectorAll('section[data-sec]:not([hidden]):not([data-sec="results"])')];
+    if (!ps.length) return;
+    const t = ps[Math.max(0, Math.min(ps.length - 1, base + dir))];
+    body.scrollTo({ left: t.offsetLeft, behavior: 'smooth' });
+    setActive(t.dataset.sec);
+  }
+  function initSwipe() {
+    let sx = null, sy = 0, sl = 0, t0 = 0, axis = null, base = 0;
+    body.addEventListener('touchstart', e => {
+      if (e.touches.length !== 1) { sx = null; return; }
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY; sl = body.scrollLeft; t0 = Date.now(); axis = null; base = curIdx();
+    }, { passive: true });
+    body.addEventListener('touchmove', e => {
+      if (sx == null) return;
+      const dx = e.touches[0].clientX - sx, dy = e.touches[0].clientY - sy;
+      if (!axis && Math.max(Math.abs(dx), Math.abs(dy)) > 8) axis = Math.abs(dx) > Math.abs(dy) * 1.3 ? 'x' : 'y';
+      if (axis === 'x') body.scrollLeft = sl - dx * 0.5;
+    }, { passive: true });
+    const end = e => {
+      if (sx == null) return;
+      const dx = (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : sx) - sx;
+      const dt = Math.max(Date.now() - t0, 1), was = axis;
+      sx = null; axis = null;
+      if (was !== 'x') return;
+      const fast = Math.abs(dx) / dt > 0.8 && Math.abs(dx) > 60;
+      step((Math.abs(dx) > (body.clientWidth || 1) * SWIPE_FRAC || fast) ? (dx < 0 ? 1 : -1) : 0, base);
+    };
+    body.addEventListener('touchend', end, { passive: true });
+    body.addEventListener('touchcancel', end, { passive: true });
+    let acc = 0, lastT = 0, locked = false;
+    body.addEventListener('wheel', e => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      const now = performance.now(), gap = now - lastT; lastT = now;
+      if (locked) { if (gap > 120) { locked = false; acc = 0; } else return; }
+      if (gap > 200) acc = 0;
+      acc += e.deltaX;
+      if (Math.abs(acc) > WHEEL_MIN) { step(acc > 0 ? 1 : -1); acc = 0; locked = true; }
+    }, { passive: false });
   }
   function onSearch() {
     const q = searchInp.value.trim().toLowerCase();

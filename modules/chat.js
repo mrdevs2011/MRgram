@@ -709,6 +709,7 @@ export async function openChatThread(uid) {
   $('chatThreadName').textContent   = '...';
   $('chatThreadAvi').innerHTML      = '';
   $('chatThreadInput').value        = '';
+  autoGrowChatInput();
 
   state.currentChatUid = uid;
   let chatId = _latestChatMap[uid]?.id;
@@ -1789,7 +1790,21 @@ function clearChatFile() {
   updateVoiceSendBtn();
 }
 
+/** Xabar maydoni qatorlar soniga qarab balandlashadi (max ~7 qator, undan keyin ichida skroll). */
+const _INPUT_MAX_H = 144;
+export function autoGrowChatInput() {
+  const el = $('chatThreadInput');
+  if (!el) return;
+  el.style.height = 'auto';
+  const h = el.scrollHeight;
+  if (!h) { el.style.height = ''; return; }   // modal yopiq (display:none) — o'lchab bo'lmaydi
+  el.style.height = Math.min(h, _INPUT_MAX_H) + 'px';
+  el.style.overflowY = h > _INPUT_MAX_H ? 'auto' : 'hidden';
+}
+window.addEventListener('resize', autoGrowChatInput);
+
 export function updateVoiceSendBtn() {
+  autoGrowChatInput();
   const inp  = $('chatThreadInput');
   const hasText = inp?.value?.trim().length > 0;
   const hasFile = !!_chatSelFile;
@@ -1945,7 +1960,8 @@ if (_chatsAddBtn) _chatsAddBtn.addEventListener('click', openCreateChoice);
 $('chatThreadInput').addEventListener('input', updateVoiceSendBtn);
 $('chatThreadInput').addEventListener('input', _onChatInputTyping);
 $('chatThreadInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendAction(); }
+  // Desktop: Enter = yuborish, Shift+Enter = yangi qator. Telefon (sensorli): Enter = yangi qator, yuborish tugma bilan.
+  if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && !window.matchMedia('(pointer: coarse)').matches) { e.preventDefault(); handleSendAction(); }
 });
 
 /* ── Composer emoji tugmasi — matn maydoni ichida chapda (Telegram

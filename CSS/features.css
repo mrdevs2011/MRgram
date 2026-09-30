@@ -1172,10 +1172,10 @@
 .ep-search-inp:focus { background: rgba(255,255,255,.09); border-color: var(--line); }
 .ep-clear { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; background: none; border: none; border-radius: 50%; color: var(--text3); cursor: pointer; padding: 0; }
 .ep-clear:hover { color: var(--text); background: rgba(255,255,255,.08); }
-/* Gorizontal: har bir kategoriya = alohida sahifa (tab). Vertikal: sahifa ichidagi emojilar. Telefonda chapga/o'ngga surish, desktopda touchpad 2 barmoq bilan. */
-.ep-body { position: relative; flex: 1; min-height: 0; display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
-.ep-body::-webkit-scrollbar { display: none; }
-.ep-body section { flex: 0 0 100%; min-width: 0; box-sizing: border-box; padding: 0 8px 8px; overflow-y: auto; overflow-x: hidden; scroll-snap-align: start; scroll-snap-stop: always; overscroll-behavior-y: contain; overscroll-behavior-x: auto; }
+/* Gorizontal: har bir kategoriya = alohida sahifa (tab), surish JS da (emoji-picker.js, initSwipe) — sezgirlik past. Vertikal: sahifa ichida skroll, lekin scrollbar ko'rinmaydi. */
+.ep-body { position: relative; flex: 1; min-height: 0; display: flex; overflow-x: hidden; overflow-y: hidden; touch-action: pan-y; overscroll-behavior-x: contain; scrollbar-width: none; }
+.ep-body::-webkit-scrollbar, .ep-body section::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.ep-body section { flex: 0 0 100%; min-width: 0; box-sizing: border-box; padding: 0 8px 8px; overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain; overscroll-behavior-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
 .ep-body h4 { margin: 12px 4px 6px; font-size: 12px; font-weight: 500; color: var(--text3); }
 .ep-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; }
 .ep-e { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; background: none; border: none; border-radius: 10px; font-size: 22px; line-height: 1; padding: 0; cursor: pointer; font-family: "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif; }
