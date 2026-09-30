@@ -615,3 +615,6 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 @media (max-width: 1099px) {
   [data-theme] .search-overlay { bottom: var(--nav); }
 }
+
+/* Suhbatlar qidiruvi: global input{background;border;radius:12px} qoidasi ichki inputni ham "quti" qilib qo'ygan edi -> pill (wrap) ichida faqat shaffof input */
+#chatsView .ulist-search-wrap .ulist-search-input { background: transparent; border: none; border-radius: 0; box-shadow: none; padding: 0; }
