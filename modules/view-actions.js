@@ -115,6 +115,7 @@ export async function initView() {
   _initBroadcast();
   await _initUsers();
   import('./admin-storage.js').then(m => m.renderStorageUsage(document.getElementById('actionsBroadcastSection'))).catch(() => {});
+  import('./admin-keys.js').then(m => m.renderKeysCheck(document.getElementById('actionsBroadcastSection'))).catch(() => {});
 
   _initialized = true;
 }
