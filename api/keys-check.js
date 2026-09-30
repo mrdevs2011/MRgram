@@ -69,7 +69,7 @@ export default async function handler(req, res) {
       ? row('TURN_STATIC', 'Statik TURN (TURN_URLS/USERNAME/CREDENTIAL)', 'fail', 'yetishmayapti: ' + missing.join(', '))
       : row('TURN_STATIC', 'Statik TURN (TURN_URLS/USERNAME/CREDENTIAL)', 'ok', 'uchalasi bor (ishlashi tekshirilmaydi)'));
   } else {
-    rows.push(row('TURN_STATIC', 'Statik TURN (zaxira)', 'warn', 'ixtiyoriy, o\'rnatilmagan — Cloudflare ishlamasa OpenRelay'));
+    rows.push(row('TURN_STATIC', 'Statik TURN (zaxira)', 'ok', 'ixtiyoriy — kerak emas (Cloudflare asosiy)'));
   }
 
   return res.status(200).json({ supabaseHost: host, rows });
