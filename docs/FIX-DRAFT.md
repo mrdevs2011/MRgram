@@ -6,6 +6,7 @@ Holat (2026-09-29 22:50): KOD TUZATILDI, MR TASDIQI KUTILYAPTI (branch fix/draft
 - F2: sarlavha statusi `.chat-thread-typing` height:0/opacity:0 bilan yashirilgan edi -> ko'rinadigan qilindi; ro'yxat nuqtalari uchun `_refreshUsersPresence` (last_seen kesh eskirishi); heartbeat fon/yopiq oynada ham ketadi; ONLINE_THRESHOLD 70s->100s.
 - F3: ASOSIY SABAB topildi: `--tg-blue` aniqlanmagan -> `.nav-badge`/`.chat-row-badge` fon OQ + matn OQ (ko'rinmas). Fon `var(--blue)` qilindi (matn oq).
 - F4: ism ustidan halqa (ism z-index), avatar KVADRAT (border-radius 50% child/isolation). call.js tegilmadi. Taymer farqi tekshirilmadi (skrin vaqti farqi bo'lishi mumkin).
+- Qora rasm preview (2026-09-30): sabab ikki qatlam: compress.js shaffof PNG ni JPEG ga o'tkazganda fon QORA bo'lardi (oq fon qo'shildi) va .cfm-img-preview fon --pal-gray-900 edi (transparent qilindi). Taymer 00:00 vs 00:02: har tomon o'z ulanish vaqtidan sanaydi, xato emas (call.js tegilmadi).
 - Qo'shimcha: ko'k pufakdagi fayl izohi kontrasti oshirildi. Qora rasm preview: sababi aniqlanmadi (3 KB rasm o'zi bo'sh/qora bo'lishi mumkin) -- qayta sinash kerak.
 Tasdiq: Qoida 8 -- 2 qurilmada MR ko'zi bilan.
 

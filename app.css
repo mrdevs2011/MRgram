@@ -1682,7 +1682,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .cfm-media-wrap { display: flex; flex-direction: column; gap: 4px; max-width: 260px; }
 .cfm-img-link { display: block; border-radius: 14px; overflow: hidden; line-height: 0; transition: none; }
 .cfm-img-link:hover { opacity: 1; }
-.cfm-img-preview { display: block; width: 100%; max-width: 260px; max-height: 320px; object-fit: cover; border-radius: 14px; background: var(--pal-gray-900); }
+.cfm-img-preview { display: block; width: 100%; max-width: 260px; max-height: 320px; object-fit: cover; border-radius: 14px; background: transparent; }
 .cfm-video-preview { display: block; width: 100%; max-width: 260px; max-height: 300px; border-radius: 14px; background: var(--pal-black); outline: none; }
 .cfm-media-meta { font-size: 10.5px; color: var(--pal-legacy-909093); padding: 0 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chat-msg.mine .cfm-media-meta { color: rgba(255, 255, 255, 0.85); }

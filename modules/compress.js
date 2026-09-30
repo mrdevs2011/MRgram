@@ -24,6 +24,9 @@ export async function compressImage(file) {
     const canvas = document.createElement('canvas');
     canvas.width = w; canvas.height = h;
     const ctx = canvas.getContext('2d');
+    // JPEG shaffoflikni qo'llamaydi: oq fon bo'lmasa shaffof PNG QORA bo'lib qoladi
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, w, h);
     ctx.drawImage(bitmap, 0, 0, w, h);
     bitmap.close && bitmap.close();
 
