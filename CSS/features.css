@@ -1142,11 +1142,17 @@
 }
 .chat-emoji-btn:hover { color: var(--text2); background: var(--bg4); }
 .chat-emoji-quickpick {
-  display: none;
+  display: flex;
   flex-direction: column;
   position: absolute;
   left: 0;
   bottom: calc(100% + 8px);
+  /* Yopiq holat: panel o'z balandligicha pastga tushgan (input qatori ichiga), shu chiziqdan pastdagi qismi kesilgan —
+     transform va clip-path bir xil vaqt/egri chiziqda yuradi, shuning uchun panel input tagidan chiqib, yana shu yerga kirib ketadi. */
+  visibility: hidden; pointer-events: none;
+  transform: translateY(100%); clip-path: inset(0 0 100% 0);
+  will-change: transform, clip-path;
+  transition: transform .24s cubic-bezier(.4, 0, .6, 1), clip-path .24s cubic-bezier(.4, 0, .6, 1), visibility 0s linear .24s;
   width: min(344px, calc(100vw - 24px));
   height: min(380px, 60vh);
   background: var(--bg);
@@ -1156,7 +1162,11 @@
   overflow: hidden;
   z-index: 50;
 }
-.chat-emoji-quickpick.show { display: flex; }
+.chat-emoji-quickpick.show {
+  visibility: visible; pointer-events: auto; transform: none; clip-path: inset(0 0 0 0);
+  transition: transform .3s cubic-bezier(.22, .8, .25, 1), clip-path .3s cubic-bezier(.22, .8, .25, 1), visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) { .chat-emoji-quickpick, .chat-emoji-quickpick.show { transition: none; } }
 .chat-emoji-quickpick [hidden] { display: none !important; }
 .chat-emoji-quickpick .ep-loading, .chat-emoji-quickpick .ep-empty { padding: 28px 12px; text-align: center; color: var(--text3); font-size: 13px; }
 .ep-top, .ep-search { display: flex; align-items: center; gap: 4px; padding: 8px 8px 6px; border-bottom: 1px solid var(--line); flex-shrink: 0; }

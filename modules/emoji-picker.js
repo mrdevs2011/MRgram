@@ -181,17 +181,46 @@ export function initEmojiPicker({ btn, pop, input }) {
       else input.removeAttribute('inputmode');
     } else if (open) input.focus({ preventScroll: true });
   }
-  const closePanel = () => { if (pop.classList.contains('show')) { pop.classList.remove('show'); dock(false); } };
+  const closePanel = () => { if (pop.classList.contains('show')) { pop.classList.remove('show'); pinned = false; dock(false); } };
   input.addEventListener('focus', () => { if (isMobile() && !pop.classList.contains('show')) input.removeAttribute('inputmode'); });
   input.addEventListener('pointerdown', () => { if (isMobile() && pop.classList.contains('show')) closePanel(); });
 
+  /* Desktop: tugma ustiga kursor olib kelinsa panel yumshoq ochiladi, kursor ketsa yopiladi.
+     Tugmani bosish yoki panel ichini bosish panelni "qotiradi" (tashqariga bosilgunча / Esc gacha ochiq turadi). */
+  const canHover = () => !isMobile() && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  let pinned = false, hoverT = null, leaveT = null;
+  async function openPanel(focus) {
+    pop.classList.add('show');
+    await build(); recent = loadRecent(); if (built && body) paintRecent();
+    if (focus) dock(true);
+  }
+
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
-    const open = pop.classList.toggle('show');
-    if (open) { await build(); recent = loadRecent(); if (built && body) { paintRecent(); } }
-    dock(open);
+    clearTimeout(hoverT); clearTimeout(leaveT);
+    const isOpen = pop.classList.contains('show');
+    if (isOpen && canHover() && !pinned) { pinned = true; return; } // hover bilan ochilgan — bosish qotiradi
+    if (isOpen) { pop.classList.remove('show'); pinned = false; dock(false); return; }
+    pinned = true;
+    await openPanel(true);
   });
   pop.addEventListener('mousedown', e => { if (!e.target.closest('.ep-search-inp')) e.preventDefault(); });
+
+  const wrap = btn.closest('.chat-emoji-wrap') || btn.parentElement;
+  wrap.addEventListener('mouseenter', () => {
+    if (!canHover()) return;
+    clearTimeout(leaveT);
+    if (pop.classList.contains('show')) return;
+    clearTimeout(hoverT);
+    hoverT = setTimeout(() => { pinned = false; openPanel(false); }, 120); // tasodifan o'tib ketganda ochilmasin
+  });
+  wrap.addEventListener('mouseleave', () => {
+    clearTimeout(hoverT);
+    if (!canHover() || pinned) return;
+    clearTimeout(leaveT);
+    leaveT = setTimeout(() => { if (!pinned) pop.classList.remove('show'); }, 350); // tugmadan panelga o'tish uchun kichik muhlat
+  });
+  pop.addEventListener('mousedown', () => { if (canHover() && pop.classList.contains('show')) pinned = true; });
 
   /* Hover 3 soniya — emoji nomi (o'zbekcha, Unicode CLDR) tooltip ko'rinishida. Ma'lumot (emoji-uz.js) birinchi marta lazy yuklanadi. */
   const TIP_DELAY = 3000;
