@@ -4647,3 +4647,69 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 
 /* Emoji nomi tooltipi (hover 3s) */
 .chat-emoji-quickpick .ep-tip { position: absolute; z-index: 10; pointer-events: none; white-space: nowrap; max-width: calc(100% - 8px); overflow: hidden; text-overflow: ellipsis; padding: 5px 10px; border-radius: 8px; background: #000; border: 1px solid rgba(255,255,255,.18); color: var(--text, #e7e9ea); font-size: 12px; line-height: 1.3; }
+
+/* ═══ Xabar kontekst menyusi (modules/msg-menu.js): o'ng tugma / mobilda bosib turish ═══ */
+
+/* Mobilda (sensorli) DM xabarlarida matn belgilanmaydi — nusxalash menyudagi "Nusxalash" orqali.
+   Faqat data-msg-id li (DM) xabarlar: guruh xabarlarida menyu yo'q, u yerda oddiy belgilash saqlanadi. */
+@media (pointer: coarse) {
+  #chatThreadMessages .chat-msg[data-msg-id] { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+}
+
+.chat-msg-edited { font-size: 11px; opacity: .6; margin-right: 4px; }
+
+#msgCtx { position: fixed; z-index: 600; display: none; min-width: 220px; max-width: calc(100vw - 16px); padding: 6px; border-radius: 14px; background: var(--pal-gray-900); border: 1px solid var(--pal-gray-700); box-shadow: 0 12px 40px rgba(0,0,0,.6); -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+#msgCtx.show { display: block; animation: mcPop .14s ease-out; }
+@keyframes mcPop { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+#msgCtx .mc-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border: 0; border-radius: 9px; background: none; color: var(--text, #e7e9ea); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+#msgCtx .mc-item svg { flex-shrink: 0; color: var(--pal-gray-500); }
+#msgCtx .mc-item:hover, #msgCtx .mc-item:focus-visible { background: var(--pal-white-08); outline: none; }
+#msgCtx .mc-item.danger, #msgCtx .mc-item.danger svg { color: var(--red); }
+#msgCtx .mc-sep { height: 1px; margin: 6px 4px; background: var(--pal-gray-700); }
+#msgCtx .mc-seen { display: flex; align-items: center; gap: 10px; padding: 6px 12px 4px; font-size: 12px; color: var(--pal-gray-500); }
+#msgCtx .mc-seen svg { flex-shrink: 0; }
+@media (pointer: coarse) { #msgCtx .mc-item { padding: 12px 14px; } }
+
+/* Menyu ochiq bo'lgan xabar */
+.chat-msg.mc-active .chat-bubble { box-shadow: 0 0 0 2px rgba(255,255,255,.28); }
+
+/* Tanlash rejimi: chapda aylana, bosib belgilanadi */
+#chatThreadMessages.msg-selecting .chat-msg[data-msg-id] { align-self: stretch; max-width: 100%; align-items: center; cursor: pointer; }
+#chatThreadMessages.msg-selecting .chat-msg[data-msg-id] .chat-bubble { max-width: 72%; }
+#chatThreadMessages.msg-selecting .chat-msg[data-msg-id]::before { content: ""; flex-shrink: 0; box-sizing: border-box; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--pal-gray-500); }
+#chatThreadMessages.msg-selecting .chat-msg.mine[data-msg-id]::before { margin-right: auto; }
+#chatThreadMessages.msg-selecting .chat-msg.theirs[data-msg-id]::before { margin-right: 10px; }
+#chatThreadMessages.msg-selecting .chat-msg.mc-selected::before { border-color: var(--blue); background: var(--blue) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 12px no-repeat; }
+#chatThreadMessages.msg-selecting .chat-msg.mc-selected .chat-bubble { box-shadow: 0 0 0 2px var(--blue); }
+
+/* Tanlash paneli: kiritish qatori o'rnida */
+#msgSelBar { display: none; flex-shrink: 0; align-items: center; gap: 6px; padding: 8px 10px; padding-bottom: max(8px, env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--pal-gray-700); }
+#chatThreadModal.msg-sel-on #msgSelBar { display: flex; }
+#chatThreadModal.msg-sel-on .chat-thread-input-row,
+#chatThreadModal.msg-sel-on .chat-reply-bar,
+#chatThreadModal.msg-sel-on .chat-file-preview { display: none; }
+#msgSelBar .msb-x { flex-shrink: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: var(--pal-white-08); color: var(--text); cursor: pointer; }
+#msgSelBar .msb-count { flex: 1; min-width: 0; padding: 0 6px; font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#msgSelBar .msb-btn { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 12px; border: 0; border-radius: 18px; background: var(--pal-white-08); color: var(--text); font: inherit; font-size: 13px; white-space: nowrap; cursor: pointer; }
+#msgSelBar .msb-x:hover, #msgSelBar .msb-btn:hover { background: var(--pal-white-14); }
+#msgSelBar .msb-btn.danger { color: var(--red); }
+#msgSelBar .msb-btn[hidden] { display: none; }
+@media (max-width: 420px) { #msgSelBar .msb-btn { width: 40px; padding: 0; justify-content: center; } #msgSelBar .msb-btn span { display: none; } }
+
+/* Uzatish oynasi */
+#msgFwd { position: fixed; inset: 0; z-index: 620; display: none; align-items: center; justify-content: center; padding: 16px; background: var(--overlay); }
+#msgFwd.show { display: flex; }
+#msgFwd .mf-card { width: min(380px, 100%); max-height: min(520px, 80dvh); display: flex; flex-direction: column; overflow: hidden; border-radius: 16px; background: var(--pal-gray-900); border: 1px solid var(--pal-gray-700); }
+#msgFwd .mf-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; font-size: 15px; font-weight: 600; color: var(--text); }
+#msgFwd .mf-close { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%; background: var(--pal-white-08); color: var(--text); cursor: pointer; }
+#msgFwd .mf-search { margin: 4px 12px 8px; padding: 10px 14px; border: 1px solid rgba(255,255,255,.14); border-radius: 20px; background: #000; color: var(--text); font: inherit; font-size: 14px; outline: none; }
+#msgFwd .mf-search:focus { border-color: rgba(255,255,255,.28); }
+#msgFwd .mf-list { overflow-y: auto; padding: 0 6px 8px; }
+#msgFwd .mf-row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 10px; color: var(--text); font-size: 14px; cursor: pointer; }
+#msgFwd .mf-row:hover { background: var(--pal-white-08); }
+#msgFwd .mf-row img { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+#msgFwd .mf-row span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#msgFwd .mf-empty { padding: 24px; text-align: center; color: var(--pal-gray-500); font-size: 13px; }
+
+/* Tasdiq oynasi (showConfirm) doim eng ustida: umumiy .overlay z-index=200 < chat oynasi 360, shuning uchun chat ochiq paytda "O'chirilsinmi?" orqada qolardi */
+#confirmOverlay { z-index: 640; }

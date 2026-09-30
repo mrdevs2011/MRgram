@@ -244,6 +244,7 @@ import {
 } from './config.js';
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLastSeen } from './utils.js';
 import { toast }            from './toast.js';
+import { initMsgMenu, msgMenuAfterPaint, msgMenuReset, isEditing, commitEdit } from './msg-menu.js';
 import { rateOk }           from './rate-limit.js';
 import { initEmojiPicker } from './emoji-picker.js';
 import { emojiOnlyClass } from './emoji-only.js';
@@ -296,6 +297,7 @@ async function _refreshUsersPresence() {
 
 let _threadUnsub = null;
 let _reloadThread = null;
+let _curMsgs = [];   // msg-menu.js uchun: paintMessages() ning oxirgi xabarlar ro'yxati
 let _chatSelFile = null;
 
 /* ── Global chats watcher (badge + chats list, real-time) ─────────────
@@ -703,6 +705,7 @@ function _onChatInputTyping() {
 /* ── Open chat thread ─────────────────────────────────────────────────── */
 export async function openChatThread(uid) {
   if (!uid || !state.me || uid === state.me.uid) return;
+  msgMenuReset();
 
   _injectPresenceCSS();
   $('chatThreadModal').classList.add('show');
@@ -1113,12 +1116,14 @@ export function _dateSepLabel(ts) {
 function paintMessages(msgs) {
   const box = $('chatThreadMessages');
   if (!box) return;
+  _curMsgs = msgs;
 
   if (!msgs.length) {
     box.innerHTML = `<div class="empty pt-30vh tac">
       <div class="fs-14px fw-600 c-text mb-6px">Hozircha xabarlar yo'q</div>
       <div class="fs-13px c-text2">Salom bering</div>
     </div>`;
+    msgMenuAfterPaint();
     return;
   }
 
@@ -1216,7 +1221,7 @@ function paintMessages(msgs) {
         <div class="chat-bubble-wrap">
           ${bubbleContent}
           <span class="chat-msg-meta">
-            <span class="chat-msg-time">${time}</span>
+            ${m.editedAt ? '<span class="chat-msg-edited">tahrirlangan</span>' : ''}<span class="chat-msg-time">${time}</span>
             ${mine ? renderTicks(m.status) : ''}
           </span>
         </div>
@@ -1252,6 +1257,7 @@ function paintMessages(msgs) {
   // faol ijro holatini yangi chizilgan DOM ichidan data-url bo'yicha
   // qidirib topilgan tugma/waveform'ga qayta bog'laymiz.
   _reattachActiveVoiceUI(box);
+  msgMenuAfterPaint();
 }
 
 /**
@@ -1342,6 +1348,7 @@ function _reattachActiveVoiceUI(box) {
 /* ── Yopish chat thread ───────────────────────────────────────────────── */
 export function closeChatThread() {
   document.dispatchEvent(new Event('chatmedia:close'));
+  msgMenuReset();
   if (_threadUnsub) { _threadUnsub(); _threadUnsub = null; }
   if (_peerUserUnsub) { _peerUserUnsub(); _peerUserUnsub = null; }
   if (_peerStatusTick) { clearInterval(_peerStatusTick); _peerStatusTick = null; }
@@ -1370,6 +1377,7 @@ export async function sendChatMessage() {
   if (state.currentChatKind && state.currentChatKind !== 'dm') {
     return sendGroupMessage();
   }
+  if (isEditing()) { await commitEdit($('chatThreadInput')?.value); return; }
   const inp  = $('chatThreadInput');
   const text = inp?.value?.trim();
   if (!text || !state.currentChatId || !state.me) return;
@@ -1945,6 +1953,21 @@ async function uploadViaControllerProgress(file, folder, onProgress) {
 
 /* ── Wire static DOM (modal already exists in index.html on page load) ── */
 $('chatThreadBack').onclick = closeChatThread;
+
+// Xabar kontekst menyusi (o'ng tugma / mobilda bosib turish) — modules/msg-menu.js
+initMsgMenu({
+  box: $('chatThreadMessages'),
+  getMsgs: () => _curMsgs,
+  reload: () => { if (_reloadThread) _reloadThread(); },
+  syncInput: updateVoiceSendBtn,
+  getUsers: async () => (_usersCache && _usersCache.length) ? _usersCache : await _fetchChatUsers(),
+  chatIdFor: async uid => {
+    const cached = _latestChatMap[uid]?.id;
+    if (cached && _UUID_RE.test(cached)) return cached;
+    const { data, error } = await sb.rpc('get_or_create_chat', { p_other: uid });
+    return error ? null : data;
+  },
+});
 $('chatThreadModal').addEventListener('click', e => {
   if (e.target === $('chatThreadModal')) closeChatThread();
 });
