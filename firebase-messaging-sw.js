@@ -105,6 +105,7 @@ const PRECACHE_URLS = [
   '/modules/feed.js',
   '/modules/chat.js',
   '/modules/chat-media.js',
+  '/modules/error-log.js',
   '/modules/call.js',
   '/modules/comments.js',
   '/modules/groups.js',
