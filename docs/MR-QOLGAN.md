@@ -5,9 +5,9 @@ Kalitlar repo'da saqlanmaydi. Supabase CLI login MR ning keyring'ida (CMC orqali
 
 ## 1. Bugunoq
 
-- [ ] **Vercel deploy tekshirish:** Dashboard -> Deployments -> oxirgisi "Ready", Build Logs'da `modules/env.js yozildi` bor.
+- [x] **Vercel deploy tekshirish:** Dashboard -> Deployments -> oxirgisi "Ready", Build Logs'da `modules/env.js yozildi` bor.
       Keyin `docs/SMOKE.md` ni telefonda o'tkaz (ayniqsa: admin panel, chat, izohlar).
-- [ ] **TURN sinovi:** Cloudflare TURN. Vercel Production'da `TURN_KEY_ID` va `TURN_KEY_API_TOKEN` bor (2026-09-30 tasdiqlandi, `api/turn.js` shularni o'qiydi).
+- [x] **TURN sinovi:** Cloudflare TURN. Vercel Production'da `TURN_KEY_ID` va `TURN_KEY_API_TOKEN` bor (2026-09-30 tasdiqlandi, `api/turn.js` shularni o'qiydi).
       Sinov: Wi-Fi'dagi telefondan mobil tarmoqdagi telefonga qo'ng'iroq. Ulanmasa: Deployments -> Redeploy (env deploy'dan keyin qo'shilgan bo'lishi mumkin).
       Preview'da ham kerak bo'lsa, ikkala env'ga Preview belgisini qo'sh. Yo'q bo'lsa ilova umumiy OpenRelay'ga tushadi (beqaror).
 - [x] **SQL 014 + 015** (2026-09-30 yurgizildi, `migrations/` ga ko'chirildi).
@@ -28,4 +28,8 @@ Kalitlar repo'da saqlanmaydi. Supabase CLI login MR ning keyring'ida (CMC orqali
 ## 3. Bir marta
 
 - [x] `000_schema.sql` jonli dump bilan almashtirildi (2026-09-30, `ed8c6a3`; webhook siri `__WEBHOOK_SECRET__` bilan yashirilgan).
-- [ ] Qarorlar jurnali (roadmap 8-bo'lim): Q9, Q11. Q4 yopildi (kerak emas). Q10 (Storage 1 GB dan oshsa) hozir dolzarb emas, panelda kuzatiladi.
+- [x] Qarorlar jurnali (roadmap 8-bo'lim): Q9, Q11 (2026-10-01 yopildi). Q4 yopildi (kerak emas). Q10 (Storage 1 GB dan oshsa) hozir dolzarb emas, panelda kuzatiladi.
+
+## 2026-10-01
+
+007-012 `migrations/` ga ko'chirildi (no-op). Qolgan yagona ish: **013** — 2026-10-06 dan keyin, `supabase db dump` zaxirasi bilan.

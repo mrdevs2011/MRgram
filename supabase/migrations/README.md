@@ -8,3 +8,4 @@ Bazada ISHGA TUSHIRILGAN SQL fayllar, tartib raqami bilan. Yangi bazada `000_sch
 - `000_schema.sql` = jonli bazadan olingan dump (2026-09-30, `supabase db dump --linked`; sxema-only bu standart). Webhook siri `__WEBHOOK_SECRET__` bilan yashirilgan.
 - Dump 001-006, 014, 015 ni o'z ichiga oladi: yangi bazada faqat 000 + undan keyingi patchlar kerak bo'ladi.
 - Dump olganda sirni yashirishni unutma: `sed -E 's/("x-webhook-secret":")[^"]*(")/\1__WEBHOOK_SECRET__\2/g'`.
+- 007-012 (2026-10-01): contract patchlari; jonli bazada allaqachon no-op edi (000_schema dump ko'rsatadi), idempotent. 013 (`posts.views`) `unfulfilled/` da, 2026-10-06 dan keyin.

@@ -21,3 +21,5 @@ Qoida: kod deploy -> >=1 hafta kuzatuv -> `supabase db dump` -> patch. Eng erta 
 Eslatma: 007–013 hammasi hali bazaga tushmagan, shuning uchun `unfulfilled/` da. Bajarilgach `migrations/` ga keyingi raqam bilan ko'chiriladi (README).
 
 > 2026-09-30 jonli dump (`migrations/000_schema.sql`): `follows`, `admin_actions`, `broadcast_history`, `login_history` jadvallari, `chat_members.typing_until/last_seen_at` va `join_group_by_code()` bazada ALLAQACHON YO'Q (007/008/009/012 va 010 ning drop qismi bajarilgan bo'lishi mumkin, yoki bazada hech qachon bo'lmagan). `increment_post_view()` hali bor (013 kutmoqda). Bajarishdan oldin har bir patchni jonli holatga qarab tekshiring; hammasi idempotent.
+
+> 2026-10-01: 007-012 `migrations/` ga ko'chirildi (jonli bazada no-op). `unfulfilled/` da faqat **013** qoldi (2026-10-06 dan keyin, zaxiradan so'ng).

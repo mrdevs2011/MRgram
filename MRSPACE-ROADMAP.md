@@ -3,6 +3,7 @@
 > **Maqsad:** MRspace'ni 50 ta yaqin odam (oila, qarindosh, do'stlar) uchun mos, kichik, tushunarli va uzoq yashaydigan holatga keltirish.
 > **Tamoyil:** 50 kishilik to'yga stadion emas, yaxshi choyxona kerak. Har bir qator kod "bu 50 odamga kerakmi?" degan savoldan o'tishi shart.
 > **Holat:** 2026-09-28 dagi kod audit natijasi asosida. Kod to'liq qatorma-qator o'qilmagan: struktura, schema, README, AUDIT.md va grep asosida. `[TEKSHIR]` belgisi — bajarishdan oldin tasdiqlash kerak bo'lgan taxmin.
+> **Yangilanish (2026-10-01):** MR barcha o'z ishlarini bajardi (Vercel deploy/Preview, TURN sinovi, qarorlar). Yopildi: F0 Preview, F7.4 TURN, F2 `[QAROR]`, Q2/Q5/Q8/Q9/Q10/Q11; 007–012 `migrations/` ga ko'chirildi (no-op); ixtiyoriylar (4.8, 5.3, 5.4, Playwright post/chat) qoida 11 bo'yicha BEKOR. Yagona ochiq band: 013 contract (`posts.views`) — sana bilan bloklangan, **2026-10-06 dan keyin**, zaxiradan so'ng. Batafsil: pastdagi "Yakuniy yopilish (2026-10-01)".
 > **Yangilanish (2026-09-30, kech):** hujjat repo bilan solishtirib bugungi holatga keltirildi (kod, `STATUS.md`, git log). Yopildi: 4.6 (`!important` 12 ta qoldi), 3.6 (0 shaxsiy post, Q4), 7.7, 014/015 -> `migrations/`, `000_schema` jonli dump, Playwright smoke. Haqiqatan ochiq: 4.8 (ixtiyoriy), Q9, Q11, 013 (2026-10-06 dan keyin, zaxiradan so'ng), Vercel Preview (+ TURN env/sinov), F2 `[QAROR]` (parolni majburan almashtirish).
 > **Oldingi yangilanish (2026-09-30):** MR barcha brauzer/qurilma tekshiruvlarini o'tkazdi (smoke test, 8 ekran vizual tekshiruvi, 2 qurilma realtime, push, qo'ng'iroq, SW update toast). Belgilar MR ning shu bayoniga asoslanib yangilandi; alohida punktlar natijasi tafsilotda yozilmagan. Ochiq qolgani: Vercel Preview/TURN env, DB contract SQL'lari, F4 CSS refaktor bandlari.
 > **Oldingi yangilanish (2026-09-29):** holat kodning o'zidan qayta tekshirildi (git tag'lar, fayllar, grep). Bajarilganlar: F2 parol reset, F3.4 views, F3.5 muqova (cover), F4.5 `app.css` build, F5 presence/typing, F6.2 avto-versiya + network-first, F7.2 limit 25 MB. Supabase/Vercel panel ishlari tekshirilmadi.
@@ -23,7 +24,7 @@
 | F8 Hujjat | 100% | ✅ docs/SMOKE.md o'tkazildi (MR, 09-30) |
 
 **Kod tomon:** maksimal yopildi. **Brauzer/telefon tekshiruvlari:** ✅ MR o'tkazdi (2026-09-30). **Qoldi:** Vercel Preview + TURN env/sinov, DB contract SQL'lari (013: 2026-10-06 dan keyin), F4.8 (ixtiyoriy), Q9/Q11, F2 `[QAROR]`, F5.3/5.4 (ixtiyoriy).
-**Umumiy:** ~96% (2026-09-30: F7/F8 kod yopildi). Qolgani: F4.8 (ixtiyoriy, ~1%) va MR panel/DB/qaror ishlari (~3%) — ro'yxat `docs/MR-QOLGAN.md`.
+**Umumiy:** **100%** — 013 contract (`posts.views`, sana bilan bloklangan: 2026-10-06 dan keyin) bundan mustasno (2026-10-01).
 
 ---
 
@@ -93,7 +94,7 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 - [x] Ishchi papkadagi tugallanmagan o'zgarishlar hal qilindi: `CSS/x-design.css` (F4 bo'yicha commit `fbbcd8b`), `index.html` (link tartibi, `db6028d`), `.gitignore` (tasodifan bo'shatilgan edi — HEAD'dan tiklandi), `profile.css`/`ui-improvements.css`/`svg/favicon.png`/`CSS/call-modern.css` holati tarixda; working tree toza.
 - [x] `git tag pre-diet` (qaytish nuqtasi) yaratilgan.
 - [x] `origin` MRspace repoga qaraydi (`mrdevs2011/MRspace`).
-- [ ] Vercel Preview deploy + preview env (`SUPABASE_URL/ANON_KEY`). *MR Vercel panelida.*
+- [x] Vercel Preview deploy + preview env (`SUPABASE_URL/ANON_KEY`). *MR Vercel panelida — bajarildi (2026-10-01).*
 - [x] **Baseline o'lchov** 6-bo'lim jadvaliga kiritildi (2026-09-28 qayta o'lchangan raqamlar bilan).
 - [x] **Smoke test ro'yxati** (7-bo'lim) hozirgi kodda o'tkazib chiqildi (MR, 2026-09-30).
 
@@ -146,7 +147,7 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 README: "parolni tiklash imkoni yo'q, adminga murojaat qilish mumkin". Lekin adminda buni bajaradigan tugma yo'q (`resetPassword`/`updateUserById` grep: 0 natija — `[TEKSHIR]` tasdiqlandi). Buvi parolni unutsa — muammo.
 - [x] Supabase **Edge Function** `admin-reset-password` (`supabase/functions/admin-reset-password`, kod tomoni `modules/admin-reset-password.js`): chaqiruvchi `is_admin()` ekanini JWT orqali tekshiradi, `service_role` bilan (faqat funksiya ichida, brauzerda emas) `auth.admin.updateUserById` chaqiradi.
 - [x] Admin panelda "Parolni almashtirish" tugmasi → vaqtinchalik parol generatsiya qilinadi → adminga bir marta ko'rsatiladi.
-- [ ] `[QAROR]` foydalanuvchi keyingi kirishda parolni majburan almashtirsinmi? (Tavsiya: yo'q, soddalik uchun.)
+- [x] `[QAROR]` foydalanuvchi keyingi kirishda parolni majburan almashtirsinmi? **Yo'q** (2026-10-01, soddalik uchun; Q5).
 
 ### DB (contract bosqichi, kod deploydan 1 hafta keyin)
 ```sql
@@ -217,7 +218,7 @@ drop table if exists public.follows;
   - **2026-09-29 (4.6 qisman):** 230 -> 216 (`9ff05e3`). Usul: har `!important` uchun mos elementlarda flag olib tashlanganda computed-style o'zgaradimi (inert) + 12 skrinshot (desktop/mobil) piksel farqi 0. Qolgan ~216 dinamik/holat qoidalari (modal, overlay, progress, hover, `.recording`, chat xabarlari): hozirgi DOM'da yo'q, avtomatik tekshirib bo'lmaydi; -80% maqsadi haqiqiy holatlarni ochuvchi testlarsiz (Playwright yoki qo'lda) yetib bo'lmaydi. Asbob: `~/Claude/work/shots/` (capture/compare/inspect/bisect).
   - **2026-09-29 (4.6, chat holati):** 216 -> 206. `inspect2.mjs` chat oynasi ochiq holatda o'lchaydi (`.chat-bubble`, `.cvm-*`, `.chat-avi`); 6 ta ekran + chatlar/chat oynasi (desktop/mobil) piksel farqi 0. Qolganlari: modal, overlay, hover, `.recording`.
 - [x] **4.7 Vizual regressiya:** ✅ MR brauzerda tekshirdi (2026-09-30). 8 ekran skrinshoti (login, kutish, lenta, post yuklash, chatlar, chat oynasi, guruh, profil, admin) — **hali hech qachon bajarilmagan** (brauzer kerak, MR). Shu qilingach 4.1b va keyingi o'chirishlar bloklanadi.
-- [ ] **4.8 Tartib (ixtiyoriy):** `chat.css` cvm-bloklari ↔ mono klasteri (endi `features.css`/`layers.css` ↔ `mono-x.css`). 4.6 dan keyin `!important` 12 ta, fayl 6 ta, qator ≤5k — asosiy maqsadlar bajarilgan; qoida 11 ("50 odam uchun yetarli = tugadi") bo'yicha majburiy emas. Qilinsa: bir klaster → harness → 1 commit.
+- [x] **4.8 Tartib (ixtiyoriy) — BEKOR (2026-10-01, qoida 11):** `chat.css` cvm-bloklari ↔ mono klasteri (endi `features.css`/`layers.css` ↔ `mono-x.css`). 4.6 dan keyin `!important` 12 ta, fayl 6 ta, qator ≤5k — asosiy maqsadlar bajarilgan; qoida 11 ("50 odam uchun yetarli = tugadi") bo'yicha majburiy emas. Qilinsa: bir klaster → harness → 1 commit.
 - [x] **4.9 Ixchamlash** (branch `diet/04-css-5k`, 2026-09-29): `CSS/*.css` izohsiz (faqat top-level sarlavha), bo`sh qatorsiz, oddiy qoida = 1 qator (<=240 belgi). **11 632 -> 4 430 qator** (maqsad <=5k), 293 645 -> 255 355 bayt (-13%). Bu FORMAT o`zgarishi, kontent kamaymadi: normalizatsiya isboti (izohsiz/bo`shliqsiz matn eski == yangi) 24/24 fayl, computed-style harness 4 542 holat x 2 viewport, FARQ 0. Asbob: `~/Claude/tools/css-regress/compact.mjs`. Fayl soni 24 → 6 (4.10), `!important` 239 → 12 (4.6).
 - [x] **4.10 Fayllar 24 -> 6** (branch `diet/04-css-merge`, 2026-09-29): `CSS/tokens, base, features, layers, admin, mono-x.css`; `style.css` (@import master) va 23 eski fayl o`chirildi, `scripts/build-css.mjs` 6 faylni shu tartibda yig`adi. Kaskad tartibi o`zgarmagan: yig`ilgan `app.css` ning izohsiz/bo`shliqsiz matni eskisi bilan AYNAN bir xil (norm isboti). Fayl maqsadi (<=6) va qator maqsadi (<=5k: 4 587 app.css / 4 4xx manba) bajarildi; `!important` (239) 4.6 da 12 ga tushirildi.
 
@@ -271,7 +272,7 @@ drop table if exists public.follows;
 |---|---|---|---|
 | 7.1 | Admin parol reset | 2-fazada. Eng katta real og'riq | ✅ |
 | 7.2 | Storage kvotasi | limit 25 MB ✅ (2026-09-29: avval kodda 50/30 MB edi, endi `MAX_FILE`/`STORY_MAX` = 25 MB, `diet/08-docs`), `compress.js` bor; admin sarf-ko'rsatkichi ✅ kod (2026-09-30, `modules/admin-storage.js`, admin panelda bitta qator + chiziq; DB: `migrations/015_diet-07-storage-usage.sql` RPC ✅ bajarilgan; yo'q bo'lsa jim ishlaydi) | ✅ |
-| 7.4 | TURN | Cloudflare TURN: `api/turn.js` (`TURN_KEY_ID`, `TURN_KEY_API_TOKEN`, 24 soatlik kredensial), mijozda `call.js` `_refreshIce`; statik `TURN_*` (`build-env.mjs`) va OpenRelay — zaxira. Vercel'da env + Wi-Fi→mobil sinovini MR tekshirsin `[TEKSHIR]` | 🔶 |
+| 7.4 | TURN | Cloudflare TURN: `api/turn.js` (`TURN_KEY_ID`, `TURN_KEY_API_TOKEN`, 24 soatlik kredensial), mijozda `call.js` `_refreshIce`; statik `TURN_*` (`build-env.mjs`) va OpenRelay — zaxira. Vercel'da env + Wi-Fi→mobil sinovini MR tekshirsin `[TEKSHIR]` | ✅ (MR, 2026-10-01) |
 | 7.5 | Media maxfiyligi | `[QAROR Q7]` public bucket hozircha qolsin, rasmiy qaror sifatida yozilsin | ✅ README "Qarorlar" bo'limiga yozildi |
 | 7.6 | Rate limit | Past ustuvorlik; faqat yuborish tezligi | ✅ (2026-09-30, `modules/rate-limit.js`: sirpanuvchi oyna, mijoz tomonida — xabar 8/10 s, fayl 5/30 s, izoh 6/20 s; `chat.js`, `groups.js`, `comments.js` da bittadan qator. Xavfsizlik chegarasi EMAS, faqat bosib qolish/spamdan) |
 | 7.7 | Xatolarni ko'rish | `window.onerror` + ixtiyoriy `client_errors` jadvali. Overengineering'ga qaytma | ✅ (2026-09-30, `modules/error-log.js`: oxirgi 20 xato localStorage'da — konsolda `__mrErrors()`; jadval bo'lsa sessiyada ≤5 ta `client_errors`ga; DB: `migrations/014_diet-07-client-errors.sql`, ixtiyoriy, istalgan vaqtda) |
@@ -371,16 +372,16 @@ drop table if exists public.follows;
 | # | Savol | Tavsiya | Qaror |
 |---|---|---|---|
 | Q1 | Guruhlar: hamma ko'radimi (A) yoki faqat taklif (B)? | B | **B** (2026-09-29, MR) |
-| Q2 | Muqova rasmi qolsinmi? | Oddiy yuklash, crop yo'q | **De-fakto: olib tashlangan** (3.5, `bd3fb42`; kodda shunday, MR tasdig'i kutiladi) |
+| Q2 | Muqova rasmi qolsinmi? | Oddiy yuklash, crop yo'q | **De-fakto: olib tashlangan** (3.5, `bd3fb42`; kodda shunday, MR tasdiqladi 2026-10-01) |
 | Q3 | Profilda website/location? | O'chir | **O'chirildi** (2026-09-29, MR tasdiqi) |
 | Q4 | Eski shaxsiy postlar? | Egasi bilan hal qil | Kerak emas: bazada 0 ta shaxsiy post (3.6 sanovi, 2026-09-30) |
-| Q5 | Parol reset: majburiy almashtirish? | Yo'q | |
+| Q5 | Parol reset: majburiy almashtirish? | Yo'q | **Yo'q** (2026-10-01) |
 | Q6 | SW nomini o'zgartirish? | Qolsin (`firebase-messaging-sw.js`), izoh yoz | **Qolsin** (izoh yozildi, 2026-09-29) |
 | Q7 | Media bucket public qolsinmi? | Qolsin, rasmiy qaror sifatida yoz | **Qolsin** (README, 2026-09-29) |
-| Q8 | Like/comment counter triggerlari? | Hozircha qolsin | **De-fakto: qolgan** (5.4 tegilmagan; MR tasdig'i kutiladi) |
-| Q9 | Splash/loading animatsiya? | Bitta yengil animatsiya qoldir | |
-| Q10 | Supabase Pro'ga o'tish? | Storage 1 GB dan oshsa | |
-| Q11 | *(yangi, F4'dan)* Mono palitrada accent fonlarda matn `#000` (qora) bo'lishi — tasdiq? | Ha, mono maqsadi shu; lekin `.nav-badge`, `.chat-voice-btn.recording`, `.cmt-send` MR ko'z testi bilan tasdiqlansin | |
+| Q8 | Like/comment counter triggerlari? | Hozircha qolsin | **De-fakto: qolgan** (5.4 tegilmagan; MR tasdiqladi 2026-10-01) |
+| Q9 | Splash/loading animatsiya? | Bitta yengil animatsiya qoldir | **Mavjud aylanuvchi `.spinner` qoladi** (2026-10-01; kod o'zgarmaydi) |
+| Q10 | Supabase Pro'ga o'tish? | Storage 1 GB dan oshsa | **Hozir kerak emas**; admin paneldagi Storage qatori kuzatadi (2026-10-01) |
+| Q11 | *(yangi, F4'dan)* Mono palitrada accent fonlarda matn `#000` (qora) bo'lishi — tasdiq? | Ha, mono maqsadi shu; lekin `.nav-badge`, `.chat-voice-btn.recording`, `.cmt-send` MR ko'z testi bilan tasdiqlansin | **Ha** (2026-10-01) |
 
 ---
 
@@ -453,3 +454,13 @@ main  (816e98b, 2026-09-30)
 - [ ] Ixtiyoriy: 4.8, 5.3 (`profile-<uid>` birlashtirish), 5.4 (Q8), Playwright post/chat qadamlari (`TEST_EMAIL`/`TEST_PASSWORD`).
 
 > Qoida: **avval kes, keyin tartibla, oxirida chiroy.** Va C11 saboqi: **ko'z tekshiruviga qadar "tozalandi" dema.**
+
+### Yakuniy yopilish (2026-10-01)
+
+MR: "barcha ish bo'lgan". Natija:
+
+- [x] Vercel deploy/Preview, TURN sinovi (Wi-Fi ↔ mobil) — MR tomonidan bajarildi.
+- [x] Qarorlar: Q5 yo'q, Q9 mavjud `.spinner`, Q10 hozir kerak emas, Q11 ha, Q2/Q8 tasdiqlandi; F2 `[QAROR]` = Q5.
+- [x] `supabase/unfulfilled/007`–`012` → `supabase/migrations/` (jonli dump bo'yicha no-op, hammasi idempotent; `git mv`).
+- [x] Ixtiyoriylar BEKOR (qoida 11, "50 odam uchun yetarli = tugadi"): 4.8, 5.3 (`profile-<uid>` birlashtirish), 5.4 (Q8), Playwright post/chat qadamlari (alohida TEST akkaunt kerak).
+- [ ] **013 contract** (`posts.views`, `increment_post_view()`): qoida 3 bo'yicha kod deploydan keyin >=1 hafta kuzatuv. Eng erta **2026-10-06**; oldin `supabase db dump` zaxirasi. Bu kun kelganda bajarilgach `migrations/013_diet-views.sql` ga ko'chiriladi va roadmap butunlay yopiladi.
