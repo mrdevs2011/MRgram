@@ -676,3 +676,5 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 .post-cmt-panel .post-cmt-list .cmt-row, .post-cmt-panel .post-cmt-list .cmt-body { min-width: 0; }
 .post-cmt-panel .post-cmt-input-row { order: 2; border-top: 1px solid var(--line); }
 .post-cmt-panel .post-cmt-input-row .cmt-input { min-width: 0; flex: 1; }
+/* Sodda ko'rinish: ajratuvchi (dekorativ) chiziqlarsiz. Faol tab chizig'i, input va avatar halqalari saqlanadi. */
+[data-theme] .post, .post, [data-theme] .chat-row, .chat-row, [data-theme] .chat-thread, .exp-head, #storiesBar, [data-theme] :is(.post-cmt-list, .rr-cmt-list) .cmt-row, [data-theme] :is(.post-cmt-list, .rr-cmt-list) .cmt-empty, :is(.post-cmt-list, .rr-cmt-list) .cmt-skel-row, .post-cmt-panel, .post-cmt-panel .post-cmt-input-row, .rr-cmt-panel .rr-cmt-input-row { border-top: none; border-bottom: none; }
