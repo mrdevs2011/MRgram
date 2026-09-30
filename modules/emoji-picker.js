@@ -18,7 +18,7 @@ const ICONS = {
   symbols:    svg('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>'),
   flags:      svg('<path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/>'),
   search:     svg('<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>'),
-  close:      svg('<path d="M6 6l12 12M18 6L6 18"/>'),
+  close:      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
 };
 
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -49,8 +49,10 @@ export function initEmojiPicker({ btn, pop, input }) {
         <div class="ep-tabs">${tabDefs.map(t => `<button type="button" class="ep-tab" data-tab="${t.id}" title="${esc(t.name || 'Oxirgilar')}">${ICONS[t.id]}</button>`).join('')}</div>
       </div>
       <div class="ep-search" hidden>
-        <input type="text" class="ep-search-inp" placeholder="Qidirish (inglizcha: heart, cat...)" autocomplete="off" spellcheck="false">
-        <button type="button" class="ep-tab" data-act="closesearch" title="Yopish">${ICONS.close}</button>
+        <div class="ep-search-wrap">
+          <input type="text" class="ep-search-inp" placeholder="Qidirish (inglizcha: heart, cat...)" autocomplete="off" spellcheck="false">
+          <button type="button" class="ep-clear" data-act="closesearch" title="Yopish">${ICONS.close}</button>
+        </div>
       </div>
       <div class="ep-body">
         <section data-sec="recent"><h4>Oxirgilar</h4><div class="ep-grid" data-grid="recent"></div></section>

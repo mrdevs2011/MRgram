@@ -1377,7 +1377,13 @@
 .ep-tab { width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: none; border: none; border-radius: 50%; color: var(--text3); cursor: pointer; padding: 0; }
 .ep-tab:hover { background: var(--bg4); color: var(--text2); }
 .ep-tab.on { background: var(--bg4); color: var(--text); }
-.ep-search-inp { flex: 1; min-width: 0; height: 34px; padding: 0 12px; border-radius: 17px; border: 1px solid var(--line); background: var(--bg4); color: var(--text); font: inherit; font-size: 14px; outline: none; }
+.ep-search { padding: 8px; }
+.ep-search-wrap { position: relative; flex: 1; width: 100%; }
+.ep-search-inp { display: block; width: 100%; box-sizing: border-box; height: 30px; padding: 0 30px 0 12px; border-radius: 15px; border: 1px solid transparent; background: rgba(255,255,255,.06); color: var(--text); font: inherit; font-size: 13px; outline: none; transition: background .15s, border-color .15s; }
+.ep-search-inp::placeholder { color: var(--text3); }
+.ep-search-inp:focus { background: rgba(255,255,255,.09); border-color: var(--line); }
+.ep-clear { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; background: none; border: none; border-radius: 50%; color: var(--text3); cursor: pointer; padding: 0; }
+.ep-clear:hover { color: var(--text); background: rgba(255,255,255,.08); }
 .ep-body { flex: 1; overflow-y: auto; padding: 0 8px 8px; overscroll-behavior: contain; }
 .ep-body section { content-visibility: auto; contain-intrinsic-size: auto 240px; }
 .ep-body h4 { margin: 12px 4px 6px; font-size: 12px; font-weight: 500; color: var(--text3); }
@@ -4562,7 +4568,7 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 
 /* Desktop: chat pastki input — yumaloq, silliq "suzuvchi" bar */
 @media (min-width: 1100px) {
-  #chatThreadModal .chat-thread-input-row { margin: 8px 16px 16px; padding: 6px 10px; border: none; border-radius: 28px; background: var(--bg3); }
+  #chatThreadModal .chat-thread-input-row { margin: 8px 16px 16px; padding: 6px 10px; border: 1px solid var(--pal-gray-800); border-radius: 28px; background: #0b0c0e; }
   #chatThreadModal .chat-thread-input { background: transparent; border-radius: 0; padding: 9px 8px; }
   #chatThreadModal .chat-thread-input:focus { background: transparent; }
 }
@@ -4573,13 +4579,13 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 
 /* Desktop: chat sarlavhasi — pastki input bilan bir xil yumaloq "suzuvchi" bar */
 @media (min-width: 1100px) {
-  #chatThreadModal .chat-thread-hdr { margin: 16px 16px 8px; padding: 8px 12px; border: none; border-radius: 28px; background: var(--bg3); }
+  #chatThreadModal .chat-thread-hdr { margin: 16px 16px 8px; padding: 8px 12px; border: 1px solid var(--pal-gray-800); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 28px; background: #0b0c0e; }
 }
 
 /* Mobil: chat sarlavhasi va pastki input ham yumaloq "suzuvchi" bar (desktop bilan bir xil ko'rinish, kichikroq chetlar) */
 @media (max-width: 1099px) {
-  #chatThreadModal .chat-thread-hdr { margin: max(8px, env(safe-area-inset-top, 0px)) 8px 4px; padding: 6px 10px; border: none; border-radius: 26px; background: var(--bg3); }
-  #chatThreadModal .chat-thread-input-row { margin: 4px 8px calc(8px + env(safe-area-inset-bottom, 0px)); padding: 5px 8px; border: none; border-radius: 26px; background: var(--bg3); }
+  #chatThreadModal .chat-thread-hdr { margin: max(8px, env(safe-area-inset-top, 0px)) 8px 4px; padding: 6px 10px; border: 1px solid var(--pal-gray-800); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 26px; background: #0b0c0e; }
+  #chatThreadModal .chat-thread-input-row { margin: 4px 8px calc(8px + env(safe-area-inset-bottom, 0px)); padding: 5px 8px; border: 1px solid var(--pal-gray-800); border-radius: 26px; background: #0b0c0e; }
   #chatThreadModal .chat-thread-input { background: transparent; border-radius: 0; padding: 9px 8px; }
   #chatThreadModal .chat-thread-input:focus { background: transparent; }
 }
