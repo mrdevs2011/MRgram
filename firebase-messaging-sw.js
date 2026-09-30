@@ -104,6 +104,7 @@ const PRECACHE_URLS = [
   '/modules/toast.js',
   '/modules/feed.js',
   '/modules/chat.js',
+  '/modules/chat-media.js',
   '/modules/call.js',
   '/modules/comments.js',
   '/modules/groups.js',

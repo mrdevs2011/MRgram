@@ -342,14 +342,12 @@ function _startMicPulse(stream) {
 
       // IMG: smooth scale
       img.style.transform  = `scale(${scale.toFixed(4)})`;
-      img.style.transition = 'transform 0.06s ease-out';
 
       // WRAPPER: glow rings
       wrap.style.boxShadow =
         `0 0 0 ${ring1}px rgba(59,130,246,${a1}),` +
         `0 0 0 ${ring2}px rgba(59,130,246,${a2}),` +
         `0 0 ${ring2 * 2}px rgba(99,179,237,${(a2 * 0.6).toFixed(2)})`;
-      wrap.style.transition = 'box-shadow 0.06s ease-out';
     }
     _tick();
   } catch (_) {}
@@ -361,10 +359,9 @@ function _stopMicPulse() {
   if (wrap) {
     const img = wrap.querySelector('img') || wrap;
     img.style.transform  = 'scale(1)';
-    img.style.transition = 'transform 0.3s ease-out';
     wrap.style.boxShadow = '';
     wrap.style.overflow  = 'hidden';
-    setTimeout(() => { img.style.transform = ''; img.style.transition = ''; }, 320);
+    setTimeout(() => { img.style.transform = ''; }, 320);
     // ESLATMA: bu yerda AudioContext'ni endi YOPMAYMIZ — u umumiy
     // (_getSharedAudioCtx) va butun sessiya davomida qayta ishlatiladi;
     // yopish keyingi qo'ng'iroqlarda yangi context yaratish zarurati va

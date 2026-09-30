@@ -228,6 +228,10 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
   --c-danger: var(--red);
 }
 #chatThreadModal .chat-thread-messages { background-image: none; }
+/* Chat pastki input: dark sahifaga mos — qator sahifa bilan bir xil qora, input esa yumshoq pill */
+#chatThreadModal .chat-thread-input-row, #chatThreadModal .chat-reply-bar { background: var(--c-bg-chat); border-top: 1px solid var(--c-divider); }
+#chatThreadModal .chat-thread-input { background: var(--bg3); border-radius: 22px; padding: 9px 16px; }
+#chatThreadModal .chat-thread-input:focus { background: var(--bg3); }
 #chatThreadModal .chat-bubble { font-size: 15px; line-height: 1.33; }
 #chatThreadModal .chat-msg.mine .chat-bubble { background: var(--x-blue); color: var(--pal-white); border-radius: 22px 22px 4px 22px; }
 #chatThreadModal .chat-msg.theirs .chat-bubble { background: var(--line); color: var(--text); border-radius: 22px 22px 22px 4px; }
@@ -627,3 +631,13 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 .search-clear-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border: none; border-radius: 16px; background: var(--pal-gray-500); color: var(--bg); cursor: pointer; z-index: 2; }
 .search-clear-btn:hover { opacity: .85; }
 [data-theme] .search-overlay .exp-pill input:placeholder-shown ~ .search-clear-btn { display: none; }
+
+/* nav ikonkadagi badge (chat "1") overflow:hidden tufayli kesilmasin */
+.nav-btn { overflow: visible; }
+
+/* Desktop: chat pastki input — yumaloq, silliq "suzuvchi" bar */
+@media (min-width: 1100px) {
+  #chatThreadModal .chat-thread-input-row { margin: 8px 16px 16px; padding: 6px 10px; border: none; border-radius: 28px; background: var(--bg3); }
+  #chatThreadModal .chat-thread-input { background: transparent; border-radius: 0; padding: 9px 8px; }
+  #chatThreadModal .chat-thread-input:focus { background: transparent; }
+}

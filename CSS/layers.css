@@ -6,36 +6,9 @@
 /* [data-theme="dark"] body/.app/.bot-nav/.sheet/.modal-content → hammasi CSS/dark-theme-fix.css'da (o'sha fay... */
 /* Dark — glass element overrides */
 [data-theme="dark"] .post { background: var(--pal-gray-800); border: 0.5px solid var(--pal-gray-700); box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
-/* Light mode brand text */
-/* ═══════════════════════════════════════════ Smooth Theme Transitions ══════════════════════════════════════... */
-body,
-.app,
-.post,
-.sheet,
-.modal-content,
-.bot-nav,
-.app-hdr,
-.profile-hdr,
-.grid-cell,
-.up-grid-cell,
-.field,
-.ta,
-.cmt-body,
-.cmt-input,
-.upload-drop,
-.file-card,
-.profile-avi,
-.up-avi,
-.dm-avi,
-.cmt-avi,
-.rcap-avi,
-.avatar-crop-container {
-  transition: none;
-}
 /* ═══════════════════════════════════════════ Theme Toggle Button ═══════════════════════════════════════════ */
-.theme-btn { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 14px; background: var(--glass); color: var(--text2); cursor: pointer; transition: none; padding: 0; flex-shrink: 0; }
+.theme-btn { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 14px; background: var(--glass); color: var(--text2); cursor: pointer;  padding: 0; flex-shrink: 0; }
 .theme-btn:hover { background: var(--glass-mid); color: var(--text); box-shadow: var(--specular-top), var(--liquid-shadow-sm); }
-.theme-btn:active { transition: none; }
 .theme-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
 @media (min-width: 1100px) {
   .theme-btn { position: relative; }
@@ -56,7 +29,7 @@ body,
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;
-    transition: none;
+    
     z-index: 200;
     box-shadow: var(--liquid-shadow-sm);
   }
@@ -67,7 +40,7 @@ body,
 .glass { background: var(--glass); border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top), var(--liquid-shadow-md); }
 .glass-heavy { background: var(--glass-heavy); border: 0.5px solid var(--glass-border-top); box-shadow: var(--specular-top), var(--liquid-shadow-lg); }
 /* Input fields */
-input, textarea { background: var(--glass); border: 0.5px solid var(--glass-border); color: var(--text); transition: none; }
+input, textarea { background: var(--glass); border: 0.5px solid var(--glass-border); color: var(--text);  }
 input:focus, textarea:focus { border-color: var(--blue); background: var(--glass-mid); box-shadow: 0 0 0 3px var(--blue-glow2), var(--specular-top); }
 input::placeholder, textarea::placeholder { color: var(--text3); }
 /* ═══════════════════════════════════════════ Unified Icon System — 2026 minimalist line icons All inline SVG... */
@@ -97,11 +70,6 @@ svg { color: inherit; }
 }
 .nav-btn.on, .nav-btn.active, .act-btn.liked, .act-btn.active, .profile-grid-tab.active, .tab-btn.active, .admin-tab.active, .chat-search-btn.active, .icon-btn.active, .icon-btn.selected { color: var(--tg-primary-blue); }
 .nav-center-btn, .btn-primary, .chat-voice-btn, .fab { color: var(--tg-text-main); }
-/* ─── ui-improvements ─── */
-/* ═══════════════════════════════════════════ MRdatabase — UI Improvements & Polish Accessibility, Microinter... */
-/* ═══════════════════════════════════════════ 1. THEME TOGGLE — Enhanced Visual Feedback ════════════════════... */
-/* Smooth theme transition */
-[data-theme] body, [data-theme] .app, [data-theme] .post, [data-theme] .bot-nav, [data-theme] .app-hdr, [data-theme] .sheet, [data-theme] .overlay { transition: none; }
 /* ═══════════════════════════════════════════ 2. FEED IMPROVEMENTS — Gradient Border & Skeleton ═════════════... */
 /* Gradient border on post hover */
 .post { position: relative; }
@@ -117,13 +85,13 @@ svg { color: inherit; }
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
-  transition: none;
+  
   pointer-events: none;
 }
 .post:hover::before { opacity: 1; }
 /* Avatar shimmer */
 .skel-avi { position: relative; overflow: hidden; }
-.skel-avi::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--pal-gray-800); animation: none; }
+.skel-avi::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--pal-gray-800);  }
 /* ═══════════════════════════════════════════ 3. NAVIGATION BAR — Active State Enhancement ══════════════════... */
 /* Nav button icon bounce on tap */
 .nav-btn:active, .nav-btn.on { position: relative; }
@@ -152,14 +120,14 @@ svg { color: inherit; }
 /* Remove default focus outline for mouse users */
 :focus:not(:focus-visible) { outline: none; }
 /* ═══════════════════════════════════════════ SHIMMER LOADING ANIMATION ═════════════════════════════════════... */
-.skel, .skel-avi, .skel-line, .skel-media { background: var(--bg3); background-size: 200px 100%; animation: none; }
+.skel, .skel-avi, .skel-line, .skel-media { background: var(--bg3); background-size: 200px 100%;  }
 /* Skeleton post cards */
 .skeleton-post { background: var(--bg2); border-radius: 18px; padding: 16px; margin-bottom: 12px; overflow: hidden; }
 .skeleton-post .skel-avi { width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0; }
-.skeleton-post .skel-line { height: 12px; border-radius: 6px; background: var(--bg3); background-size: 200px 100%; animation: none; }
-.skeleton-post .skel-media { width: 100%; height: 200px; border-radius: 12px; margin: 12px 0; background: var(--bg3); background-size: 200px 100%; animation: none; }
+.skeleton-post .skel-line { height: 12px; border-radius: 6px; background: var(--bg3); background-size: 200px 100%;  }
+.skeleton-post .skel-media { width: 100%; height: 200px; border-radius: 12px; margin: 12px 0; background: var(--bg3); background-size: 200px 100%;  }
 .skeleton-post .skel-actions { display: flex; gap: 8px; margin-top: 12px; }
-.skeleton-post .skel-actions::before, .skeleton-post .skel-actions::after { content: ''; flex: 1; height: 36px; border-radius: 8px; background: var(--bg3); background-size: 200px 100%; animation: none; }
+.skeleton-post .skel-actions::before, .skeleton-post .skel-actions::after { content: ''; flex: 1; height: 36px; border-radius: 8px; background: var(--bg3); background-size: 200px 100%;  }
 /* ═══════════════════════════════════════════ POST CARD — Microinteractions ═════════════════════════════════... */
 /* POST CARD — Microinteractions o'chirildi: .post transition / .post:hover lift / box-shadow — barchasi CSS/0... */
 /* Like button hover animation */
@@ -203,7 +171,7 @@ svg { color: inherit; }
   cursor: pointer;
   position: relative;
   z-index: 1;
-  transition: background 0.15s ease, transform 0.15s ease;
+  
 }
 .empty-cta:hover { background: var(--pal-white); transform: translateY(-1px); }
 /* ═══════════════════════════════════════════ PROFILE GRID — Hover Effects ══════════════════════════════════... */
@@ -213,7 +181,7 @@ svg { color: inherit; }
 .grid-cell--media, .up-grid-cell--media { grid-row: span 2; min-height: 148px; aspect-ratio: 1 / 1.05; }
 /* Matn post — pastroq */
 .grid-cell--text, .up-grid-cell--text { grid-row: span 1; min-height: 72px; aspect-ratio: auto; }
-.grid-cell img, .grid-cell video, .up-grid-cell img, .up-grid-cell video { width: 100%; height: 100%; object-fit: cover; transition: none; }
+.grid-cell img, .grid-cell video, .up-grid-cell img, .up-grid-cell video { width: 100%; height: 100%; object-fit: cover;  }
 .grid-cell:hover img,
 .grid-cell:hover video,
 .up-grid-cell:hover img,
@@ -229,12 +197,12 @@ svg { color: inherit; }
   padding: 10px 8px;
   gap: 14px;
   opacity: 0;
-  transition: opacity .15s ease;
+  
   pointer-events: none;
 }
 .grid-cell:hover .grid-cell-overlay, .up-grid-cell:hover .up-grid-cell-overlay { opacity: 1; }
 .grid-stat, .up-grid-stat { display: flex; align-items: center; gap: 4px; color: var(--pal-white); font-size: 12px; font-weight: 600; text-shadow: 0 1px 3px var(--pal-black); }
-.grid-play-badge { position: absolute; top: 6px; right: 6px; background: var(--pal-black); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: none; }
+.grid-play-badge { position: absolute; top: 6px; right: 6px; background: var(--pal-black); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; opacity: 0;  }
 .grid-cell:hover .grid-play-badge { opacity: 1; }
 /* Text-only post */
 .grid-cell-txt, .up-grid-cell-txt {
@@ -253,12 +221,12 @@ svg { color: inherit; }
 }
 /* ═══════════════════════════════════════════ REELS — Enhanced Progress & Controls ══════════════════════════... */
 @media (min-width: 1100px) {
-  .reel::after { content: ''; position: absolute; inset: 0; background: var(--pal-black); opacity: 0; transition: none; pointer-events: none; }
+  .reel::after { content: ''; position: absolute; inset: 0; background: var(--pal-black); opacity: 0;  pointer-events: none; }
   .reel:hover::after { opacity: 1; }
 }
 /* ═══════════════════════════════════════════ 6. COMMENTS — Enhanced Interactions ═══════════════════════════... */
 /* Swipe to reply indicator (mobile) */
-.cmt-swipe-indicator { position: absolute; left: 0; top: 0; bottom: 0; width: 60px; background: var(--blue-glow2); border-radius: 14px 0 0 14px; display: flex; align-items: center; justify-content: center; opacity: 0; transition: none; }
+.cmt-swipe-indicator { position: absolute; left: 0; top: 0; bottom: 0; width: 60px; background: var(--blue-glow2); border-radius: 14px 0 0 14px; display: flex; align-items: center; justify-content: center; opacity: 0;  }
 .cmt-swipe-icon { width: 20px; height: 20px; color: var(--blue); }
 /* Long-press copy indicator */
 .cmt-copy-hint {
@@ -274,15 +242,12 @@ svg { color: inherit; }
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: none;
+  
 }
 .cmt-body.long-press .cmt-copy-hint { opacity: 1; }
 /* Typing indicator */
 .cmt-typing { display: flex; gap: 4px; padding: 12px 16px; align-items: center; }
-.cmt-typing-dot { width: 6px; height: 6px; background: var(--text3); border-radius: 50%; animation: none; }
-.cmt-typing-dot:nth-child(1) { animation-delay: 0s; }
-.cmt-typing-dot:nth-child(2) { animation-delay: 0s; }
-.cmt-typing-dot:nth-child(3) { animation-delay: 0s; }
+.cmt-typing-dot { width: 6px; height: 6px; background: var(--text3); border-radius: 50%;  }
 /* Animated stat numbers */
 /* ═══════════════════════════════════════════ 8. UPLOAD FLOW — Enhanced ═════════════════════════════════════... */
 /* Drag and drop zone — flat, no spinning border / blue flash (owned by nav.css base) */
@@ -298,7 +263,7 @@ svg { color: inherit; }
 .toast-icon.warning { color: var(--amber); }
 .toast-icon.info { color: var(--blue); }
 /* Toast progress (for uploads) */
-.toast-progress { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--blue); border-radius: 0 0 50px 50px; transform-origin: left; animation: none; }
+.toast-progress { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--blue); border-radius: 0 0 50px 50px; transform-origin: left;  }
 /* ═══════════════════════════════════════════ 11. ACCESSIBILITY — Additional Features ═══════════════════════... */
 /* High contrast mode */
 [data-contrast="high"] { --line: var(--pal-legacy-525257); --line2: #848487; --line3: var(--pal-legacy-b5b5b7); --text: var(--pal-white); --text2: #e0e0e0; --text3: #b0b0b0; }
@@ -308,12 +273,12 @@ svg { color: inherit; }
 [data-font-size="large"] .post-name, [data-font-size="large"] .post-caption { font-size: 16px; }
 [data-font-size="large"] .stat-val { font-size: 22px; }
 .vid-controls { background: var(--pal-black); }
-.vc-play, .vc-mute, .vc-fs { background: var(--pal-gray-800); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; transition: none; }
+.vc-play, .vc-mute, .vc-fs { background: var(--pal-gray-800); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;  }
 .vc-play:hover, .vc-mute:hover, .vc-fs:hover { background: var(--pal-legacy-3a3a3f); }
-.vc-play:active, .vc-mute:active, .vc-bar { height: 4px; transition: none; }
+.vc-play:active, .vc-mute:active, .vc-bar { height: 4px;  }
 .vc-progress:hover .vc-bar { height: 6px; }
 .vc-fill { position: relative; }
-.vc-fill::after { content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: var(--pal-white); border-radius: 50%; opacity: 0; transition: none; }
+.vc-fill::after { content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: var(--pal-white); border-radius: 50%; opacity: 0;  }
 .vc-progress:hover .vc-fill::after { opacity: 1; }
 /* ═══════════════════════════════════════════ SEARCH OVERLAY — Suggestions ══════════════════════════════════... */
 .search-suggestions {
@@ -332,7 +297,7 @@ svg { color: inherit; }
   display: none;
 }
 .search-suggestions.show { display: block; }
-.search-suggestion-item { padding: 10px 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: none; }
+.search-suggestion-item { padding: 10px 12px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer;  }
 .search-suggestion-item:hover { background: var(--bg3); }
 .search-suggestion-item.active { background: var(--blue-glow2); }
 .search-suggestion-icon { color: var(--text3); flex-shrink: 0; }
@@ -352,7 +317,7 @@ svg { color: inherit; }
   z-index: 9999;
   opacity: 0;
   pointer-events: none;
-  transition: none;
+  
 }
 #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 #toast.toast-success { border-color: var(--green); box-shadow: 0 8px 32px var(--pal-gray-800); }
@@ -376,29 +341,14 @@ svg { color: inherit; }
   justify-content: center;
   box-shadow: 0 2px 8px var(--blue-glow, var(--pal-gray-700));
 }
-/* Nav icon no longer shakes continuously while unread — a badge with a * gentle pulse is enough of a cue with... */
-/* ═══════════════════════════════════════════ MODAL ANIMATIONS — Enhanced ═══════════════════════════════════... */
-/* Sheet modal bounce */
-/* Detail modal fade */
-/* Zoom modal */
-/* ═══════════════════════════════════════════ COMMENTS — Enhanced ═══════════════════════════════════════════ */
-.cmt-row:nth-child(1) { animation-delay: 0s; }
-.cmt-row:nth-child(2) { animation-delay: 0s; }
-.cmt-row:nth-child(3) { animation-delay: 0s; }
-.cmt-row:nth-child(4) { animation-delay: 0s; }
-.cmt-row:nth-child(5) { animation-delay: 0s; }
 /* Comment hover */
 .cmt-body:hover { border-color: var(--line2); }
-/* Send button pulse */
-/* ═══════════════════════════════════════════ USER PROFILE MODAL — Enhanced ═════════════════════════════════... */
-.up-avi { transition: none; }
 /* .up-follow-btn { position/overflow } → yuqorida (510-qator) aynan nusxa, o'chirildi */
 /* ═══════════════════════════════════════════ FLOAT UPLOAD BAR — Enhanced ═══════════════════════════════════... */
-.upload-float-bar, .ufb-fill.indeterminate { background: var(--blue3); background-size: 200% 100%; animation: none; }
+.upload-float-bar, .ufb-fill.indeterminate { background: var(--blue3); background-size: 200% 100%;  }
 /* ═══════════════════════════════════════════ REDUCED MOTION SUPPORT ═══════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
-  .heart-burst, .upload-float-bar { animation: none !important; }
+  *, *::before, *::after {    scroll-behavior: auto !important; }
 }
 /* ═══════════════════════════════════════════ MOBILE OPTIMIZATIONS ═══════════════════════════════════════════ */
 @media (max-width: 1099px) {
@@ -409,7 +359,7 @@ svg { color: inherit; }
 }
 /* ═══════════════════════════════════════════ DESKTOP ENHANCEMENTS ═══════════════════════════════════════════ */
 @media (min-width: 1100px) {
-  .bot-nav { transition: none; }
+  .bot-nav {  }
   .feed { max-width: 580px; }
   #detailModal { align-items: center; justify-content: center; }
   #detailContent { max-width: 600px; max-height: 90dvh; border-radius: 20px; margin: 20px; }
@@ -427,33 +377,24 @@ svg { color: inherit; }
 /* ═══════════════════════════════════════════════════════════════════════ YAKUNIY POLISH — flat (X.com uslubi... */
 /* .app-hdr glow/shimmer bloki o'chirildi — CSS/00-components.core.css allaqachon flat .app-hdr'ni belgilaydi.... */
 /* header icon buttons — flat, oddiy hover */
-.hdr-icon-btn { border-radius: 12px; transition: none; }
+.hdr-icon-btn { border-radius: 12px;  }
 .hdr-icon-btn:hover { background: var(--glass-mid); border: 0.5px solid var(--glass-border); color: var(--text); }
 .hdr-icon-btn:active { opacity: 0.7; }
-/* 2. Nav-btn — flat, glow olib tashlandi */
-.nav-btn { transition: none; }
 .nav-btn:hover { background: var(--glass-mid); border: 0.5px solid var(--glass-border); }
 /* .nav-btn.on scale-pulse va svg glow o'chirildi — flat active holat CSS/00-components.core.css yoki nav.css... */
 /* .bot-nav glow bloki o'chirildi — CSS/00-components.core.css'da flat versiyasi belgilangan. AUDIT.md 2-bo'li... */
 /* 4. Sheet handle — oddiy hover */
-.sheet-handle { cursor: grab; transition: none; }
+.sheet-handle { cursor: grab;  }
 .sheet-handle:hover { opacity: 1; }
 /* 5. Sheet — inner glow olib tashlandi, flat shadow */
 .sheet { box-shadow: 0 -2px 16px var(--pal-black-35); }
 /* .post glow/tilt bloki o'chirildi — CSS/00-components.core.css'da flat versiyasi belgilangan (transform: non... */
 /* 7. Input fields — flat focus ring (faqat .cmt-input/.ta/.sb-panel uchun, .field o'z fokus-ringini CSS/00-co... */
 .cmt-input:focus, .ta:focus, .sb-panel-input-wrap:focus-within { box-shadow: inset 0 0 0 1px var(--blue); }
-/* .btn-primary/.btn-ghost/.btn-danger spring-bounce o'chirildi — CSS/00-components.core.css flat hover'ni bel... */
-.cmt-send { transition: none; }
 /* 9. Avatar — flat ring, glow/scale olib tashlandi */
 .dm-avi, .cmt-avi, .cmt-my-avi { box-shadow: 0 0 0 1.5px var(--glass-border); }
 .dm-avi:hover, .cmt-avi:hover { box-shadow: 0 0 0 2px var(--blue); }
-/* 10. Zoom modal — oddiy fade, "liquid" animatsiya nomi va spring-easing olib tashlandi */
-/* 11. File card — flat hover, lift/scale olib tashlandi */
-.file-card { transition: none; }
 .file-card:hover { background: var(--glass-mid); }
-/* 13. Comment body — flat, glow/translateX olib tashlandi */
-.cmt-body { transition: none; }
 .cmt-body:hover { background: var(--glass-mid); }
 /* 14. Search overlay — flat panel */
 .search-overlay-inner { background: var(--glass-mid); border: 0.5px solid var(--glass-border-top); }
@@ -461,8 +402,6 @@ svg { color: inherit; }
 /* 16. Upload drop zone — flat, owned by nav.css base (no inner-glow override) */
 /* 17. Detail modal — flat shadow, glass depth olib tashlandi */
 #detailContent { box-shadow: 0 -4px 24px var(--pal-black-35); }
-/* 18. Create button — pulse animatsiya butunlay o'chirildi (flat) */
-.nav-center-btn { transition: none; }
 /* .nav-center-btn::before pulse-glow pseudo-element olib tashlandi */
 .nav-center-btn:hover { opacity: 0.85; }
 /* Create (+) tugma — oddiy plus, fon/soya/highlight yo'q (id → boshqa temalardan ustun) */
@@ -507,8 +446,6 @@ svg { color: inherit; }
 .visible { visibility: visible; }
 .opacity-30 { opacity: 1; }
 .opacity-60 { opacity: 1; }
-/* Transition */
-.transition { transition: none; }
 .shadow { box-shadow: 0 1px 3px rgba(0, 0, 0,0.1), 0 1px 2px rgba(0, 0, 0,0.06); }
 .shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0,0.1), 0 4px 6px rgba(0, 0, 0,0.05); }
 /* ═══════════════════════════════════════════════════════════════════ MODAL Z-INDEX TARTIB (global override)... */
@@ -541,11 +478,11 @@ svg { color: inherit; }
 /* Post head subtle separator */
 [data-theme="dark"] .post-head { border-bottom: 0.5px solid var(--pal-gray-900); }
 /* Post gradient border on hover — more subtle */
-[data-theme="dark"] .post::before { opacity: 0; transition: none; }
+[data-theme="dark"] .post::before { opacity: 0;  }
 [data-theme="dark"] .post:hover::before { opacity: 1; }
 /* Post action buttons */
 [data-theme="dark"] .post-stats { border-top: 0.5px solid var(--pal-gray-900); border-bottom: 0.5px solid var(--pal-gray-900); color: var(--text3); }
-[data-theme="dark"] .act-btn { color: var(--text2); border-right: 0.5px solid var(--pal-gray-900); transition: none; }
+[data-theme="dark"] .act-btn { color: var(--text2); border-right: 0.5px solid var(--pal-gray-900);  }
 [data-theme="dark"] .act-btn:hover { background: var(--pal-gray-900); color: var(--text); }
 [data-theme="dark"] .act-btn.liked { color: var(--red); }
 /* ══════════════════════════════════════════ 5. AVATAR — Avatar halqasi ═════════════════════════════════════... */
@@ -753,8 +690,6 @@ svg { color: inherit; }
 /* Skeleton */
 .skeleton-post, [data-theme="dark"] .skeleton-post { border: none; }
 .reel-top-btn, .reel-vol-top, [data-theme="dark"] .reel-top-btn, [data-theme="dark"] .reel-vol-top { border: none; }
-/* Sidebar desktop — chegarasiz */
-@media (min-width: 1100px) {}
 /* Nav ring/glow animatsiyalari — shadow yo'q */
 .nav-btn:hover, .nav-btn.on { box-shadow: none; }
 /* Feed buttons */
@@ -919,16 +854,16 @@ svg { color: inherit; }
 #chatThreadModal .chat-msg.theirs .cvm-dur { color: var(--c-text-2); }
 /* Composer / input row — skrinshotga 1:1 mos, tekis (flat) ko'rinish: * hech qanday pill/doira foni yo'q, iko... */
 #chatThreadModal .chat-thread-input-row { background: var(--c-bg-input); border-top: 1px solid var(--c-divider); padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px)); position: relative; }
-#chatThreadModal .chat-thread-input { background: transparent; border: none; border-radius: 0; color: var(--c-text-1); padding: 9px 4px; transition: none; }
+#chatThreadModal .chat-thread-input { background: transparent; border: none; border-radius: 0; color: var(--c-text-1); padding: 9px 4px;  }
 #chatThreadModal .chat-thread-input::placeholder { color: var(--c-text-2); }
 #chatThreadModal .chat-emoji-btn { background: transparent; color: var(--c-text-2); }
 #chatThreadModal .chat-emoji-btn:hover { background: transparent; color: var(--c-text-1); }
-#chatThreadModal .chat-attach-btn { background: transparent; color: var(--c-text-2); transition: none; }
+#chatThreadModal .chat-attach-btn { background: transparent; color: var(--c-text-2);  }
 #chatThreadModal .chat-attach-btn:hover { background: transparent; color: var(--c-text-1); }
 #chatThreadModal .chat-voice-btn { background: transparent; box-shadow: none; color: var(--c-text-1); }
 #chatThreadModal .chat-voice-btn:hover { background: transparent; }
 /* Mikrofon tugmasi bosib turilganda — oddiy scale animatsiya. */
-#chatThreadModal .chat-voice-btn.active { transform: scale(1.2); transition: none; }
+#chatThreadModal .chat-voice-btn.active { transform: scale(1.2);  }
 /* Reply bar above input */
 #chatThreadModal .chat-reply-bar { background: var(--c-bg-input); border-top: 1px solid var(--c-divider); }
 #chatThreadModal .crb-name { color: var(--c-accent-2); }
@@ -951,7 +886,7 @@ svg { color: inherit; }
 /* ─── 00-components.core ─── */
 /* ═══════════════════════════════════════════════════════════════ MRspace — CORE COMPONENTS (single source of... */
 /* 1. Buttons */
-.btn-primary { width: 100%; border: none; color: var(--pal-white); font-family: var(--font); cursor: pointer; margin-top: 4px; transition: none; }
+.btn-primary { width: 100%; border: none; color: var(--pal-white); font-family: var(--font); cursor: pointer; margin-top: 4px;  }
 .btn-primary:active { opacity: 0.85; }
 .btn-ghost {
   width: 100%;
@@ -964,7 +899,7 @@ svg { color: inherit; }
   font-family: var(--font);
   cursor: pointer;
   margin-top: 8px;
-  transition: none;
+  
 }
 .btn-ghost:hover { color: var(--text); }
 .btn-ghost:active { opacity: 0.85; }
@@ -979,7 +914,7 @@ svg { color: inherit; }
   font-family: var(--font);
   cursor: pointer;
   margin-top: 8px;
-  transition: none;
+  
 }
 .btn-danger:active { opacity: 0.85; }
 /* 2. Bottom nav / sidebar */
@@ -1023,11 +958,11 @@ svg { color: inherit; }
   .app-hdr { background: transparent; }
 }
 /* 4. Input fields */
-.field, input:not([type="checkbox"]):not([type="radio"]), textarea { color: var(--text); transition: none; }
+.field, input:not([type="checkbox"]):not([type="radio"]), textarea { color: var(--text);  }
 .field:focus, input:focus, textarea:focus { outline: none; }
 input::placeholder, textarea::placeholder, .field::placeholder { color: var(--text3); }
 /* 5. Post card (base) */
-.post { background: var(--bg2, var(--glass)); border: 0.5px solid var(--glass-border); border-radius: 14px; box-shadow: none; transition: none; }
+.post { background: var(--bg2, var(--glass)); border: 0.5px solid var(--glass-border); border-radius: 14px; box-shadow: none;  }
 .post:hover { box-shadow: none; transform: none; }
 @media (min-width: 1100px) {
   .post { border-radius: 16px; }
@@ -1293,9 +1228,6 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
   nav.bot-nav #createBtn.nav-center-btn { order: 1; margin: 12px 0 0; }
   nav.bot-nav .sb-bottom { order: 2; }
 }
-/* ─── no-animations (F4.4) ─── */
-*, *::before, *::after { animation-name: none !important; animation-duration: 0s !important; transition: none !important; scroll-behavior: auto !important; }
-#splash *, #splash, .spinner, [class*="splash-"] { animation-name: revert !important; animation-duration: revert !important; }
 /* ─── style (global reset) ─── */
 /* ═══════════════════════════════════════════
    MRspace — Master Stylesheet
@@ -1408,12 +1340,6 @@ body {
 .cached-badge::before {
   content: '↓';
   font-size: 10px;
-}
-
-/* ── Global interactive tap feedback ── */
-button:active,
-[role="button"]:active {
-  transition: none;
 }
 
 /* ── iOS 27 Haptic Flash — visual touch confirmation ── */

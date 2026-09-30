@@ -54,7 +54,7 @@ function _injectCSS() {
   font-size: 13px;
   padding: 9px 12px;
   outline: none;
-  transition: border-color 0.15s;
+
 }
 .bc-input:focus { border-color: var(--blue); }
 .bc-input::placeholder { color: var(--text3); }
@@ -80,7 +80,7 @@ function _injectCSS() {
   font-weight: 600;
   padding: 9px 16px;
   cursor: pointer;
-  transition: opacity 0.15s;
+
   white-space: nowrap;
 }
 .bc-send-btn:disabled { opacity: 0.55; cursor: not-allowed; }
@@ -180,7 +180,7 @@ function _initBroadcast() {
   border-radius: 8px;
   font-family: var(--font); font-size: 12px; font-weight: 600;
   padding: 6px 12px; cursor: pointer;
-  transition: opacity 0.15s;
+
 }
 .bc-del-btn:hover { opacity: 0.75; }
 `;

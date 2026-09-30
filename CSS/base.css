@@ -1,7 +1,7 @@
 /* CSS/base.css — splash, loading. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
 /* ─── splash ─── */
 /* ═══════════════════════ SPLASH SCREEN — Minimal ═══════════════════════ */
-#splash { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: none; background-color: var(--pal-gray-900); }
+#splash { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999;  background-color: var(--pal-gray-900); }
 #splash.out { opacity: 0; pointer-events: none; }
 .splash-inner { text-align: center; display: flex; flex-direction: column; align-items: center; }
 .splash-svg { width: 96px; height: 96px; border-radius: 0; overflow: visible; }
@@ -26,16 +26,14 @@
 .empty { padding: 60px 20px; text-align: center; color: var(--text3); font-size: 14px; }
 .empty-icon { font-size: 34px; margin-bottom: 12px; opacity: 1; }
 .spin-wrap { text-align: center; }
-.spinner { width: 28px; height: 28px; border: 2px solid var(--line2); border-radius: 50%; margin: 0 auto; animation: spinner-rotate .7s linear infinite !important; }
-@keyframes spinner-rotate {
-  to { transform: rotate(360deg); }
-}
+.spinner { width: 28px; height: 28px; border: 2px solid var(--line2); border-radius: 50%; margin: 0 auto;  }
+
 /* ═══════════════════════ SKELETON LOADING ═══════════════════════ */
 .skel { background: var(--bg4); border-radius: 8px; position: relative; overflow: hidden; flex-shrink: 0; }
-.skel::after { content: ''; position: absolute; inset: 0; background: var(--pal-gray-800); animation: none; }
+.skel::after { content: ''; position: absolute; inset: 0; background: var(--pal-gray-800);  }
 .skel-actions { height: 42px; border-radius: 10px; }
 /* Comment skeleton rows */
-.cmt-skel-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px; animation: none; }
+.cmt-skel-row { display: flex; align-items: center; gap: 10px; padding: 10px 16px;  }
 /* ═══════════════════════ TOAST - Base styles only Types defined in ui-improvements.css ═══════════════════════ */
 #toast { border: 1px solid var(--glass-border); visibility: hidden; white-space: nowrap; box-shadow: 0 8px 32px var(--pal-black); letter-spacing: -0.1px; }
 #toast.show { visibility: visible; }
@@ -57,7 +55,7 @@
 .empty-search strong { color: var(--text2); font-weight: 500; }
 .empty-search-hint { font-family: var(--mono); }
 /* ═══════════════════════ PASSWORD WARNING MODAL ═══════════════════════ */
-#pwdWarnOverlay { position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center; padding: 24px; pointer-events: none; opacity: 0; transition: none; }
+#pwdWarnOverlay { position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center; padding: 24px; pointer-events: none; opacity: 0;  }
 #pwdWarnOverlay.show { opacity: 1; pointer-events: auto; }
 #pwdWarnOverlay::before { content: ''; position: fixed; inset: 0; background: var(--pal-black); z-index: -1; }
 .pwd-warn-bubble {
@@ -69,7 +67,7 @@
   width: 100%;
   box-shadow: 0 0 0 1px var(--pal-gray-900), 0 8px 40px var(--pal-gray-800), 0 2px 8px var(--pal-black);
   transform: scale(0.88) translateY(12px);
-  transition: none;
+  
   position: relative;
   overflow: hidden;
 }
@@ -92,7 +90,7 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: none;
+  
   font-family: inherit;
   letter-spacing: -0.1px;
 }

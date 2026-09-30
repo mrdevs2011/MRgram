@@ -185,7 +185,7 @@
 .users-admin-hdr h2 { font-size: 1.15rem; font-weight: 700; color: var(--text); margin: 0 0 4px; letter-spacing: -0.3px; }
 /* Qidiruv va status filtri */
 .ua-search-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-.ua-search-input { flex: 1; min-width: 160px; background: var(--bg3); border: 1px solid var(--line2); border-radius: 8px; color: var(--text); font-family: var(--font); font-size: 13px; padding: 9px 12px; outline: none; transition: none; }
+.ua-search-input { flex: 1; min-width: 160px; background: var(--bg3); border: 1px solid var(--line2); border-radius: 8px; color: var(--text); font-family: var(--font); font-size: 13px; padding: 9px 12px; outline: none;  }
 .ua-search-input:focus { border-color: var(--blue); }
 .ua-search-input::placeholder { color: var(--text3); }
 .ua-status-filter { background: var(--bg3); border: 1px solid var(--line2); border-radius: 8px; color: var(--text2); font-family: var(--font); font-size: 12.5px; padding: 9px 10px; outline: none; cursor: pointer; }
@@ -209,7 +209,7 @@
   justify-content: center;
   cursor: pointer;
   opacity: 0;
-  transition: none;
+  
   flex-shrink: 0;
 }
 .ua-row:hover .ua-delete-btn { opacity: 1; }
@@ -230,7 +230,7 @@
 .ua-badge--legacy { background: var(--bg4); color: var(--text3); border: 1px solid var(--line2); }
 .ua-badge--blocked { background: var(--red-glow); color: var(--red); border: 1px solid #2d2d2d; }
 /* Action buttons */
-.ua-approve-btn, .ua-reject-btn { font-size: 0.76rem; font-weight: 600; padding: 6px 13px; border-radius: 8px; border: none; cursor: pointer; transition: none; font-family: var(--font); letter-spacing: -0.1px; }
+.ua-approve-btn, .ua-reject-btn { font-size: 0.76rem; font-weight: 600; padding: 6px 13px; border-radius: 8px; border: none; cursor: pointer;  font-family: var(--font); letter-spacing: -0.1px; }
 .ua-approve-btn { background: var(--blue); color: var(--pal-white); box-shadow: 0 2px 8px var(--blue-glow2); }
 .ua-approve-btn:hover { opacity: 1; }
 .ua-approve-btn:disabled { opacity: 1; cursor: not-allowed; }
@@ -238,7 +238,7 @@
 .ua-reject-btn:hover { background: var(--pal-gray-800); }
 .ua-reject-btn:disabled { opacity: 1; cursor: not-allowed; }
 /* Block / Unblock buttons */
-.ua-block-btn, .ua-unblock-btn { font-size: 0.76rem; font-weight: 600; padding: 6px 13px; border-radius: 8px; border: none; cursor: pointer; transition: none; white-space: nowrap; font-family: var(--font); }
+.ua-block-btn, .ua-unblock-btn { font-size: 0.76rem; font-weight: 600; padding: 6px 13px; border-radius: 8px; border: none; cursor: pointer;  white-space: nowrap; font-family: var(--font); }
 .ua-block-btn { background: var(--red-glow); color: var(--red); border: 1px solid var(--pal-gray-800); }
 .ua-block-btn:hover { background: var(--pal-gray-800); }
 .ua-unblock-btn { background: var(--green-glow); color: var(--green); border: 1px solid var(--pal-gray-800); }
@@ -246,9 +246,9 @@
 /* Bloklangan row */
 .ua-row--blocked { opacity: 1; }
 /* ═══════════════════════════════════════════════════════════════════════ DELETE CONFIRM MODAL ══════════════... */
-.ua-modal-overlay { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: none; }
+.ua-modal-overlay { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none;  }
 .ua-modal-overlay.show { opacity: 1; pointer-events: all; }
-.ua-modal { padding: 28px 24px 22px; max-width: 340px; width: 100%; text-align: center; transform: scale(0.93); transition: none; }
+.ua-modal { padding: 28px 24px 22px; max-width: 340px; width: 100%; text-align: center; transform: scale(0.93);  }
 .ua-modal-overlay.show .ua-modal { transform: scale(1); }
 .ua-modal-icon { display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
 .ua-modal-icon svg { display: block; }
@@ -257,7 +257,7 @@
 .ua-modal-body strong { color: var(--text); overflow-wrap: anywhere; }
 .ua-modal-warn { font-size: 0.78rem; color: var(--red); display: block; margin-top: 6px; }
 .ua-modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-.ua-modal-cancel, .ua-modal-confirm { flex: 1; padding: 11px 0; border-radius: 10px; border: none; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: none; font-family: var(--font); }
+.ua-modal-cancel, .ua-modal-confirm { flex: 1; padding: 11px 0; border-radius: 10px; border: none; font-size: 0.88rem; font-weight: 600; cursor: pointer;  font-family: var(--font); }
 .ua-modal-cancel { color: var(--text); }
 .ua-modal-confirm { background: var(--red); color: var(--pal-white); }
 .ua-modal-confirm:hover { opacity: 1; }
@@ -297,7 +297,7 @@
   #actionsView .users-admin-hdr { grid-column: 2; grid-row: 1; padding: 0 0 14px; border-bottom: 1px solid var(--line); }
   #actionsView #usersAdminList { grid-column: 2; grid-row: 2; padding: 10px 4px 24px 0; }
   #actionsView .actions-divider { display: none; }
-  #actionsView .ua-row { padding: 14px 16px; transition: none; }
+  #actionsView .ua-row { padding: 14px 16px;  }
   #actionsView .ua-delete-btn { opacity: 0; }
   #actionsView .ua-row:hover .ua-delete-btn { opacity: 1; }
   #actionsView .ua-actions { flex-direction: column; gap: 6px; margin-right: 44px; }
@@ -315,7 +315,7 @@
   margin: 4px 8px;
   border: 0.5px solid var(--ag-border-side);
   box-shadow: var(--ag-specular), 0 2px 12px var(--pal-black);
-  transition: none;
+  
   position: relative;
   overflow: hidden;
 }
@@ -326,7 +326,7 @@
 .ua-modal { background: var(--ag-modal-bg); border: none; border-radius: 28px; box-shadow: var(--ag-specular), var(--ag-shadow), inset 0 -1px 0 var(--ag-border-bot); position: relative; overflow: hidden; }
 .ua-modal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--ag-border-top); pointer-events: none; }
 /* Buttons — solid style */
-.ua-modal-cancel { background: var(--ag-glass-mid); border: 0.5px solid var(--ag-border-side); box-shadow: var(--ag-specular); transition: none; }
+.ua-modal-cancel { background: var(--ag-glass-mid); border: 0.5px solid var(--ag-border-side); box-shadow: var(--ag-specular);  }
 .ua-modal-cancel:hover { background: var(--ag-glass-strong); box-shadow: var(--ag-specular), 0 4px 16px var(--pal-black); }
 /* Badges — glass glow */
 .ua-badge--approved { box-shadow: 0 0 12px var(--pal-gray-800); }

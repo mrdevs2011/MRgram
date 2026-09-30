@@ -251,7 +251,7 @@ export async function renderFeedTo(feedEl, posts) {
             <span class="post-dot">·</span>
             <span class="post-time">${fmt(p.createdAt)}</span>
           </div>
-        
+
         </div>
         ${buildCaption(p.text, p.id)}
         ${buildMedia(p)}
@@ -332,7 +332,7 @@ function _injectShareCSS() {
   font-size: 13.5px;
   color: var(--text, #fff);
   font-weight: 500;
-  transition: background .12s;
+
   user-select: none;
 }
 .share-popup-row:hover { background: color-mix(in srgb, var(--blue, #ffffff) 14%, transparent); }
@@ -343,7 +343,7 @@ function _injectShareCSS() {
 /* ── Post highlight glow ── */
 .post-highlight {
   border-radius: 18px;
-  transition: background .3s;
+
 }
 `;
   document.head.appendChild(s);

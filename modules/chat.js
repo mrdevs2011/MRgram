@@ -41,12 +41,12 @@ function _injectSearchCSS() {
   background: transparent;
   border: 1px solid #2f3336;
   border-radius: 999px;
-  transition: border-color .15s;
+
 }
 .ulist-search-wrap:focus-within { border-color: var(--x-blue, #1d9bf0); box-shadow: none; }
 .ulist-search-icon {
   color: var(--text3, #767676); flex-shrink: 0; cursor: pointer;
-  display: flex; align-items: center; transition: color .15s;
+  display: flex; align-items: center;
 }
 .ulist-search-icon svg { width: 18px; height: 18px; }
 .ulist-search-wrap:focus-within .ulist-search-icon { color: var(--x-blue, #1d9bf0); }
@@ -59,29 +59,26 @@ function _injectSearchCSS() {
 .ulist-search-result.not-found { color: var(--red, #ef4444); }
 
 /* ── Skeleton ── */
-@keyframes skelShimmer {
-  0%   { background-position: -400px 0; }
-  100% { background-position: 400px 0; }
-}
+
 .chat-row-skeleton {
   display: flex; align-items: center; gap: 12px;
   padding: 11px 16px;
   opacity: 0;
-  animation: skelFadeIn .28s ease forwards;
+
 }
-@keyframes skelFadeIn { to { opacity: 1; } }
+
 .skel-avi {
   width: 46px; height: 46px; border-radius: 50%; flex-shrink: 0;
   background: var(--bg2,#262626);
   background-size: 400px 100%;
-  animation: skelShimmer 1.3s infinite linear;
+
 }
 .skel-body { flex: 1; display: flex; flex-direction: column; gap: 7px; }
 .skel-name, .skel-preview {
   height: 11px; border-radius: 7px;
   background: var(--bg2,#262626);
   background-size: 400px 100%;
-  animation: skelShimmer 1.3s infinite linear;
+
 }
 .skel-name { height: 13px; }
 
@@ -181,7 +178,7 @@ function _paintSearchSkeleton() {
     root.appendChild(rowsWrap);
   }
   rowsWrap.innerHTML = [1,2,3].map((_, i) => `
-    <div class="chat-row-skeleton" style="animation-delay:${i*0.08}s">
+    <div class="chat-row-skeleton" style="{i*0.08}s">
       <div class="skel-avi"></div>
       <div class="skel-body">
         <div class="skel-name" style="width:${55+i*12}%"></div>
@@ -1240,8 +1237,8 @@ function paintMessages(msgs) {
       dateSep = `<div class="chat-date-sep"><span>${_dateSepLabel(m.createdAt)}</span></div>`;
     }
 
-    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}" data-msg-id="${m.id || ''}" style="${isNew ? `animation-delay:${Math.min(idx * 0.04, 0.3)}s` : ''}">
-      
+    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}" data-msg-id="${m.id || ''}" style="${isNew ? `{Math.min(idx * 0.04, 0.3)}s` : ''}">
+
       <div class="chat-bubble">
         <div class="chat-bubble-wrap">
           ${bubbleContent}
@@ -1371,6 +1368,7 @@ function _reattachActiveVoiceUI(box) {
 
 /* ── Yopish chat thread ───────────────────────────────────────────────── */
 export function closeChatThread() {
+  document.dispatchEvent(new Event('chatmedia:close'));
   if (_threadUnsub) { _threadUnsub(); _threadUnsub = null; }
   if (_peerUserUnsub) { _peerUserUnsub(); _peerUserUnsub = null; }
   if (_peerStatusTick) { clearInterval(_peerStatusTick); _peerStatusTick = null; }
@@ -2075,7 +2073,7 @@ export function destroyChatsView() {
 }
 
 /* ── Chat thread header: avi/nom bosilganda profil ochish ────────────── */
-// DM uchun: user profil modali
+// DM uchun: shu suhbatdagi media/musiqa/fayllar paneli (haqiqiy profil emas)
 // Guruh/Kanal uchun: guruh info overlay
 (function() {
   const aviEl  = document.getElementById('chatThreadAvi');
@@ -2086,8 +2084,8 @@ export function destroyChatsView() {
     if (kind === 'dm') {
       const uid = state.currentChatUid;
       if (!uid) return;
-      const { openUserProfileModal } = await import('./profile.js');
-      openUserProfileModal(uid);
+      const { openChatMedia } = await import('./chat-media.js');
+      openChatMedia({ chatId: state.currentChatId, name: nameEl?.textContent, avatar: aviEl?.querySelector('img')?.src });
     } else {
       // guruh yoki kanal — group info overlay
       const { openGroupInfo } = await import('./groups.js');

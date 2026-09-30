@@ -378,7 +378,7 @@ function _ensurePendingMiniCSS() {
 .pmini-actions { display: flex; gap: 6px; flex-shrink: 0; }
 .pmini-approve-btn, .pmini-reject-btn {
   border: none; border-radius: 8px; font-family: var(--font); font-size: 12px; font-weight: 600;
-  padding: 7px 11px; cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
+  padding: 7px 11px; cursor: pointer;  white-space: nowrap;
 }
 .pmini-approve-btn { background: var(--green,#22c55e); color: #fff; }
 .pmini-reject-btn { background: color-mix(in srgb, var(--red,#ef4444) 15%, transparent); color: var(--red,#ef4444); }

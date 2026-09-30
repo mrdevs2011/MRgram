@@ -295,7 +295,7 @@ function _toggleProfileSearch() {
       'margin:8px 16px 4px', 'padding:9px 14px',
       'background:var(--bg4,rgba(255,255,255,0.06))',
       'border:1.5px solid var(--line,rgba(255,255,255,0.10))',
-      'border-radius:14px', 'transition:border-color .18s',
+      'border-radius:14px',
     ].join(';');
     wrap.innerHTML = `
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex-shrink:0;opacity:.5" stroke-linecap="round" stroke-linejoin="round">
