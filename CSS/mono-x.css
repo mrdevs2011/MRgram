@@ -151,10 +151,10 @@ nav.bot-nav, nav.bot-nav button { font-family: var(--font); letter-spacing: 0; }
 nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle, nav.bot-nav .sb-logo-row, nav.bot-nav .sb-logo-glass, nav.bot-nav .sb-account, nav.bot-nav #createBtn.nav-center-btn { border: none; box-shadow: none; outline-offset: -2px; }
 nav.bot-nav .nav-btn svg, nav.bot-nav .sb-search-toggle svg { fill: none; stroke: currentColor; color: var(--text); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 nav.bot-nav .nav-btn.on svg, nav.bot-nav #sbSearchToggle.search-active svg { stroke-width: 2.4; }
-/* Pastki nav (mobil + planshet): tugmalar px radiusli (50% emas — keng tugmada oval bo'lib qoladi) */
+/* Pastki nav (mobil + planshet): tugmalar 48x48 kvadrat + 24px radius = aniq doira (new post kabi) */
 @media (max-width: 1099px) {
   nav.bot-nav { gap: 0; }
-  nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { width: auto; height: 48px; border-radius: 16px; }
+  nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { flex: 0 0 auto; width: 48px; height: 48px; min-height: 48px; border-radius: 24px; }
   nav.bot-nav .nav-btn:hover, nav.bot-nav .nav-btn:active { background: var(--bg4); }
 }
 @media (max-width: 1099px) {
