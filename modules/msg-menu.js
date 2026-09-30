@@ -24,6 +24,7 @@ const IC = {
 let api = null, box = null, menu = null, selBar = null, fwdEl = null;
 let openId = null, selMode = false, editing = null;
 let lp = null, lpTimer = null, lpOpened = false, suppressUntil = 0;
+let drag = null, scrollRaf = 0; // surib belgilash holati
 const sel = new Set();
 
 const isDM = () => !state.currentChatKind || state.currentChatKind === 'dm';
@@ -195,6 +196,7 @@ function ensureSelBar() {
     <button type="button" class="msb-x" data-sb="x" title="Bekor qilish">${IC.x}</button>
     <div class="msb-count" id="msbCount"></div>
     <button type="button" class="msb-btn" data-sb="copy">${IC.copy}<span>Nusxalash</span></button>
+    <button type="button" class="msb-btn" data-sb="edit">${IC.edit}<span>Tahrirlash</span></button>
     <button type="button" class="msb-btn" data-sb="fwd">${IC.fwd}<span>Uzatish</span></button>
     <button type="button" class="msb-btn danger" data-sb="del">${IC.del}<span>O‘chirish</span></button>`;
   selBar.addEventListener('click', e => {
@@ -206,6 +208,7 @@ function ensureSelBar() {
       const t = (api.getMsgs() || []).filter(m => sel.has(m.id)).map(m => (m.text || '').trim()).filter(Boolean).join('\n');
       if (t) copyText(t); else toast('Nusxalanadigan matn yo‘q');
     }
+    else if (b.dataset.sb === 'edit') { const m = msgOf(ids[0]); if (m) startEdit(m); }
     else if (b.dataset.sb === 'fwd') forward(ids, true);
     else if (b.dataset.sb === 'del') remove(ids);
   });
@@ -238,13 +241,15 @@ function toggleSel(id) {
   paintSel();
 }
 
-function paintSel() {
+function paintSel(keepEmpty) {
   if (!selMode) return;
-  if (!sel.size) { exitSelect(); return; }
+  if (!sel.size && !keepEmpty) { exitSelect(); return; }
   box.querySelectorAll('.chat-msg[data-msg-id]').forEach(r => r.classList.toggle('mc-selected', sel.has(r.dataset.msgId)));
   $('msbCount').textContent = `${sel.size} ta tanlandi`;
   const allMine = [...sel].every(id => isMine(msgOf(id)));
   selBar.querySelector('[data-sb="del"]').hidden = !allMine;
+  const one = sel.size === 1 ? msgOf([...sel][0]) : null;
+  selBar.querySelector('[data-sb="edit"]').hidden = !(one && isMine(one) && one.type === 'text');
 }
 
 /* ── Uzatish (foydalanuvchi tanlash oynasi) ────────────────────────── */
@@ -294,6 +299,70 @@ async function forward(ids, fromSel = false) {
   setTimeout(() => { if (!coarse()) search.focus(); }, 30);
 }
 
+/* ── Surib belgilash (Telegram uslubi) ────────────────────────────────
+   Xabarni bosib turish -> shu xabar belgilanadi (tanlash rejimi), barmoqni tepaga/pastga surilsa
+   oradagi xabarlar ham belgilanadi (qaytsa — belgi olinadi). Chetga yaqinlashsa ro'yxat o'zi aylanadi. */
+const rowsList = () => [...box.querySelectorAll('.chat-msg[data-msg-id]:not([data-msg-id=""])')];
+
+function rowIndexAtY(rows, y) {
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i].getBoundingClientRect();
+    if (y < r.top) {
+      if (i === 0) return 0;
+      return (y - rows[i - 1].getBoundingClientRect().bottom) < (r.top - y) ? i - 1 : i;
+    }
+    if (y <= r.bottom) return i;
+  }
+  return rows.length - 1;
+}
+
+function beginDrag(row, y) {
+  const id = row.dataset.msgId;
+  window.getSelection?.()?.removeAllRanges();
+  if (!selMode) enterSelect(id); else toggleSel(id);
+  if (!selMode) return; // oxirgi belgi olib tashlandi — surish yo'q
+  drag = { anchor: id, adding: sel.has(id), base: new Set(sel), lastY: y };
+  scrollRaf = requestAnimationFrame(autoScroll);
+}
+
+function updateDrag(y) {
+  if (!drag || !selMode) return;
+  drag.lastY = y;
+  const rows = rowsList();
+  const a = rows.findIndex(r => r.dataset.msgId === drag.anchor);
+  const c = rowIndexAtY(rows, y);
+  if (a < 0 || c < 0) return;
+  const lo = Math.min(a, c), hi = Math.max(a, c);
+  const next = new Set(drag.base);
+  for (let i = lo; i <= hi; i++) {
+    const id = rows[i].dataset.msgId;
+    if (drag.adding) next.add(id); else next.delete(id);
+  }
+  sel.clear();
+  next.forEach(id => sel.add(id));
+  paintSel(true);
+}
+
+function autoScroll() {
+  scrollRaf = 0;
+  if (!drag) return;
+  const r = box.getBoundingClientRect(), y = drag.lastY, edge = 56;
+  let v = 0;
+  if (y < r.top + edge) v = -Math.ceil((r.top + edge - y) / 4);
+  else if (y > r.bottom - edge) v = Math.ceil((y - (r.bottom - edge)) / 4);
+  v = Math.max(-22, Math.min(22, v));
+  if (v) { box.scrollTop += v; updateDrag(y); }
+  scrollRaf = requestAnimationFrame(autoScroll);
+}
+
+function endDrag() {
+  if (!drag) return;
+  drag = null;
+  if (scrollRaf) { cancelAnimationFrame(scrollRaf); scrollRaf = 0; }
+  suppressUntil = Date.now() + 400; // qo'yib yuborilgandan keyingi "click" ni yutamiz
+  if (selMode && !sel.size) exitSelect(); else paintSel();
+}
+
 /* ── Hodisalar ─────────────────────────────────────────────────────── */
 function cancelLp() { clearTimeout(lpTimer); lpTimer = null; lp = null; }
 
@@ -312,33 +381,60 @@ export function initMsgMenu(opts) {
     openMenu(row, e.clientX, e.clientY);
   });
 
-  // Mobil: bosib turish
+  // Mobil: bosib turish -> belgilash, suring -> oradagilar ham belgilanadi
   box.addEventListener('touchstart', e => {
-    if (!isDM() || selMode || e.touches.length !== 1) return;
+    if (!isDM() || e.touches.length !== 1) return;
     const row = rowOf(e.target);
     if (!row) return;
     const t = e.touches[0];
     cancelLp();
     lp = { row, x: t.clientX, y: t.clientY };
     lpTimer = setTimeout(() => {
-      const r = lp?.row;
+      const r = lp?.row, y0 = lp?.y;
       cancelLp();
       if (!r || !r.isConnected) return;
       navigator.vibrate?.(12);
-      suppressUntil = Date.now() + 700;
       lpOpened = true;
-      openMenu(r, null, null);
+      closeMenu();
+      beginDrag(r, y0);
     }, LONG_MS);
   }, { passive: true });
   box.addEventListener('touchmove', e => {
-    if (!lp) return;
     const t = e.touches[0];
+    if (drag) { e.preventDefault(); updateDrag(t.clientY); return; } // surish paytida ro'yxat o'zi siljimasin
+    if (!lp) return;
     if (Math.abs(t.clientX - lp.x) > 10 || Math.abs(t.clientY - lp.y) > 10) cancelLp();
-  }, { passive: true });
+  }, { passive: false });
   // Bosib turib qo'yib yuborilganda brauzer "click" yuborishi mumkin (play tugmasi, havola...) — uni yutamiz
-  const endTouch = () => { cancelLp(); if (lpOpened) { lpOpened = false; suppressUntil = Date.now() + 400; } };
+  const endTouch = () => { cancelLp(); endDrag(); if (lpOpened) { lpOpened = false; suppressUntil = Date.now() + 400; } };
   box.addEventListener('touchend', endTouch, { passive: true });
   box.addEventListener('touchcancel', endTouch, { passive: true });
+
+  // Desktop: sichqonchani bosib turing (yoki tanlash rejimida shunchaki suring) — xuddi shu mantiq
+  let ms = null, msTimer = null;
+  box.addEventListener('mousedown', e => {
+    if (e.button !== 0 || coarse() || !isDM()) return;
+    if (!selMode && e.target.closest('a,button,input,textarea,audio,video,[contenteditable]')) return;
+    const row = rowOf(e.target);
+    if (!row) return;
+    clearTimeout(msTimer);
+    ms = { row, x: e.clientX, y: e.clientY };
+    if (!selMode) msTimer = setTimeout(() => {
+      const r = ms?.row, y0 = ms?.y;
+      if (!r || !r.isConnected) return;
+      lpOpened = false;
+      beginDrag(r, y0);
+    }, LONG_MS);
+  });
+  document.addEventListener('mousemove', e => {
+    if (drag) { updateDrag(e.clientY); return; }
+    if (!ms) return;
+    if (Math.abs(e.clientX - ms.x) <= 6 && Math.abs(e.clientY - ms.y) <= 6) return;
+    clearTimeout(msTimer);
+    if (selMode) { const r = ms.row; ms = null; if (r.isConnected) beginDrag(r, e.clientY); }
+    else ms = null; // oddiy matn belgilash
+  });
+  document.addEventListener('mouseup', () => { clearTimeout(msTimer); ms = null; endDrag(); });
 
   // Bosib turgandan keyingi "click" (masalan play tugmasi) va tanlash rejimidagi bosishlar
   box.addEventListener('click', e => {
@@ -386,6 +482,7 @@ export function msgMenuAfterPaint() {
 /** Chat yopilganda / almashtirilganda */
 export function msgMenuReset() {
   cancelLp();
+  endDrag();
   closeMenu();
   exitSelect();
   cancelEdit(true);

@@ -814,6 +814,9 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 
 /* Tanlash rejimi: chapda aylana, bosib belgilanadi */
 #chatThreadMessages.msg-selecting .chat-msg[data-msg-id] { align-self: stretch; max-width: 100%; align-items: center; cursor: pointer; }
+/* surib belgilash: matn belgilanib/callout chiqib ketmasin */
+#chatThreadMessages .chat-msg[data-msg-id] { -webkit-touch-callout: none; }
+#chatThreadMessages.msg-selecting { -webkit-user-select: none; user-select: none; }
 #chatThreadMessages.msg-selecting .chat-msg[data-msg-id] .chat-bubble { max-width: 72%; }
 #chatThreadMessages.msg-selecting .chat-msg[data-msg-id]::before { content: ""; flex-shrink: 0; box-sizing: border-box; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--pal-gray-500); }
 #chatThreadMessages.msg-selecting .chat-msg.mine[data-msg-id]::before { margin-right: auto; }
