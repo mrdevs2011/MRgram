@@ -20,8 +20,8 @@ Kalitlar repo'da saqlanmaydi. Supabase CLI login MR ning keyring'ida (CMC orqali
 
 - **007 / 008 / 009 / 012:** `follows`, `admin_actions`, `broadcast_history`, `login_history`, `chat_members.typing_until`, `last_seen_at` bazada ALLAQACHON YO'Q.
   Patchlar idempotent, qayta yurgizish zararsiz (no-op). Aniqlik uchun: kim/qachon drop qilganini MR biladi. Tasdiqlangach `migrations/` ga ko'chirish yoki o'chirish.
-- **010:** `join_group_by_code()` allaqachon yo'q. `update groups set is_private = true` qismi holati noma'lum (jonli ma'lumotni tekshirish kerak).
-- **011 (kanal -> guruh):** kutmoqda (5.3 kanal ishi tugaguncha).
+- **010:** `join_group_by_code()` allaqachon yo'q. `groups` jadvali bo'sh (2026-09-30 tekshirildi: 0 guruh, 0 a'zo, 0 xabar; 2 foydalanuvchi), shuning uchun `update groups ...` qismi no-op.
+- **011 (kanal -> guruh):** ham no-op (kanal/guruh yo'q). 010 va 011 ni yurgizish shart emas, `migrations/` ga ko'chirib yoki o'chirib yopsa bo'ladi.
 - **013 (`posts.views`, `increment_post_view()`):** bazada HALI BOR. Eng erta 2026-10-06 dan keyin, `supabase db dump` bilan zaxira olib.
   Contract SQL'larni erta yurgizma: roadmap 3-qoida (kod va `drop` bir vaqtda emas). Tartib: `supabase/unfulfilled/CHECKLIST.md`.
 
