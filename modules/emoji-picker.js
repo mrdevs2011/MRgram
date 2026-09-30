@@ -173,15 +173,13 @@ export function initEmojiPicker({ btn, pop, input }) {
   }
 
   /* Panel input qatori tepasida (mobil va desktop). Mobil (<1100px): klaviatura o'rnida ochiladi (Telegram kabi) — tizim klaviaturasi chiqmaydi,
-     xabarlar ro'yxati panel ostida qolmasligi uchun pastga suriladi. */
+     panel xabarlar ustida suzib turadi — xabarlar joyidan siljimaydi. */
   const isMobile = () => window.matchMedia('(max-width: 1099px)').matches;
   function dock(open) {
     if (isMobile()) {
       if (open) { input.setAttribute('inputmode', 'none'); input.blur(); input.focus({ preventScroll: true }); }
       else input.removeAttribute('inputmode');
     } else if (open) input.focus({ preventScroll: true });
-    const msgs = pop.closest('#chatThreadModal')?.querySelector('.chat-thread-messages');
-    if (msgs) requestAnimationFrame(() => { msgs.scrollTop = msgs.scrollHeight; });
   }
   const closePanel = () => { if (pop.classList.contains('show')) { pop.classList.remove('show'); dock(false); } };
   input.addEventListener('focus', () => { if (isMobile() && !pop.classList.contains('show')) input.removeAttribute('inputmode'); });

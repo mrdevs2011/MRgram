@@ -4627,18 +4627,16 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 /* Chat media: yuklanmagan rasm katakchasi */
 .up-grid-cell.cm-broken { background: var(--bg3); }
 
-/* Emoji paneli (mobil + desktop): input qatori TEPASIDA, suhbat ustuni bo'ylab to'liq enli, klaviatura o'rnida (Telegram kabi) */
+/* Emoji paneli (mobil + desktop): input qatori TEPASIDA, suhbat ustuni bo'ylab to'liq enli, xabarlar ustida SUZIB turadi (layout surilmaydi), chegarasiz — input qatori bilan bir xil #000 */
 #chatThreadModal { --ep-h: clamp(260px, 40dvh, 360px); }
 #chatThreadModal .chat-emoji-wrap { position: static; }
 #chatThreadModal .chat-emoji-quickpick {
   left: 0; right: 0; bottom: 100%;
   width: auto; max-width: none;
   height: var(--ep-h);
-  border: 0; border-top: 1px solid var(--pal-gray-800);
-  border-radius: 0; box-shadow: none;
-  background: var(--bg);
+  border: 0; border-radius: 0; box-shadow: none;
+  background: #000;
 }
-#chatThreadModal:has(.chat-emoji-quickpick.show) .chat-thread-messages { padding-bottom: calc(var(--ep-h) + 8px); }
 
 /* Emoji paneli: emojilar bir-biriga yaqin (ustun soni kenglikka qarab), qidiruv inputi #000 + ingichka border */
 .chat-emoji-quickpick .ep-grid { grid-template-columns: repeat(auto-fill, minmax(36px, 1fr)); gap: 0; }
