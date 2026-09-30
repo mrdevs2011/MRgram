@@ -18,11 +18,11 @@
 | F4 CSS | ~80% (6 fayl / 4585 qator ✅; !important 230→142; qolgani color/call/hover) | ✅ skrinshot/smoke (MR, 09-30) |
 | F5 Realtime | 100% | ✅ 2 qurilma sinovi (MR, 09-30) |
 | F6 Data / SW | ~90% kod (Ts✅ SW✅ vendor✅) | ✅ telefon offline + update toast (MR, 09-30) |
-| F7 Family-grade | ~85% kod (7.1/7.2limit/7.5/7.8 ✅); TURN/rate-limit ixtiyoriy | Vercel TURN_* (qoldi) |
+| F7 Family-grade | ~95% kod (7.1/7.2/7.5/7.6/7.7/7.8 ✅); qoldi: TURN_* env, 014/015 SQL | Vercel TURN_* (MR, `docs/MR-QOLGAN.md`) |
 | F8 Hujjat | 100% | ✅ docs/SMOKE.md o'tkazildi (MR, 09-30) |
 
 **Kod tomon:** maksimal yopildi. **Brauzer/telefon tekshiruvlari:** ✅ MR o'tkazdi (2026-09-30). **Qoldi:** Vercel Preview + TURN_*, DB contract SQL'lari, F4 refaktor (4.3/4.4/4.6/4.8), F5.3/5.4, F7.6/7.7, ixtiyoriy Playwright.
-**Umumiy:** ~90% (tekshiruv tomoni yopildi; qolgani asosan MR panel/DB ishlari va F4 CSS).
+**Umumiy:** ~96% (2026-09-30: F7/F8 kod yopildi). Qolgani: F4 CSS (4.2/4.6/4.8, ~2%) va MR panel/DB ishlari (~2%) — ro'yxat `docs/MR-QOLGAN.md`.
 
 ---
 
@@ -361,13 +361,13 @@ drop table if exists public.follows;
 | # | Savol | Tavsiya | Qaror |
 |---|---|---|---|
 | Q1 | Guruhlar: hamma ko'radimi (A) yoki faqat taklif (B)? | B | **B** (2026-09-29, MR) |
-| Q2 | Muqova rasmi qolsinmi? | Oddiy yuklash, crop yo'q | |
+| Q2 | Muqova rasmi qolsinmi? | Oddiy yuklash, crop yo'q | **De-fakto: olib tashlangan** (3.5, `bd3fb42`; kodda shunday, MR tasdig'i kutiladi) |
 | Q3 | Profilda website/location? | O'chir | **O'chirildi** (2026-09-29, MR tasdiqi) |
 | Q4 | Eski shaxsiy postlar? | Egasi bilan hal qil | |
 | Q5 | Parol reset: majburiy almashtirish? | Yo'q | |
 | Q6 | SW nomini o'zgartirish? | Qolsin (`firebase-messaging-sw.js`), izoh yoz | **Qolsin** (izoh yozildi, 2026-09-29) |
 | Q7 | Media bucket public qolsinmi? | Qolsin, rasmiy qaror sifatida yoz | **Qolsin** (README, 2026-09-29) |
-| Q8 | Like/comment counter triggerlari? | Hozircha qolsin | |
+| Q8 | Like/comment counter triggerlari? | Hozircha qolsin | **De-fakto: qolgan** (5.4 tegilmagan; MR tasdig'i kutiladi) |
 | Q9 | Splash/loading animatsiya? | Bitta yengil animatsiya qoldir | |
 | Q10 | Supabase Pro'ga o'tish? | Storage 1 GB dan oshsa | |
 | Q11 | *(yangi, F4'dan)* Mono palitrada accent fonlarda matn `#000` (qora) bo'lishi — tasdiq? | Ha, mono maqsadi shu; lekin `.nav-badge`, `.chat-voice-btn.recording`, `.cmt-send` MR ko'z testi bilan tasdiqlansin | |
