@@ -52,14 +52,24 @@ async function browserRows(vapid) {
       return error ? ['fail', error.message] : ['ok', 'o\'qiladi'];
     }),
     run('REALTIME', 'Realtime (WebSocket)', () => new Promise(resolve => {
+      const seen = [];
       const ch = sb.channel('keycheck-' + Math.random().toString(36).slice(2, 8));
+      const info = () => {
+        let app = '';
+        try { const all = sb.getChannels().filter(c => c !== ch); app = `; ilova kanallari: ${all.filter(c => c.state === 'joined').length}/${all.length} joined`; } catch { /* noop */ }
+        let ws = '';
+        try { ws = `; ws: ${sb.realtime.isConnected() ? 'ulangan' : 'uzilgan'}`; } catch { /* noop */ }
+        return 'holatlar: ' + (seen.join(' → ') || 'yo\'q') + ws + app;
+      };
+      const t = setTimeout(() => { sb.removeChannel(ch); resolve(['fail', 'SUBSCRIBED bo\'lmadi. ' + info()]); }, 8000);
       ch.subscribe(st => {
-        if (st === 'SUBSCRIBED') { sb.removeChannel(ch); resolve(['ok', 'ulandi']); }
-        else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT' || st === 'CLOSED') { sb.removeChannel(ch); resolve(['fail', 'holat: ' + st]); }
+        if (seen[seen.length - 1] !== st) seen.push(st);
+        if (st === 'SUBSCRIBED') { clearTimeout(t); sb.removeChannel(ch); resolve(['ok', 'ulandi']); }
       });
     })),
     run('VAPID_CLIENT', 'VAPID ochiq kalit (push.js)', async () =>
-      vapidShape(vapid) ? ['ok', 'format to\'g\'ri'] : ['fail', 'format noto\'g\'ri (65 bayt base64url bo\'lishi kerak)']),
+      typeof vapid !== 'string' ? ['warn', 'push.js eski versiyada yuklangan (keshda) — sahifani yangilab qayta tekshiring']
+      : vapidShape(vapid) ? ['ok', 'format to\'g\'ri'] : ['fail', 'format noto\'g\'ri (65 bayt base64url bo\'lishi kerak)']),
     run('PUSH_SUB', 'Push obunasi (shu qurilma)', async () => {
       if (!('Notification' in window) || !('serviceWorker' in navigator)) return ['warn', 'brauzer push\'ni qo\'llamaydi'];
       if (Notification.permission === 'denied') return ['warn', 'bildirishnoma ruxsati BLOKLANGAN'];
