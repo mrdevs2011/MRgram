@@ -194,6 +194,38 @@ export function initEmojiPicker({ btn, pop, input }) {
     dock(open);
   });
   pop.addEventListener('mousedown', e => { if (!e.target.closest('.ep-search-inp')) e.preventDefault(); });
+
+  /* Hover 3 soniya — emoji nomi (o'zbekcha, Unicode CLDR) tooltip ko'rinishida. Ma'lumot (emoji-uz.js) birinchi marta lazy yuklanadi. */
+  const TIP_DELAY = 3000;
+  let tipTimer = null, tipEl = null, uzMap = null;
+  const hideTip = () => { clearTimeout(tipTimer); tipTimer = null; if (tipEl) { tipEl.remove(); tipEl = null; } };
+  async function showTip(cell) {
+    if (!cell.isConnected || !cell.matches(':hover')) return;
+    if (!uzMap) { try { ({ EMOJI_UZ: uzMap } = await import('./emoji-uz.js')); } catch { return; } }
+    if (!cell.isConnected || !cell.matches(':hover')) return;
+    const name = uzMap[(cell.dataset.e || '').replace(/\uFE0F/g, '')];
+    if (!name) return;
+    hideTip();
+    tipEl = document.createElement('div');
+    tipEl.className = 'ep-tip';
+    tipEl.textContent = name;
+    pop.appendChild(tipEl);
+    const pr = pop.getBoundingClientRect(), cr = cell.getBoundingClientRect(), tw = tipEl.offsetWidth, th = tipEl.offsetHeight;
+    let left = cr.left - pr.left + cr.width / 2 - tw / 2;
+    left = Math.max(4, Math.min(pr.width - tw - 4, left));
+    let top = cr.top - pr.top - th - 6;
+    if (top < 4) top = cr.bottom - pr.top + 6;
+    tipEl.style.left = left + 'px'; tipEl.style.top = top + 'px';
+  }
+  pop.addEventListener('mouseover', e => {
+    const cell = e.target.closest('.ep-e');
+    if (!cell || cell === e.relatedTarget?.closest?.('.ep-e')) return;
+    hideTip();
+    tipTimer = setTimeout(() => showTip(cell), TIP_DELAY);
+  });
+  pop.addEventListener('mouseout', e => { if (e.target.closest('.ep-e') && !e.relatedTarget?.closest?.('.ep-e')) hideTip(); else if (e.target.closest('.ep-e')) hideTip(); });
+  pop.addEventListener('mousedown', hideTip);
+  pop.addEventListener('scroll', hideTip, true);
   pop.addEventListener('click', (e) => {
     const em = e.target.closest('.ep-e'); if (em) { insert(em.dataset.e); return; }
     const tab = e.target.closest('[data-tab]'); if (tab) { goTo(tab.dataset.tab); setActive(tab.dataset.tab); return; }

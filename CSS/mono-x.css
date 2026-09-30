@@ -785,3 +785,6 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 .chat-emoji-quickpick .ep-search-inp,
 .chat-emoji-quickpick .ep-search-inp:focus { background: #000; border: 1px solid rgba(255,255,255,.14); box-shadow: none; }
 .chat-emoji-quickpick .ep-search-inp:focus { border-color: rgba(255,255,255,.28); }
+
+/* Emoji nomi tooltipi (hover 3s) */
+.chat-emoji-quickpick .ep-tip { position: absolute; z-index: 10; pointer-events: none; white-space: nowrap; max-width: calc(100% - 8px); overflow: hidden; text-overflow: ellipsis; padding: 5px 10px; border-radius: 8px; background: #000; border: 1px solid rgba(255,255,255,.18); color: var(--text, #e7e9ea); font-size: 12px; line-height: 1.3; }
