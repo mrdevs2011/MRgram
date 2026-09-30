@@ -829,7 +829,7 @@
 /* .nav-btn:hover { background: var(--glass); } — butunlay o'chirildi: ui-improvements.css 'var(--glass-mid)'... */
 .nav-btn:active { transition: none; }
 .nav-btn svg { width: 22px; height: 22px; stroke: var(--text3); stroke-width: 1.8; fill: none; transition: none; }
-.nav-btn span { display: none; }
+.nav-btn span:not(.nav-badge) { display: none; }
 /* Active nav button — solid pill */
 .nav-btn.on { background: var(--glass-mid); border: 0.5px solid var(--glass-border); }
 .nav-btn.on svg { stroke: var(--blue); filter: drop-shadow(0 0 6px var(--blue-glow)); }
@@ -1180,7 +1180,7 @@
   .sb-brand-text { display: none; }
   .nav-btn { flex-direction: column; justify-content: center; align-items: center; width: 44px; height: 44px; padding: 0; gap: 0; border-radius: 14px; flex-shrink: 0; }
   .nav-btn::after { display: none; }
-  .nav-btn span { display: none; }
+  .nav-btn span:not(.nav-badge) { display: none; }
   .nav-btn svg { width: 22px; height: 22px; }
   .nav-btn:hover { transform: none; background: var(--glass); border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top); }
   .nav-btn.on { background: var(--pal-gray-800); border: 0.5px solid #333333; box-shadow: var(--specular-top), 0 0 0 2px var(--pal-gray-900); }
