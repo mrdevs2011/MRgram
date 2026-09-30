@@ -100,7 +100,7 @@ const _turnList = TURN_URLS.split(',').map(x => x.trim()).filter(Boolean);
 if (!_turnList.length) {
   console.warn('[call] TURN_URLS sozlanmagan — umumiy OpenRelay ishlatilmoqda (beqaror)');
 }
-const ICE_SERVERS = {
+const _STATIC_ICE = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
     ..._turnList.length
@@ -114,6 +114,30 @@ const ICE_SERVERS = {
   ],
   iceCandidatePoolSize: 10
 };
+
+// Cloudflare TURN: qisqa muddatli kredensial /api/turn dan olinadi (sirlar serverda).
+// Ishlamasa yuqoridagi statik sozlamaga (TURN_* yoki OpenRelay) tushadi.
+let ICE_SERVERS = _STATIC_ICE;
+let _iceAt = 0;
+async function _refreshIce() {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const token = session?.access_token;
+    if (!token) return;
+    const r = await fetch('/api/turn', { headers: { Authorization: 'Bearer ' + token } });
+    if (!r.ok) return;
+    const j = await r.json();
+    if (Array.isArray(j.iceServers) && j.iceServers.length) {
+      ICE_SERVERS = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, ...j.iceServers], iceCandidatePoolSize: 10 };
+      _iceAt = Date.now();
+    }
+  } catch (e) { console.warn('[call] /api/turn:', e?.message || e); }
+}
+sb.auth.onAuthStateChange((_ev, sess) => { if (sess) _refreshIce(); });
+setInterval(() => { if (Date.now() - _iceAt > 6 * 3600e3) _refreshIce(); }, 30 * 60e3);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && Date.now() - _iceAt > 6 * 3600e3) _refreshIce();
+});
 
 let _pc          = null;
 let _localStream = null;

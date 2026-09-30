@@ -5,7 +5,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!modules/|CSS/|svg/|icons/).*)",
+      "source": "/((?!api/|modules/|CSS/|svg/|icons/).*)",
       "destination": "/index.html"
     }
   ]
