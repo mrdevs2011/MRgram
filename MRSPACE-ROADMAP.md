@@ -24,7 +24,7 @@
 | F8 Hujjat | 100% | ✅ docs/SMOKE.md o'tkazildi (MR, 09-30) |
 
 **Kod tomon:** maksimal yopildi. **Brauzer/telefon tekshiruvlari:** ✅ MR o'tkazdi (2026-09-30). **Qoldi:** Vercel Preview + TURN env/sinov, DB contract SQL'lari (013: 2026-10-06 dan keyin), F4.8 (ixtiyoriy), Q9/Q11, F2 `[QAROR]`, F5.3/5.4 (ixtiyoriy).
-**Umumiy:** **100%** — 013 contract (`posts.views`, sana bilan bloklangan: 2026-10-06 dan keyin) bundan mustasno (2026-10-01).
+**Umumiy:** **100%** (2026-10-01) — 013 ham yurgizildi.
 
 ---
 
@@ -463,4 +463,6 @@ MR: "barcha ish bo'lgan". Natija:
 - [x] Qarorlar: Q5 yo'q, Q9 mavjud `.spinner`, Q10 hozir kerak emas, Q11 ha, Q2/Q8 tasdiqlandi; F2 `[QAROR]` = Q5.
 - [x] `supabase/unfulfilled/007`–`012` → `supabase/migrations/` (jonli dump bo'yicha no-op, hammasi idempotent; `git mv`).
 - [x] Ixtiyoriylar BEKOR (qoida 11, "50 odam uchun yetarli = tugadi"): 4.8, 5.3 (`profile-<uid>` birlashtirish), 5.4 (Q8), Playwright post/chat qadamlari (alohida TEST akkaunt kerak).
-- [ ] **013 contract** (`posts.views`, `increment_post_view()`): qoida 3 bo'yicha kod deploydan keyin >=1 hafta kuzatuv. Eng erta **2026-10-06**; oldin `supabase db dump` zaxirasi. Bu kun kelganda bajarilgach `migrations/013_diet-views.sql` ga ko'chiriladi va roadmap butunlay yopiladi.
+- [x] **013 contract** (`posts.views`, `increment_post_view()`): MR (root) ruxsati bilan 2026-10-01 da, 1 haftalik kuzatuvdan OLDIN yurgizildi (qoida 3 ongli ravishda chetlab o'tildi). Zaxira: `~/Claude/backups/` (schema dump + `posts.views` JSON). Topilma: `posts_insert` RLS policy `views = 0` ga tayangan edi — policy shu shartsiz, qolgan shartlari aynan o'sha holda qayta yaratildi (bitta tranzaksiya). Tekshiruv: ustun yo'q, funksiya yo'q, policy yangi, 6 post joyida. Fayl `migrations/013_diet-views.sql` ga ko'chirildi.
+
+**ROADMAP 100% YOPILDI (2026-10-01).**

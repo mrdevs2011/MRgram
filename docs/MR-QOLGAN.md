@@ -33,3 +33,5 @@ Kalitlar repo'da saqlanmaydi. Supabase CLI login MR ning keyring'ida (CMC orqali
 ## 2026-10-01
 
 007-012 `migrations/` ga ko'chirildi (no-op). Qolgan yagona ish: **013** — 2026-10-06 dan keyin, `supabase db dump` zaxirasi bilan.
+
+**2026-10-01 (kech):** 013 ham yurgizildi (MR ruxsati bilan). Ochiq ish qolmadi.
