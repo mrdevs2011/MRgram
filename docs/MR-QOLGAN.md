@@ -11,10 +11,10 @@ Supabase/Vercel'ga kirish yo'q (`supabase` CLI login qilinmagan, `vercel` o'rnat
       Production (va Preview) uchun:
       `TURN_URLS` (vergul bilan: `turn:host:3478,turns:host:443`), `TURN_USERNAME`, `TURN_CREDENTIAL`.
       Qiymatlarni TURN provayderingdan olasan. Yo'q bo'lsa ilova umumiy OpenRelay'ga tushadi (beqaror). Env qo'shgach **Redeploy**.
-- [ ] **SQL 014 + 015 (expand — xavfsiz, istalgan vaqtda):** Supabase → SQL Editor → `supabase/unfulfilled/014_diet-07-client-errors.sql`
+- [x] **SQL 014 + 015 (2026-09-30 yurgizildi, `migrations/` ga ko'chirildi; admin panelda "Storage: X / 1 GB" ni ko'z bilan tasdiqlash qoldi) (expand — xavfsiz, istalgan vaqtda):** Supabase → SQL Editor → `supabase/unfulfilled/014_diet-07-client-errors.sql`
       va `015_diet-07-storage-usage.sql` ni ketma-ket yurgiz. Tekshiruv: admin panelda "Storage: X / 1 GB" qatori chiqadi
       (yurgizmasang "hisoblanmadi" deb turadi). Ishga tushgach ikkalasini `migrations/` ga keyingi raqam bilan ko'chir.
-- [ ] **3.6 eski shaxsiy postlar:** `supabase/queries/3.6-private-posts.sql` ni SQL Editor'da yurgiz (faqat select),
+- [x] **3.6 eski shaxsiy postlar (2026-09-30: 7 post, hammasi ochiq, shaxsiy 0 -> Q4 kerak emas):** `supabase/queries/3.6-private-posts.sql` ni SQL Editor'da yurgiz (faqat select),
       natijani menga/AI ga ko'rsat → Q4 qarori.
 
 ## 2. 2026-10-06 dan keyin (kod deploydan >= 1 hafta)

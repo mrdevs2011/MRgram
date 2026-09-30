@@ -363,7 +363,7 @@ drop table if exists public.follows;
 | Q1 | Guruhlar: hamma ko'radimi (A) yoki faqat taklif (B)? | B | **B** (2026-09-29, MR) |
 | Q2 | Muqova rasmi qolsinmi? | Oddiy yuklash, crop yo'q | **De-fakto: olib tashlangan** (3.5, `bd3fb42`; kodda shunday, MR tasdig'i kutiladi) |
 | Q3 | Profilda website/location? | O'chir | **O'chirildi** (2026-09-29, MR tasdiqi) |
-| Q4 | Eski shaxsiy postlar? | Egasi bilan hal qil | |
+| Q4 | Eski shaxsiy postlar? | Egasi bilan hal qil | Kerak emas: bazada 0 ta shaxsiy post (3.6 sanovi, 2026-09-30) |
 | Q5 | Parol reset: majburiy almashtirish? | Yo'q | |
 | Q6 | SW nomini o'zgartirish? | Qolsin (`firebase-messaging-sw.js`), izoh yoz | **Qolsin** (izoh yozildi, 2026-09-29) |
 | Q7 | Media bucket public qolsinmi? | Qolsin, rasmiy qaror sifatida yoz | **Qolsin** (README, 2026-09-29) |
