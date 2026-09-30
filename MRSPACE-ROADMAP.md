@@ -3,7 +3,8 @@
 > **Maqsad:** MRspace'ni 50 ta yaqin odam (oila, qarindosh, do'stlar) uchun mos, kichik, tushunarli va uzoq yashaydigan holatga keltirish.
 > **Tamoyil:** 50 kishilik to'yga stadion emas, yaxshi choyxona kerak. Har bir qator kod "bu 50 odamga kerakmi?" degan savoldan o'tishi shart.
 > **Holat:** 2026-09-28 dagi kod audit natijasi asosida. Kod to'liq qatorma-qator o'qilmagan: struktura, schema, README, AUDIT.md va grep asosida. `[TEKSHIR]` belgisi — bajarishdan oldin tasdiqlash kerak bo'lgan taxmin.
-> **Yangilanish (2026-09-29):** holat kodning o'zidan qayta tekshirildi (git tag'lar, fayllar, grep). Bajarilganlar: F2 parol reset, F3.4 views, F3.5 muqova (cover), F4.5 `app.css` build, F5 presence/typing, F6.2 avto-versiya + network-first, F7.2 limit 25 MB. Supabase/Vercel panel ishlari tekshirilmadi.
+> **Yangilanish (2026-09-30):** MR barcha brauzer/qurilma tekshiruvlarini o'tkazdi (smoke test, 8 ekran vizual tekshiruvi, 2 qurilma realtime, push, qo'ng'iroq, SW update toast). Belgilar MR ning shu bayoniga asoslanib yangilandi; alohida punktlar natijasi tafsilotda yozilmagan. Ochiq qolgani: Vercel Preview/TURN env, DB contract SQL'lari, F4 CSS refaktor bandlari, Playwright (ixtiyoriy).
+> **Oldingi yangilanish (2026-09-29):** holat kodning o'zidan qayta tekshirildi (git tag'lar, fayllar, grep). Bajarilganlar: F2 parol reset, F3.4 views, F3.5 muqova (cover), F4.5 `app.css` build, F5 presence/typing, F6.2 avto-versiya + network-first, F7.2 limit 25 MB. Supabase/Vercel panel ishlari tekshirilmadi.
 > **Oldingi yangilanish (2026-09-28):** bu fayl repoda ilk marta saqlandi va joriy holatga ko'ra belgilandi (`[x]`/`[ ]`, "Holat" ustunlari). Tarix: commitlar `09bce2c` (F1), `db6028d` (link tartibi), `fbbcd8b` (x-design klasteri).
 
 
@@ -12,16 +13,16 @@
 | Faza | Kod | Tekshiruv (MR) |
 |---|---|---|
 | F1 Axlat kod | 100% | — |
-| F2 Admin + parol reset | 100% | brauzer smoke + DB contract (oktabr) |
-| F3 Mahsulot yuzasi | 100% | brauzer (explore/guruh) + DB contract |
-| F4 CSS | ~80% (6 fayl / 4585 qator ✅; !important 230→142; qolgani color/call/hover) | skrinshot/smoke |
-| F5 Realtime | 100% | 2 telefon sinov |
-| F6 Data / SW | ~90% kod (Ts✅ SW✅ vendor✅) | telefon offline + update toast |
-| F7 Family-grade | ~85% kod (7.1/7.2limit/7.5/7.8 ✅); TURN/rate-limit ixtiyoriy | Vercel TURN_* |
-| F8 Hujjat | 100% | docs/SMOKE.md qo'lda |
+| F2 Admin + parol reset | 100% | ✅ brauzer smoke (MR, 09-30); DB contract (oktabr) qoldi |
+| F3 Mahsulot yuzasi | 100% | ✅ brauzer (explore/guruh) (MR, 09-30); DB contract qoldi |
+| F4 CSS | ~80% (6 fayl / 4585 qator ✅; !important 230→142; qolgani color/call/hover) | ✅ skrinshot/smoke (MR, 09-30) |
+| F5 Realtime | 100% | ✅ 2 qurilma sinovi (MR, 09-30) |
+| F6 Data / SW | ~90% kod (Ts✅ SW✅ vendor✅) | ✅ telefon offline + update toast (MR, 09-30) |
+| F7 Family-grade | ~85% kod (7.1/7.2limit/7.5/7.8 ✅); TURN/rate-limit ixtiyoriy | Vercel TURN_* (qoldi) |
+| F8 Hujjat | 100% | ✅ docs/SMOKE.md o'tkazildi (MR, 09-30) |
 
-**Kod tomon:** maksimal yopildi. **Senga qolgan:** brauzer/telefon smoke, Vercel TURN, DB contract.
-**Umumiy:** ~90%. To'liq 100% = sen tekshirib bo'lgach.
+**Kod tomon:** maksimal yopildi. **Brauzer/telefon tekshiruvlari:** ✅ MR o'tkazdi (2026-09-30). **Qoldi:** Vercel Preview + TURN_*, DB contract SQL'lari, F4 refaktor (4.3/4.4/4.6/4.8), F5.3/5.4, F7.6/7.7, ixtiyoriy Playwright.
+**Umumiy:** ~90% (tekshiruv tomoni yopildi; qolgani asosan MR panel/DB ishlari va F4 CSS).
 
 ---
 
@@ -73,7 +74,7 @@
 | 0 | Xavfsizlik to'ri | past | 1–2 soat | — | ⚠️ qisman (tag va remote tayyor; preview/smoke — MR ishi) |
 | 1 | Axlat va o'lik kod | past | 2–3 soat | 0 | ✅ deyarli tayyor (`09bce2c`) |
 | 2 | Admin dieta + parol reset | o'rta | 1 kun | 0, 1 | ✅ kod tayyor (branch `diet/02-admin`, Preview sinovi + 1 hafta kuzatuv → `patch-diet-02-admin.sql` kutilmoqda) |
-| 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.1 (main'da, sinalmagan), 3.2, 3.3, 3.4 ✅, 3.5 deyarli ✅; 3.6 ❌ |
+| 3 | Mahsulot yuzasini qisqartirish | o'rta | 1–1.5 kun | 0, 1 | 🔶 3.1 (main'da, brauzerda sinalgan ✅), 3.2, 3.3, 3.4 ✅, 3.5 deyarli ✅; 3.6 ❌ |
 | 4 | CSS konsolidatsiya | o'rta–yuqori (vizual) | 2–3 kun | 3 (oldin nima qolishi aniq bo'lsin) | 🔶 4.4/4.5 ✅ (bitta `app.css`); 23 fayl/12.1k qator (partiya 1–3 keyin), 288 `!important` |
 | 5 | Realtime va presence | o'rta | 1 kun | 3 | 🔶 5.1/5.2 ✅; 5.3 deyarli ✅ (doimiy kanallar ~8 → 5, sinov MR) |
 | 6 | Data qatlami va SW | yuqori | 1.5–2 kun | 5 | 🔶 avto-versiya, network-first, yangilanish toast'i ✅; vendored supabase ✅, `Ts` adapteri ✅ |
@@ -93,9 +94,9 @@ Jami: **~8–11 ish kuni** (qisman vaqt bilan 3–4 hafta). 2 va 7 fazalar bir-b
 - [x] `origin` MRspace repoga qaraydi (`mrdevs2011/MRspace`).
 - [ ] Vercel Preview deploy + preview env (`SUPABASE_URL/ANON_KEY`). *MR Vercel panelida.*
 - [x] **Baseline o'lchov** 6-bo'lim jadvaliga kiritildi (2026-09-28 qayta o'lchangan raqamlar bilan).
-- [ ] **Smoke test ro'yxati** (7-bo'lim) hozirgi kodda o'tkazib chiqish. *Brauzer/qurilma kerak — MR.*
+- [x] **Smoke test ro'yxati** (7-bo'lim) hozirgi kodda o'tkazib chiqildi (MR, 2026-09-30).
 
-**Tayyor mezoni:** tag bor, baseline yozilgan, smoke test o'tdi. → *Yakunlanmadi (tashqi bandlar qoldi).*
+**Tayyor mezoni:** tag bor, baseline yozilgan, smoke test o'tdi. → *Deyarli yakunlandi: faqat Vercel Preview deploy + preview env qoldi (MR panelida).*
 
 ---
 
@@ -157,7 +158,7 @@ drop table if exists public.login_history;
 **Xavf:** o'rta. `view-users.js` ni qayta yozishda approve/reject/block/delete oqimi buzilishi mumkin.
 **Tekshiruv:** smoke test "Admin" bloki + yangi user ro'yxatdan o'tkazib tasdiqla/rad et/blokla/o'chir.
 **Kutilgan natija:** ~−1000 JS, `admin.css` 1176 → ~300, `view-users.js` 995 → ~400.
-**Haqiqiy natija (JS):** 14 548 → 13 472 (−1 076), `view-users.js` 985 → 532, `view-actions.js` 386 → 292. `admin.css` qisqartirish F4 ga o'tdi. Brauzerda sinalmagan (faqat `node --check`).
+**Haqiqiy natija (JS):** 14 548 → 13 472 (−1 076), `view-users.js` 985 → 532, `view-actions.js` 386 → 292. `admin.css` qisqartirish F4 ga o'tdi. Brauzerda sinalgan (MR, 2026-09-30).
 
 ---
 
@@ -165,9 +166,9 @@ drop table if exists public.login_history;
 
 **Maqsad:** ijtimoiy tarmoq bezaklarini olib tashlab, oilaviy messenjer + oilaviy lentaga aylantirish.
 
-- **3.1 Explore→filtr:** ✅ kod tomoni (branch `diet/03-explore`): `explore.js` 281 → 179 qator. Tablar (Kashf/Postlar/Odamlar/Media), trend/hashtaglar va media setkasi olib tashlandi; bitta ro'yxat — Odamlar + Postlar, Enter/typeahead bilan filtrlanadi. `expTabs` elementi olib tashlandi. `ui.js` typeahead tegilmadi. `.exp-tab*`/`.exp-media`/trend CSS qoidalari endi o'lik → F4 da tozalanadi. ⚠️ Brauzerda sinalmagan (qoida 8: `exp-head` ko'rinishi).
-- **3.2 Kanal→guruh rejimi:** ✅ (2026-09-29) SQL patch bazada ishlagan (MR), kodda `'channel'` shoxlari va `_renderChannelActionBar` olib tashlandi (`diet/03-channel-cleanup`, ⚠️ brauzerda sinalmagan; CSS `--channel` klasslari F4 ga qoldi; `groups.type` check-cheklovini qisqartirish — keyingi SQL). Oldingi holat: 🔶 kod tomoni (branch `diet/03-channel-group`): "+" to'g'ridan-to'g'ri guruh formasini ochadi, "Yangi kanal" tanlovi yo'q; yaratishda "Xabar yuborish: faqat adminlar" tanlovi (`msg_permission='admins'`). Eski `type:'channel'` yozuvlari bazada qoladi va ishlayveradi (render shoxlari saqlangan). DB: `supabase/unfulfilled/patch-diet-03-channels.sql` (channel→group+admins) yozildi, ISHGA TUSHIRILMAGAN; patchdan keyin kodda `'channel'` shoxlari olib tashlanadi. ⚠️ Brauzerda sinalmagan.
-- **3.3 Guruh ochiq/maxfiy [QAROR Q1 = B, 2026-09-29]:** ✅ kod tomoni (branch `diet/03-groups-b`): yaratishda faqat yopiq (`is_private:true`, `invite_code` yo'q), maxfiylik/havola/username UI, "havola orqali qo'shilish" oynasi va chat qidiruvidagi kod-join olib tashlandi (`groups.js` −264 qator). DB: `supabase/unfulfilled/patch-diet-03-groups.sql` yozildi, ISHGA TUSHIRILMAGAN (1 hafta kuzatuvdan keyin). RLS/`group_is_private()` tegilmadi. ⚠️ Brauzerda sinalmagan.
+- **3.1 Explore→filtr:** ✅ kod tomoni (branch `diet/03-explore`): `explore.js` 281 → 179 qator. Tablar (Kashf/Postlar/Odamlar/Media), trend/hashtaglar va media setkasi olib tashlandi; bitta ro'yxat — Odamlar + Postlar, Enter/typeahead bilan filtrlanadi. `expTabs` elementi olib tashlandi. `ui.js` typeahead tegilmadi. `.exp-tab*`/`.exp-media`/trend CSS qoidalari endi o'lik → F4 da tozalanadi. ✅ brauzerda sinalgan (MR, 2026-09-30) (qoida 8: `exp-head` ko'rinishi).
+- **3.2 Kanal→guruh rejimi:** ✅ (2026-09-29) SQL patch bazada ishlagan (MR), kodda `'channel'` shoxlari va `_renderChannelActionBar` olib tashlandi (`diet/03-channel-cleanup`, ✅ brauzerda sinalgan (MR, 2026-09-30); CSS `--channel` klasslari F4 ga qoldi; `groups.type` check-cheklovini qisqartirish — keyingi SQL). Oldingi holat: 🔶 kod tomoni (branch `diet/03-channel-group`): "+" to'g'ridan-to'g'ri guruh formasini ochadi, "Yangi kanal" tanlovi yo'q; yaratishda "Xabar yuborish: faqat adminlar" tanlovi (`msg_permission='admins'`). Eski `type:'channel'` yozuvlari bazada qoladi va ishlayveradi (render shoxlari saqlangan). DB: `supabase/unfulfilled/patch-diet-03-channels.sql` (channel→group+admins) yozildi, ISHGA TUSHIRILMAGAN; patchdan keyin kodda `'channel'` shoxlari olib tashlanadi. ✅ brauzerda sinalgan (MR, 2026-09-30).
+- **3.3 Guruh ochiq/maxfiy [QAROR Q1 = B, 2026-09-29]:** ✅ kod tomoni (branch `diet/03-groups-b`): yaratishda faqat yopiq (`is_private:true`, `invite_code` yo'q), maxfiylik/havola/username UI, "havola orqali qo'shilish" oynasi va chat qidiruvidagi kod-join olib tashlandi (`groups.js` −264 qator). DB: `supabase/unfulfilled/patch-diet-03-groups.sql` yozildi, ISHGA TUSHIRILMAGAN (1 hafta kuzatuvdan keyin). RLS/`group_is_private()` tegilmadi. ✅ brauzerda sinalgan (MR, 2026-09-30).
 - **3.4 Post views:** ✅ kod tomoni tag `diet-progress-03` bilan olib tashlangan (`posts.views` ustunini bazadan drop — contract, keyinroq).
 - **3.5 Profil [QAROR]:** 🔶 muqova (cover) va `cover-crop.js` butunlay olib tashlandi (2026-09-29, `bd3fb42`); `cover_url` ustuni bazada qoldi. `website`/`location` UI va kod tomonidan olib tashlandi ✅ (branch `diet/03-product-profile`; `profiles.website`/`location` ustunlarini drop — contract, 1 hafta kuzatuvdan keyin).
 - **3.6 Eski shaxsiy postlar [QAROR]:** 🔶 sanov SQL tayyor: `supabase/queries/3.6-private-posts.sql` (faqat select, 3 blok). Natijani MR Supabase SQL Editor'da yurgizadi → keyin Q4 qarori.
@@ -202,9 +203,9 @@ drop table if exists public.follows;
   - F1.8 (Eruda) tasdiqlandi: `index.html` da 0 ta.
   - **Qaror kerak (MR):** (a) tartibni `x-design → mono` ga o'zgartirish vizual natija beradi (qoida 8 — avval brauzerda ko'z bilan), (b) yoki mavjud tartib rasmiy qabul qilinadi. Shu qarorgacha CSS'da o'chirish/ko'chirish qilinmaydi.
 - [~] **4.1b Inventar:** ✅ hisobot tayyor (2026-09-29): `node scripts/css-inventory.mjs` → `docs/CSS-INVENTORY.md`. Token-darajasida: 3089 qoidadan **1001 hard-o'lik** (5538 qator, ~33%), 210 maybe; eng katta: `devs-utility.css` (438 hard + 159 maybe), `admin.css` (602 qator), `ui-improvements.css` (675). `!important` 335 dan 65 tasi o'lik qoidalarda. ❌ Hali hech narsa o'chirilmagan (qoida 8 + property-daraja tekshiruvi kerak); birinchi nomzod `devs-utility.css`.
-  - **`devs-utility.css` tozalandi** (branch `diet/04-prune-utility`, 2026-09-29): 438 hard-o'lik qoida olib tashlandi, 2449 → 696 qator; `app.css` qayta yig'ildi (433 350 → 412 550 bayt). `scripts/css-inventory.mjs --prune=CSS/fayl.css` bilan. `{}` balansi ✅. 159 `maybe` qoida qoldi (dinamik yig'ilishi mumkin). ⚠️ Brauzerda sinalmagan (qoida 8) — MR Preview'da 8 ekranni ko'rsin; buzilsa `git revert`.
-  - **Ikkinchi partiya** (branch `diet/04-prune-admin-ui`, 2026-09-29): `admin.css` 92 qoida (1138 → 590 qator), `ui-improvements.css` 76 (1728 → 1129), `admin-plain.css` 12 (169 → 145) — jami −1171 qator; `app.css` 412 550 → 384 463 bayt (14 008 qator). Bu fayllarda olib tashlangan qoidalar ichida `!important` yo'q. `{}` balansi ✅. ⚠️ Brauzerda sinalmagan: birinchi navbatda admin panel va Profil/Chat ekranlarini ko'ring.
-  - **Uchinchi partiya** (branch `diet/04-prune-rest`, 2026-09-29): qolgan barcha fayllardan hard-o'lik qoidalar olib tashlandi (chat 51, feed 57, local-utility 89, nav 34, x-design 34, groups 34, mono 20, borderless 18, dark-theme-fix 18, chat-dark-redesign 12, profile 10, theme 8, loading 7, sidebar-x 3; jami ~395). Barcha `CSS/*.css`: **16 737 → 12 127 qator** (−28%), `!important` 353 → 288, `app.css` 299 KB (12 320 qator). Inventarda hard = 0; `maybe` 210 qoida qoldi (qo'lda ko'rib chiqiladi). `{}` balansi ✅ barcha fayllarda. ⚠️ Brauzerda sinalmagan — bu partiya barcha ekranlarga tegadi, 8 ekranni (login, kutish, lenta, post yuklash, chatlar, chat oynasi, guruh, profil, admin) dark/light va mobilda ko'ring. Buzilsa: `git revert` faqat shu commit (yoki `pre-prune-0929` tag).
+  - **`devs-utility.css` tozalandi** (branch `diet/04-prune-utility`, 2026-09-29): 438 hard-o'lik qoida olib tashlandi, 2449 → 696 qator; `app.css` qayta yig'ildi (433 350 → 412 550 bayt). `scripts/css-inventory.mjs --prune=CSS/fayl.css` bilan. `{}` balansi ✅. 159 `maybe` qoida qoldi (dinamik yig'ilishi mumkin). ✅ brauzerda sinalgan (MR, 2026-09-30) (qoida 8) — MR Preview'da 8 ekranni ko'rsin; buzilsa `git revert`.
+  - **Ikkinchi partiya** (branch `diet/04-prune-admin-ui`, 2026-09-29): `admin.css` 92 qoida (1138 → 590 qator), `ui-improvements.css` 76 (1728 → 1129), `admin-plain.css` 12 (169 → 145) — jami −1171 qator; `app.css` 412 550 → 384 463 bayt (14 008 qator). Bu fayllarda olib tashlangan qoidalar ichida `!important` yo'q. `{}` balansi ✅. ✅ brauzerda sinalgan (MR, 2026-09-30): birinchi navbatda admin panel va Profil/Chat ekranlarini ko'ring.
+  - **Uchinchi partiya** (branch `diet/04-prune-rest`, 2026-09-29): qolgan barcha fayllardan hard-o'lik qoidalar olib tashlandi (chat 51, feed 57, local-utility 89, nav 34, x-design 34, groups 34, mono 20, borderless 18, dark-theme-fix 18, chat-dark-redesign 12, profile 10, theme 8, loading 7, sidebar-x 3; jami ~395). Barcha `CSS/*.css`: **16 737 → 12 127 qator** (−28%), `!important` 353 → 288, `app.css` 299 KB (12 320 qator). Inventarda hard = 0; `maybe` 210 qoida qoldi (qo'lda ko'rib chiqiladi). `{}` balansi ✅ barcha fayllarda. ✅ brauzerda sinalgan (MR, 2026-09-30) — bu partiya barcha ekranlarga tegadi, 8 ekranni (login, kutish, lenta, post yuklash, chatlar, chat oynasi, guruh, profil, admin) dark/light va mobilda ko'ring. Buzilsa: `git revert` faqat shu commit (yoki `pre-prune-0929` tag).
 - [~] **4.2 Tokenlar:** `theme.css` → yagona manba. Bajarildi: 4.2a-d palitra (`--pal-*`, 19+ token), 4.2e 49 o'lik token e'loni, 4.2f `CSS/tokens.css` (98 e'lon). Qoldi: 14 `--pal-legacy-*` kulrangni birlashtirish (MR ko'z qarori), media/element tokenlari (~62 e'lon) va spacing/radius/shrift tokenlari. Regress asboblari: `~/Claude/tools/css-regress`.
 - [ ] **4.3 Tuzilma (maqsad):** `tokens.css / base.css / components.css / features.css / admin.css`. **Hozir: 22 fayl / 17 055 qator.**
 - [ ] **4.4 `no-animations.css`:** `style.css`da hali eng oxirgi qatlam — transition/animation'larni manba faylidan olish. `[QAROR]` splash/loading uchun bitta yengil animatsiya (Q9).
@@ -214,7 +215,7 @@ drop table if exists public.follows;
  joriy o'lchov quyida; maqsad: kamida 80% qisqarish.
   - **2026-09-29 (4.6 qisman):** 230 -> 216 (`9ff05e3`). Usul: har `!important` uchun mos elementlarda flag olib tashlanganda computed-style o'zgaradimi (inert) + 12 skrinshot (desktop/mobil) piksel farqi 0. Qolgan ~216 dinamik/holat qoidalari (modal, overlay, progress, hover, `.recording`, chat xabarlari): hozirgi DOM'da yo'q, avtomatik tekshirib bo'lmaydi; -80% maqsadi haqiqiy holatlarni ochuvchi testlarsiz (Playwright yoki qo'lda) yetib bo'lmaydi. Asbob: `~/Claude/work/shots/` (capture/compare/inspect/bisect).
   - **2026-09-29 (4.6, chat holati):** 216 -> 206. `inspect2.mjs` chat oynasi ochiq holatda o'lchaydi (`.chat-bubble`, `.cvm-*`, `.chat-avi`); 6 ta ekran + chatlar/chat oynasi (desktop/mobil) piksel farqi 0. Qolganlari: modal, overlay, hover, `.recording`.
-- [ ] **4.7 Vizual regressiya:** 8 ekran skrinshoti (login, kutish, lenta, post yuklash, chatlar, chat oynasi, guruh, profil, admin) — **hali hech qachon bajarilmagan** (brauzer kerak, MR). Shu qilingach 4.1b va keyingi o'chirishlar bloklanadi.
+- [x] **4.7 Vizual regressiya:** ✅ MR brauzerda tekshirdi (2026-09-30). 8 ekran skrinshoti (login, kutish, lenta, post yuklash, chatlar, chat oynasi, guruh, profil, admin) — **hali hech qachon bajarilmagan** (brauzer kerak, MR). Shu qilingach 4.1b va keyingi o'chirishlar bloklanadi.
 - [ ] **4.8 Tartib:** keyingi nomzod klaster — `chat.css` cvm-bloklari ↔ mono; bir fayl → tekshir → keyingisi; har fayl = 1 commit.
 - [x] **4.9 Ixchamlash** (branch `diet/04-css-5k`, 2026-09-29): `CSS/*.css` izohsiz (faqat top-level sarlavha), bo`sh qatorsiz, oddiy qoida = 1 qator (<=240 belgi). **11 632 -> 4 430 qator** (maqsad <=5k), 293 645 -> 255 355 bayt (-13%). Bu FORMAT o`zgarishi, kontent kamaymadi: normalizatsiya isboti (izohsiz/bo`shliqsiz matn eski == yangi) 24/24 fayl, computed-style harness 4 542 holat x 2 viewport, FARQ 0. Asbob: `~/Claude/tools/css-regress/compact.mjs`. Fayl soni hali 24 (maqsad <=6), `!important` 239.
 - [x] **4.10 Fayllar 24 -> 6** (branch `diet/04-css-merge`, 2026-09-29): `CSS/tokens, base, features, layers, admin, mono-x.css`; `style.css` (@import master) va 23 eski fayl o`chirildi, `scripts/build-css.mjs` 6 faylni shu tartibda yig`adi. Kaskad tartibi o`zgarmagan: yig`ilgan `app.css` ning izohsiz/bo`shliqsiz matni eskisi bilan AYNAN bir xil (norm isboti). Fayl maqsadi (<=6) va qator maqsadi (<=5k: 4 587 app.css / 4 4xx manba) bajarildi; qoldi faqat `!important` (239).
@@ -232,7 +233,7 @@ drop table if exists public.follows;
 
 - 5.1 Presence DB→Realtime: ✅ tag `diet-progress-05` (Realtime Presence kanali, `last_seen` faqat chiqishda `sendBeacon` bilan).
 - 5.2 Typing DB→Broadcast: ✅ broadcast'ga o'tgan. `typing_until` izlari `chat.js`/`config.js`/`auth.js` da hali bor; ustunni drop qilish (`patch-diet-05-contract.sql`) — 1 hafta kuzatuvdan keyin.
-- 5.3 Kanallarni birlashtirish: 🔶 (2026-09-29, `diet/05-realtime`) `right-rail-rt` olib tashlandi (`postsUpdated` + 15 s tick), `chat-notice` → `chats-watcher`ga qo'shildi: `groups-watcher` ham `chats-watcher`ga qo'shildi (`bindGroupsRealtime`, `diet/05-realtime-2`): doimiy kanallar ~8 → 5 (`profile-<uid>`, `posts-feed`, `chats-watcher`, `incoming-calls-<uid>`, presence). Qoldi: `profile-<uid>` ↔ boshqalar (ixtiyoriy), thread kanallari (`thread-`, `gthread-`, `peer-`, `typing-bc-`) alohida qoladi. ⚠️ 2 qurilmada sinalmagan. Eski holat: ❌ `sb.channel(` hali ~18 ta joyda (auth, chat, groups, call, admin fayllari). Maqsad: bitta `me:<uid>` kanali + `incoming-calls-<uid>` + thread kanallari + admin → ~3–4. Xavf: filter chalkashishi — bitta-bitta ko'chir, 2 qurilmada sinab ko'r.
+- 5.3 Kanallarni birlashtirish: 🔶 (2026-09-29, `diet/05-realtime`) `right-rail-rt` olib tashlandi (`postsUpdated` + 15 s tick), `chat-notice` → `chats-watcher`ga qo'shildi: `groups-watcher` ham `chats-watcher`ga qo'shildi (`bindGroupsRealtime`, `diet/05-realtime-2`): doimiy kanallar ~8 → 5 (`profile-<uid>`, `posts-feed`, `chats-watcher`, `incoming-calls-<uid>`, presence). Qoldi: `profile-<uid>` ↔ boshqalar (ixtiyoriy), thread kanallari (`thread-`, `gthread-`, `peer-`, `typing-bc-`) alohida qoladi. ✅ 2 qurilmada sinalgan (MR, 2026-09-30). Eski holat: ❌ `sb.channel(` hali ~18 ta joyda (auth, chat, groups, call, admin fayllari). Maqsad: bitta `me:<uid>` kanali + `incoming-calls-<uid>` + thread kanallari + admin → ~3–4. Xavf: filter chalkashishi — bitta-bitta ko'chir, 2 qurilmada sinab ko'r.
 - 5.4 `bump_post_counters` triggerlari [QAROR Q8]: ❌ tegilmagan (hozircha qolsin).
 
 **Tekshiruv:** 2 ta qurilma: onlayn nuqta, "yozmoqda", xabar darhol keladi, qo'ng'iroq keladi.
@@ -252,8 +253,8 @@ drop table if exists public.follows;
 - [x] **Q6 tavsiyasi: nom O'ZGARMASIN** (`firebase-messaging-sw.js`), izoh yoz. *(Push obunalari nomga bog'liq.)*
 - [x] **Cache versiyasi avtomatik:** `build-env.mjs` build vaqtida `CACHE_VERSION` ga vaqt tamg'asini yozadi (`t-<timestamp>`).
 - [x] **HTML strategiyasi:** network-first (3 s timeout) → kesh fallback (tag `diet-progress-04b`).
-- [x] **Yangilanish xabari:** SW `skipWaiting` qiladi, shuning uchun `controllerchange` (sahifa ochiq paytida) → pastda "Yangi versiya bor · Yangilash" paneli (`index.html`, branch `diet/06-sw-update-toast`). ⚠️ Brauzerda sinalmagan (qoida 8): stil inline, `#000`/`#fff`.
-- [x] `PRECACHE_URLS` tekshirildi (2026-09-29, `diet/06-precache`): ro'yxatdagi barcha 33 URL diskda bor (`/app.css` to'g'ri); `allSettled` himoyasi joyida. Ro'yxatda yo'q 7 modul qo'shildi: `admin-reset-password, chats-x, compress, right-rail, shortcuts, sidebar, stories`. ⚠️ Yangi modul qo'shilganda ro'yxatni ham yangilash kerak (qo'lda). Offline ochilish sinalmagan.
+- [x] **Yangilanish xabari:** SW `skipWaiting` qiladi, shuning uchun `controllerchange` (sahifa ochiq paytida) → pastda "Yangi versiya bor · Yangilash" paneli (`index.html`, branch `diet/06-sw-update-toast`). ✅ brauzerda sinalgan (MR, 2026-09-30) (qoida 8): stil inline, `#000`/`#fff`.
+- [x] `PRECACHE_URLS` tekshirildi (2026-09-29, `diet/06-precache`): ro'yxatdagi barcha 33 URL diskda bor (`/app.css` to'g'ri); `allSettled` himoyasi joyida. Ro'yxatda yo'q 7 modul qo'shildi: `admin-reset-password, chats-x, compress, right-rail, shortcuts, sidebar, stories`. ⚠️ Yangi modul qo'shilganda ro'yxatni ham yangilash kerak (qo'lda). Offline ochilish sinalgan (MR, 2026-09-30).
 
 ### 6.3 Supabase kutubxonasi — ✅ (2026-09-29)
 - `modules/vendor-supabase.js` (94 KB): supabase-js 2.39.3 + transitiv paketlar jsdelivr bilan AYNAN bir xil versiyalarga qadalgan (gotrue 2.62.0, postgrest 1.9.1, realtime 2.9.3, storage 2.5.5, functions 2.1.5). `config.js` shundan import qiladi, SW precache'ga qo'shildi — CDN yiqilsa ham ilova ochiladi.
@@ -318,40 +319,40 @@ drop table if exists public.follows;
 
 ## 7. Smoke test ro'yxati (har faza oxirida)
 
-*(Mazmun o'zgarmadi. Status: hozirgacha hech bir faza oxirida to'liq o'tkazilmagan — F0'da birinchi marta o'tkaziladi.)*
+*(Mazmun o'zgarmadi. Status: 2026-09-30 da MR barcha punktlarni brauzer/qurilmada o'tkazdi.)*
 
 **Auth**
-- [ ] Yangi user ro'yxatdan o'tadi → "kutish" ekrani
-- [ ] Admin tasdiqlaydi → user ilovaga kiradi
-- [ ] Admin rad etadi → "rad etildi" ekrani
-- [ ] Bloklangan user kira olmaydi; blok tugagach kiradi
+- [x] Yangi user ro'yxatdan o'tadi → "kutish" ekrani
+- [x] Admin tasdiqlaydi → user ilovaga kiradi
+- [x] Admin rad etadi → "rad etildi" ekrani
+- [x] Bloklangan user kira olmaydi; blok tugagach kiradi
 
 **Lenta**
-- [ ] Rasm/video post yuklanadi (≤ limit), lentada ko'rinadi
-- [ ] Like, izoh ishlaydi; markdown (qalin/egik) chiqadi
+- [x] Rasm/video post yuklanadi (≤ limit), lentada ko'rinadi
+- [x] Like, izoh ishlaydi; markdown (qalin/egik) chiqadi
 
 **Chat**
-- [ ] Yozma, ovozli xabar, fayl yuboriladi
-- [ ] Reply, qidiruv, o'qildi belgisi
-- [ ] "Yozmoqda..." va onlayn/oxirgi faollik (5-fazadan keyin 2 qurilmada)
-- [ ] Push bildirishnoma (telefon yopiq holda) keladi
+- [x] Yozma, ovozli xabar, fayl yuboriladi
+- [x] Reply, qidiruv, o'qildi belgisi
+- [x] "Yozmoqda..." va onlayn/oxirgi faollik (5-fazadan keyin 2 qurilmada)
+- [x] Push bildirishnoma (telefon yopiq holda) keladi
 
 **Guruh**
-- [ ] Guruh yaratiladi, a'zo qo'shiladi, xabar keladi
-- [ ] Faqat-adminlar rejimi (ex-kanal) ishlaydi
+- [x] Guruh yaratiladi, a'zo qo'shiladi, xabar keladi
+- [x] Faqat-adminlar rejimi (ex-kanal) ishlaydi
 
 **Qo'ng'iroq**
-- [ ] Audio va video qo'ng'iroq Wi-Fi ↔ mobil tarmoqda ulanadi
+- [x] Audio va video qo'ng'iroq Wi-Fi ↔ mobil tarmoqda ulanadi
 
 **Admin**
-- [ ] E'lon yuboriladi va hamma ko'radi
-- [ ] Parol reset (2-fazadan keyin)
-- [ ] O'chirilgan user ma'lumoti ketadi
+- [x] E'lon yuboriladi va hamma ko'radi
+- [x] Parol reset (2-fazadan keyin)
+- [x] O'chirilgan user ma'lumoti ketadi
 
 **Texnik**
-- [ ] Konsolda qizil xato yo'q
-- [ ] Yangi deploydan keyin user ilovani ochsa yangi versiya keladi (6-fazadan keyin)
-- [ ] Dark/light va mobil/desktop tartib buzilmagan
+- [x] Konsolda qizil xato yo'q
+- [x] Yangi deploydan keyin user ilovani ochsa yangi versiya keladi (6-fazadan keyin)
+- [x] Dark/light va mobil/desktop tartib buzilmagan
 
 ---
 
@@ -429,5 +430,7 @@ main  (ac66409)
 5. **F7.2–7.4** (storage, TURN) — bular ilovani omon saqlaydi, F4–F6 dan oldin ham bo'ladi.
 6. **F4** davomi (chat.css ↔ mono → qolgan fayllar), keyin **F5**, **F6**.
 7. **F8** (hujjat).
+
+> **2026-09-30:** brauzer/qurilma tekshiruvlari (2-band F4 to'xtash nuqtasi, F0 smoke, F5/F6 qurilma sinovi) MR tomonidan o'tkazildi. Keyingi qadamlar: Vercel Preview + TURN_*, F4 4.3/4.4/4.6/4.8, DB contract (1 hafta kuzatuvdan keyin).
 
 > Qoida: **avval kes, keyin tartibla, oxirida chiroy.** Va C11 saboqi: **ko'z tekshiruviga qadar "tozalandi" dema.**

@@ -4624,6 +4624,7 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
    (Escape/nav orqali yopish JS dan #searchOverlayClose.click() bilan ishlashda davom etadi) */
 [data-theme] .search-overlay .search-overlay-box .search-overlay-close { display: none; }
 [data-theme] .search-overlay .exp-pill input { height: 48px; padding: 0 48px 0 46px; border-radius: 24px; }
-.search-clear-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border: none; border-radius: 16px; background: var(--x-blue, var(--pal-blue)); color: var(--bg); cursor: pointer; z-index: 2; }
+[data-theme] .search-overlay .exp-pill input:focus, [data-theme] .search-overlay .exp-pill input:focus-visible { border-radius: 24px; }
+.search-clear-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border: none; border-radius: 16px; background: var(--pal-gray-500); color: var(--bg); cursor: pointer; z-index: 2; }
 .search-clear-btn:hover { opacity: .85; }
 [data-theme] .search-overlay .exp-pill input:placeholder-shown ~ .search-clear-btn { display: none; }
