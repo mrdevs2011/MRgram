@@ -79,6 +79,16 @@ $('searchOverlayClose')?.addEventListener('click', e => {
   closeSearchOverlay();
 });
 
+/* X (tozalash) — faqat inputni bo'shatadi, oynani yopmaydi */
+$('searchClearBtn')?.addEventListener('click', e => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!searchInput) return;
+  searchInput.value = '';
+  searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+  searchInput.focus();
+});
+
 /* Backdrop click → close */
 searchOverlay?.addEventListener('click', e => {
   if (e.target === searchOverlay) closeSearchOverlay();
