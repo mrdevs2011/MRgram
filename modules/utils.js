@@ -159,7 +159,7 @@ export const defAvi = n => {
 };
 
 /* ── Tasdiqlash dialog ───────────────────────────────────────────────────── */
-export function showConfirm(msg, onOk, title = 'Aniqmi?') {
+export function showConfirm(msg, onOk, title = 'Aniqmi?', okLabel = 'Mayli') {
   const confirmTitle   = $('confirmTitle');
   const confirmMsg     = $('confirmMsg');
   const confirmOverlay = $('confirmOverlay');
@@ -171,6 +171,7 @@ export function showConfirm(msg, onOk, title = 'Aniqmi?') {
   }
   confirmTitle.textContent = title;
   confirmMsg.textContent   = msg;
+  ok.textContent = okLabel; // klon ham shu matnni oladi
   confirmOverlay.classList.add('show');
   const close  = () => confirmOverlay.classList.remove('show');
   const newOk  = ok.cloneNode(true);

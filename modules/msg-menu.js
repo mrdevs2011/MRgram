@@ -161,7 +161,7 @@ function remove(ids) {
     if (editing && own.includes(editing.id)) cancelEdit(true);
     exitSelect();
     api.reload();
-  }, 'O‘chirish');
+  }, 'O‘chirish', 'O‘chirish');
 }
 
 /* ── Tahrirlash (input ustida "Tahrirlash" paneli, reply-bar qayta ishlatiladi) ── */
