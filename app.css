@@ -4579,12 +4579,14 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 
 /* Desktop: chat sarlavhasi — pastki input bilan bir xil yumaloq "suzuvchi" bar */
 @media (min-width: 1100px) {
-  #chatThreadModal .chat-thread-hdr { margin: 16px 16px 8px; padding: 8px 12px; border: 1px solid var(--pal-gray-800); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 28px; background: #0b0c0e; }
+  #chatThreadModal .chat-thread-hdr { position: absolute; top: 0; left: 0; right: 0; z-index: 6; margin: 16px 16px 8px; padding: 8px 12px; border: 1px solid var(--pal-gray-800); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 28px; background: #0b0c0e; }
+  #chatThreadModal .chat-thread-messages { padding-top: 76px; }
 }
 
 /* Mobil: chat sarlavhasi va pastki input ham yumaloq "suzuvchi" bar (desktop bilan bir xil ko'rinish, kichikroq chetlar) */
 @media (max-width: 1099px) {
-  #chatThreadModal .chat-thread-hdr { margin: max(8px, env(safe-area-inset-top, 0px)) 8px 4px; padding: 6px 10px; border: 1px solid var(--pal-gray-800); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 26px; background: #0b0c0e; }
+  #chatThreadModal .chat-thread-hdr { position: absolute; top: 0; left: 0; right: 0; z-index: 6; margin: max(8px, env(safe-area-inset-top, 0px)) 8px 4px; padding: 6px 10px; border: 1px solid var(--pal-gray-800); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 26px; background: #0b0c0e; }
+  #chatThreadModal .chat-thread-messages { padding-top: calc(64px + env(safe-area-inset-top, 0px)); }
   #chatThreadModal .chat-thread-input-row { margin: 4px 8px calc(8px + env(safe-area-inset-bottom, 0px)); padding: 5px 8px; border: 1px solid var(--pal-gray-800); border-radius: 26px; background: #0b0c0e; }
   #chatThreadModal .chat-thread-input { background: transparent; border-radius: 0; padding: 9px 8px; }
   #chatThreadModal .chat-thread-input:focus { background: transparent; }
@@ -4609,3 +4611,14 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 .post-cmt-panel .post-cmt-input-row .cmt-input { min-width: 0; flex: 1; }
 /* Sodda ko'rinish: ajratuvchi (dekorativ) chiziqlarsiz. Faol tab chizig'i, input va avatar halqalari saqlanadi. */
 [data-theme] .post, .post, [data-theme] .chat-row, .chat-row, [data-theme] .chat-thread, .exp-head, #storiesBar, [data-theme] :is(.post-cmt-list, .rr-cmt-list) .cmt-row, [data-theme] :is(.post-cmt-list, .rr-cmt-list) .cmt-empty, :is(.post-cmt-list, .rr-cmt-list) .cmt-skel-row, .post-cmt-panel, .post-cmt-panel .post-cmt-input-row, .rr-cmt-panel .rr-cmt-input-row { border-top: none; border-bottom: none; }
+
+/* Faqat emojidan iborat xabarlar: bubble yo'q; 1 ta eng katta, 2 > 3 > 4 kichrayadi, 4+ bir xil */
+.chat-msg.emoji-only .chat-bubble { background: none !important; box-shadow: none !important; border: none !important; padding: 0 !important; border-radius: 0 !important; }
+.chat-msg.emoji-only .chat-bubble-text { font-size: var(--emo-size, 38px); line-height: 1.15; letter-spacing: 1px; }
+.chat-msg.emoji-only .chat-bubble-text::after { content: none !important; }
+.chat-msg.emoji-only .chat-msg-meta { float: none; display: flex; justify-content: flex-end; margin: 2px 2px 0 0; }
+.chat-msg.emoji-only.theirs .chat-msg-meta { justify-content: flex-start; }
+.chat-msg.emoji-only.emo-1 { --emo-size: 76px; }
+.chat-msg.emoji-only.emo-2 { --emo-size: 56px; }
+.chat-msg.emoji-only.emo-3 { --emo-size: 46px; }
+.chat-msg.emoji-only.emo-4 { --emo-size: 38px; }

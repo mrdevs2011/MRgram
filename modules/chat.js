@@ -269,6 +269,7 @@ import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLa
 import { toast }            from './toast.js';
 import { rateOk }           from './rate-limit.js';
 import { initEmojiPicker } from './emoji-picker.js';
+import { emojiOnlyClass } from './emoji-only.js';
 import {
   startGroupsWatcher, stopGroupsWatcher, bindGroupsRealtime,
   openGroupThread, closeGroupThread,
@@ -1153,6 +1154,7 @@ function paintMessages(msgs) {
     const mine = m.senderId === state.me?.uid;
     const time = fmtTime(m.createdAt);
     let bubbleContent = '';
+    let emoCls = '';
 
     if (m.type === 'voice') {
       /* ── Voice message ── */
@@ -1212,6 +1214,7 @@ function paintMessages(msgs) {
     } else {
       /* ── Text message ── */
       bubbleContent = `<div class="chat-bubble-text">${renderMarkdown(m.text || '')}</div>`;
+      emoCls = emojiOnlyClass(m.text);
     }
 
     // ID asosida "yangi"lik: shu xabar ID'si ilgari chizilmagan bo'lsagina
@@ -1229,7 +1232,7 @@ function paintMessages(msgs) {
       dateSep = `<div class="chat-date-sep"><span>${_dateSepLabel(m.createdAt)}</span></div>`;
     }
 
-    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}" data-msg-id="${m.id || ''}">
+    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}${emoCls}" data-msg-id="${m.id || ''}">
 
       <div class="chat-bubble">
         <div class="chat-bubble-wrap">

@@ -24,6 +24,7 @@ import { sb, state, uploadViaController, isAdmin, fetchAllRows, mapProfile, mapG
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, lockScroll, unlockScroll, isOnline } from './utils.js';
 import { toast }                                    from './toast.js';
 import { rateOk }                                   from './rate-limit.js';
+import { emojiOnlyClass }                            from './emoji-only.js';
 import { updateVoiceSendBtn, _toDateSafe, _isSameDay, _dateSepLabel } from './chat.js';
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -352,6 +353,7 @@ async function paintGroupMessages(msgs, groupData) {
     const sName  = sender.fullName || 'Foydalanuvchi';
     const time   = fmtTime(m.createdAt);
     let bubbleContent = '';
+    let emoCls = '';
 
     if (m.type === 'file') {
       const fname  = esc(m.fileName || 'file');
@@ -370,6 +372,7 @@ async function paintGroupMessages(msgs, groupData) {
       }
     } else {
       bubbleContent = `<div class="chat-bubble-text">${renderMarkdown(m.text || '')}</div>`;
+      emoCls = emojiOnlyClass(m.text);
     }
 
     const senderAvi = sender.avatar || defAvi(sName);
@@ -385,7 +388,7 @@ async function paintGroupMessages(msgs, groupData) {
       dateSep = `<div class="chat-date-sep"><span>${_dateSepLabel(m.createdAt)}</span></div>`;
     }
 
-    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}">
+    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${emoCls}">
       ${!mine ? `<button class="msg-avi-btn" data-uid="${esc(m.senderId)}" title="${esc(sName)} profilini ko'rish">
         <img src="${esc(senderAvi)}" onerror="this.style.display='none'">
       </button>` : ''}
