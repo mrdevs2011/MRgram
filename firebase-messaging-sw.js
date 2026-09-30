@@ -106,6 +106,7 @@ const PRECACHE_URLS = [
   '/modules/chat.js',
   '/modules/chat-media.js',
   '/modules/error-log.js',
+  '/modules/no-autocomplete.js',
   '/modules/admin-storage.js',
   '/modules/rate-limit.js',
   '/modules/call.js',
