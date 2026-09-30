@@ -665,14 +665,14 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
    DOM tartibi o'zgarmaydi — faqat CSS order (comments.js ga tegilmagan). */
 .rr-cmt-panel:not([hidden]) { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 .rr-cmt-panel .rr-cmt-hdr { flex-shrink: 0; order: 1; }
-.rr-cmt-panel .rr-cmt-list { order: 2; flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
+.rr-cmt-panel .rr-cmt-list { order: 2; flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: auto; }
 .rr-cmt-panel .rr-cmt-input-row { order: 3; flex-shrink: 0; border-top: 1px solid var(--line); background: var(--bg); padding-bottom: 4px; }
 .rr-cmt-panel .rr-cmt-list .cmt-row, .rr-cmt-panel .rr-cmt-list .cmt-body { min-width: 0; }
 .rr-cmt-panel .rr-cmt-input-row .cmt-input { min-width: 0; flex: 1; }
 .rr-cmt-panel .rr-cmt-input-row .cmt-send { flex-shrink: 0; }
 
 .post-cmt-panel { display: flex; flex-direction: column; }
-.post-cmt-panel .post-cmt-list { order: 1; max-height: min(640px, 70dvh); overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
+.post-cmt-panel .post-cmt-list { order: 1; max-height: min(640px, 70dvh); overflow-y: auto; overflow-x: hidden; overscroll-behavior: auto; }
 .post-cmt-panel .post-cmt-list .cmt-row, .post-cmt-panel .post-cmt-list .cmt-body { min-width: 0; }
 .post-cmt-panel .post-cmt-input-row { order: 2; border-top: 1px solid var(--line); }
 .post-cmt-panel .post-cmt-input-row .cmt-input { min-width: 0; flex: 1; }
