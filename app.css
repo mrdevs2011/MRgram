@@ -468,7 +468,7 @@
 .ufb-track { height: 3px; background: var(--bg4); border-radius: 99px; overflow: hidden; }
 .ufb-fill { height: 100%; background: var(--blue); border-radius: 99px;  width: 0%; }
 /* Indeterminate animation when stuck */
-.ufb-fill.indeterminate { width: 40% !important;  }
+.ufb-fill.indeterminate { width: 40%;  }
 .ufb-pct { font-size: 11px; font-weight: 600; color: var(--blue); flex-shrink: 0; min-width: 32px; text-align: right; }
 /* ═══════════════════════════════════════════ THEME AWARE ENHANCEMENTS ══════════════════════════════════════... */
 /* Dark mode: stronger borders and shadows */
@@ -719,7 +719,7 @@
 .pe-field-label { font-size: 11.5px; font-weight: 600; color: var(--text3); margin: 10px 0 4px; text-transform: uppercase; letter-spacing: 0.04em; }
 .pe-field-prefix-wrap { position: relative; display: flex; align-items: center; }
 .pe-prefix { position: absolute; left: 14px; color: var(--text3); font-size: 15px; font-weight: 500; pointer-events: none; }
-/* !important shart — .field'ning shorthand padding (nav.css) @import zanjirida profile.css'dan KEYIN yuklanad... */
+/* shart — .field'ning shorthand padding (nav.css) @import zanjirida profile.css'dan KEYIN yuklanad... */
 .pe-prefix-field { padding-left: 28px !important; }
 /* Group edit avatar */
 .grp-edit-avi-wrap { position: relative; width: 80px; height: 80px; margin: 0 auto 16px; }
@@ -791,8 +791,8 @@
 .auth-switch { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text2); }
 /* Auth error */
 .err-msg { min-height: 18px; font-size: 12px; color: var(--red); margin: -4px 0 8px; padding: 0 4px; line-height: 1.4; font-family: var(--mono); letter-spacing: 0.1px; }
-.field.input-error { border-color: var(--red) !important; background: var(--pal-gray-900) !important; box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-900) !important; }
-.field.input-error:focus { border-color: var(--red) !important; box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-800) !important; }
+.field.input-error { border-color: var(--red); background: var(--pal-gray-900); box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-900); }
+.field.input-error:focus { border-color: var(--red); box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-800); }
 #authErr { color: var(--red); font-size: 12.5px; font-weight: 500; min-height: 18px; margin-top: -4px; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
 #authErr:not(:empty)::before {
   content: '';
@@ -1546,7 +1546,7 @@
 .call-voice-avi { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; }
 .call-voice-avi img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 /* Doira qirqimi child (yashil harf) da yo'qolib, KVADRAT bo'lib qolmasin */
-.call-voice-avi { flex-shrink: 0; isolation: isolate; border-radius: 50% !important; }
+.call-voice-avi { flex-shrink: 0; isolation: isolate; border-radius: 50%; }
 .call-avi-initial { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 700; color: var(--pal-white); background: var(--pal-green); border-radius: 50%; }
 .incoming-call-avi .call-avi-initial { font-size: 52px; }
 .call-voice-name { font-size: 24px; font-weight: 700; color: var(--pal-white); }
@@ -1656,15 +1656,15 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .chat-msg.theirs .chat-bubble:has(.cfm-media-wrap) { padding: 4px 4px 6px; }
 /* ═══════════════════════════════════════════════════════════════════════ VOICE BTN — amplitude-based smooth... */
 .chat-voice-btn.recording {
-  border: 0.5px solid #5F5F63 !important;
+  border: 0.5px solid #5F5F63;
   
-  transform: scale(var(--rec-scale, 1.0)) !important;
-  box-shadow: inset 0 1px 0 var(--pal-legacy-525257), 0 0 0 calc((var(--rec-scale, 1.0) - 1) * 28px) #232323, 0 0 calc(var(--rec-glow, 0) * 0.4px) var(--pal-gray-700), 0 4px 16px var(--pal-legacy-2e2e2e) !important;
+  transform: scale(var(--rec-scale, 1.0));
+  box-shadow: inset 0 1px 0 var(--pal-legacy-525257), 0 0 0 calc((var(--rec-scale, 1.0) - 1) * 28px) #232323, 0 0 calc(var(--rec-glow, 0) * 0.4px) var(--pal-gray-700), 0 4px 16px var(--pal-legacy-2e2e2e);
   
 }
 /* ═══════════════════════════════════════════════════════════════════════ PENDING UPLOAD BUBBLE ═════════════... */
 .cpb-wrap { margin-bottom: 4px; }
-.cpb-bubble { min-width: 200px; max-width: 280px; padding: 12px 14px 10px !important; }
+.cpb-bubble { min-width: 200px; max-width: 280px; padding: 12px 14px 10px; }
 .cpb-voice, .cpb-file { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .cpb-mic-icon {
   width: 36px;
@@ -1688,30 +1688,30 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .cpb-pct { font-size: 11px; font-weight: 700; color: #C1C1C3; text-align: right; font-variant-numeric: tabular-nums; }
 /* ═══════════════════════════════════════════════════════════════════════ CALL MODALS — SOLID UI ════════════... */
 /* Incoming call — true edge-to-edge fullscreen (Telegram-style), no card box */
-#incomingCallModal { background: radial-gradient(circle at 50% 0%, var(--pal-gray-800) 0%, var(--pal-black) 55%), var(--pal-black) !important; }
+#incomingCallModal { background: radial-gradient(circle at 50% 0%, var(--pal-gray-800) 0%, var(--pal-black) 55%), var(--pal-black); }
 /* .incoming-call-inner intentionally left un-boxed — it already spans 100% width/height via the base rule abo... */
 /* Ring animation — green glass rings */
-.incoming-call-ring-anim span { box-shadow: 0 0 12px var(--pal-gray-900) !important; }
+.incoming-call-ring-anim span { box-shadow: 0 0 12px var(--pal-gray-900); }
 /* Avatar glass border */
-.incoming-call-avi { border: 2.5px solid #1A8C46 !important; box-shadow: inset 0 1px 0 var(--pal-legacy-3a3a3f), 0 0 0 4px var(--pal-gray-900), 0 0 32px var(--pal-gray-800), 0 8px 24px var(--pal-black) !important; }
+.incoming-call-avi { border: 2.5px solid #1A8C46; box-shadow: inset 0 1px 0 var(--pal-legacy-3a3a3f), 0 0 0 4px var(--pal-gray-900), 0 0 32px var(--pal-gray-800), 0 8px 24px var(--pal-black); }
 /* Buttons — glass */
-.inc-call-btn { border: 0.5px solid var(--pal-legacy-3f3f44) !important; box-shadow: inset 0 1px 0 var(--pal-legacy-4d4d52), 0 6px 24px var(--pal-black) !important;  }
-.inc-call-btn.reject { background: #CC3B3C !important; box-shadow: inset 0 1px 0 var(--pal-legacy-3f3f44), 0 6px 24px #652024 !important; }
-.inc-call-btn.accept { background: #1EA852 !important; box-shadow: inset 0 1px 0 var(--pal-legacy-3f3f44), 0 6px 24px #13542F !important; }
+.inc-call-btn { border: 0.5px solid var(--pal-legacy-3f3f44); box-shadow: inset 0 1px 0 var(--pal-legacy-4d4d52), 0 6px 24px var(--pal-black);  }
+.inc-call-btn.reject { background: #CC3B3C; box-shadow: inset 0 1px 0 var(--pal-legacy-3f3f44), 0 6px 24px #652024 !important; }
+.inc-call-btn.accept { background: #1EA852; box-shadow: inset 0 1px 0 var(--pal-legacy-3f3f44), 0 6px 24px #13542F !important; }
 /* Active call modal — deep space glass */
-#callActiveModal { background: var(--pal-black) !important; }
+#callActiveModal { background: var(--pal-black); }
 #callActiveModal::before { content: ''; position: fixed; inset: 0; background: var(--pal-gray-900), var(--pal-black); pointer-events: none; z-index: 0; }
 /* Voice avatar — glass sphere */
 .call-voice-avi {
-  border: 2px solid var(--pal-legacy-35353b) !important;
-  box-shadow: inset 0 2px 0 var(--pal-legacy-35353b), 0 0 0 8px var(--pal-gray-900), 0 0 60px var(--pal-gray-700), 0 16px 48px var(--pal-black) !important;
-  background: var(--pal-gray-900) !important;
+  border: 2px solid var(--pal-legacy-35353b);
+  box-shadow: inset 0 2px 0 var(--pal-legacy-35353b), 0 0 0 8px var(--pal-gray-900), 0 0 60px var(--pal-gray-700), 0 16px 48px var(--pal-black);
+  background: var(--pal-gray-900);
 }
 /* Control buttons — consolidated into single definition above */
 /* Video mode — controls glass bar */
 #callActiveModal.video-mode .call-active-btns {
-  background: var(--pal-black) !important;
-  border: 0.5px solid var(--pal-legacy-26262c) !important;
+  background: var(--pal-black);
+  border: 0.5px solid var(--pal-legacy-26262c);
   box-shadow: inset 0 1px 0 #2B2B31, 0 4px 24px var(--pal-black) !important;
   border-radius: 60px !important;
 }
