@@ -114,6 +114,7 @@ export async function initView() {
 
   _initBroadcast();
   await _initUsers();
+  import('./admin-storage.js').then(m => m.renderStorageUsage(document.getElementById('actionsBroadcastSection'))).catch(() => {});
 
   _initialized = true;
 }
@@ -289,4 +290,5 @@ export function destroyView() {
   const section = document.getElementById('actionsBroadcastSection');
   if (section) delete section.dataset.ready;
   if (_noticeUnsub) { _noticeUnsub(); _noticeUnsub = null; }
+  document.getElementById('actionsStorageInfo')?.remove();
 }
