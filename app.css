@@ -4509,6 +4509,46 @@ html, body, #app, .app { background: var(--pal-black) !important; background-col
   }
   .right-rail[hidden] { display: none !important; }
   #chatsView, #reelsView, #actionsView { margin-right: 0; }
+
+  /* ── CHAT (≥1200px): suhbat MARKAZDA (feed kabi), ro'yxat + qidiruv O'NG ustunda (rail kabi) ── */
+  #chatsView.on {
+    position: fixed !important;
+    top: 12px !important;
+    bottom: auto !important;
+    left: calc(var(--content-left, var(--sidebar, 260px)) + var(--center-w) + 16px) !important;
+    right: max(12px, var(--gutter, 0px)) !important;
+    width: auto !important;
+    min-width: 260px;
+    height: calc(100dvh - 24px) !important;
+    margin: 0 !important;
+    padding: 4px 20px 20px !important;
+    box-sizing: border-box;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--pal-black);
+    border: 1px solid var(--pal-gray-700);
+    border-radius: 16px;
+    z-index: 40;
+  }
+  #chatsView .chats-hdr { padding: 12px 0 8px; background: var(--pal-black) !important; font-size: 18px; font-weight: 700; }
+  #chatsView .ulist-search-wrap { margin: 4px 0 10px; }
+  #chatsView .chats-list { padding-bottom: 8px; }
+  body:has(#chatsView.on) #chatThreadModal {
+    left: var(--content-left, var(--sidebar, 260px));
+    right: auto;
+    width: var(--center-w);
+    max-width: var(--center-w);
+    box-sizing: border-box;
+    border-left: 0;
+    border-right: 1px solid var(--pal-gray-700);
+  }
+  .chats-x-pane {
+    left: var(--content-left, var(--sidebar, 260px));
+    right: auto;
+    width: var(--center-w);
+    box-sizing: border-box;
+    border-right: 1px solid var(--pal-gray-700);
+  }
 }
 .rr-card { background: transparent; border: none; border-radius: 0; padding: 16px 0 8px; border-bottom: 1px solid var(--pal-gray-700); }
 .rr-card:last-child { border-bottom: none; }
