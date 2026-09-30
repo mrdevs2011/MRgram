@@ -4622,3 +4622,23 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 .chat-msg.emoji-only.emo-2 { --emo-size: 56px; }
 .chat-msg.emoji-only.emo-3 { --emo-size: 46px; }
 .chat-msg.emoji-only.emo-4 { --emo-size: 38px; }
+
+/* Emoji ustiga bosilganda animatsiya (Telegram uslubi) */
+.chat-msg.emoji-only .chat-bubble { position: relative; overflow: visible !important; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+.chat-msg.emoji-only .chat-bubble-text { width: fit-content; transform-origin: 50% 70%; }
+.chat-msg.emoji-only .chat-bubble-text.emo-play { animation: emoPop .7s cubic-bezier(.3, 1.4, .5, 1); }
+@keyframes emoPop {
+  0% { transform: scale(1); }
+  20% { transform: scale(1.4) rotate(-10deg); }
+  40% { transform: scale(.9) rotate(8deg); }
+  60% { transform: scale(1.18) rotate(-5deg); }
+  80% { transform: scale(.97) rotate(2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.emo-fx { position: absolute; left: 50%; top: 40%; font-size: var(--sz, 20px); line-height: 1; pointer-events: none; z-index: 8; opacity: 0; animation: emoFly .9s ease-out var(--dl, 0ms) forwards; }
+@keyframes emoFly {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.4); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), calc(-50% + var(--dy, -80px))) scale(1) rotate(var(--rot, 0deg)); }
+}
+@media (prefers-reduced-motion: reduce) { .chat-msg.emoji-only .chat-bubble-text.emo-play { animation-duration: .3s; } }
