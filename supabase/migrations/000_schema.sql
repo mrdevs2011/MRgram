@@ -1,240 +1,119 @@
--- ═══════════════════════════════════════════════════════════════════════
--- MRspace — Supabase sxemasi (0 dan, migratsiyasiz)
--- Supabase Dashboard → SQL Editor'da BIR MARTA ishga tushiring.
---
--- Oldindan Dashboard'da:
---   Authentication → Providers → Email → "Confirm email" ni O'CHIRING
---   (ilova username'dan soxta email yasaydi: username@mrspace.uz)
---
--- Ishga tushgandan keyin admin qilish (o'zingiz ro'yxatdan o'tgach):
---   update public.profiles set is_admin = true, approval = 'approved'
---   where username = 'SIZNING_USERNAME';
--- ═══════════════════════════════════════════════════════════════════════
+-- 000_schema.sql -- JONLI bazadan olingan baseline (supabase db dump, schema-only, 2026-09-30).
+-- Sir: send_push_on_* triggerlaridagi x-webhook-secret qiymati __WEBHOOK_SECRET__ bilan almashtirilgan (repoga yozilmaydi).
+-- Yangi bazada ishga tushirishdan oldin o'sha joyga haqiqiy qiymatni qo'ying.
+-- Eslatma: bu dump 001-006, 014, 015 ni o'z ichiga oladi (ularni qayta yurgizish shart emas).
 
--- ─── 0. Anon uchun hamma narsani yopamiz, kerakligini keyin ochamiz ────
-revoke all on all tables    in schema public from anon;
-revoke all on all functions in schema public from anon;
 
--- ═══════════════════════════════════════════════════════════════════════
--- 1. PROFILES  (Firestore: users/{uid})
--- ═══════════════════════════════════════════════════════════════════════
-create table public.profiles (
-  id              uuid primary key references auth.users(id) on delete cascade,
-  username        text not null check (username = lower(username) and length(username) between 2 and 40),
-  full_name       text not null default '',
-  email           text,
-  bio             text not null default '',
-  avatar          text not null default '',
-  cover_url       text,
-  website         text,
-  location        text,
-  approval        text not null default 'pending' check (approval in ('pending','approved','rejected')),
-  blocked         boolean not null default false,
-  blocked_until   timestamptz,               -- null + blocked=true => doimiy blok
-  is_admin        boolean not null default false,
-  last_seen       timestamptz,
-  last_login      timestamptz,
-  last_user_agent text,
-  last_platform   text,
-  created_at      timestamptz not null default now()
-);
-create unique index profiles_username_key on public.profiles (username);
 
--- ─── Yordamchi funksiyalar (RLS ichida rekursiyasiz ishlashi uchun security definer) ───
-create function public.is_admin() returns boolean
-language sql stable security definer set search_path = public as $$
-  select coalesce((select is_admin from public.profiles where id = auth.uid()), false);
-$$;
 
-create function public.is_approved() returns boolean
-language sql stable security definer set search_path = public as $$
-  select exists (
-    select 1 from public.profiles p
-    where p.id = auth.uid()
-      and p.approval = 'approved'
-      and (not p.blocked or (p.blocked_until is not null and p.blocked_until < now()))
-  );
-$$;
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
--- Server vaqti (Firestore _servertime_sync o'rniga)
-create function public.server_now() returns timestamptz
-language sql stable as $$ select now(); $$;
 
--- ─── Yangi auth user → profil (client o'zi profil yozmaydi, approval soxtalashtirib bo'lmaydi) ───
-create function public.handle_new_user() returns trigger
-language plpgsql security definer set search_path = public as $$
-declare
-  uname text := lower(coalesce(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)));
+CREATE EXTENSION IF NOT EXISTS "pg_net" WITH SCHEMA "extensions";
+
+
+
+
+
+
+COMMENT ON SCHEMA "public" IS 'standard public schema';
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "pgcrypto" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "supabase_vault" WITH SCHEMA "vault";
+
+
+
+
+
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
+
+
+
+
+
+
+CREATE OR REPLACE FUNCTION "public"."admin_delete_user"("p_uid" "uuid") RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public', 'auth'
+    AS $$
 begin
-  insert into public.profiles (id, username, full_name, email, avatar)
-  values (
-    new.id,
-    uname,
-    coalesce(nullif(new.raw_user_meta_data->>'full_name', ''), uname),
-    new.email,
-    coalesce(new.raw_user_meta_data->>'avatar', '')
-  );
-  return new;
-end $$;
-
-create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute function public.handle_new_user();
-
--- ─── Login sahifasi uchun (anon chaqiradi) ───
-create function public.username_available(p_username text) returns boolean
-language sql stable security definer set search_path = public as $$
-  select not exists (select 1 from public.profiles where username = lower(p_username));
-$$;
-
-create function public.email_for_username(p_username text) returns text
-language sql stable security definer set search_path = public as $$
-  select email from public.profiles where username = lower(p_username);
-$$;
-grant execute on function public.username_available(text) to anon, authenticated;
-grant execute on function public.email_for_username(text) to anon, authenticated;
-
--- ─── Maxfiy ustunlarni oddiy user o'zgartira olmasin ───
-create function public.guard_profile_update() returns trigger
-language plpgsql security definer set search_path = public as $$
-begin
-  -- service_role / SQL editor (auth.uid() null) — cheklanmaydi
-  if auth.uid() is not null and not public.is_admin() then
-    if new.id is distinct from old.id
-       or new.email is distinct from old.email
-       or new.approval is distinct from old.approval
-       or new.blocked is distinct from old.blocked
-       or new.blocked_until is distinct from old.blocked_until
-       or new.is_admin is distinct from old.is_admin
-       or new.created_at is distinct from old.created_at then
-      raise exception 'Bu maydonlarni faqat admin o''zgartira oladi';
-    end if;
+  if not public.is_admin() then
+    raise exception 'Faqat admin';
   end if;
-  return new;
+  if p_uid = auth.uid() then
+    raise exception 'O''zingizni bu yerdan o''chirib bo''lmaydi';
+  end if;
+  delete from auth.users where id = p_uid;
 end $$;
-create trigger profiles_guard before update on public.profiles
-  for each row execute function public.guard_profile_update();
 
-alter table public.profiles enable row level security;
-create policy profiles_select on public.profiles for select to authenticated
-  using (id = auth.uid() or public.is_approved() or public.is_admin());
-create policy profiles_update on public.profiles for update to authenticated
-  using (id = auth.uid() or public.is_admin())
-  with check (id = auth.uid() or public.is_admin());
-create policy profiles_delete on public.profiles for delete to authenticated using (public.is_admin());
--- INSERT policy yo'q: profilni faqat handle_new_user() trigger yaratadi
 
--- ═══════════════════════════════════════════════════════════════════════
--- 2. FOLLOWS, CONTACTS, LOGIN HISTORY, PUSH
--- ═══════════════════════════════════════════════════════════════════════
-create table public.follows (
-  follower_id  uuid not null references public.profiles(id) on delete cascade,
-  following_id uuid not null references public.profiles(id) on delete cascade,
-  created_at   timestamptz not null default now(),
-  primary key (follower_id, following_id),
-  check (follower_id <> following_id)
-);
-create index follows_following_idx on public.follows (following_id);
-alter table public.follows enable row level security;
-create policy follows_select on public.follows for select to authenticated using (true);
-create policy follows_insert on public.follows for insert to authenticated
-  with check (follower_id = auth.uid() and public.is_approved());
-create policy follows_delete on public.follows for delete to authenticated
-  using (follower_id = auth.uid() or public.is_admin());
+ALTER FUNCTION "public"."admin_delete_user"("p_uid" "uuid") OWNER TO "postgres";
 
-create table public.contacts (
-  owner_id   uuid not null references public.profiles(id) on delete cascade,
-  contact_id uuid not null references public.profiles(id) on delete cascade,
-  full_name  text not null default '',
-  avatar     text not null default '',
-  added_at   timestamptz not null default now(),
-  primary key (owner_id, contact_id)
-);
-alter table public.contacts enable row level security;
-create policy contacts_all on public.contacts for all to authenticated
-  using (owner_id = auth.uid()) with check (owner_id = auth.uid() and public.is_approved());
 
-create table public.login_history (
-  id         bigint generated always as identity primary key,
-  user_id    uuid not null references public.profiles(id) on delete cascade,
-  type       text not null check (type in ('login','session')),
-  at         timestamptz not null default now(),
-  user_agent text,
-  platform   text
-);
-create index login_history_user_idx on public.login_history (user_id, at desc);
-alter table public.login_history enable row level security;
-create policy login_history_select on public.login_history for select to authenticated
-  using (user_id = auth.uid() or public.is_admin());
-create policy login_history_insert on public.login_history for insert to authenticated
-  with check (user_id = auth.uid());
-
--- Push tokenlar (Web Push obunasi JSON ko'rinishida)
-create table public.push_tokens (
-  token      text primary key,
-  user_id    uuid not null references public.profiles(id) on delete cascade,
-  platform   text,
-  created_at timestamptz not null default now()
-);
-create index push_tokens_user_idx on public.push_tokens (user_id);
-alter table public.push_tokens enable row level security;
-create policy push_tokens_all on public.push_tokens for all to authenticated
-  using (user_id = auth.uid()) with check (user_id = auth.uid());
-
-create or replace function public.register_push_token(p_token text, p_platform text default null)
-returns void language plpgsql security definer set search_path = public as $$
+CREATE OR REPLACE FUNCTION "public"."admin_storage_usage"() RETURNS bigint
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public', 'storage'
+    AS $$
 begin
-  if auth.uid() is null then raise exception 'Tizimga kirilmagan'; end if;
-  insert into public.push_tokens (token, user_id, platform)
-  values (p_token, auth.uid(), p_platform)
-  on conflict (token) do update set user_id = auth.uid(), platform = excluded.platform;
+  if not public.is_admin() then
+    raise exception 'admin only' using errcode = '42501';
+  end if;
+  return coalesce((
+    select sum((metadata->>'size')::bigint)
+    from storage.objects
+    where bucket_id = 'media'
+  ), 0);
+end;
+$$;
+
+
+ALTER FUNCTION "public"."admin_storage_usage"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."append_call_candidate"("p_call" "uuid", "p_candidate" "jsonb") RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+begin
+  update public.calls set
+    caller_candidates = case when caller_id = auth.uid() then caller_candidates || jsonb_build_array(p_candidate) else caller_candidates end,
+    callee_candidates = case when callee_id = auth.uid() then callee_candidates || jsonb_build_array(p_candidate) else callee_candidates end
+  where id = p_call and auth.uid() in (caller_id, callee_id);
 end $$;
-grant execute on function public.register_push_token(text, text) to authenticated;
 
--- ═══════════════════════════════════════════════════════════════════════
--- 3. POSTS, LIKES, COMMENTS
--- ═══════════════════════════════════════════════════════════════════════
-create table public.posts (
-  id             uuid primary key default gen_random_uuid(),
-  user_id        uuid not null references public.profiles(id) on delete cascade,
-  user_full_name text not null default '',
-  text           text,
-  media_path     text,             -- 'media' bucket ichidagi yo'l
-  media_type     text,
-  media_width    int,
-  media_height   int,
-  file_name      text,
-  file_size      bigint,
-  is_public      boolean not null default false,
-  is_max_private boolean not null default false,
-  views          int not null default 0,
-  likes_count    int not null default 0,
-  comment_count  int not null default 0,
-  created_at     timestamptz not null default now()
-);
-create index posts_created_idx on public.posts (created_at desc);
-create index posts_user_idx    on public.posts (user_id, created_at desc);
 
-create table public.post_likes (
-  post_id    uuid not null references public.posts(id) on delete cascade,
-  user_id    uuid not null references public.profiles(id) on delete cascade,
-  created_at timestamptz not null default now(),
-  primary key (post_id, user_id)
-);
+ALTER FUNCTION "public"."append_call_candidate"("p_call" "uuid", "p_candidate" "jsonb") OWNER TO "postgres";
 
-create table public.comments (
-  id         uuid primary key default gen_random_uuid(),
-  post_id    uuid not null references public.posts(id) on delete cascade,
-  user_id    uuid not null references public.profiles(id) on delete cascade,
-  user_name  text not null default '',
-  text       text not null,
-  created_at timestamptz not null default now()
-);
-create index comments_post_idx on public.comments (post_id, created_at);
 
--- Hisoblagichlar trigger orqali (client "sakrab" o'zgartira olmaydi)
-create function public.bump_post_counters() returns trigger
-language plpgsql security definer set search_path = public as $$
+CREATE OR REPLACE FUNCTION "public"."bump_post_counters"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
 begin
   if tg_table_name = 'post_likes' then
     update public.posts set likes_count = greatest(likes_count + case when tg_op = 'INSERT' then 1 else -1 end, 0)
@@ -245,97 +124,60 @@ begin
   end if;
   return null;
 end $$;
-create trigger post_likes_count after insert or delete on public.post_likes
-  for each row execute function public.bump_post_counters();
-create trigger comments_count after insert or delete on public.comments
-  for each row execute function public.bump_post_counters();
 
-create function public.increment_post_view(p_post uuid) returns void
-language sql security definer set search_path = public as $$
-  update public.posts set views = views + 1
-  where id = p_post and auth.uid() is not null and public.is_approved()
-    and (is_public or user_id = auth.uid());
-$$;
 
-alter table public.posts enable row level security;
-create policy posts_select on public.posts for select to authenticated
-  using (public.is_admin() or user_id = auth.uid() or is_public);
-create policy posts_insert on public.posts for insert to authenticated
-  with check (
-    public.is_admin()
-    or (public.is_approved() and user_id = auth.uid()
-        and views = 0 and likes_count = 0 and comment_count = 0)
-  );
-create policy posts_update on public.posts for update to authenticated
-  using ((public.is_approved() and user_id = auth.uid()) or public.is_admin())
-  with check ((user_id = auth.uid()) or public.is_admin());
-create policy posts_delete on public.posts for delete to authenticated
-  using (user_id = auth.uid() or public.is_admin());
-revoke update on public.posts from authenticated;
-grant  update (text, is_public, is_max_private) on public.posts to authenticated;
+ALTER FUNCTION "public"."bump_post_counters"() OWNER TO "postgres";
 
-create function public.post_is_visible(p_post uuid) returns boolean
-language sql stable security definer set search_path = public as $$
-  select public.is_admin() or exists (
-    select 1 from public.posts
-    where id = p_post and (is_public or user_id = auth.uid())
+
+CREATE OR REPLACE FUNCTION "public"."can_post_in_group"("p_group" "uuid") RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select exists (
+    select 1 from public.groups g
+    join public.group_members m on m.group_id = g.id and m.user_id = auth.uid()
+    where g.id = p_group
+      and (
+        m.role in ('owner','admin')
+        or (g.type = 'group' and g.msg_permission = 'all')
+      )
   );
 $$;
 
-alter table public.post_likes enable row level security;
-create policy likes_select on public.post_likes for select to authenticated
-  using (public.is_admin() or (public.is_approved() and public.post_is_visible(post_id)));
-create policy likes_insert on public.post_likes for insert to authenticated
-  with check (user_id = auth.uid() and public.is_approved() and public.post_is_visible(post_id));
-create policy likes_delete on public.post_likes for delete to authenticated
-  using (user_id = auth.uid());
 
-alter table public.comments enable row level security;
-create policy comments_select on public.comments for select to authenticated
-  using (public.is_admin() or (public.is_approved() and public.post_is_visible(post_id)));
-create policy comments_insert on public.comments for insert to authenticated
-  with check (user_id = auth.uid() and public.is_approved() and public.post_is_visible(post_id));
-create policy comments_update on public.comments for update to authenticated
-  using (user_id = auth.uid()) with check (user_id = auth.uid());
-create policy comments_delete on public.comments for delete to authenticated
-  using (user_id = auth.uid() or public.is_admin());
-revoke update on public.comments from authenticated;
-grant  update (text) on public.comments to authenticated;
+ALTER FUNCTION "public"."can_post_in_group"("p_group" "uuid") OWNER TO "postgres";
 
--- ═══════════════════════════════════════════════════════════════════════
--- 4. 1-ga-1 CHATLAR
---    chats: ikki kishi (user_a < user_b), chat_members: har biriga unread/typing
--- ═══════════════════════════════════════════════════════════════════════
-create table public.chats (
-  id              uuid primary key default gen_random_uuid(),
-  user_a          uuid not null references public.profiles(id) on delete cascade,
-  user_b          uuid not null references public.profiles(id) on delete cascade,
-  last_message    text not null default '',
-  last_sender_id  uuid,
-  last_message_at timestamptz not null default now(),
-  created_at      timestamptz not null default now(),
-  check (user_a < user_b),
-  unique (user_a, user_b)
-);
 
-create table public.chat_members (
-  chat_id      uuid not null references public.chats(id) on delete cascade,
-  user_id      uuid not null references public.profiles(id) on delete cascade,
-  unread_count int not null default 0,
-  typing_until timestamptz,
-  last_seen_at timestamptz,
-  primary key (chat_id, user_id)
-);
-create index chat_members_user_idx on public.chat_members (user_id);
+CREATE OR REPLACE FUNCTION "public"."delete_my_account"() RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public', 'auth'
+    AS $$
+begin
+  if auth.uid() is null then
+    raise exception 'Tizimga kirilmagan';
+  end if;
+  delete from auth.users where id = auth.uid();
+end $$;
 
-create function public.is_chat_member(p_chat uuid) returns boolean
-language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.chats c
-                 where c.id = p_chat and auth.uid() in (c.user_a, c.user_b));
+
+ALTER FUNCTION "public"."delete_my_account"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."email_for_username"("p_username" "text") RETURNS "text"
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select email from public.profiles where username = lower(p_username);
 $$;
 
-create function public.get_or_create_chat(p_other uuid) returns uuid
-language plpgsql security definer set search_path = public as $$
+
+ALTER FUNCTION "public"."email_for_username"("p_username" "text") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."get_or_create_chat"("p_other" "uuid") RETURNS "uuid"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
 declare
   me uuid := auth.uid();
   a uuid; b uuid; cid uuid;
@@ -351,44 +193,66 @@ begin
   return cid;
 end $$;
 
-create table public.messages (
-  id         uuid primary key default gen_random_uuid(),
-  chat_id    uuid not null references public.chats(id) on delete cascade,
-  sender_id  uuid not null references public.profiles(id) on delete cascade,
-  type       text not null default 'text' check (type in ('text','voice','file')),
-  text       text,
-  media_path text,
-  media_type text,
-  file_name  text,
-  file_size  bigint,
-  duration   int,
-  status     text not null default 'sent' check (status in ('sent','delivered','read')),
-  read_at    timestamptz,
-  edited_at  timestamptz,
-  created_at timestamptz not null default now()
-);
-create index messages_chat_idx on public.messages (chat_id, created_at);
 
-create function public.on_message_insert() returns trigger
-language plpgsql security definer set search_path = public as $$
+ALTER FUNCTION "public"."get_or_create_chat"("p_other" "uuid") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."group_is_private"("p_group" "uuid") RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select coalesce((select is_private from public.groups where id = p_group), true);
+$$;
+
+
+ALTER FUNCTION "public"."group_is_private"("p_group" "uuid") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."guard_call_update"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
 begin
-  update public.chats set
-    last_message    = case new.type when 'voice' then 'Ovozli xabar'
-                                    when 'file'  then coalesce(new.file_name, 'Fayl')
-                                    else coalesce(new.text, '') end,
-    last_sender_id  = new.sender_id,
-    last_message_at = new.created_at
-  where id = new.chat_id;
-  update public.chat_members set unread_count = unread_count + 1
-  where chat_id = new.chat_id and user_id <> new.sender_id;
-  return null;
+  if auth.uid() is null or public.is_admin() then return new; end if;
+  if new.caller_id is distinct from old.caller_id or new.callee_id is distinct from old.callee_id
+     or new.type is distinct from old.type or new.offer is distinct from old.offer
+     or new.created_at is distinct from old.created_at then
+    raise exception 'Qo''ng''iroq asosiy maydonlari o''zgarmaydi';
+  end if;
+  if auth.uid() = old.caller_id and (new.answer is distinct from old.answer
+     or new.callee_candidates is distinct from old.callee_candidates) then
+    raise exception 'Chaqiruvchi callee maydonlariga tega olmaydi';
+  end if;
+  if auth.uid() = old.callee_id and new.caller_candidates is distinct from old.caller_candidates then
+    raise exception 'Qabul qiluvchi caller maydonlariga tega olmaydi';
+  end if;
+  return new;
 end $$;
-create trigger messages_after_insert after insert on public.messages
-  for each row execute function public.on_message_insert();
 
--- Yuboruvchi: text/edited_at/status. Qabul qiluvchi: faqat status/read_at.
-create function public.guard_message_update() returns trigger
-language plpgsql security definer set search_path = public as $$
+
+ALTER FUNCTION "public"."guard_call_update"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."guard_member_update"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+begin
+  if auth.uid() is not null and new.role is distinct from old.role
+     and not (public.is_group_admin(old.group_id) or public.is_admin()) then
+    raise exception 'Rolni faqat admin o''zgartira oladi';
+  end if;
+  return new;
+end $$;
+
+
+ALTER FUNCTION "public"."guard_member_update"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."guard_message_update"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
 begin
   if auth.uid() is null then return new; end if;
   if auth.uid() = old.sender_id then
@@ -407,144 +271,149 @@ begin
   end if;
   return new;
 end $$;
-create trigger messages_guard before update on public.messages
-  for each row execute function public.guard_message_update();
 
-alter table public.chats enable row level security;
-create policy chats_select on public.chats for select to authenticated
-  using (auth.uid() in (user_a, user_b) or public.is_admin());
-create policy chats_delete on public.chats for delete to authenticated using (public.is_admin());
--- INSERT/UPDATE: faqat get_or_create_chat() va triggerlar orqali
 
-alter table public.chat_members enable row level security;
-create policy chat_members_select on public.chat_members for select to authenticated
-  using (public.is_chat_member(chat_id) or public.is_admin());
-create policy chat_members_update on public.chat_members for update to authenticated
-  using (user_id = auth.uid()) with check (user_id = auth.uid());
-revoke update on public.chat_members from authenticated;
-grant  update (unread_count, typing_until, last_seen_at) on public.chat_members to authenticated;
+ALTER FUNCTION "public"."guard_message_update"() OWNER TO "postgres";
 
-alter table public.messages enable row level security;
-create policy messages_select on public.messages for select to authenticated
-  using (public.is_chat_member(chat_id) or public.is_admin());
-create policy messages_insert on public.messages for insert to authenticated
-  with check (sender_id = auth.uid() and public.is_approved() and public.is_chat_member(chat_id));
-create policy messages_update on public.messages for update to authenticated
-  using (public.is_chat_member(chat_id)) with check (public.is_chat_member(chat_id));
-create policy messages_delete on public.messages for delete to authenticated
-  using (sender_id = auth.uid() or public.is_admin());
-revoke update on public.messages from authenticated;
-grant  update (text, status, read_at, edited_at) on public.messages to authenticated;
 
--- ═══════════════════════════════════════════════════════════════════════
--- 5. GURUH VA KANALLAR
--- ═══════════════════════════════════════════════════════════════════════
-create table public.groups (
-  id              uuid primary key default gen_random_uuid(),
-  type            text not null check (type in ('group','channel')),
-  name            text not null,
-  avatar          text not null default '',
-  description     text not null default '',
-  owner_id        uuid not null references public.profiles(id) on delete cascade,
-  is_private      boolean not null default false,
-  invite_code     text unique,
-  msg_permission  text not null default 'all' check (msg_permission in ('all','admins')),
-  last_message    text not null default '',
-  last_sender_id  uuid,
-  last_message_at timestamptz not null default now(),
-  created_at      timestamptz not null default now()
-);
+CREATE OR REPLACE FUNCTION "public"."guard_profile_update"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+begin
+  if auth.uid() is not null and not public.is_admin() then
+    if new.id is distinct from old.id
+       or new.email is distinct from old.email
+       or new.approval is distinct from old.approval
+       or new.blocked is distinct from old.blocked
+       or new.blocked_until is distinct from old.blocked_until
+       or new.is_admin is distinct from old.is_admin
+       or new.created_at is distinct from old.created_at then
+      raise exception 'Bu maydonlarni faqat admin o''zgartira oladi';
+    end if;
+  end if;
+  return new;
+end $$;
 
-create table public.group_members (
-  group_id     uuid not null references public.groups(id) on delete cascade,
-  user_id      uuid not null references public.profiles(id) on delete cascade,
-  role         text not null default 'member' check (role in ('owner','admin','member')),
-  unread_count int not null default 0,
-  joined_at    timestamptz not null default now(),
-  primary key (group_id, user_id)
-);
-create index group_members_user_idx on public.group_members (user_id);
 
-create function public.is_group_member(p_group uuid) returns boolean
-language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.group_members
-                 where group_id = p_group and user_id = auth.uid());
+ALTER FUNCTION "public"."guard_profile_update"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+declare
+  uname text := lower(coalesce(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)));
+begin
+  insert into public.profiles (id, username, full_name, email, avatar)
+  values (
+    new.id,
+    uname,
+    coalesce(nullif(new.raw_user_meta_data->>'full_name', ''), uname),
+    new.email,
+    coalesce(new.raw_user_meta_data->>'avatar', '')
+  );
+  return new;
+end $$;
+
+
+ALTER FUNCTION "public"."handle_new_user"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."increment_post_view"("p_post" "uuid") RETURNS "void"
+    LANGUAGE "sql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  update public.posts set views = views + 1
+  where id = p_post and auth.uid() is not null and public.is_approved()
+    and (is_public or user_id = auth.uid());
 $$;
-create function public.is_group_admin(p_group uuid) returns boolean
-language sql stable security definer set search_path = public as $$
-  select exists (select 1 from public.group_members
-                 where group_id = p_group and user_id = auth.uid() and role in ('owner','admin'));
+
+
+ALTER FUNCTION "public"."increment_post_view"("p_post" "uuid") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."is_admin"() RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select coalesce((select is_admin from public.profiles where id = auth.uid()), false);
 $$;
-create function public.group_is_private(p_group uuid) returns boolean
-language sql stable security definer set search_path = public as $$
-  select coalesce((select is_private from public.groups where id = p_group), true);
-$$;
-create function public.can_post_in_group(p_group uuid) returns boolean
-language sql stable security definer set search_path = public as $$
+
+
+ALTER FUNCTION "public"."is_admin"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."is_approved"() RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
   select exists (
-    select 1 from public.groups g
-    join public.group_members m on m.group_id = g.id and m.user_id = auth.uid()
-    where g.id = p_group
-      and (
-        m.role in ('owner','admin')
-        or (g.type = 'group' and g.msg_permission = 'all')
-      )
+    select 1 from public.profiles p
+    where p.id = auth.uid()
+      and p.approval = 'approved'
+      and (not p.blocked or (p.blocked_until is not null and p.blocked_until < now()))
   );
 $$;
 
--- Yaratuvchi avtomatik "owner" a'zo
-create function public.on_group_insert() returns trigger
-language plpgsql security definer set search_path = public as $$
+
+ALTER FUNCTION "public"."is_approved"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."is_chat_member"("p_chat" "uuid") RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select exists (select 1 from public.chats c
+                 where c.id = p_chat and auth.uid() in (c.user_a, c.user_b));
+$$;
+
+
+ALTER FUNCTION "public"."is_chat_member"("p_chat" "uuid") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."is_group_admin"("p_group" "uuid") RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select exists (select 1 from public.group_members
+                 where group_id = p_group and user_id = auth.uid() and role in ('owner','admin'));
+$$;
+
+
+ALTER FUNCTION "public"."is_group_admin"("p_group" "uuid") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."is_group_member"("p_group" "uuid") RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select exists (select 1 from public.group_members
+                 where group_id = p_group and user_id = auth.uid());
+$$;
+
+
+ALTER FUNCTION "public"."is_group_member"("p_group" "uuid") OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."on_group_insert"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
 begin
   insert into public.group_members (group_id, user_id, role) values (new.id, new.owner_id, 'owner');
   return null;
 end $$;
-create trigger groups_after_insert after insert on public.groups
-  for each row execute function public.on_group_insert();
 
--- Yopiq guruhga taklif kodi bilan qo'shilish
-create function public.join_group_by_code(p_code text) returns uuid
-language plpgsql security definer set search_path = public as $$
-declare gid uuid;
-begin
-  if auth.uid() is null or not public.is_approved() then raise exception 'Ruxsat yo''q'; end if;
-  select id into gid from public.groups where invite_code = p_code;
-  if gid is null then raise exception 'Kod noto''g''ri'; end if;
-  insert into public.group_members (group_id, user_id) values (gid, auth.uid())
-  on conflict do nothing;
-  return gid;
-end $$;
 
--- A'zo o'z rolini oshira olmasin
-create function public.guard_member_update() returns trigger
-language plpgsql security definer set search_path = public as $$
-begin
-  if auth.uid() is not null and new.role is distinct from old.role
-     and not (public.is_group_admin(old.group_id) or public.is_admin()) then
-    raise exception 'Rolni faqat admin o''zgartira oladi';
-  end if;
-  return new;
-end $$;
-create trigger group_members_guard before update on public.group_members
-  for each row execute function public.guard_member_update();
+ALTER FUNCTION "public"."on_group_insert"() OWNER TO "postgres";
 
-create table public.group_messages (
-  id         uuid primary key default gen_random_uuid(),
-  group_id   uuid not null references public.groups(id) on delete cascade,
-  sender_id  uuid not null references public.profiles(id) on delete cascade,
-  type       text not null default 'text' check (type in ('text','file')),
-  text       text,
-  media_path text,
-  media_type text,
-  file_name  text,
-  file_size  bigint,
-  edited_at  timestamptz,
-  created_at timestamptz not null default now()
-);
-create index group_messages_idx on public.group_messages (group_id, created_at);
 
-create function public.on_group_message_insert() returns trigger
-language plpgsql security definer set search_path = public as $$
+CREATE OR REPLACE FUNCTION "public"."on_group_message_insert"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
 begin
   update public.groups set
     last_message    = case new.type when 'file' then coalesce(new.file_name, 'Fayl') else coalesce(new.text, '') end,
@@ -555,230 +424,1618 @@ begin
   where group_id = new.group_id and user_id <> new.sender_id;
   return null;
 end $$;
-create trigger group_messages_after_insert after insert on public.group_messages
-  for each row execute function public.on_group_message_insert();
 
-alter table public.groups enable row level security;
-create policy groups_select on public.groups for select to authenticated
-  using (public.is_admin() or not is_private or public.is_group_member(id));
-create policy groups_insert on public.groups for insert to authenticated
-  with check (public.is_admin() or (public.is_approved() and owner_id = auth.uid()));
-create policy groups_update on public.groups for update to authenticated
-  using (public.is_group_admin(id) or public.is_admin())
-  with check (public.is_group_admin(id) or public.is_admin());
-create policy groups_delete on public.groups for delete to authenticated
-  using (owner_id = auth.uid() or public.is_admin());
-revoke update on public.groups from authenticated;
-grant  update (name, avatar, description, is_private, invite_code, msg_permission) on public.groups to authenticated;
 
-alter table public.group_members enable row level security;
-create policy gm_select on public.group_members for select to authenticated
-  using (public.is_admin() or public.is_group_member(group_id) or not public.group_is_private(group_id));
-create policy gm_insert on public.group_members for insert to authenticated
-  with check (
-    public.is_admin()
-    or public.is_group_admin(group_id)
-    or (user_id = auth.uid() and role = 'member' and public.is_approved()
-        and not public.group_is_private(group_id))
+ALTER FUNCTION "public"."on_group_message_insert"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."on_message_insert"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+begin
+  update public.chats set
+    last_message    = case new.type when 'voice' then 'Ovozli xabar'
+                                    when 'file'  then coalesce(new.file_name, 'Fayl')
+                                    else coalesce(new.text, '') end,
+    last_sender_id  = new.sender_id,
+    last_message_at = new.created_at
+  where id = new.chat_id;
+  update public.chat_members set unread_count = unread_count + 1
+  where chat_id = new.chat_id and user_id <> new.sender_id;
+  return null;
+end $$;
+
+
+ALTER FUNCTION "public"."on_message_insert"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."post_is_visible"("p_post" "uuid") RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select public.is_admin() or exists (
+    select 1 from public.posts
+    where id = p_post and (is_public or user_id = auth.uid())
   );
-create policy gm_update on public.group_members for update to authenticated
-  using (user_id = auth.uid() or public.is_group_admin(group_id) or public.is_admin());
-create policy gm_delete on public.group_members for delete to authenticated
-  using (user_id = auth.uid() or public.is_group_admin(group_id) or public.is_admin());
-revoke update on public.group_members from authenticated;
-grant  update (role, unread_count) on public.group_members to authenticated;
+$$;
 
-alter table public.group_messages enable row level security;
-create policy gmsg_select on public.group_messages for select to authenticated
-  using (public.is_admin() or public.is_group_member(group_id));
-create policy gmsg_insert on public.group_messages for insert to authenticated
-  with check (
-    sender_id = auth.uid() and public.is_approved()
-    and (public.can_post_in_group(group_id) or public.is_admin())
-  );
-create policy gmsg_update on public.group_messages for update to authenticated
-  using (sender_id = auth.uid()) with check (sender_id = auth.uid());
-create policy gmsg_delete on public.group_messages for delete to authenticated
-  using (sender_id = auth.uid() or public.is_group_admin(group_id) or public.is_admin());
-revoke update on public.group_messages from authenticated;
-grant  update (text, edited_at) on public.group_messages to authenticated;
 
--- ═══════════════════════════════════════════════════════════════════════
--- 6. QO'NG'IROQLAR (WebRTC signaling)
--- ═══════════════════════════════════════════════════════════════════════
-create table public.calls (
-  id                uuid primary key default gen_random_uuid(),
-  caller_id         uuid not null references public.profiles(id) on delete cascade,
-  callee_id         uuid not null references public.profiles(id) on delete cascade,
-  type              text not null check (type in ('voice','video')),
-  status            text not null default 'ringing',
-  offer             jsonb not null,
-  answer            jsonb,
-  caller_candidates jsonb not null default '[]',
-  callee_candidates jsonb not null default '[]',
-  video_offer       jsonb,   -- qo'ng'iroq ichida video yoqilganda qayta muzokara (renegotiation)
-  video_answer      jsonb,
-  created_at        timestamptz not null default now()
-);
-create index calls_callee_idx on public.calls (callee_id, created_at desc);
+ALTER FUNCTION "public"."post_is_visible"("p_post" "uuid") OWNER TO "postgres";
 
--- ICE candidate'larni atomik qo'shish (parallel yozuvlar bir-birini bosmasin)
-create function public.append_call_candidate(p_call uuid, p_candidate jsonb) returns void
-language plpgsql security definer set search_path = public as $$
+
+CREATE OR REPLACE FUNCTION "public"."register_push_token"("p_token" "text", "p_platform" "text" DEFAULT NULL::"text") RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
 begin
-  update public.calls set
-    caller_candidates = case when caller_id = auth.uid() then caller_candidates || jsonb_build_array(p_candidate) else caller_candidates end,
-    callee_candidates = case when callee_id = auth.uid() then callee_candidates || jsonb_build_array(p_candidate) else callee_candidates end
-  where id = p_call and auth.uid() in (caller_id, callee_id);
+  if auth.uid() is null then raise exception 'Tizimga kirilmagan'; end if;
+  insert into public.push_tokens (token, user_id, platform)
+  values (p_token, auth.uid(), p_platform)
+  on conflict (token) do update set user_id = auth.uid(), platform = excluded.platform;
 end $$;
 
-create function public.guard_call_update() returns trigger
-language plpgsql security definer set search_path = public as $$
-begin
-  if auth.uid() is null or public.is_admin() then return new; end if;
-  if new.caller_id is distinct from old.caller_id or new.callee_id is distinct from old.callee_id
-     or new.type is distinct from old.type or new.offer is distinct from old.offer
-     or new.created_at is distinct from old.created_at then
-    raise exception 'Qo''ng''iroq asosiy maydonlari o''zgarmaydi';
-  end if;
-  if auth.uid() = old.caller_id and (new.answer is distinct from old.answer
-     or new.callee_candidates is distinct from old.callee_candidates) then
-    raise exception 'Chaqiruvchi callee maydonlariga tega olmaydi';
-  end if;
-  if auth.uid() = old.callee_id and new.caller_candidates is distinct from old.caller_candidates then
-    raise exception 'Qabul qiluvchi caller maydonlariga tega olmaydi';
-  end if;
-  return new;
-end $$;
-create trigger calls_guard before update on public.calls
-  for each row execute function public.guard_call_update();
 
-alter table public.calls enable row level security;
-create policy calls_select on public.calls for select to authenticated
-  using (auth.uid() in (caller_id, callee_id) or public.is_admin());
-create policy calls_insert on public.calls for insert to authenticated
-  with check (public.is_admin() or (caller_id = auth.uid() and public.is_approved()));
-create policy calls_update on public.calls for update to authenticated
-  using (auth.uid() in (caller_id, callee_id) or public.is_admin());
-create policy calls_delete on public.calls for delete to authenticated
-  using (auth.uid() in (caller_id, callee_id) or public.is_admin());
-revoke update on public.calls from authenticated;
-grant  update (status, answer, caller_candidates, callee_candidates, video_offer, video_answer) on public.calls to authenticated;
+ALTER FUNCTION "public"."register_push_token"("p_token" "text", "p_platform" "text") OWNER TO "postgres";
 
--- ═══════════════════════════════════════════════════════════════════════
--- 7. ADMIN: e'lon, e'lonlar tarixi, audit log
--- ═══════════════════════════════════════════════════════════════════════
-create table public.admin_notice (          -- faqat 1 qator: id = 'global'
-  id         text primary key default 'global' check (id = 'global'),
-  text       text not null,
-  target     text not null default 'all',
-  admin_id   uuid references public.profiles(id) on delete set null,
-  created_at timestamptz not null default now()
+
+CREATE OR REPLACE FUNCTION "public"."server_now"() RETURNS timestamp with time zone
+    LANGUAGE "sql" STABLE
+    AS $$ select now(); $$;
+
+
+ALTER FUNCTION "public"."server_now"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."username_available"("p_username" "text") RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select not exists (select 1 from public.profiles where username = lower(p_username));
+$$;
+
+
+ALTER FUNCTION "public"."username_available"("p_username" "text") OWNER TO "postgres";
+
+SET default_tablespace = '';
+
+SET default_table_access_method = "heap";
+
+
+CREATE TABLE IF NOT EXISTS "public"."admin_notice" (
+    "id" "text" DEFAULT 'global'::"text" NOT NULL,
+    "text" "text" NOT NULL,
+    "target" "text" DEFAULT 'all'::"text" NOT NULL,
+    "admin_id" "uuid",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "admin_notice_id_check" CHECK (("id" = 'global'::"text"))
 );
-alter table public.admin_notice enable row level security;
-create policy notice_select on public.admin_notice for select to authenticated using (true);
-create policy notice_write  on public.admin_notice for all to authenticated
-  using (public.is_admin()) with check (public.is_admin());
 
-create table public.broadcast_history (
-  id         uuid primary key default gen_random_uuid(),
-  text       text not null,
-  target     text not null default 'all',
-  admin_id   uuid references public.profiles(id) on delete set null,
-  created_at timestamptz not null default now()
+
+ALTER TABLE "public"."admin_notice" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."calls" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "caller_id" "uuid" NOT NULL,
+    "callee_id" "uuid" NOT NULL,
+    "type" "text" NOT NULL,
+    "status" "text" DEFAULT 'ringing'::"text" NOT NULL,
+    "offer" "jsonb" NOT NULL,
+    "answer" "jsonb",
+    "caller_candidates" "jsonb" DEFAULT '[]'::"jsonb" NOT NULL,
+    "callee_candidates" "jsonb" DEFAULT '[]'::"jsonb" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "video_offer" "jsonb",
+    "video_answer" "jsonb",
+    CONSTRAINT "calls_type_check" CHECK (("type" = ANY (ARRAY['voice'::"text", 'video'::"text"])))
 );
-alter table public.broadcast_history enable row level security;
-create policy bh_select on public.broadcast_history for select to authenticated using (public.is_admin());
-create policy bh_insert on public.broadcast_history for insert to authenticated
-  with check (public.is_admin() and admin_id = auth.uid());
 
-create table public.admin_actions (         -- o'zgarmas audit log
-  id          uuid primary key default gen_random_uuid(),
-  action      text not null,
-  target_uid  uuid,
-  target_name text,
-  details     text,
-  admin_id    uuid references public.profiles(id) on delete set null,
-  admin_name  text,
-  created_at  timestamptz not null default now()
+ALTER TABLE ONLY "public"."calls" REPLICA IDENTITY FULL;
+
+
+ALTER TABLE "public"."calls" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."chat_members" (
+    "chat_id" "uuid" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "unread_count" integer DEFAULT 0 NOT NULL
 );
-create index admin_actions_idx on public.admin_actions (created_at desc);
-alter table public.admin_actions enable row level security;
-create policy aa_select on public.admin_actions for select to authenticated using (public.is_admin());
-create policy aa_insert on public.admin_actions for insert to authenticated
-  with check (public.is_admin() and admin_id = auth.uid());
--- UPDATE/DELETE policy yo'q => o'zgartirib bo'lmaydi
 
--- ═══════════════════════════════════════════════════════════════════════
--- 8. STORAGE  (bucket 'media', ommaviy o'qish; yuklash faqat o'z papkasiga)
---    Yo'l formati: {user_id}/{papka}/{fayl}
--- ═══════════════════════════════════════════════════════════════════════
-insert into storage.buckets (id, name, public, file_size_limit)
-values ('media', 'media', true, 52428800)
-on conflict (id) do nothing;
+ALTER TABLE ONLY "public"."chat_members" REPLICA IDENTITY FULL;
 
-create policy media_insert on storage.objects for insert to authenticated
-  with check (bucket_id = 'media'
-              and (storage.foldername(name))[1] = auth.uid()::text
-              and public.is_approved());
-create policy media_update on storage.objects for update to authenticated
-  using (bucket_id = 'media' and (storage.foldername(name))[1] = auth.uid()::text
-         and public.is_approved());
-create policy media_delete on storage.objects for delete to authenticated
-  using (bucket_id = 'media'
-         and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin()));
 
--- ═══════════════════════════════════════════════════════════════════════
--- 9. REALTIME  (RLS realtime'ga ham amal qiladi)
--- ═══════════════════════════════════════════════════════════════════════
-alter table public.messages       replica identity full;
-alter table public.group_messages replica identity full;
-alter table public.calls          replica identity full;
-alter table public.chat_members   replica identity full;
-alter table public.group_members  replica identity full;
-alter table public.post_likes     replica identity full;
-alter table public.comments       replica identity full;
+ALTER TABLE "public"."chat_members" OWNER TO "postgres";
 
-alter publication supabase_realtime add table
-  public.messages, public.group_messages, public.chats, public.chat_members,
-  public.groups, public.group_members, public.calls,
-  public.posts, public.post_likes, public.comments,
-  public.profiles, public.admin_notice;
 
--- ═══════════════════════════════════════════════════════════════════════
--- 10. HISOBNI O'CHIRISH  (client: sb.rpc('delete_my_account'))
--- Firebase'dagi /api/delete-user o'rnini bosadi. auth.users dan o'chirilgach
--- profiles va unga bog'liq hamma jadval (on delete cascade) tozalanadi.
--- Storage fayllarini client o'zi oldindan o'chiradi (auth.js → _purgeMyMedia).
--- ═══════════════════════════════════════════════════════════════════════
-create or replace function public.delete_my_account() returns void
-language plpgsql security definer set search_path = public, auth as $$
-begin
-  if auth.uid() is null then
-    raise exception 'Tizimga kirilmagan';
-  end if;
-  delete from auth.users where id = auth.uid();
-end $$;
-revoke all on function public.delete_my_account() from public, anon;
-grant execute on function public.delete_my_account() to authenticated;
+CREATE TABLE IF NOT EXISTS "public"."chats" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "user_a" "uuid" NOT NULL,
+    "user_b" "uuid" NOT NULL,
+    "last_message" "text" DEFAULT ''::"text" NOT NULL,
+    "last_sender_id" "uuid",
+    "last_message_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "chats_check" CHECK (("user_a" < "user_b"))
+);
 
--- ═══════════════════════════════════════════════════════════════════════
--- 11. ADMIN: boshqa foydalanuvchini o'chirish + push tokenlarni ko'rish
---     (Firebase'dagi /api/delete-user o'rnini bosadi)
--- ═══════════════════════════════════════════════════════════════════════
-create or replace function public.admin_delete_user(p_uid uuid) returns void
-language plpgsql security definer set search_path = public, auth as $$
-begin
-  if not public.is_admin() then
-    raise exception 'Faqat admin';
-  end if;
-  if p_uid = auth.uid() then
-    raise exception 'O''zingizni bu yerdan o''chirib bo''lmaydi';
-  end if;
-  delete from auth.users where id = p_uid;
-end $$;
-revoke all on function public.admin_delete_user(uuid) from public, anon;
-grant execute on function public.admin_delete_user(uuid) to authenticated;
 
-create policy push_tokens_admin_select on public.push_tokens
-  for select to authenticated using (public.is_admin());
+ALTER TABLE "public"."chats" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."client_errors" (
+    "id" bigint NOT NULL,
+    "user_id" "uuid",
+    "message" "text" NOT NULL,
+    "source" "text",
+    "stack" "text",
+    "ua" "text",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."client_errors" OWNER TO "postgres";
+
+
+ALTER TABLE "public"."client_errors" ALTER COLUMN "id" ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME "public"."client_errors_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE IF NOT EXISTS "public"."comments" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "post_id" "uuid" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "user_name" "text" DEFAULT ''::"text" NOT NULL,
+    "text" "text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+ALTER TABLE ONLY "public"."comments" REPLICA IDENTITY FULL;
+
+
+ALTER TABLE "public"."comments" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."contacts" (
+    "owner_id" "uuid" NOT NULL,
+    "contact_id" "uuid" NOT NULL,
+    "full_name" "text" DEFAULT ''::"text" NOT NULL,
+    "avatar" "text" DEFAULT ''::"text" NOT NULL,
+    "added_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."contacts" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."group_members" (
+    "group_id" "uuid" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "role" "text" DEFAULT 'member'::"text" NOT NULL,
+    "unread_count" integer DEFAULT 0 NOT NULL,
+    "joined_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "group_members_role_check" CHECK (("role" = ANY (ARRAY['owner'::"text", 'admin'::"text", 'member'::"text"])))
+);
+
+ALTER TABLE ONLY "public"."group_members" REPLICA IDENTITY FULL;
+
+
+ALTER TABLE "public"."group_members" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."group_messages" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "group_id" "uuid" NOT NULL,
+    "sender_id" "uuid" NOT NULL,
+    "type" "text" DEFAULT 'text'::"text" NOT NULL,
+    "text" "text",
+    "media_path" "text",
+    "media_type" "text",
+    "file_name" "text",
+    "file_size" bigint,
+    "edited_at" timestamp with time zone,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "group_messages_type_check" CHECK (("type" = ANY (ARRAY['text'::"text", 'file'::"text"])))
+);
+
+ALTER TABLE ONLY "public"."group_messages" REPLICA IDENTITY FULL;
+
+
+ALTER TABLE "public"."group_messages" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."groups" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "type" "text" NOT NULL,
+    "name" "text" NOT NULL,
+    "avatar" "text" DEFAULT ''::"text" NOT NULL,
+    "description" "text" DEFAULT ''::"text" NOT NULL,
+    "owner_id" "uuid" NOT NULL,
+    "is_private" boolean DEFAULT false NOT NULL,
+    "invite_code" "text",
+    "msg_permission" "text" DEFAULT 'all'::"text" NOT NULL,
+    "last_message" "text" DEFAULT ''::"text" NOT NULL,
+    "last_sender_id" "uuid",
+    "last_message_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "groups_msg_permission_check" CHECK (("msg_permission" = ANY (ARRAY['all'::"text", 'admins'::"text"]))),
+    CONSTRAINT "groups_type_check" CHECK (("type" = ANY (ARRAY['group'::"text", 'channel'::"text"])))
+);
+
+
+ALTER TABLE "public"."groups" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."messages" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "chat_id" "uuid" NOT NULL,
+    "sender_id" "uuid" NOT NULL,
+    "type" "text" DEFAULT 'text'::"text" NOT NULL,
+    "text" "text",
+    "media_path" "text",
+    "media_type" "text",
+    "file_name" "text",
+    "file_size" bigint,
+    "duration" integer,
+    "status" "text" DEFAULT 'sent'::"text" NOT NULL,
+    "read_at" timestamp with time zone,
+    "edited_at" timestamp with time zone,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "messages_status_check" CHECK (("status" = ANY (ARRAY['sent'::"text", 'delivered'::"text", 'read'::"text"]))),
+    CONSTRAINT "messages_type_check" CHECK (("type" = ANY (ARRAY['text'::"text", 'voice'::"text", 'file'::"text"])))
+);
+
+ALTER TABLE ONLY "public"."messages" REPLICA IDENTITY FULL;
+
+
+ALTER TABLE "public"."messages" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."post_likes" (
+    "post_id" "uuid" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+ALTER TABLE ONLY "public"."post_likes" REPLICA IDENTITY FULL;
+
+
+ALTER TABLE "public"."post_likes" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."posts" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "user_full_name" "text" DEFAULT ''::"text" NOT NULL,
+    "text" "text",
+    "media_path" "text",
+    "media_type" "text",
+    "media_width" integer,
+    "media_height" integer,
+    "file_name" "text",
+    "file_size" bigint,
+    "is_public" boolean DEFAULT false NOT NULL,
+    "is_max_private" boolean DEFAULT false NOT NULL,
+    "views" integer DEFAULT 0 NOT NULL,
+    "likes_count" integer DEFAULT 0 NOT NULL,
+    "comment_count" integer DEFAULT 0 NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."posts" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."profiles" (
+    "id" "uuid" NOT NULL,
+    "username" "text" NOT NULL,
+    "full_name" "text" DEFAULT ''::"text" NOT NULL,
+    "email" "text",
+    "bio" "text" DEFAULT ''::"text" NOT NULL,
+    "avatar" "text" DEFAULT ''::"text" NOT NULL,
+    "cover_url" "text",
+    "website" "text",
+    "location" "text",
+    "approval" "text" DEFAULT 'pending'::"text" NOT NULL,
+    "blocked" boolean DEFAULT false NOT NULL,
+    "blocked_until" timestamp with time zone,
+    "is_admin" boolean DEFAULT false NOT NULL,
+    "last_seen" timestamp with time zone,
+    "last_login" timestamp with time zone,
+    "last_user_agent" "text",
+    "last_platform" "text",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    CONSTRAINT "profiles_approval_check" CHECK (("approval" = ANY (ARRAY['pending'::"text", 'approved'::"text", 'rejected'::"text"]))),
+    CONSTRAINT "profiles_username_check" CHECK ((("username" = "lower"("username")) AND (("length"("username") >= 2) AND ("length"("username") <= 40))))
+);
+
+
+ALTER TABLE "public"."profiles" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."push_tokens" (
+    "token" "text" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "platform" "text",
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."push_tokens" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."stories" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "media_path" "text" NOT NULL,
+    "media_type" "text" DEFAULT 'image'::"text" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "expires_at" timestamp with time zone DEFAULT ("now"() + '24:00:00'::interval) NOT NULL,
+    "caption" "text",
+    CONSTRAINT "stories_caption_len" CHECK ((("caption" IS NULL) OR ("char_length"("caption") <= 200)))
+);
+
+
+ALTER TABLE "public"."stories" OWNER TO "postgres";
+
+
+CREATE TABLE IF NOT EXISTS "public"."story_views" (
+    "story_id" "uuid" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "viewed_at" timestamp with time zone DEFAULT "now"() NOT NULL
+);
+
+
+ALTER TABLE "public"."story_views" OWNER TO "postgres";
+
+
+ALTER TABLE ONLY "public"."admin_notice"
+    ADD CONSTRAINT "admin_notice_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."calls"
+    ADD CONSTRAINT "calls_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."chat_members"
+    ADD CONSTRAINT "chat_members_pkey" PRIMARY KEY ("chat_id", "user_id");
+
+
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "chats_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "chats_user_a_user_b_key" UNIQUE ("user_a", "user_b");
+
+
+
+ALTER TABLE ONLY "public"."client_errors"
+    ADD CONSTRAINT "client_errors_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."comments"
+    ADD CONSTRAINT "comments_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."contacts"
+    ADD CONSTRAINT "contacts_pkey" PRIMARY KEY ("owner_id", "contact_id");
+
+
+
+ALTER TABLE ONLY "public"."group_members"
+    ADD CONSTRAINT "group_members_pkey" PRIMARY KEY ("group_id", "user_id");
+
+
+
+ALTER TABLE ONLY "public"."group_messages"
+    ADD CONSTRAINT "group_messages_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."groups"
+    ADD CONSTRAINT "groups_invite_code_key" UNIQUE ("invite_code");
+
+
+
+ALTER TABLE ONLY "public"."groups"
+    ADD CONSTRAINT "groups_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."messages"
+    ADD CONSTRAINT "messages_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."post_likes"
+    ADD CONSTRAINT "post_likes_pkey" PRIMARY KEY ("post_id", "user_id");
+
+
+
+ALTER TABLE ONLY "public"."posts"
+    ADD CONSTRAINT "posts_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."profiles"
+    ADD CONSTRAINT "profiles_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."push_tokens"
+    ADD CONSTRAINT "push_tokens_pkey" PRIMARY KEY ("token");
+
+
+
+ALTER TABLE ONLY "public"."stories"
+    ADD CONSTRAINT "stories_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."story_views"
+    ADD CONSTRAINT "story_views_pkey" PRIMARY KEY ("story_id", "user_id");
+
+
+
+CREATE INDEX "calls_callee_idx" ON "public"."calls" USING "btree" ("callee_id", "created_at" DESC);
+
+
+
+CREATE INDEX "chat_members_user_idx" ON "public"."chat_members" USING "btree" ("user_id");
+
+
+
+CREATE INDEX "comments_post_idx" ON "public"."comments" USING "btree" ("post_id", "created_at");
+
+
+
+CREATE INDEX "group_members_user_idx" ON "public"."group_members" USING "btree" ("user_id");
+
+
+
+CREATE INDEX "group_messages_idx" ON "public"."group_messages" USING "btree" ("group_id", "created_at");
+
+
+
+CREATE INDEX "messages_chat_idx" ON "public"."messages" USING "btree" ("chat_id", "created_at");
+
+
+
+CREATE INDEX "posts_created_idx" ON "public"."posts" USING "btree" ("created_at" DESC);
+
+
+
+CREATE INDEX "posts_user_idx" ON "public"."posts" USING "btree" ("user_id", "created_at" DESC);
+
+
+
+CREATE UNIQUE INDEX "profiles_username_key" ON "public"."profiles" USING "btree" ("username");
+
+
+
+CREATE INDEX "push_tokens_user_idx" ON "public"."push_tokens" USING "btree" ("user_id");
+
+
+
+CREATE INDEX "stories_expires_idx" ON "public"."stories" USING "btree" ("expires_at" DESC);
+
+
+
+CREATE INDEX "stories_user_idx" ON "public"."stories" USING "btree" ("user_id", "created_at" DESC);
+
+
+
+CREATE OR REPLACE TRIGGER "calls_guard" BEFORE UPDATE ON "public"."calls" FOR EACH ROW EXECUTE FUNCTION "public"."guard_call_update"();
+
+
+
+CREATE OR REPLACE TRIGGER "comments_count" AFTER INSERT OR DELETE ON "public"."comments" FOR EACH ROW EXECUTE FUNCTION "public"."bump_post_counters"();
+
+
+
+CREATE OR REPLACE TRIGGER "group_members_guard" BEFORE UPDATE ON "public"."group_members" FOR EACH ROW EXECUTE FUNCTION "public"."guard_member_update"();
+
+
+
+CREATE OR REPLACE TRIGGER "group_messages_after_insert" AFTER INSERT ON "public"."group_messages" FOR EACH ROW EXECUTE FUNCTION "public"."on_group_message_insert"();
+
+
+
+CREATE OR REPLACE TRIGGER "groups_after_insert" AFTER INSERT ON "public"."groups" FOR EACH ROW EXECUTE FUNCTION "public"."on_group_insert"();
+
+
+
+CREATE OR REPLACE TRIGGER "messages_after_insert" AFTER INSERT ON "public"."messages" FOR EACH ROW EXECUTE FUNCTION "public"."on_message_insert"();
+
+
+
+CREATE OR REPLACE TRIGGER "messages_guard" BEFORE UPDATE ON "public"."messages" FOR EACH ROW EXECUTE FUNCTION "public"."guard_message_update"();
+
+
+
+CREATE OR REPLACE TRIGGER "post_likes_count" AFTER INSERT OR DELETE ON "public"."post_likes" FOR EACH ROW EXECUTE FUNCTION "public"."bump_post_counters"();
+
+
+
+CREATE OR REPLACE TRIGGER "profiles_guard" BEFORE UPDATE ON "public"."profiles" FOR EACH ROW EXECUTE FUNCTION "public"."guard_profile_update"();
+
+
+
+CREATE OR REPLACE TRIGGER "send_push_on_calls" AFTER INSERT ON "public"."calls" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://dsomjkskgrhaaxpkdyvs.supabase.co/functions/v1/send-push', 'POST', '{"Content-Type":"application/json","x-webhook-secret":"__WEBHOOK_SECRET__"}', '{}', '5000');
+
+
+
+CREATE OR REPLACE TRIGGER "send_push_on_group_messages" AFTER INSERT ON "public"."group_messages" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://dsomjkskgrhaaxpkdyvs.supabase.co/functions/v1/send-push', 'POST', '{"Content-Type":"application/json","x-webhook-secret":"__WEBHOOK_SECRET__"}', '{}', '5000');
+
+
+
+CREATE OR REPLACE TRIGGER "send_push_on_messages" AFTER INSERT ON "public"."messages" FOR EACH ROW EXECUTE FUNCTION "supabase_functions"."http_request"('https://dsomjkskgrhaaxpkdyvs.supabase.co/functions/v1/send-push', 'POST', '{"Content-Type":"application/json","x-webhook-secret":"__WEBHOOK_SECRET__"}', '{}', '5000');
+
+
+
+ALTER TABLE ONLY "public"."admin_notice"
+    ADD CONSTRAINT "admin_notice_admin_id_fkey" FOREIGN KEY ("admin_id") REFERENCES "public"."profiles"("id") ON DELETE SET NULL;
+
+
+
+ALTER TABLE ONLY "public"."calls"
+    ADD CONSTRAINT "calls_callee_id_fkey" FOREIGN KEY ("callee_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."calls"
+    ADD CONSTRAINT "calls_caller_id_fkey" FOREIGN KEY ("caller_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."chat_members"
+    ADD CONSTRAINT "chat_members_chat_id_fkey" FOREIGN KEY ("chat_id") REFERENCES "public"."chats"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."chat_members"
+    ADD CONSTRAINT "chat_members_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "chats_user_a_fkey" FOREIGN KEY ("user_a") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."chats"
+    ADD CONSTRAINT "chats_user_b_fkey" FOREIGN KEY ("user_b") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."client_errors"
+    ADD CONSTRAINT "client_errors_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE SET NULL;
+
+
+
+ALTER TABLE ONLY "public"."comments"
+    ADD CONSTRAINT "comments_post_id_fkey" FOREIGN KEY ("post_id") REFERENCES "public"."posts"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."comments"
+    ADD CONSTRAINT "comments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."contacts"
+    ADD CONSTRAINT "contacts_contact_id_fkey" FOREIGN KEY ("contact_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."contacts"
+    ADD CONSTRAINT "contacts_owner_id_fkey" FOREIGN KEY ("owner_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."group_members"
+    ADD CONSTRAINT "group_members_group_id_fkey" FOREIGN KEY ("group_id") REFERENCES "public"."groups"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."group_members"
+    ADD CONSTRAINT "group_members_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."group_messages"
+    ADD CONSTRAINT "group_messages_group_id_fkey" FOREIGN KEY ("group_id") REFERENCES "public"."groups"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."group_messages"
+    ADD CONSTRAINT "group_messages_sender_id_fkey" FOREIGN KEY ("sender_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."groups"
+    ADD CONSTRAINT "groups_owner_id_fkey" FOREIGN KEY ("owner_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."messages"
+    ADD CONSTRAINT "messages_chat_id_fkey" FOREIGN KEY ("chat_id") REFERENCES "public"."chats"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."messages"
+    ADD CONSTRAINT "messages_sender_id_fkey" FOREIGN KEY ("sender_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."post_likes"
+    ADD CONSTRAINT "post_likes_post_id_fkey" FOREIGN KEY ("post_id") REFERENCES "public"."posts"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."post_likes"
+    ADD CONSTRAINT "post_likes_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."posts"
+    ADD CONSTRAINT "posts_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."profiles"
+    ADD CONSTRAINT "profiles_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."push_tokens"
+    ADD CONSTRAINT "push_tokens_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."stories"
+    ADD CONSTRAINT "stories_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."story_views"
+    ADD CONSTRAINT "story_views_story_id_fkey" FOREIGN KEY ("story_id") REFERENCES "public"."stories"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."story_views"
+    ADD CONSTRAINT "story_views_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."profiles"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE "public"."admin_notice" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."calls" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "calls_delete" ON "public"."calls" FOR DELETE TO "authenticated" USING (((("auth"."uid"() = "caller_id") OR ("auth"."uid"() = "callee_id")) OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "calls_insert" ON "public"."calls" FOR INSERT TO "authenticated" WITH CHECK (("public"."is_admin"() OR (("caller_id" = "auth"."uid"()) AND "public"."is_approved"())));
+
+
+
+CREATE POLICY "calls_select" ON "public"."calls" FOR SELECT TO "authenticated" USING (((("auth"."uid"() = "caller_id") OR ("auth"."uid"() = "callee_id")) OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "calls_update" ON "public"."calls" FOR UPDATE TO "authenticated" USING (((("auth"."uid"() = "caller_id") OR ("auth"."uid"() = "callee_id")) OR "public"."is_admin"()));
+
+
+
+ALTER TABLE "public"."chat_members" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "chat_members_select" ON "public"."chat_members" FOR SELECT TO "authenticated" USING (("public"."is_chat_member"("chat_id") OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "chat_members_update" ON "public"."chat_members" FOR UPDATE TO "authenticated" USING (("user_id" = "auth"."uid"())) WITH CHECK (("user_id" = "auth"."uid"()));
+
+
+
+ALTER TABLE "public"."chats" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "chats_delete" ON "public"."chats" FOR DELETE TO "authenticated" USING ("public"."is_admin"());
+
+
+
+CREATE POLICY "chats_select" ON "public"."chats" FOR SELECT TO "authenticated" USING (((("auth"."uid"() = "user_a") OR ("auth"."uid"() = "user_b")) OR "public"."is_admin"()));
+
+
+
+ALTER TABLE "public"."client_errors" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "client_errors_admin_delete" ON "public"."client_errors" FOR DELETE TO "authenticated" USING ("public"."is_admin"());
+
+
+
+CREATE POLICY "client_errors_admin_read" ON "public"."client_errors" FOR SELECT TO "authenticated" USING ("public"."is_admin"());
+
+
+
+CREATE POLICY "client_errors_insert" ON "public"."client_errors" FOR INSERT TO "authenticated" WITH CHECK ((("user_id" IS NULL) OR ("user_id" = "auth"."uid"())));
+
+
+
+ALTER TABLE "public"."comments" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "comments_delete" ON "public"."comments" FOR DELETE TO "authenticated" USING ((("user_id" = "auth"."uid"()) OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "comments_insert" ON "public"."comments" FOR INSERT TO "authenticated" WITH CHECK ((("user_id" = "auth"."uid"()) AND "public"."is_approved"() AND "public"."post_is_visible"("post_id")));
+
+
+
+CREATE POLICY "comments_select" ON "public"."comments" FOR SELECT TO "authenticated" USING (("public"."is_admin"() OR ("public"."is_approved"() AND "public"."post_is_visible"("post_id"))));
+
+
+
+CREATE POLICY "comments_update" ON "public"."comments" FOR UPDATE TO "authenticated" USING (("user_id" = "auth"."uid"())) WITH CHECK (("user_id" = "auth"."uid"()));
+
+
+
+ALTER TABLE "public"."contacts" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "contacts_all" ON "public"."contacts" TO "authenticated" USING (("owner_id" = "auth"."uid"())) WITH CHECK ((("owner_id" = "auth"."uid"()) AND "public"."is_approved"()));
+
+
+
+CREATE POLICY "gm_delete" ON "public"."group_members" FOR DELETE TO "authenticated" USING ((("user_id" = "auth"."uid"()) OR "public"."is_group_admin"("group_id") OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "gm_insert" ON "public"."group_members" FOR INSERT TO "authenticated" WITH CHECK (("public"."is_admin"() OR "public"."is_group_admin"("group_id") OR (("user_id" = "auth"."uid"()) AND ("role" = 'member'::"text") AND "public"."is_approved"() AND (NOT "public"."group_is_private"("group_id")))));
+
+
+
+CREATE POLICY "gm_select" ON "public"."group_members" FOR SELECT TO "authenticated" USING (("public"."is_admin"() OR "public"."is_group_member"("group_id") OR (NOT "public"."group_is_private"("group_id"))));
+
+
+
+CREATE POLICY "gm_update" ON "public"."group_members" FOR UPDATE TO "authenticated" USING ((("user_id" = "auth"."uid"()) OR "public"."is_group_admin"("group_id") OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "gmsg_delete" ON "public"."group_messages" FOR DELETE TO "authenticated" USING ((("sender_id" = "auth"."uid"()) OR "public"."is_group_admin"("group_id") OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "gmsg_insert" ON "public"."group_messages" FOR INSERT TO "authenticated" WITH CHECK ((("sender_id" = "auth"."uid"()) AND "public"."is_approved"() AND ("public"."can_post_in_group"("group_id") OR "public"."is_admin"())));
+
+
+
+CREATE POLICY "gmsg_select" ON "public"."group_messages" FOR SELECT TO "authenticated" USING (("public"."is_admin"() OR "public"."is_group_member"("group_id")));
+
+
+
+CREATE POLICY "gmsg_update" ON "public"."group_messages" FOR UPDATE TO "authenticated" USING (("sender_id" = "auth"."uid"())) WITH CHECK (("sender_id" = "auth"."uid"()));
+
+
+
+ALTER TABLE "public"."group_members" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."group_messages" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."groups" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "groups_delete" ON "public"."groups" FOR DELETE TO "authenticated" USING ((("owner_id" = "auth"."uid"()) OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "groups_insert" ON "public"."groups" FOR INSERT TO "authenticated" WITH CHECK (("public"."is_admin"() OR ("public"."is_approved"() AND ("owner_id" = "auth"."uid"()))));
+
+
+
+CREATE POLICY "groups_select" ON "public"."groups" FOR SELECT TO "authenticated" USING (("public"."is_admin"() OR (NOT "is_private") OR "public"."is_group_member"("id")));
+
+
+
+CREATE POLICY "groups_update" ON "public"."groups" FOR UPDATE TO "authenticated" USING (("public"."is_group_admin"("id") OR "public"."is_admin"())) WITH CHECK (("public"."is_group_admin"("id") OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "likes_delete" ON "public"."post_likes" FOR DELETE TO "authenticated" USING (("user_id" = "auth"."uid"()));
+
+
+
+CREATE POLICY "likes_insert" ON "public"."post_likes" FOR INSERT TO "authenticated" WITH CHECK ((("user_id" = "auth"."uid"()) AND "public"."is_approved"() AND "public"."post_is_visible"("post_id")));
+
+
+
+CREATE POLICY "likes_select" ON "public"."post_likes" FOR SELECT TO "authenticated" USING (("public"."is_admin"() OR ("public"."is_approved"() AND "public"."post_is_visible"("post_id"))));
+
+
+
+ALTER TABLE "public"."messages" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "messages_delete" ON "public"."messages" FOR DELETE TO "authenticated" USING ((("sender_id" = "auth"."uid"()) OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "messages_insert" ON "public"."messages" FOR INSERT TO "authenticated" WITH CHECK ((("sender_id" = "auth"."uid"()) AND "public"."is_approved"() AND "public"."is_chat_member"("chat_id")));
+
+
+
+CREATE POLICY "messages_select" ON "public"."messages" FOR SELECT TO "authenticated" USING (("public"."is_chat_member"("chat_id") OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "messages_update" ON "public"."messages" FOR UPDATE TO "authenticated" USING ("public"."is_chat_member"("chat_id")) WITH CHECK ("public"."is_chat_member"("chat_id"));
+
+
+
+CREATE POLICY "notice_select" ON "public"."admin_notice" FOR SELECT TO "authenticated" USING (true);
+
+
+
+CREATE POLICY "notice_write" ON "public"."admin_notice" TO "authenticated" USING ("public"."is_admin"()) WITH CHECK ("public"."is_admin"());
+
+
+
+ALTER TABLE "public"."post_likes" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."posts" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "posts_delete" ON "public"."posts" FOR DELETE TO "authenticated" USING ((("user_id" = "auth"."uid"()) OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "posts_insert" ON "public"."posts" FOR INSERT TO "authenticated" WITH CHECK (("public"."is_admin"() OR ("public"."is_approved"() AND ("user_id" = "auth"."uid"()) AND ("views" = 0) AND ("likes_count" = 0) AND ("comment_count" = 0))));
+
+
+
+CREATE POLICY "posts_select" ON "public"."posts" FOR SELECT TO "authenticated" USING (("public"."is_admin"() OR ("user_id" = "auth"."uid"()) OR "is_public"));
+
+
+
+CREATE POLICY "posts_update" ON "public"."posts" FOR UPDATE TO "authenticated" USING ((("public"."is_approved"() AND ("user_id" = "auth"."uid"())) OR "public"."is_admin"())) WITH CHECK ((("user_id" = "auth"."uid"()) OR "public"."is_admin"()));
+
+
+
+ALTER TABLE "public"."profiles" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "profiles_delete" ON "public"."profiles" FOR DELETE TO "authenticated" USING ("public"."is_admin"());
+
+
+
+CREATE POLICY "profiles_select" ON "public"."profiles" FOR SELECT TO "authenticated" USING ((("id" = "auth"."uid"()) OR "public"."is_approved"() OR "public"."is_admin"()));
+
+
+
+CREATE POLICY "profiles_update" ON "public"."profiles" FOR UPDATE TO "authenticated" USING ((("id" = "auth"."uid"()) OR "public"."is_admin"())) WITH CHECK ((("id" = "auth"."uid"()) OR "public"."is_admin"()));
+
+
+
+ALTER TABLE "public"."push_tokens" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "push_tokens_admin_select" ON "public"."push_tokens" FOR SELECT TO "authenticated" USING ("public"."is_admin"());
+
+
+
+CREATE POLICY "push_tokens_all" ON "public"."push_tokens" TO "authenticated" USING (("user_id" = "auth"."uid"())) WITH CHECK (("user_id" = "auth"."uid"()));
+
+
+
+ALTER TABLE "public"."stories" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "stories_delete" ON "public"."stories" FOR DELETE TO "authenticated" USING (("auth"."uid"() = "user_id"));
+
+
+
+CREATE POLICY "stories_insert" ON "public"."stories" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "user_id"));
+
+
+
+CREATE POLICY "stories_select" ON "public"."stories" FOR SELECT TO "authenticated" USING (("expires_at" > "now"()));
+
+
+
+ALTER TABLE "public"."story_views" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "story_views_insert" ON "public"."story_views" FOR INSERT TO "authenticated" WITH CHECK (("auth"."uid"() = "user_id"));
+
+
+
+CREATE POLICY "story_views_select" ON "public"."story_views" FOR SELECT TO "authenticated" USING (true);
+
+
+
+
+
+ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
+
+
+
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."admin_notice";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."calls";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."chat_members";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."chats";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."comments";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."group_members";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."group_messages";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."groups";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."messages";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."post_likes";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."posts";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."profiles";
+
+
+
+
+
+
+GRANT USAGE ON SCHEMA "public" TO "postgres";
+GRANT USAGE ON SCHEMA "public" TO "anon";
+GRANT USAGE ON SCHEMA "public" TO "authenticated";
+GRANT USAGE ON SCHEMA "public" TO "service_role";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+REVOKE ALL ON FUNCTION "public"."admin_delete_user"("p_uid" "uuid") FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."admin_delete_user"("p_uid" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."admin_delete_user"("p_uid" "uuid") TO "service_role";
+
+
+
+REVOKE ALL ON FUNCTION "public"."admin_storage_usage"() FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."admin_storage_usage"() TO "anon";
+GRANT ALL ON FUNCTION "public"."admin_storage_usage"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."admin_storage_usage"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."append_call_candidate"("p_call" "uuid", "p_candidate" "jsonb") TO "anon";
+GRANT ALL ON FUNCTION "public"."append_call_candidate"("p_call" "uuid", "p_candidate" "jsonb") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."append_call_candidate"("p_call" "uuid", "p_candidate" "jsonb") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."bump_post_counters"() TO "anon";
+GRANT ALL ON FUNCTION "public"."bump_post_counters"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."bump_post_counters"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."can_post_in_group"("p_group" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."can_post_in_group"("p_group" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."can_post_in_group"("p_group" "uuid") TO "service_role";
+
+
+
+REVOKE ALL ON FUNCTION "public"."delete_my_account"() FROM PUBLIC;
+GRANT ALL ON FUNCTION "public"."delete_my_account"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."delete_my_account"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."email_for_username"("p_username" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."email_for_username"("p_username" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."email_for_username"("p_username" "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."get_or_create_chat"("p_other" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."get_or_create_chat"("p_other" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."get_or_create_chat"("p_other" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."group_is_private"("p_group" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."group_is_private"("p_group" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."group_is_private"("p_group" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."guard_call_update"() TO "anon";
+GRANT ALL ON FUNCTION "public"."guard_call_update"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."guard_call_update"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."guard_member_update"() TO "anon";
+GRANT ALL ON FUNCTION "public"."guard_member_update"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."guard_member_update"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."guard_message_update"() TO "anon";
+GRANT ALL ON FUNCTION "public"."guard_message_update"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."guard_message_update"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."guard_profile_update"() TO "anon";
+GRANT ALL ON FUNCTION "public"."guard_profile_update"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."guard_profile_update"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "anon";
+GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."increment_post_view"("p_post" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."increment_post_view"("p_post" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."increment_post_view"("p_post" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."is_admin"() TO "anon";
+GRANT ALL ON FUNCTION "public"."is_admin"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."is_admin"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."is_approved"() TO "anon";
+GRANT ALL ON FUNCTION "public"."is_approved"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."is_approved"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."is_chat_member"("p_chat" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."is_chat_member"("p_chat" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."is_chat_member"("p_chat" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."is_group_admin"("p_group" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."is_group_admin"("p_group" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."is_group_admin"("p_group" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."is_group_member"("p_group" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."is_group_member"("p_group" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."is_group_member"("p_group" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."on_group_insert"() TO "anon";
+GRANT ALL ON FUNCTION "public"."on_group_insert"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."on_group_insert"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."on_group_message_insert"() TO "anon";
+GRANT ALL ON FUNCTION "public"."on_group_message_insert"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."on_group_message_insert"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."on_message_insert"() TO "anon";
+GRANT ALL ON FUNCTION "public"."on_message_insert"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."on_message_insert"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."post_is_visible"("p_post" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."post_is_visible"("p_post" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."post_is_visible"("p_post" "uuid") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."register_push_token"("p_token" "text", "p_platform" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."register_push_token"("p_token" "text", "p_platform" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."register_push_token"("p_token" "text", "p_platform" "text") TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."server_now"() TO "anon";
+GRANT ALL ON FUNCTION "public"."server_now"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."server_now"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."username_available"("p_username" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."username_available"("p_username" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."username_available"("p_username" "text") TO "service_role";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GRANT ALL ON TABLE "public"."admin_notice" TO "anon";
+GRANT ALL ON TABLE "public"."admin_notice" TO "authenticated";
+GRANT ALL ON TABLE "public"."admin_notice" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."calls" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."calls" TO "authenticated";
+GRANT ALL ON TABLE "public"."calls" TO "service_role";
+
+
+
+GRANT UPDATE("status") ON TABLE "public"."calls" TO "authenticated";
+
+
+
+GRANT UPDATE("answer") ON TABLE "public"."calls" TO "authenticated";
+
+
+
+GRANT UPDATE("caller_candidates") ON TABLE "public"."calls" TO "authenticated";
+
+
+
+GRANT UPDATE("callee_candidates") ON TABLE "public"."calls" TO "authenticated";
+
+
+
+GRANT UPDATE("video_offer") ON TABLE "public"."calls" TO "authenticated";
+
+
+
+GRANT UPDATE("video_answer") ON TABLE "public"."calls" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."chat_members" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."chat_members" TO "authenticated";
+GRANT ALL ON TABLE "public"."chat_members" TO "service_role";
+
+
+
+GRANT UPDATE("unread_count") ON TABLE "public"."chat_members" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."chats" TO "anon";
+GRANT ALL ON TABLE "public"."chats" TO "authenticated";
+GRANT ALL ON TABLE "public"."chats" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."client_errors" TO "anon";
+GRANT ALL ON TABLE "public"."client_errors" TO "authenticated";
+GRANT ALL ON TABLE "public"."client_errors" TO "service_role";
+
+
+
+GRANT ALL ON SEQUENCE "public"."client_errors_id_seq" TO "anon";
+GRANT ALL ON SEQUENCE "public"."client_errors_id_seq" TO "authenticated";
+GRANT ALL ON SEQUENCE "public"."client_errors_id_seq" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."comments" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."comments" TO "authenticated";
+GRANT ALL ON TABLE "public"."comments" TO "service_role";
+
+
+
+GRANT UPDATE("text") ON TABLE "public"."comments" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."contacts" TO "anon";
+GRANT ALL ON TABLE "public"."contacts" TO "authenticated";
+GRANT ALL ON TABLE "public"."contacts" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."group_members" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."group_members" TO "authenticated";
+GRANT ALL ON TABLE "public"."group_members" TO "service_role";
+
+
+
+GRANT UPDATE("role") ON TABLE "public"."group_members" TO "authenticated";
+
+
+
+GRANT UPDATE("unread_count") ON TABLE "public"."group_members" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."group_messages" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."group_messages" TO "authenticated";
+GRANT ALL ON TABLE "public"."group_messages" TO "service_role";
+
+
+
+GRANT UPDATE("text") ON TABLE "public"."group_messages" TO "authenticated";
+
+
+
+GRANT UPDATE("edited_at") ON TABLE "public"."group_messages" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."groups" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."groups" TO "authenticated";
+GRANT ALL ON TABLE "public"."groups" TO "service_role";
+
+
+
+GRANT UPDATE("name") ON TABLE "public"."groups" TO "authenticated";
+
+
+
+GRANT UPDATE("avatar") ON TABLE "public"."groups" TO "authenticated";
+
+
+
+GRANT UPDATE("description") ON TABLE "public"."groups" TO "authenticated";
+
+
+
+GRANT UPDATE("is_private") ON TABLE "public"."groups" TO "authenticated";
+
+
+
+GRANT UPDATE("invite_code") ON TABLE "public"."groups" TO "authenticated";
+
+
+
+GRANT UPDATE("msg_permission") ON TABLE "public"."groups" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."messages" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."messages" TO "authenticated";
+GRANT ALL ON TABLE "public"."messages" TO "service_role";
+
+
+
+GRANT UPDATE("text") ON TABLE "public"."messages" TO "authenticated";
+
+
+
+GRANT UPDATE("status") ON TABLE "public"."messages" TO "authenticated";
+
+
+
+GRANT UPDATE("read_at") ON TABLE "public"."messages" TO "authenticated";
+
+
+
+GRANT UPDATE("edited_at") ON TABLE "public"."messages" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."post_likes" TO "anon";
+GRANT ALL ON TABLE "public"."post_likes" TO "authenticated";
+GRANT ALL ON TABLE "public"."post_likes" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."posts" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,MAINTAIN ON TABLE "public"."posts" TO "authenticated";
+GRANT ALL ON TABLE "public"."posts" TO "service_role";
+
+
+
+GRANT UPDATE("text") ON TABLE "public"."posts" TO "authenticated";
+
+
+
+GRANT UPDATE("is_public") ON TABLE "public"."posts" TO "authenticated";
+
+
+
+GRANT UPDATE("is_max_private") ON TABLE "public"."posts" TO "authenticated";
+
+
+
+GRANT ALL ON TABLE "public"."profiles" TO "anon";
+GRANT ALL ON TABLE "public"."profiles" TO "authenticated";
+GRANT ALL ON TABLE "public"."profiles" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."push_tokens" TO "anon";
+GRANT ALL ON TABLE "public"."push_tokens" TO "authenticated";
+GRANT ALL ON TABLE "public"."push_tokens" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."stories" TO "anon";
+GRANT ALL ON TABLE "public"."stories" TO "authenticated";
+GRANT ALL ON TABLE "public"."stories" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."story_views" TO "anon";
+GRANT ALL ON TABLE "public"."story_views" TO "authenticated";
+GRANT ALL ON TABLE "public"."story_views" TO "service_role";
+
+
+
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS TO "service_role";
+
+
+
+
+
+
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES TO "service_role";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
