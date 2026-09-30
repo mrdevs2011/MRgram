@@ -3,7 +3,7 @@
 > **Maqsad:** MRspace'ni 50 ta yaqin odam (oila, qarindosh, do'stlar) uchun mos, kichik, tushunarli va uzoq yashaydigan holatga keltirish.
 > **Tamoyil:** 50 kishilik to'yga stadion emas, yaxshi choyxona kerak. Har bir qator kod "bu 50 odamga kerakmi?" degan savoldan o'tishi shart.
 > **Holat:** 2026-09-28 dagi kod audit natijasi asosida. Kod to'liq qatorma-qator o'qilmagan: struktura, schema, README, AUDIT.md va grep asosida. `[TEKSHIR]` belgisi — bajarishdan oldin tasdiqlash kerak bo'lgan taxmin.
-> **Yangilanish (2026-09-30, kech):** hujjat repo bilan solishtirib bugungi holatga keltirildi (kod, `STATUS.md`, git log). Yopildi: 4.6 (`!important` 12 ta qoldi), 3.6 (0 shaxsiy post, Q4), 7.7, 014/015 -> `migrations/`, `000_schema` jonli dump, Playwright smoke. Haqiqatan ochiq: 4.3, 4.4, 4.8, Q9, Q11, 013 (2026-10-06 dan keyin, zaxiradan so'ng), Vercel Preview (+ TURN env/sinov), F2 `[QAROR]` (parolni majburan almashtirish).
+> **Yangilanish (2026-09-30, kech):** hujjat repo bilan solishtirib bugungi holatga keltirildi (kod, `STATUS.md`, git log). Yopildi: 4.6 (`!important` 12 ta qoldi), 3.6 (0 shaxsiy post, Q4), 7.7, 014/015 -> `migrations/`, `000_schema` jonli dump, Playwright smoke. Haqiqatan ochiq: 4.8 (ixtiyoriy), Q9, Q11, 013 (2026-10-06 dan keyin, zaxiradan so'ng), Vercel Preview (+ TURN env/sinov), F2 `[QAROR]` (parolni majburan almashtirish).
 > **Oldingi yangilanish (2026-09-30):** MR barcha brauzer/qurilma tekshiruvlarini o'tkazdi (smoke test, 8 ekran vizual tekshiruvi, 2 qurilma realtime, push, qo'ng'iroq, SW update toast). Belgilar MR ning shu bayoniga asoslanib yangilandi; alohida punktlar natijasi tafsilotda yozilmagan. Ochiq qolgani: Vercel Preview/TURN env, DB contract SQL'lari, F4 CSS refaktor bandlari.
 > **Oldingi yangilanish (2026-09-29):** holat kodning o'zidan qayta tekshirildi (git tag'lar, fayllar, grep). Bajarilganlar: F2 parol reset, F3.4 views, F3.5 muqova (cover), F4.5 `app.css` build, F5 presence/typing, F6.2 avto-versiya + network-first, F7.2 limit 25 MB. Supabase/Vercel panel ishlari tekshirilmadi.
 > **Oldingi yangilanish (2026-09-28):** bu fayl repoda ilk marta saqlandi va joriy holatga ko'ra belgilandi (`[x]`/`[ ]`, "Holat" ustunlari). Tarix: commitlar `09bce2c` (F1), `db6028d` (link tartibi), `fbbcd8b` (x-design klasteri).
@@ -16,14 +16,14 @@
 | F1 Axlat kod | 100% | — |
 | F2 Admin + parol reset | 100% | ✅ brauzer smoke (MR, 09-30); DB contract (oktabr) qoldi |
 | F3 Mahsulot yuzasi | 100% | ✅ brauzer (explore/guruh) (MR, 09-30); DB contract qoldi |
-| F4 CSS | 4.1–4.7, 4.9, 4.10 ✅ (6 fayl, ~4.4k qator; `!important` 12 ta); qoldi 4.3, 4.4, 4.8 | ✅ skrinshot/smoke (MR, 09-30) |
+| F4 CSS | 4.1–4.7, 4.9, 4.10 ✅ (6 fayl, ~4.4k qator; `!important` 12 ta); 4.3/4.4 ✅ (2026-09-30 kech); qoldi 4.8 (ixtiyoriy) | ✅ skrinshot/smoke (MR, 09-30) |
 | F5 Realtime | 100% | ✅ 2 qurilma sinovi (MR, 09-30) |
 | F6 Data / SW | ~90% kod (Ts✅ SW✅ vendor✅) | ✅ telefon offline + update toast (MR, 09-30) |
 | F7 Family-grade | ~95% kod (7.1/7.2/7.5/7.6/7.7/7.8 ✅); qoldi: Vercel'da `TURN_KEY_ID`/`TURN_KEY_API_TOKEN` env + TURN sinovi (014/015 `migrations/` da) | Vercel TURN env (MR, `docs/MR-QOLGAN.md`) |
 | F8 Hujjat | 100% | ✅ docs/SMOKE.md o'tkazildi (MR, 09-30) |
 
-**Kod tomon:** maksimal yopildi. **Brauzer/telefon tekshiruvlari:** ✅ MR o'tkazdi (2026-09-30). **Qoldi:** Vercel Preview + TURN env/sinov, DB contract SQL'lari (013: 2026-10-06 dan keyin), F4 (4.3/4.4/4.8), Q9/Q11, F2 `[QAROR]`, F5.3/5.4.
-**Umumiy:** ~96% (2026-09-30: F7/F8 kod yopildi). Qolgani: F4 CSS (4.3/4.4/4.8, ~2%) va MR panel/DB ishlari (~2%) — ro'yxat `docs/MR-QOLGAN.md`.
+**Kod tomon:** maksimal yopildi. **Brauzer/telefon tekshiruvlari:** ✅ MR o'tkazdi (2026-09-30). **Qoldi:** Vercel Preview + TURN env/sinov, DB contract SQL'lari (013: 2026-10-06 dan keyin), F4.8 (ixtiyoriy), Q9/Q11, F2 `[QAROR]`, F5.3/5.4 (ixtiyoriy).
+**Umumiy:** ~96% (2026-09-30: F7/F8 kod yopildi). Qolgani: F4.8 (ixtiyoriy, ~1%) va MR panel/DB/qaror ishlari (~3%) — ro'yxat `docs/MR-QOLGAN.md`.
 
 ---
 
@@ -189,7 +189,7 @@ drop table if exists public.follows;
 
 ---
 
-## FAZA 4 — CSS konsolidatsiya 🔶 (davom etmoqda; hozir 23 fayl / ~16.7k qator)
+## FAZA 4 — CSS konsolidatsiya ✅ (asosiy maqsadlar bajarildi; hozir 6 fayl / 4 593 qator; 4.8 ixtiyoriy)
 
 **Strategiya:** "yana tozalash" emas, **qayta yig'ish.** 3-fazadan keyin qolgan UI uchun yangi, kichik tizim.
 
@@ -208,8 +208,8 @@ drop table if exists public.follows;
   - **Ikkinchi partiya** (branch `diet/04-prune-admin-ui`, 2026-09-29): `admin.css` 92 qoida (1138 → 590 qator), `ui-improvements.css` 76 (1728 → 1129), `admin-plain.css` 12 (169 → 145) — jami −1171 qator; `app.css` 412 550 → 384 463 bayt (14 008 qator). Bu fayllarda olib tashlangan qoidalar ichida `!important` yo'q. `{}` balansi ✅. ✅ brauzerda sinalgan (MR, 2026-09-30): birinchi navbatda admin panel va Profil/Chat ekranlarini ko'ring.
   - **Uchinchi partiya** (branch `diet/04-prune-rest`, 2026-09-29): qolgan barcha fayllardan hard-o'lik qoidalar olib tashlandi (chat 51, feed 57, local-utility 89, nav 34, x-design 34, groups 34, mono 20, borderless 18, dark-theme-fix 18, chat-dark-redesign 12, profile 10, theme 8, loading 7, sidebar-x 3; jami ~395). Barcha `CSS/*.css`: **16 737 → 12 127 qator** (−28%), `!important` 353 → 288, `app.css` 299 KB (12 320 qator). Inventarda hard = 0; `maybe` 210 qoida qoldi (qo'lda ko'rib chiqiladi). `{}` balansi ✅ barcha fayllarda. ✅ brauzerda sinalgan (MR, 2026-09-30) — bu partiya barcha ekranlarga tegadi, 8 ekranni (login, kutish, lenta, post yuklash, chatlar, chat oynasi, guruh, profil, admin) dark/light va mobilda ko'ring. Buzilsa: `git revert` faqat shu commit (yoki `pre-prune-0929` tag).
 - [~] **4.2 Tokenlar:** `theme.css` → yagona manba. Bajarildi: 4.2a-d palitra (`--pal-*`, 19+ token), 4.2e 49 o'lik token e'loni, 4.2f `CSS/tokens.css` (98 e'lon). Qoldi: 14 `--pal-legacy-*` kulrangni birlashtirish (MR ko'z qarori), media/element tokenlari (~62 e'lon) va spacing/radius/shrift tokenlari. Regress asboblari: `~/Claude/tools/css-regress`.
-- [ ] **4.3 Tuzilma (maqsad):** `tokens.css / base.css / components.css / features.css / admin.css`. **Hozir: 22 fayl / 17 055 qator.**
-- [ ] **4.4 `no-animations.css`:** `style.css`da hali eng oxirgi qatlam — transition/animation'larni manba faylidan olish. `[QAROR]` splash/loading uchun bitta yengil animatsiya (Q9).
+- [x] **4.3 Tuzilma:** ✅ (2026-09-30 kech) 4.10 bilan bajarilgan: `tokens / base / features / layers / admin / mono-x.css` (6 fayl, **4 593 qator**; `app.css` 4 594). Maqsaddagi `components.css` alohida fayl bo'lmadi, `layers.css` ichida — 6 fayl maqsadi (≤6) bajarildi.
+- [x] **4.4 `no-animations.css`:** ✅ (2026-09-30 kech) alohida fayl yo'q: 4.10 da `layers.css` ichiga qo'shilgan (sarlavhada `no-animations (F4.4)`), `layers.css` da global transition/animation o'chiruvchi qoida qolmagan (grep: faqat 3 ta izoh qatori). Qolgan `[QAROR]` — splash/loading uchun bitta yengil animatsiya (Q9) — MR ga.
 - [x] **4.5 `@import` zanjiri yo'q:** `scripts/build-css.mjs` CSS'ni bitta `app.css` ga yig'adi (`npm run build`). `app.css` qo'lda tahrirlanmaydi, manba `CSS/*.css`.
 - [x] **4.6 `!important` audit:** ✅ (2026-09-30) 127 → **12** (`6e8342d`, `04d6ec6`, `5e40387`, `666b5d0`). Usul: har flag alohida olib tashlanib, headless Chromium (1280 va 390) da ~4500 element computed-style solishtirildi; 115 ta 0/0 → olib tashlandi, 12 tasi farq berdi → qoldi (`.view.on`, `.vc-mute`, `.inc-call-btn`, `.c-red`, `.chat-voice-btn` va h.k.). ⚠️ harness faqat statik holat (hover/dark tema o'lchanmagan); buzilsa tegishli commit `git revert`.
   - **2026-09-29 kech (4.6 davom):** 206→151 (modal z-index 7, nav createBtn 5, header/search 6, logo 2, call-ring anim 3). inspect3 load-bearing o'zgarmadi. Qolgan ~151 — asosan color contrast, call modal, hover/recording; holat ochuvchi test kengaytirish kerak.
@@ -217,7 +217,7 @@ drop table if exists public.follows;
   - **2026-09-29 (4.6 qisman):** 230 -> 216 (`9ff05e3`). Usul: har `!important` uchun mos elementlarda flag olib tashlanganda computed-style o'zgaradimi (inert) + 12 skrinshot (desktop/mobil) piksel farqi 0. Qolgan ~216 dinamik/holat qoidalari (modal, overlay, progress, hover, `.recording`, chat xabarlari): hozirgi DOM'da yo'q, avtomatik tekshirib bo'lmaydi; -80% maqsadi haqiqiy holatlarni ochuvchi testlarsiz (Playwright yoki qo'lda) yetib bo'lmaydi. Asbob: `~/Claude/work/shots/` (capture/compare/inspect/bisect).
   - **2026-09-29 (4.6, chat holati):** 216 -> 206. `inspect2.mjs` chat oynasi ochiq holatda o'lchaydi (`.chat-bubble`, `.cvm-*`, `.chat-avi`); 6 ta ekran + chatlar/chat oynasi (desktop/mobil) piksel farqi 0. Qolganlari: modal, overlay, hover, `.recording`.
 - [x] **4.7 Vizual regressiya:** ✅ MR brauzerda tekshirdi (2026-09-30). 8 ekran skrinshoti (login, kutish, lenta, post yuklash, chatlar, chat oynasi, guruh, profil, admin) — **hali hech qachon bajarilmagan** (brauzer kerak, MR). Shu qilingach 4.1b va keyingi o'chirishlar bloklanadi.
-- [ ] **4.8 Tartib:** keyingi nomzod klaster — `chat.css` cvm-bloklari ↔ mono; bir fayl → tekshir → keyingisi; har fayl = 1 commit.
+- [ ] **4.8 Tartib (ixtiyoriy):** `chat.css` cvm-bloklari ↔ mono klasteri (endi `features.css`/`layers.css` ↔ `mono-x.css`). 4.6 dan keyin `!important` 12 ta, fayl 6 ta, qator ≤5k — asosiy maqsadlar bajarilgan; qoida 11 ("50 odam uchun yetarli = tugadi") bo'yicha majburiy emas. Qilinsa: bir klaster → harness → 1 commit.
 - [x] **4.9 Ixchamlash** (branch `diet/04-css-5k`, 2026-09-29): `CSS/*.css` izohsiz (faqat top-level sarlavha), bo`sh qatorsiz, oddiy qoida = 1 qator (<=240 belgi). **11 632 -> 4 430 qator** (maqsad <=5k), 293 645 -> 255 355 bayt (-13%). Bu FORMAT o`zgarishi, kontent kamaymadi: normalizatsiya isboti (izohsiz/bo`shliqsiz matn eski == yangi) 24/24 fayl, computed-style harness 4 542 holat x 2 viewport, FARQ 0. Asbob: `~/Claude/tools/css-regress/compact.mjs`. Fayl soni 24 → 6 (4.10), `!important` 239 → 12 (4.6).
 - [x] **4.10 Fayllar 24 -> 6** (branch `diet/04-css-merge`, 2026-09-29): `CSS/tokens, base, features, layers, admin, mono-x.css`; `style.css` (@import master) va 23 eski fayl o`chirildi, `scripts/build-css.mjs` 6 faylni shu tartibda yig`adi. Kaskad tartibi o`zgarmagan: yig`ilgan `app.css` ning izohsiz/bo`shliqsiz matni eskisi bilan AYNAN bir xil (norm isboti). Fayl maqsadi (<=6) va qator maqsadi (<=5k: 4 587 app.css / 4 4xx manba) bajarildi; `!important` (239) 4.6 da 12 ga tushirildi.
 
@@ -306,7 +306,16 @@ drop table if exists public.follows;
 
 *\*Hisob chegaralari farqi (SW/index.html hisobga kirgan); tendensiya muhim. CSS fayllar 22, chunki `auth-ig-style.css` allaqachon o'chirilgan (AUDIT C9).*
 
-**Qayta o'lchov (2026-09-29 kech, `main`):**
+**Qayta o'lchov (2026-09-30 kech, `HEAD` = `816e98b`):**
+
+| Ko'rsatkich | Qiymat |
+|---|---|
+| `modules/*.js` | 38 fayl, **12 826** qator |
+| `CSS/*.css` | **6 fayl, 4 593** qator (manba); `app.css` 4 594 qator |
+| `!important` | **12** |
+| `sb.channel(` chaqiruvlari | 13 ta joyda: chat 4, auth 3, call 2, admin-badge 1, groups 1, view-actions 1, view-users 1 |
+
+**Oldingi o'lchov (2026-09-29 kech, `main`):**
 
 | Ko'rsatkich | Qiymat |
 |---|---|
@@ -393,7 +402,7 @@ drop table if exists public.follows;
 ## 10. Git va deploy tartibi
 
 ```
-main  (ac66409)
+main  (816e98b, 2026-09-30)
  ├─ diet/00-safety      (tag: pre-diet)        ← qismiy (tag/remote bor; preview/smoke MR ishi)
  ├─ diet/02-admin       ✅ main'ga qo'shilgan
  ├─ diet/03-channel-*, 03-groups-b, 03-product-profile   ✅ main'ga qo'shilgan
@@ -433,5 +442,14 @@ main  (ac66409)
 7. **F8** (hujjat).
 
 > **2026-09-30:** brauzer/qurilma tekshiruvlari (2-band F4 to'xtash nuqtasi, F0 smoke, F5/F6 qurilma sinovi) MR tomonidan o'tkazildi. Keyingi qadamlar: Vercel Preview + TURN_*, F4 4.3/4.4/4.8, DB contract (013: 2026-10-06 dan keyin), Q9/Q11.
+
+### Yakuniy holat (2026-09-30 kech)
+
+**Kod tomoni tugadi.** Roadmapda faqat quyidagilar ochiq, ularni AI o'zi yopa olmaydi (ro'yxat: `docs/MR-QOLGAN.md`):
+
+- [ ] Vercel Preview + TURN sinovi (Wi-Fi ↔ mobil qo'ng'iroq).
+- [ ] 013 contract (`posts.views`, `increment_post_view()`): 2026-10-06 dan keyin, `supabase db dump` zaxirasi bilan. 007/008/009/010/011/012 — no-op, `migrations/` ga ko'chirish yoki o'chirish (MR tasdig'i).
+- [ ] Qarorlar: Q5 (parol reset: majburiy almashtirish), Q9 (splash animatsiya), Q10 (Pro'ga o'tish, hozir dolzarb emas), Q11 (mono `#000` accent matn), F2 `[QAROR]`; Q2/Q8 — MR tasdig'i.
+- [ ] Ixtiyoriy: 4.8, 5.3 (`profile-<uid>` birlashtirish), 5.4 (Q8), Playwright post/chat qadamlari (`TEST_EMAIL`/`TEST_PASSWORD`).
 
 > Qoida: **avval kes, keyin tartibla, oxirida chiroy.** Va C11 saboqi: **ko'z tekshiruviga qadar "tozalandi" dema.**
