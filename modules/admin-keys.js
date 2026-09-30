@@ -5,7 +5,14 @@
 import { sb, MEDIA_BUCKET } from './config.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env.js';
 
-const ICO = { ok: '✅', warn: '⚠️', fail: '❌' };
+const _svg = d => `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:5px">${d}</svg>`;
+const ICO = {
+  ok:   _svg('<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16 9.5"/>'),
+  warn: _svg('<path d="M12 3.5l9.5 16.5h-19z"/><path d="M12 10v4.5M12 17.4v.1"/>'),
+  fail: _svg('<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>'),
+  key:  _svg('<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/>'),
+};
+const _row = (kind, text) => { const s = document.createElement('span'); s.innerHTML = ICO[kind] || ''; s.append(text); return s; };
 const COL = { ok: 'inherit', warn: 'var(--text3,#767676)', fail: 'var(--red,#ef4444)' };
 
 const withTimeout = (p, ms, msg) => Promise.race([
@@ -121,8 +128,12 @@ function paint(box, groups) {
   box.replaceChildren();
   const sum = document.createElement('div');
   sum.style.cssText = 'font-weight:600;margin:10px 0 6px';
-  sum.textContent = bad ? `❌ ${bad} ta ishlamayapti` + (warn ? `, ⚠️ ${warn} ta ogohlantirish` : '')
-    : warn ? `✅ Hammasi ishlaydi, ⚠️ ${warn} ta ogohlantirish` : '✅ Hammasi ishlaydi';
+  if (bad) {
+    sum.append(_row('fail', `${bad} ta ishlamayapti`));
+    if (warn) sum.append(', ', _row('warn', `${warn} ta ogohlantirish`));
+  } else if (warn) {
+    sum.append(_row('ok', 'Hammasi ishlaydi'), ', ', _row('warn', `${warn} ta ogohlantirish`));
+  } else sum.append(_row('ok', 'Hammasi ishlaydi'));
   box.appendChild(sum);
   for (const g of groups) {
     const h = document.createElement('div');
@@ -132,7 +143,7 @@ function paint(box, groups) {
     for (const r of g.rows) {
       const d = document.createElement('div');
       d.style.cssText = `padding:3px 0;color:${COL[r.status] || 'inherit'};word-break:break-word`;
-      d.textContent = `${ICO[r.status] || '•'} ${r.name} — ${r.detail}`;
+      d.appendChild(_row(r.status, `${r.name} — ${r.detail}`));
       box.appendChild(d);
     }
   }
@@ -149,7 +160,8 @@ export async function renderKeysCheck(anchor) {
   wrap.style.cssText = 'margin:14px 18px;font-size:12.5px;';
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.textContent = '🔑 Kalitlarni tekshirish';
+  const setBtn = txt => { btn.replaceChildren(_row('key', txt)); };
+  setBtn('Kalitlarni tekshirish');
   btn.style.cssText = 'padding:8px 14px;border-radius:10px;border:1px solid var(--line,rgba(128,128,128,.35));background:transparent;color:inherit;font-size:13px;cursor:pointer';
   const box = document.createElement('div');
   wrap.append(btn, box);
@@ -167,7 +179,7 @@ export async function renderKeysCheck(anchor) {
         { title: 'Supabase Edge (secrets)', rows: srv.edge },
       ]);
     } catch (e) {
-      box.textContent = '❌ Tekshiruv boshlanmadi: ' + (e?.message || e);
-    } finally { btn.disabled = false; btn.textContent = '🔑 Qayta tekshirish'; }
+      box.replaceChildren(_row('fail', 'Tekshiruv boshlanmadi: ' + (e?.message || e)));
+    } finally { btn.disabled = false; setBtn('Qayta tekshirish'); }
   });
 }

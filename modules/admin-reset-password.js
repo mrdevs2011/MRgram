@@ -59,7 +59,7 @@ export async function adminResetPassword(uid, displayName) {
     if (!res.ok) throw new Error(out.error || out.message || `HTTP ${res.status}`);
 
     // Natijani ekranda bir marta ko'rsatish (screenshot olish mumkin)
-    alert(`✅ Yangi vaqtinchalik parol:\n\n${tempPwd}\n\n` +
+    alert(`Yangi vaqtinchalik parol:\n\n${tempPwd}\n\n` +
           `Foydalanuvchiga bildiring. Bu parol hech qayerda saqlanmaydi —\n` +
           `hozir nusxalang yoki suratga oling.`);
     toast('Parol yangilandi', 'success');

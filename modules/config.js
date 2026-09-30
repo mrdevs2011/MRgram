@@ -15,7 +15,7 @@ export const MEDIA_BUCKET      = 'media';
 
 export const SB_CONFIGURED = !/YOUR-/.test(SUPABASE_URL + SUPABASE_ANON_KEY);
 if (!SB_CONFIGURED) {
-  console.error('⚠️ config.js: SUPABASE_URL va SUPABASE_ANON_KEY hali kiritilmagan');
+  console.error('config.js: SUPABASE_URL va SUPABASE_ANON_KEY hali kiritilmagan');
 }
 
 export const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
@@ -110,7 +110,7 @@ export async function uploadViaController(file, folder = 'posts') {
     contentType: file.type || 'application/octet-stream',
     upsert: false,
   });
-  if (error) { console.error('❌ Storage:', error); throw error; }
+  if (error) { console.error('Storage:', error); throw error; }
   return { path: data.path, url: mediaPublicUrl(data.path) };
 }
 

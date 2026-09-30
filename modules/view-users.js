@@ -255,7 +255,7 @@ async function _confirmAction() {
     }
     _closeModal();
   } catch (err) {
-    console.error('❌ Action error:', err);
+    console.error('Action error:', err);
     toast('Xatolik: ' + err.message, 'error');
     confirmBtn.disabled = false;
     confirmTxt.textContent = type === 'delete' ? "O'chirish" : type === 'block' ? 'Bloklash' : 'Blokdan chiqarish';

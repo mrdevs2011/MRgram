@@ -288,7 +288,7 @@ if (authBtn) {
       }
       // Keyingi qadamni onAuthStateChange bajaradi (pending ekran)
     } catch (err) {
-      console.error('❌ Auth error:', err?.code || '', err?.message);
+      console.error('Auth error:', err?.code || '', err?.message);
       if (!isLogin) sessionStorage.removeItem('mrspace_new_signup');
       authBtn.disabled = false;
       authBtn.textContent = isLogin ? 'Kirish' : "Ro'yxatdan o'tish";

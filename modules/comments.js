@@ -295,7 +295,7 @@ async function loadComments(postId, listId) {
         toast('Izoh o\'chirildi', 'success');
         await loadComments(b.dataset.post, listId);
       } catch (e) {
-        console.error('❌ Comment delete failed:', e);
+        console.error('Comment delete failed:', e);
         toast('Izohni o\'chirib bo\'lmadi', 'error');
         b.disabled = false;
       }
@@ -313,7 +313,7 @@ async function loadComments(postId, listId) {
     list.scrollTop = list.scrollHeight;
 
   } catch (e) {
-    console.error('❌ Izohlar load failed:', e);
+    console.error('Izohlar load failed:', e);
     list.innerHTML = `<div class="cmt-empty">Izohlar yuklanmadi. Qayta urinib ko'ring.</div>`;
   } finally {
     _loading = false;
@@ -384,7 +384,7 @@ async function sendComment(mode) {
     await loadComments(state.cmtPostId, listId);
 
   } catch (e) {
-    console.error('❌ Comment send failed:', e);
+    console.error('Comment send failed:', e);
     toast('Izohni yuborib bo\'lmadi', 'error');
   } finally {
     if (sendBtn) sendBtn.disabled = !inp?.value?.trim();

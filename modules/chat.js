@@ -545,7 +545,7 @@ export async function renderChatsList() {
       if (changed && state.view === 'chats') paintChatsList(_usersCache || [], _latestChatMap);
     });
   } catch (err) {
-    console.error('❌ renderChatsList failed:', err.message);
+    console.error('renderChatsList failed:', err.message);
     root.innerHTML = `<div class="empty pt-30vh tac">
       <div class="fs-14px fw-600 c-text mb-6px">Suhbatlar yuklanmadi</div>
       <div class="fs-13px c-text2">${esc(err.message)}</div>
@@ -897,7 +897,7 @@ async function markThreadRead(chatId, otherUid, msgs) {
     await sb.from('chat_members').update({ unread_count: 0 })
       .eq('chat_id', chatId).eq('user_id', state.me.uid);
   } catch (err) {
-    console.error('❌ markThreadRead failed:', err.message);
+    console.error('markThreadRead failed:', err.message);
   }
 }
 
@@ -1408,7 +1408,7 @@ export async function sendChatMessage() {
     _reloadThread && _reloadThread();
     // Push bildirishnoma push.js bosqichida ulanadi (Edge Function / DB webhook)
   } catch (err) {
-    console.error('❌ sendChatMessage failed:', err.message);
+    console.error('sendChatMessage failed:', err.message);
     toast('Xabar yuborilmadi', 'error');
     inp.value = text; // qaytarib qo'yamiz, user qayta yuborishi uchun
     updateVoiceSendBtn();

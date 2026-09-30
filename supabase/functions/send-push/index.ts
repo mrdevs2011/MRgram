@@ -16,8 +16,8 @@ webpush.setVapidDetails(
 const ok = (b = "ok") => new Response(b, { status: 200 });
 
 function preview(r: any): string {
-  if (r.type === "voice") return "🎤 Ovozli xabar";
-  if (r.type === "file") return "📎 " + (r.file_name || "Fayl");
+  if (r.type === "voice") return "Ovozli xabar";
+  if (r.type === "file") return (r.file_name || "Fayl");
   const t = String(r.text ?? "").trim();
   return t.length > 120 ? t.slice(0, 117) + "..." : t;
 }
