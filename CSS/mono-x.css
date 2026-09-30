@@ -151,14 +151,11 @@ nav.bot-nav, nav.bot-nav button { font-family: var(--font); letter-spacing: 0; }
 nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle, nav.bot-nav .sb-logo-row, nav.bot-nav .sb-logo-glass, nav.bot-nav .sb-account, nav.bot-nav #createBtn.nav-center-btn { border: none; box-shadow: none; outline-offset: -2px; }
 nav.bot-nav .nav-btn svg, nav.bot-nav .sb-search-toggle svg { fill: none; stroke: currentColor; color: var(--text); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 nav.bot-nav .nav-btn.on svg, nav.bot-nav #sbSearchToggle.search-active svg { stroke-width: 2.4; }
-/* Rail (mobil + planshet): 50px doira elementlar */
+/* Pastki nav (mobil + planshet): tugmalar px radiusli (50% emas — keng tugmada oval bo'lib qoladi) */
 @media (max-width: 1099px) {
   nav.bot-nav { gap: 0; }
-  nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { width: 50px; height: 50px; border-radius: 50%; }
-  nav.bot-nav .nav-btn:hover { background: var(--bg4); }
-  nav.bot-nav .sb-logo-row { width: 50px; height: 50px; }
-  nav.bot-nav #createBtn.nav-center-btn { width: 52px; height: 52px; margin: 12px 0 0; }
-  nav.bot-nav .sb-account { width: 50px; height: 50px; }
+  nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { width: auto; height: 48px; border-radius: 16px; }
+  nav.bot-nav .nav-btn:hover, nav.bot-nav .nav-btn:active { background: var(--bg4); }
 }
 @media (max-width: 1099px) {
   :root { --nav: calc(56px + env(safe-area-inset-bottom, 0px)); --rail: 0px; --sidebar: 0px; --content-left: 0px; }
@@ -613,4 +610,8 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 /* Mobil + planshet (<1100px): Post tugmasi pastki navning o'rtasida, dumaloq (eski order/margin ni bekor qiladi) */
 @media (max-width: 1099px) {
   nav.bot-nav #createBtn.nav-center-btn { order: 0; width: 46px; height: 46px; margin: 0 4px; }
+}
+/* Qidiruv oynasi ochiq bo'lganda ham pastki nav ko'rinib tursin (mobil + planshet) */
+@media (max-width: 1099px) {
+  [data-theme] .search-overlay { bottom: var(--nav); }
 }
