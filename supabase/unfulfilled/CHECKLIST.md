@@ -11,4 +11,11 @@ Qoida: kod deploy -> >=1 hafta kuzatuv -> `supabase db dump` -> patch. Eng erta 
 | unfulfilled/010 | join_group_by_code(); ochiq guruhlarni yopish | 3.x | tayyor |
 | unfulfilled/011 | kanal -> guruh (type) | 5.3 kanal ishi tugagach | KUTMOQDA |
 
+**Expand (contract EMAS, kuzatuv kutmaydi — istalgan vaqtda ishga tushirsa bo'ladi):**
+
+| Patch | Nima | Kod tomoni |
+|---|---|---|
+| unfulfilled/014_diet-07-client-errors.sql | `client_errors` jadvali + RLS | `modules/error-log.js` (jadval yo'q bo'lsa jim) |
+| unfulfilled/015_diet-07-storage-usage.sql | `admin_storage_usage()` RPC | `modules/admin-storage.js` (RPC yo'q bo'lsa jim) |
+
 Eslatma: 007–013 hammasi hali bazaga tushmagan, shuning uchun `unfulfilled/` da. Bajarilgach `migrations/` ga keyingi raqam bilan ko'chiriladi (README).

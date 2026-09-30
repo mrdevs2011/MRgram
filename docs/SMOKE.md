@@ -1,6 +1,7 @@
 # Smoke test — har deploydan oldin (~5 daqiqa)
 
 Preview'da (yoki lokal) o'tkaziladi. Bitta qizil xato bo'lsa — `main` ga merge qilinmaydi.
+Avtomatik qismi: `node tests/smoke.mjs` (Playwright, 2 viewport; `BASE_URL=<preview>` bilan Preview'ga ham). Quyidagi qo'lda punktlar shunga qo'shimcha.
 Vizual CSS o'zgarishi bo'lsa: dark/light va mobil/desktop'ni **ko'z bilan** ko'r (roadmap qoida 8).
 
 ## Auth

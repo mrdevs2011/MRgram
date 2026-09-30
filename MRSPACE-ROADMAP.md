@@ -269,11 +269,11 @@ drop table if exists public.follows;
 | # | Vazifa | Nima uchun | Holat |
 |---|---|---|---|
 | 7.1 | Admin parol reset | 2-fazada. Eng katta real og'riq | ✅ |
-| 7.2 | Storage kvotasi | limit 25 MB ✅ (2026-09-29: avval kodda 50/30 MB edi, endi `MAX_FILE`/`STORY_MAX` = 25 MB, `diet/08-docs`), `compress.js` bor; admin sarf-ko'rsatkichi `[QAROR]` | 🔶 |
+| 7.2 | Storage kvotasi | limit 25 MB ✅ (2026-09-29: avval kodda 50/30 MB edi, endi `MAX_FILE`/`STORY_MAX` = 25 MB, `diet/08-docs`), `compress.js` bor; admin sarf-ko'rsatkichi ✅ kod (2026-09-30, `modules/admin-storage.js`, admin panelda bitta qator + chiziq; DB: `unfulfilled/015_diet-07-storage-usage.sql` RPC — MR ishga tushiradi, yo'q bo'lsa jim ishlaydi) | ✅ kod / 🔶 015 SQL |
 | 7.4 | TURN | Env quvuri (`build-env.mjs:19-21`) bor; Vercel'da `TURN_*` env qo'yilganini MR tekshirsin `[TEKSHIR]` | 🔶 |
 | 7.5 | Media maxfiyligi | `[QAROR Q7]` public bucket hozircha qolsin, rasmiy qaror sifatida yozilsin | ✅ README "Qarorlar" bo'limiga yozildi |
 | 7.6 | Rate limit | Past ustuvorlik; faqat yuborish tezligi | ❌ |
-| 7.7 | Xatolarni ko'rish | `window.onerror` + ixtiyoriy `client_errors` jadvali. Overengineering'ga qaytma | ❌ |
+| 7.7 | Xatolarni ko'rish | `window.onerror` + ixtiyoriy `client_errors` jadvali. Overengineering'ga qaytma | ✅ (2026-09-30, `modules/error-log.js`: oxirgi 20 xato localStorage'da — konsolda `__mrErrors()`; jadval bo'lsa sessiyada ≤5 ta `client_errors`ga; DB: `unfulfilled/014_diet-07-client-errors.sql`, ixtiyoriy, istalgan vaqtda) |
 | 7.8 | Onboarding matni | admin reset bor → "unutsangiz admin (MR) yangi parol beradi" | ✅ (`a3d0e14`) |
 
 ---
@@ -286,7 +286,7 @@ drop table if exists public.follows;
 - [x] UI xaritasi eski README bilan `docs/archive/` ga; `AUDIT.md` → `docs/archive/AUDIT.md`.
 - [x] Patchlar `supabase/migrations/NNN_*.sql` ga raqamlandi (2026-09-29, `diet/08-migrations`). ⚠️ `schema.sql` (`000_schema.sql`) jonli bazadan qayta yig'ilmagan — `supabase db dump --schema-only` MR ishi.
 - [x] Smoke test ro'yxati `docs/SMOKE.md` ga ko'chirildi.
-- [ ] Ixtiyoriy: Playwright bilan 3 test (login, post, chat).
+- [x] Playwright smoke (2026-09-30): `node tests/smoke.mjs` — lokal statik server, desktop+mobil: sahifa ochiladi, JS xatosi yo'q, resurslar 4xx yo'q, `app.css`, login ekrani, gorizontal scroll yo'q, `error-log`. 14/14 o'tdi. Login/post/chat qadamlari `TEST_EMAIL`/`TEST_PASSWORD` (alohida TEST akkaunt) berilganda yuradi — hozir faqat login qadami yozilgan; post/chat `[ ]`.
 
 ---
 
