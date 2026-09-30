@@ -268,6 +268,7 @@ import {
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLastSeen } from './utils.js';
 import { toast }            from './toast.js';
 import { rateOk }           from './rate-limit.js';
+import { initEmojiPicker } from './emoji-picker.js';
 import {
   startGroupsWatcher, stopGroupsWatcher, bindGroupsRealtime,
   openGroupThread, closeGroupThread,
@@ -1970,48 +1971,7 @@ $('chatThreadInput').addEventListener('keydown', e => {
 /* ── Composer emoji tugmasi — matn maydoni ichida chapda (Telegram
  * uslubi). Kompakt quick-picker: keng tarqalgan emojilardan iborat
  * ro'yxat, bosilganda kursor turgan joyga qo'shiladi. ── */
-const CHAT_QUICK_EMOJIS = [
-  '😀','😂','🥰','😍','😊','🙂','😉','😎','🤔','😴',
-  '😭','😢','😡','🥳','😱','🤗','🙄','😅','🤝','👍',
-  '👎','👏','🙏','💪','🔥','✨','🎉','❤️','💔','💯',
-  '👌','✅','❌','⭐','☺️','😇','🤣','😘','😜','🤷',
-];
-(function _initChatEmojiQuickpick() {
-  const btn  = $('chatEmojiBtn');
-  const pop  = $('chatEmojiQuickpick');
-  const inp  = $('chatThreadInput');
-  if (!btn || !pop || !inp) return;
-
-  if (!pop.childElementCount) {
-    pop.innerHTML = CHAT_QUICK_EMOJIS
-      .map(em => `<button type="button">${em}</button>`)
-      .join('');
-  }
-
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    pop.classList.toggle('show');
-  });
-
-  pop.addEventListener('click', (e) => {
-    const b = e.target.closest('button');
-    if (!b) return;
-    const emoji = b.textContent;
-    const start = inp.selectionStart ?? inp.value.length;
-    const end   = inp.selectionEnd ?? inp.value.length;
-    inp.value = inp.value.slice(0, start) + emoji + inp.value.slice(end);
-    const caret = start + emoji.length;
-    inp.focus();
-    inp.setSelectionRange(caret, caret);
-    inp.dispatchEvent(new Event('input', { bubbles: true }));
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!pop.classList.contains('show')) return;
-    if (e.target === btn || pop.contains(e.target)) return;
-    pop.classList.remove('show');
-  });
-})();
+initEmojiPicker({ btn: $('chatEmojiBtn'), pop: $('chatEmojiQuickpick'), input: $('chatThreadInput') });
 
 // Mikrofon/yuborish tugmasi — bitta tugma, uch xil holat:
 //  1) Matn/fayl bor bo'lsa — tap = yuborish.
