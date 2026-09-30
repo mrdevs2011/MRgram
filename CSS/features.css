@@ -1510,8 +1510,8 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 #callActiveModal.video-mode .call-active-btns {
   background: var(--pal-black);
   border: 0.5px solid var(--pal-legacy-26262c);
-  box-shadow: inset 0 1px 0 #2B2B31, 0 4px 24px var(--pal-black) !important;
-  border-radius: 60px !important;
+  box-shadow: inset 0 1px 0 #2B2B31, 0 4px 24px var(--pal-black);
+  border-radius: 60px;
 }
 /* Message sender avatar (DM & Group) */
 .msg-avi-btn {
@@ -1549,12 +1549,12 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* ════════════════════════════════════════════════════════════════════ CHAT EFFECTS PACK v2 ═════════════════... */
 /* 1. Context menu — spring scale-in */
 #chatContextMenu.show { display: block; transform-origin: top left; }
-.ctx-item.danger:hover { background: var(--pal-legacy-171717) !important; }
-#chatThreadInput:focus { box-shadow: 0 0 0 3px var(--pal-gray-800) !important; border-color: #4c4c4c !important; outline: none; }
+.ctx-item.danger:hover { background: var(--pal-legacy-171717); }
+#chatThreadInput:focus { box-shadow: 0 0 0 3px var(--pal-gray-800); border-color: #4c4c4c; outline: none; }
 /* ═══════════════════════════════════════════ CLEAN CHAT REDESIGN — Telegram/Instagram style Chegrasiz, minim... */
 /* #chatThreadModal foni → CSS/chat-dark-redesign.css'da belgilangan (bir xil selector, o'sha fayl keyinroq yu... */
 /* Messages container ── padding/background → CSS/chat-dark-redesign.css'da belgilangan (bu yerdagi eski qator... */
-.chat-thread-messages { gap: 2px !important; background: transparent !important; }
+.chat-thread-messages { gap: 2px; background: transparent !important; }
 /* Message row */
 /* Bubble — chegrasiz (padding/border-radius/font-size/line-height → o'chirildi, chunki CSS/chat-dark-redesign... */
 .chat-bubble { border: none; box-shadow: none; }
@@ -1562,7 +1562,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .chat-msg.mine .chat-bubble { box-shadow: none; border: none; }
 /* theirs — background/color/border-bottom-left-radius o'chirildi (o'lik edi, CSS/chat-dark-redesign.css g'oli... */
 .chat-msg.theirs .chat-bubble { box-shadow: none; border: none; }
-.chat-msg.mine .chat-bubble:has(.chat-img-msg), .chat-msg.theirs .chat-bubble:has(.chat-img-msg) { padding: 3px !important; border-radius: 16px !important; }
+.chat-msg.mine .chat-bubble:has(.chat-img-msg), .chat-msg.theirs .chat-bubble:has(.chat-img-msg) { padding: 3px; border-radius: 16px; }
 /* Input row — clean, chegrasiz */
 .chat-thread-input-row { background: var(--bg); border-top: none; box-shadow: none; padding: 8px 10px; padding-bottom: max(8px, env(safe-area-inset-bottom)); gap: 6px; }
 .chat-thread-input { background: var(--bg3); border: none; border-radius: 22px; padding: 10px 16px; font-size: 14px; color: var(--text); }
@@ -1572,7 +1572,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .chat-attach-btn:hover { background: transparent; color: var(--text); }
 .chat-voice-btn { background: var(--pal-white); border: none; box-shadow: none; width: 36px; height: 36px; }
 /* msg-avi-btn — completely hidden in 1v1 */
-.msg-avi-btn { display: none !important; }
+.msg-avi-btn { display: none; }
 /* ═══════════════════════════════════════════ VOICE MESSAGE — Final Clean Style mine: ko'k bubble, oq element... */
 /* Base structure */
 .chat-voice-msg {
@@ -1584,9 +1584,9 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   width: 100%;
   box-sizing: border-box;
   overflow: hidden;
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 /* MINE — ko'k bubble ichida oq elementlar */
 .chat-msg.mine .cvm-play {
@@ -1599,15 +1599,15 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.28) !important;
-  color: var(--pal-white) !important;
+  background: rgba(255,255,255,0.28);
+  color: var(--pal-white);
 }
-.chat-msg.mine .cvm-play:hover { background: var(--pal-white-42) !important; }
+.chat-msg.mine .cvm-play:hover { background: var(--pal-white-42); }
 .chat-msg.mine .cvm-waveform { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 1.5px; cursor: pointer; overflow: hidden; }
-.chat-msg.mine .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--pal-white-42) !important;  }
+.chat-msg.mine .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--pal-white-42);  }
 /* Eshitilmagan qism — muted (past intensivlik); eshitilgan qism — * to'liq yorqin oq bilan ajralib turadi (Te... */
-.chat-msg.mine .cvm-bar.played { background: rgba(255,255,255,0.95) !important; }
-.chat-msg.mine .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: rgba(255,255,255,0.72) !important; }
+.chat-msg.mine .cvm-bar.played { background: rgba(255,255,255,0.95); }
+.chat-msg.mine .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: rgba(255,255,255,0.72); }
 /* THEIRS — kulrang bubble ichida to'q elementlar */
 .chat-msg.theirs .cvm-play {
   width: 34px;
@@ -1619,14 +1619,14 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--pal-white) !important;
-  color: var(--pal-white) !important;
+  background: var(--pal-white);
+  color: var(--pal-white);
 }
-.chat-msg.theirs .cvm-play:hover { background: var(--pal-white) !important; }
+.chat-msg.theirs .cvm-play:hover { background: var(--pal-white); }
 .chat-msg.theirs .cvm-waveform { flex: 1; min-width: 0; height: 28px; display: flex; align-items: center; gap: 1.5px; cursor: pointer; overflow: hidden; }
 .chat-msg.theirs .cvm-bar { display: block; width: 1.5px; border-radius: 10px; background: var(--text3); opacity: 0.5;  }
 /* Eshitilgan qism — Telegram Primary Blue (#ffffff) bilan to'liq * to'ldiriladi, eshitilmagan qism muted kulr... */
-.chat-msg.theirs .cvm-bar.played { background: var(--blue) !important; opacity: 1; }
+.chat-msg.theirs .cvm-bar.played { background: var(--blue); opacity: 1; }
 .chat-msg.theirs .cvm-dur { font-size: 11px; white-space: nowrap; flex-shrink: 0; color: var(--text3); }
 /* Voice mini-player — chat almashtirilganda/thread yopilganda ham * ovozli xabar ijrosi davom etayotganini ko... */
 .voice-mini-player {
