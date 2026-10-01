@@ -29,7 +29,7 @@ import { openRtGroup }                              from './rt-chat.js';
 import { busOn, groupJoin, groupInboxSend, isUidOnline } from './rt-bus.js';
 import { updateVoiceSendBtn, _toDateSafe, _isSameDay, _dateSepLabel,
          paintGroupThread, resetSeenMsgs, _showPendingBubble, _updatePendingProgress, _removePendingBubble,
-         uploadViaControllerProgress } from './chat.js';
+         uploadViaControllerProgress, initChatHeaderMenu } from './chat.js';
 import { isEditing, commitEdit }                    from './msg-menu.js';
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -114,6 +114,16 @@ async function _removeMember(groupId, uid) {
   if (error) throw error;
   if (!data || !data.length) throw new Error("Ruxsat yo'q");
   _loadGroups();
+}
+
+export async function joinGroup(groupId) {
+  if (!state.me?.uid || !groupId) return;
+  await _addMembers(groupId, [state.me.uid]);
+}
+
+export async function leaveGroup(groupId) {
+  if (!state.me?.uid || !groupId) return;
+  await _removeMember(groupId, state.me.uid);
 }
 
 async function _updateGroup(groupId, patch) {
@@ -212,6 +222,7 @@ busOn('ginbox', (o) => {
 function _restoreInputRow() {
   // Join/Leave barni o'chirish
   document.getElementById('channelActionBar')?.remove();
+  document.getElementById('groupJoinBar')?.remove();
   // Input row ni qayta ko'rsatish
   const inputRow = document.querySelector('.chat-thread-input-row');
   if (inputRow) inputRow.style.display = '';
@@ -223,30 +234,95 @@ function _restoreInputRow() {
   });
 }
 
-/** "Faqat adminlar yozadi" rejimi: oddiy a'zoda input qatori UMUMAN ko'rinmaydi, o'rnida izoh chiqadi.
- *  Admin rejimni o'chirsa — input qaytadi (groups realtime orqali _loadGroups() shuni qayta chaqiradi). */
+/** Guruh composer holati:
+ *  1) Agar a'zo bo'lmasa — input o'rnida "Guruhga qo'shilish" tugmasi.
+ *  2) A'zo bo'lgach agar yozish huquqi bo'lsa — input ochiladi.
+ *  3) Agar yozish huquqi bo'lmasa — tugma kulrang bo'lib "Faqat guruhni yaratgan odam yoza oladi" ko'rsatiladi. */
 function _applyGroupComposer(g) {
   if (!g || !state.me) return;
   const me  = state.me.uid;
+  const isMember = (g.members || []).includes(me) || g.ownerId === me;
   const can = g.ownerId === me || (g.adminIds || []).includes(me) || g.msgPermission !== 'admins';
   const row = document.querySelector('.chat-thread-input-row');
   const inp = $('chatThreadInput');
   document.getElementById('channelActionBar')?.remove();
+  document.getElementById('groupJoinBar')?.remove();
   const resetBtn = id => { const el = $(id); if (el) { el.style.opacity = ''; el.style.pointerEvents = ''; } };
+
+  if (!isMember) {
+    if (row) row.style.display = 'none';
+    const bar = document.createElement('div');
+    bar.id = 'groupJoinBar';
+    bar.className = 'group-join-bar';
+    bar.innerHTML = `
+      <button type="button" class="group-join-btn" id="groupJoinBtn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+        <span>Guruhga qo'shilish</span>
+      </button>`;
+    if (row && row.parentNode) row.parentNode.insertBefore(bar, row);
+
+    bar.querySelector('#groupJoinBtn')?.addEventListener('click', async () => {
+      const btn = bar.querySelector('#groupJoinBtn');
+      btn.disabled = true;
+      try {
+        await joinGroup(g.id);
+        g.members = [...new Set([...(g.members || []), me])];
+        toast("Guruhga qo'shildingiz", "success");
+        _applyGroupComposer(g);
+      } catch (err) {
+        btn.disabled = false;
+        toast("Guruhga qo'shilishda xatolik", "error");
+      }
+    });
+    return;
+  }
+
   if (can) {
     if (row) row.style.display = '';
     if (inp) { inp.disabled = false; inp.placeholder = 'Xabar yozing...'; }
     resetBtn('chatAttachBtn'); resetBtn('chatVoiceBtn');
     return;
   }
+
+  // A'zo, lekin yozish huquqi yo'q (faqat egasi/admini yoza oladi)
   if (inp) { inp.value = ''; inp.disabled = true; inp.blur(); }
-  if (row) {
-    row.style.display = 'none';
-  }
+  if (row) row.style.display = 'none';
+  const bar = document.createElement('div');
+  bar.id = 'groupJoinBar';
+  bar.className = 'group-join-bar';
+  bar.innerHTML = `
+    <div class="group-join-btn group-join-btn--disabled">
+      <span>Faqat guruhni yaratgan odam yoza oladi</span>
+    </div>`;
+  if (row && row.parentNode) row.parentNode.insertBefore(bar, row);
+}
+
+export async function searchGroups(term) {
+  if (!term) return [];
+  try {
+    const { data, error } = await sb.from('groups')
+      .select('*, group_members(user_id, role, unread_count)')
+      .ilike('name', `%${term}%`)
+      .limit(20);
+    if (error || !data) return [];
+    const res = data.map(mapGroup);
+    res.forEach(g => { _latestGroupMap[g.id] = g; });
+    return res;
+  } catch { return []; }
 }
 
 export async function openGroupThread(groupId) {
-  const groupData = _latestGroupMap[groupId];
+  let groupData = _latestGroupMap[groupId];
+  if (!groupData && state.me && groupId) {
+    try {
+      const { data, error } = await sb.from('groups')
+        .select('*, group_members(user_id, role, unread_count)').eq('id', groupId).maybeSingle();
+      if (data && !error) {
+        groupData = mapGroup(data);
+        _latestGroupMap[groupId] = groupData;
+      }
+    } catch (_) {}
+  }
   if (!groupData || !state.me) return;
 
   _currentGroupId   = groupId;
@@ -258,6 +334,9 @@ export async function openGroupThread(groupId) {
   lockScroll();
   modal.dataset.kind = groupData.type;
   modal.dataset.gid  = groupId;
+
+  document.getElementById('chatHeaderDropdown')?.remove();
+  initChatHeaderMenu();
 
   // Header
   const av = groupData.avatar || defAvi(groupData.name || 'G');
@@ -409,6 +488,7 @@ export function closeGroupThread() {
 
   // Restore input
   _restoreInputRow();
+  document.getElementById('chatHeaderDropdown')?.remove();
   $('chatThreadInput').disabled = false;
   $('chatThreadInput').placeholder = 'Xabar yozing...';
   [$('chatAttachBtn'), $('chatVoiceBtn')].forEach(el => {

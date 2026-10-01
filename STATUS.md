@@ -55,3 +55,15 @@
 ### 2026-10-01 17:30
 - Qilindi: chatlar ro'yxatida barcha foydalanuvchilar ko'rinishi (yangi hisob ochilganda faqat bo'sh _myContacts bilan cheklanib qolmaslik) va qidiruv (search) to'g'rilandi: jonli debounced qidiruv (ism, username va guruhlar bo'yicha), tozalash tugmasi (clear btn) qo'shildi.
 - Fayllar: modules/chat.js
+
+---
+### 2026-10-01 18:05
+- Qilindi:
+  1) Yangi ochilgan hisobda chatlar ro'yxatida begona userlar bo'lmasligi, faqat Admin ko'rinishi. Qolganlar qidiruvdan topilib, xabar yozilgandan so'nggina ro'yxatda saqlanishi.
+  2) So'nggi qidiruvlar tarixi (recent searches): search inputga bosganda ko'rinishi va har birida "X" o'chirish tugmasi.
+  3) Suhbat va guruhlarni qadash (pin) hamda kontekst menyu (bosib turganda): user uchun "Suhbatni qadash" va "Suhbatni o'chirish", guruh uchun "Guruhni qadash" va "Guruhdan chiqish". Qadalganlar eng yuqorida qadash ikonchasi bilan chiqadi.
+  4) Guruhga a'zo bo'lmaganda input o'rnida "Guruhga qo'shilish" tugmasi chiqishi. Bosilganda guruhga qo'shilish va agar faqat yaratgan odam yoza oladigan bo'lsa, tugma kulrang bo'lib "Faqat guruhni yaratgan odam yoza oladi" deb yozilishi.
+  5) Suhbat va guruh header o'ng tarafida 3 nuqta menyusi: DM da "Suhbatdan chiqish", guruhda "Guruhdan chiqish".
+  6) Barcha interfeys va bildirishnomalar to'liq o'zbek tilida.
+- Fayllar: index.html, modules/chat.js, modules/groups.js, STATUS.md
+- Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.

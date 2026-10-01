@@ -27,8 +27,117 @@ function _injectPresenceCSS() {
   document.head.appendChild(s);
 }
 
-/* ── Search for non-admin users ──────────────────────────────────────── */
+/* ── Search, Pins & Context Menu for Chats ──────────────────────────── */
 let _searchQuery = '';
+
+/* ── Chat Pins (LocalStorage) ────────────────────────────────────────── */
+function _getPins() {
+  if (!state.me?.uid) return { dms: [], groups: [] };
+  try {
+    const raw = localStorage.getItem(`chat_pins_${state.me.uid}`);
+    if (!raw) return { dms: [], groups: [] };
+    const p = JSON.parse(raw);
+    return {
+      dms: Array.isArray(p.dms) ? p.dms : [],
+      groups: Array.isArray(p.groups) ? p.groups : [],
+    };
+  } catch { return { dms: [], groups: [] }; }
+}
+
+function _isPinned(type, id) {
+  const pins = _getPins();
+  return type === 'dm' ? pins.dms.includes(id) : pins.groups.includes(id);
+}
+
+function _togglePin(type, id) {
+  const pins = _getPins();
+  const list = type === 'dm' ? pins.dms : pins.groups;
+  const idx = list.indexOf(id);
+  let isNowPinned = false;
+  if (idx >= 0) {
+    list.splice(idx, 1);
+    isNowPinned = false;
+  } else {
+    list.unshift(id);
+    isNowPinned = true;
+  }
+  if (type === 'dm') pins.dms = list; else pins.groups = list;
+  try {
+    localStorage.setItem(`chat_pins_${state.me.uid}`, JSON.stringify(pins));
+  } catch (_) {}
+  return isNowPinned;
+}
+
+/* ── Recent Searches (LocalStorage) ───────────────────────────────────── */
+function _getRecents() {
+  if (!state.me?.uid) return [];
+  try {
+    const raw = localStorage.getItem(`chat_recent_searches_${state.me.uid}`);
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    return Array.isArray(list) ? list : [];
+  } catch { return []; }
+}
+
+function _saveRecent(item) {
+  if (!state.me?.uid || !item || !item.id) return;
+  const list = _getRecents().filter(x => x.id !== item.id);
+  list.unshift(item);
+  try {
+    localStorage.setItem(`chat_recent_searches_${state.me.uid}`, JSON.stringify(list.slice(0, 10)));
+  } catch (_) {}
+}
+
+function _removeRecent(id) {
+  if (!state.me?.uid) return;
+  const list = _getRecents().filter(x => x.id !== id);
+  try {
+    localStorage.setItem(`chat_recent_searches_${state.me.uid}`, JSON.stringify(list));
+  } catch (_) {}
+}
+
+function _clearAllRecents() {
+  if (!state.me?.uid) return;
+  try {
+    localStorage.removeItem(`chat_recent_searches_${state.me.uid}`);
+  } catch (_) {}
+}
+
+/* ── Deleted Chats (LocalStorage per user) ────────────────────────────── */
+function _deleteChatForMe(uid) {
+  if (!state.me?.uid || !uid) return;
+  try {
+    localStorage.setItem(`deleted_chat_${state.me.uid}_${uid}`, String(Date.now()));
+  } catch (_) {}
+  delete _latestChatMap[uid];
+  const pins = _getPins();
+  if (pins.dms.includes(uid)) _togglePin('dm', uid);
+  sb.from('contacts').delete().eq('owner_id', state.me.uid).eq('contact_id', uid).then(() => {}, () => {});
+}
+
+function _isChatDeleted(uid) {
+  try {
+    const raw = localStorage.getItem(`deleted_chat_${state.me?.uid}_${uid}`);
+    if (!raw) return false;
+    const t = Number(raw);
+    const c = _latestChatMap[uid];
+    if (c?.lastMessageAt && c.lastMessageAt > t) {
+      localStorage.removeItem(`deleted_chat_${state.me?.uid}_${uid}`);
+      return false;
+    }
+    return true;
+  } catch { return false; }
+}
+
+function _shouldShowInChatsList(u, chatMap) {
+  if (!u || !u.uid) return false;
+  if (_isChatDeleted(u.uid)) return false;
+  if (_isPinned('dm', u.uid)) return true;
+  if (u.isAdmin || u.username === 'admin' || u.username === 'mrdevs' || u.username === 'mr') return true;
+  const c = chatMap[u.uid];
+  if (c && (c.lastMessage || c.lastMessageAt || c.lastMessageId)) return true;
+  return false;
+}
 
 function _injectSearchCSS() {
   if (document.getElementById('chat-search-css')) return;
@@ -62,8 +171,187 @@ function _injectSearchCSS() {
 .ulist-search-clear:hover { color: var(--text, #fff); }
 .ulist-search-result { margin: 0 18px 10px; font-size: 12.5px; font-weight: 500; color: var(--text3, #767676); }
 .ulist-search-result.not-found { color: var(--red, #ef4444); }
+
+/* Pinned icon */
+.chat-row-pin-ico {
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--x-blue, #1d9bf0); margin-right: 4px; flex-shrink: 0;
+}
+
+/* Recent searches */
+.chat-recents-wrap {
+  margin: 6px 14px 10px; padding: 8px 12px 6px;
+  background: var(--bg2, #18181b);
+  border: 1px solid var(--line, #2f3336);
+  border-radius: 14px;
+}
+.chat-recents-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 6px 8px; font-size: 12px; font-weight: 600;
+  color: var(--text3, #8b98a5); text-transform: uppercase; letter-spacing: .5px;
+}
+.chat-recents-clear-all {
+  background: none; border: none; font-size: 12px; color: var(--x-blue, #1d9bf0);
+  cursor: pointer; padding: 2px 4px;
+}
+.chat-recents-clear-all:hover { text-decoration: underline; }
+.chat-recent-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 6px;
+  border-radius: 10px; cursor: pointer; transition: background .12s;
+}
+.chat-recent-item:hover { background: rgba(255,255,255,0.06); }
+.chat-recent-avi { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--bg3, #222); }
+.chat-recent-avi img { width: 100%; height: 100%; object-fit: cover; }
+.chat-recent-info { flex: 1; min-width: 0; }
+.chat-recent-name { font-size: 14px; font-weight: 600; color: var(--text, #fff); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-recent-sub { font-size: 12px; color: var(--text3, #8b98a5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chat-recent-del {
+  width: 28px; height: 28px; border-radius: 50%; background: none; border: none;
+  color: var(--text3, #8b98a5); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0; transition: background .12s, color .12s;
+}
+.chat-recent-del:hover { background: rgba(255,255,255,0.1); color: var(--red, #ef4444); }
+
+/* Context menu */
+.chat-ctx-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
+  display: flex; align-items: center; justify-content: center;
+  animation: fadeIn .15s ease;
+}
+.chat-ctx-menu {
+  background: var(--bg2, #1e1e24); border: 1px solid var(--line, #2f3336);
+  border-radius: 16px; padding: 6px; min-width: 230px; max-width: 90vw;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+}
+.chat-ctx-title {
+  padding: 10px 14px 8px; font-size: 13px; font-weight: 600;
+  color: var(--text3, #8b98a5); border-bottom: 1px solid var(--line, #2f3336);
+  margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.chat-ctx-item {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 11px 14px; background: none; border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 500; color: var(--text, #fff);
+  cursor: pointer; text-align: left; transition: background .12s;
+}
+.chat-ctx-item:hover, .chat-ctx-item:active { background: rgba(255,255,255,0.08); }
+.chat-ctx-item.danger { color: var(--red, #ef4444); }
+.chat-ctx-item.danger:hover, .chat-ctx-item.danger:active { background: rgba(239,68,68,0.12); }
+
+/* Header dropdown */
+.chat-header-dropdown {
+  position: absolute; right: 12px; top: 54px; z-index: 1050;
+  background: var(--bg2, #1e1e24); border: 1px solid var(--line, #2f3336);
+  border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  padding: 6px; min-width: 190px;
+}
+.chat-header-dropdown-item {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 10px 14px; background: none; border: none;
+  border-radius: 8px; font-size: 13.5px; font-weight: 500;
+  color: var(--text, #fff); cursor: pointer; text-align: left;
+}
+.chat-header-dropdown-item:hover { background: rgba(255,255,255,0.06); }
+.chat-header-dropdown-item.danger { color: var(--red, #ef4444); }
+.chat-header-dropdown-item.danger:hover { background: rgba(239,68,68,0.12); }
+
+/* Group Join Bar */
+.group-join-bar {
+  display: flex; align-items: center; justify-content: center;
+  height: 54px; min-height: 54px; padding: 6px 16px;
+  background: var(--bg1, #121214);
+  border-top: 1px solid var(--line, rgba(255,255,255,0.08));
+}
+.group-join-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 42px; border-radius: 999px;
+  background: var(--x-blue, #1d9bf0); color: #fff;
+  font-size: 14.5px; font-weight: 600; border: none; cursor: pointer;
+  transition: opacity .15s;
+}
+.group-join-btn:hover { opacity: .9; }
+.group-join-btn--disabled {
+  background: #2a2a2e !important; color: #888 !important;
+  cursor: not-allowed !important; pointer-events: none;
+}
 `;
   document.head.appendChild(s);
+}
+
+function _renderRecentSearches() {
+  const existing = document.getElementById('chatRecentSearchesWrap');
+  if (existing) existing.remove();
+
+  const recents = _getRecents();
+  if (!recents.length) return;
+
+  const wrap = document.createElement('div');
+  wrap.id = 'chatRecentSearchesWrap';
+  wrap.className = 'chat-recents-wrap';
+  wrap.innerHTML = `
+    <div class="chat-recents-hdr">
+      <span>So'nggi qidiruvlar</span>
+      <button type="button" class="chat-recents-clear-all" id="chatRecentsClearAll">Barchasini tozalash</button>
+    </div>
+    <div class="chat-recents-list">
+      ${recents.map(item => {
+        const av = item.avatar || defAvi(item.name || 'U');
+        const sub = item.type === 'group' ? 'Guruh' : (item.username ? '@' + item.username : '');
+        return `
+          <div class="chat-recent-item" data-id="${esc(item.id)}" data-type="${esc(item.type)}">
+            <div class="chat-recent-avi"><img src="${av}" onerror="this.style.display='none'"></div>
+            <div class="chat-recent-info">
+              <div class="chat-recent-name">${esc(item.name || 'Foydalanuvchi')}</div>
+              ${sub ? `<div class="chat-recent-sub">${esc(sub)}</div>` : ''}
+            </div>
+            <button type="button" class="chat-recent-del" title="O'chirish" data-del="${esc(item.id)}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  const box = document.getElementById('chatSearchBoxWrap');
+  if (box && box.nextSibling) {
+    box.parentNode.insertBefore(wrap, box.nextSibling);
+  } else if (box) {
+    box.parentNode.appendChild(wrap);
+  }
+
+  wrap.querySelector('#chatRecentsClearAll')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    _clearAllRecents();
+    wrap.remove();
+  });
+
+  wrap.querySelectorAll('.chat-recent-del').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.del;
+      _removeRecent(id);
+      const row = btn.closest('.chat-recent-item');
+      row?.remove();
+      if (!wrap.querySelector('.chat-recent-item')) {
+        wrap.remove();
+      }
+    });
+  });
+
+  wrap.querySelectorAll('.chat-recent-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const id = item.dataset.id;
+      const type = item.dataset.type;
+      wrap.remove();
+      if (type === 'group') {
+        openGroupThread(id);
+      } else {
+        openChatThread(id);
+      }
+    });
+  });
 }
 
 function _renderSearchBox(container) {
@@ -103,6 +391,7 @@ function _renderSearchBox(container) {
   async function doSearch() {
     const raw = inp.value.trim();
     updateClearBtn();
+    document.getElementById('chatRecentSearchesWrap')?.remove();
     if (!raw) {
       _searchQuery = '';
       if (res) res.classList.add('d-none');
@@ -120,9 +409,15 @@ function _renderSearchBox(container) {
       (u.username || '').toLowerCase().includes(term) ||
       (u.fullName || '').toLowerCase().includes(term)
     );
-    const matchedGroups = getGroupRows().filter(g =>
+    let matchedGroups = getGroupRows().filter(g =>
       (g.name || '').toLowerCase().includes(term)
     );
+    if (!matchedGroups.length && term) {
+      try {
+        const extra = await searchGroups(term);
+        if (extra && extra.length) matchedGroups = extra;
+      } catch (_) {}
+    }
     const totalMatches = matchedUsers.length + matchedGroups.length;
 
     if (res) {
@@ -142,10 +437,23 @@ function _renderSearchBox(container) {
   let debounceTimer = null;
   inp.addEventListener('input', () => {
     updateClearBtn();
+    document.getElementById('chatRecentSearchesWrap')?.remove();
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
       doSearch();
     }, 120);
+  });
+
+  inp.addEventListener('focus', () => {
+    if (!inp.value.trim()) {
+      _renderRecentSearches();
+    }
+  });
+
+  inp.addEventListener('click', () => {
+    if (!inp.value.trim()) {
+      _renderRecentSearches();
+    }
   });
 
   inp.addEventListener('keydown', e => {
@@ -166,8 +474,230 @@ function _renderSearchBox(container) {
     clearTimeout(debounceTimer);
     doSearch();
     inp.focus();
+    _renderRecentSearches();
+  });
+
+  document.addEventListener('click', (e) => {
+    const recWrap = document.getElementById('chatRecentSearchesWrap');
+    if (recWrap && !recWrap.contains(e.target) && e.target !== inp) {
+      recWrap.remove();
+    }
   });
 }
+
+/* ── Context Menu (Long press / right-click on chat row) ─────────────── */
+function _attachChatRowContextMenu(row) {
+  let timer = null;
+  let started = false;
+  let startX = 0, startY = 0;
+
+  const trigger = (e) => {
+    timer = null;
+    started = true;
+    _openChatContextMenu(row);
+  };
+
+  row.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 1) return;
+    started = false;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    timer = setTimeout(() => trigger(e), 450);
+  }, { passive: true });
+
+  row.addEventListener('touchmove', (e) => {
+    if (!timer) return;
+    const dx = Math.abs(e.touches[0].clientX - startX);
+    const dy = Math.abs(e.touches[0].clientY - startY);
+    if (dx > 8 || dy > 8) {
+      clearTimeout(timer);
+      timer = null;
+    }
+  }, { passive: true });
+
+  row.addEventListener('touchend', (e) => {
+    if (timer) { clearTimeout(timer); timer = null; }
+    if (started) {
+      e.preventDefault();
+      e.stopPropagation();
+      setTimeout(() => { started = false; }, 300);
+    }
+  });
+
+  row.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    started = false;
+    timer = setTimeout(() => trigger(e), 450);
+  });
+
+  row.addEventListener('mouseup', () => {
+    if (timer) { clearTimeout(timer); timer = null; }
+  });
+
+  row.addEventListener('mouseleave', () => {
+    if (timer) { clearTimeout(timer); timer = null; }
+  });
+
+  row.addEventListener('click', (e) => {
+    if (started) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      started = false;
+    }
+  }, true);
+
+  row.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    trigger(e);
+  });
+}
+
+function _openChatContextMenu(row) {
+  document.getElementById('chatCtxOverlay')?.remove();
+
+  const isGroup = !!row.dataset.gid;
+  const id = isGroup ? row.dataset.gid : row.dataset.uid;
+  const isPinned = _isPinned(isGroup ? 'group' : 'dm', id);
+
+  let title = 'Suhbat';
+  if (isGroup) {
+    const g = getGroupRows().find(x => x.id === id);
+    title = g?.name || 'Guruh';
+  } else {
+    const u = (_usersCache || []).find(x => x.uid === id);
+    title = u?.fullName || (u?.username ? '@' + u.username : 'Foydalanuvchi');
+  }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'chatCtxOverlay';
+  overlay.className = 'chat-ctx-overlay';
+  overlay.innerHTML = `
+    <div class="chat-ctx-menu">
+      <div class="chat-ctx-title">${esc(title)}</div>
+      <button type="button" class="chat-ctx-item" id="chatCtxPin">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="${isPinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg>
+        <span>${isPinned ? "Qadashni bekor qilish" : (isGroup ? "Guruhni qadash" : "Suhbatni qadash")}</span>
+      </button>
+      ${isGroup ? `
+        <button type="button" class="chat-ctx-item danger" id="chatCtxLeave">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Guruhdan chiqish</span>
+        </button>
+      ` : `
+        <button type="button" class="chat-ctx-item danger" id="chatCtxDelete">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          <span>Suhbatni o'chirish</span>
+        </button>
+      `}
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const close = () => { overlay.remove(); };
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+
+  overlay.querySelector('#chatCtxPin')?.addEventListener('click', () => {
+    close();
+    const nowPinned = _togglePin(isGroup ? 'group' : 'dm', id);
+    toast(nowPinned ? "Qadandi" : "Qadash bekor qilindi", "success");
+    paintChatsList(_usersCache || [], _latestChatMap);
+  });
+
+  overlay.querySelector('#chatCtxDelete')?.addEventListener('click', () => {
+    close();
+    if (!confirm("Ushbu suhbatni o'chirmoqchimisiz?")) return;
+    _deleteChatForMe(id);
+    toast("Suhbat o'chirildi", "info");
+    paintChatsList(_usersCache || [], _latestChatMap);
+  });
+
+  overlay.querySelector('#chatCtxLeave')?.addEventListener('click', async () => {
+    close();
+    if (!confirm("Guruhdan chiqmoqchimisiz?")) return;
+    try {
+      await leaveGroup(id);
+      toast("Guruhdan chiqdingiz", "info");
+      paintChatsList(_usersCache || [], _latestChatMap);
+    } catch { toast("Xatolik yuz berdi", "error"); }
+  });
+}
+
+/* ── Header 3-dots Dropdown Menu (DM & Group) ────────────────────────── */
+export function initChatHeaderMenu() {
+  const btn = $('chatHeaderMenuBtn');
+  if (!btn || btn._wired) return;
+  btn._wired = true;
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const existing = document.getElementById('chatHeaderDropdown');
+    if (existing) { existing.remove(); return; }
+
+    const isGroup = state.currentChatKind === 'group' || !!getCurrentGroupId() || !!document.getElementById('chatThreadModal')?.dataset?.gid;
+    const drop = document.createElement('div');
+    drop.id = 'chatHeaderDropdown';
+    drop.className = 'chat-header-dropdown';
+
+    if (isGroup) {
+      drop.innerHTML = `
+        <button type="button" class="chat-header-dropdown-item danger" id="chmLeaveGroup">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          <span>Guruhdan chiqish</span>
+        </button>
+      `;
+    } else {
+      drop.innerHTML = `
+        <button type="button" class="chat-header-dropdown-item danger" id="chmDeleteChat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          <span>Suhbatdan chiqish</span>
+        </button>
+      `;
+    }
+
+    const hdr = document.querySelector('.chat-thread-hdr');
+    if (hdr) hdr.appendChild(drop);
+
+    drop.querySelector('#chmLeaveGroup')?.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+      drop.remove();
+      const gid = getCurrentGroupId() || document.getElementById('chatThreadModal')?.dataset?.gid;
+      if (!gid) return;
+      if (!confirm("Guruhdan chiqmoqchimisiz?")) return;
+      try {
+        await leaveGroup(gid);
+        $('chatThreadModal')?.classList.remove('show');
+        closeGroupThread();
+        toast("Guruhdan chiqdingiz", "info");
+        if (state.view === 'chats') renderChatsList();
+      } catch { toast("Xatolik yuz berdi", "error"); }
+    });
+
+    drop.querySelector('#chmDeleteChat')?.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      drop.remove();
+      const uid = state.currentChatUid;
+      if (!uid) return;
+      if (!confirm("Suhbatdan chiqmoqchimisiz?")) return;
+      _deleteChatForMe(uid);
+      closeChatThread();
+      toast("Suhbatdan chiqildi", "info");
+      if (state.view === 'chats') renderChatsList();
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    const drop = document.getElementById('chatHeaderDropdown');
+    if (drop && !drop.contains(e.target) && e.target !== btn) {
+      drop.remove();
+    }
+  });
+}
+window._initChatHeaderMenu = initChatHeaderMenu;
 
 /* ── Spinner (qidiruv yuklanishi) ─────────────────────────────────────── */
 function _paintSearchSpinner() {
@@ -198,26 +728,36 @@ function _paintUserRows(users, animate = false) {
   }
   const chatMap = _latestChatMap;
   if (!users.length) {
-    rowsWrap.innerHTML = '';
+    if (!_searchQuery.trim() && !getGroupRows().length) {
+      rowsWrap.innerHTML = '<div class="empty tac" style="padding: 40px 16px;"><div class="fs-13px c-text2">Yangi suhbat boshlash uchun yuqoridagi qidiruvdan foydalaning</div></div>';
+    } else {
+      rowsWrap.innerHTML = '';
+    }
     return;
   }
-  const rows = users.map(u => ({ u, c: chatMap[u.uid] || null }));
+  const rows = users.map(u => ({ u, c: chatMap[u.uid] || null, pinned: _isPinned('dm', u.uid) }));
   rows.sort((a, b) => {
+    // 1. Pinned users first
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+    // 2. Latest message first
     const ta = a.c?.lastMessageAt || 0;
     const tb = b.c?.lastMessageAt || 0;
     if (ta !== tb) return tb - ta;
+    // 3. Alphabetical
     return (a.u.fullName || '').localeCompare(b.u.fullName || '');
   });
-  const html = rows.map(({ u, c }, idx) => {
+  const html = rows.map(({ u, c, pinned }, idx) => {
     const av = u.avatar || defAvi(u.fullName || 'U');
     const isContact = _myContacts.has(u.uid);
     const online = isUidOnline(u.uid, isOnline(u.lastSeenAt));
+    const isAdminUser = u.isAdmin || u.username === 'admin' || u.username === 'mrdevs' || u.username === 'mr';
     const preview = c
       ? `${c.lastSenderId === state.me.uid ? 'You: ' : ''}${esc((c.lastMessage || '').slice(0, 46))}`
-      : isContact ? 'Kontakt' : 'Yangi suhbat boshlash';
+      : isAdminUser ? "Admin bilan bog'lanish" : isContact ? 'Kontakt' : 'Yangi suhbat boshlash';
     const time   = c?.lastMessageAt ? fmt(c.lastMessageAt) : '';
     const unread = c?.unreadCount?.[state.me.uid] || 0;
     const badgeTxt = unread > 99 ? '+99' : '+' + unread;
+    const pinHtml = pinned ? `<span class="chat-row-pin-ico" title="Qadalgan"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg></span>` : '';
     const animStyle = '';
     return `<div class="chat-row${unread ? ' unread' : ''}${animate ? ' chat-row-anim' : ''}" data-uid="${u.uid}" ${animStyle}>
       <div class="chat-avi">
@@ -225,10 +765,11 @@ function _paintUserRows(users, animate = false) {
         ${online ? '<span class="presence-dot" title="onlayn"></span>' : ''}
       </div>
       <div class="chat-row-body">
-        <div class="chat-row-name">${esc(u.fullName || 'Foydalanuvchi')}</div>
+        <div class="chat-row-name">${esc(u.fullName || (u.username ? '@' + u.username : 'Foydalanuvchi'))}${u.username && u.fullName ? ` <span style="font-size:12px;font-weight:400;color:var(--text3)">@${esc(u.username)}</span>` : ''}</div>
         <div class="chat-row-preview${c ? '' : ' chat-row-empty'}">${preview}</div>
       </div>
       <div class="chat-row-right">
+        ${pinHtml}
         ${time ? `<div class="chat-row-time">${time}</div>` : ''}
         ${unread ? `<div class="chat-row-badge">${badgeTxt}</div>` : ''}
       </div>
@@ -237,7 +778,15 @@ function _paintUserRows(users, animate = false) {
   rowsWrap.innerHTML = html;
   _injectPresenceCSS();
   rowsWrap.querySelectorAll('.chat-row').forEach(row => {
-    row.addEventListener('click', () => openChatThread(row.dataset.uid));
+    _attachChatRowContextMenu(row);
+    row.addEventListener('click', () => {
+      const uid = row.dataset.uid;
+      const u = users.find(x => x.uid === uid);
+      if (u) {
+        _saveRecent({ type: 'user', id: u.uid, name: u.fullName || u.username, username: u.username, avatar: u.avatar });
+      }
+      openChatThread(uid);
+    });
   });
 }
 
@@ -282,7 +831,7 @@ import {
   openGroupThread, closeGroupThread,
   sendGroupMessage, sendGroupFile, sendGroupVoice, groupTypingInput, reloadGroupThread,
   injectGroupsDOM, openCreateChoice, getGroupRows,
-  getCurrentGroupId
+  getCurrentGroupId, joinGroup, leaveGroup, searchGroups
 } from './groups.js';
 import {
   cacheChatsList, getCachedChatsList, getCachedChatsListAgeMs,
@@ -675,21 +1224,40 @@ function _repaintNoticeBanner() {
 export function repaintNoticeBanner() { _repaintNoticeBanner(); }
 
 /* ── Append group/channel rows to chats list ─────────────────────────── */
-function _appendGroupRows(root, term = '') {
+async function _appendGroupRows(root, term = '') {
   // Remove old group section if any
   root.querySelector('.grp-rows-section')?.remove();
 
   let groups = getGroupRows();
   if (term) {
-    groups = groups.filter(g => (g.name || '').toLowerCase().includes(term));
+    const local = groups.filter(g => (g.name || '').toLowerCase().includes(term));
+    if (local.length) {
+      groups = local;
+    } else {
+      try {
+        const remote = await searchGroups(term);
+        groups = remote || [];
+      } catch (_) {
+        groups = [];
+      }
+    }
   }
   if (!groups.length) return;
+
+  const rows = groups.map(g => ({ g, pinned: _isPinned('group', g.id) }));
+  rows.sort((a, b) => {
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+    const ta = a.g.lastMessageAt || 0;
+    const tb = b.g.lastMessageAt || 0;
+    if (ta !== tb) return tb - ta;
+    return (a.g.name || '').localeCompare(b.g.name || '');
+  });
 
   const section = document.createElement('div');
   section.className = 'grp-rows-section';
 
   section.innerHTML = `<div class="chats-section-label">Guruhlar</div>` +
-    groups.map(g => {
+    rows.map(({ g, pinned }) => {
       const av      = g.avatar || defAvi(g.name || 'G');
       const unread  = g.unreadCount?.[state.me?.uid] || 0;
       const badgeTxt = unread > 99 ? '+99' : `+${unread}`;
@@ -697,6 +1265,7 @@ function _appendGroupRows(root, term = '') {
       const time     = g.lastMessageAt ? fmt(g.lastMessageAt) : '';
       const typeIcon = `<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
       const badgeClass = 'chat-row-grp-badge--group';
+      const pinHtml = pinned ? `<span class="chat-row-pin-ico" title="Qadalgan"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg></span>` : '';
 
       return `<div class="chat-row${unread ? ' unread' : ''}" data-gid="${g.id}">
         <div class="chat-avi">
@@ -708,6 +1277,7 @@ function _appendGroupRows(root, term = '') {
           <div class="chat-row-preview">${preview}</div>
         </div>
         <div class="chat-row-right">
+          ${pinHtml}
           ${time ? `<div class="chat-row-time">${time}</div>` : ''}
           ${unread ? `<div class="chat-row-badge">${badgeTxt}</div>` : ''}
         </div>
@@ -717,7 +1287,15 @@ function _appendGroupRows(root, term = '') {
   root.appendChild(section);
 
   section.querySelectorAll('.chat-row[data-gid]').forEach(row => {
-    row.addEventListener('click', () => openGroupThread(row.dataset.gid));
+    _attachChatRowContextMenu(row);
+    row.addEventListener('click', () => {
+      const gid = row.dataset.gid;
+      const g = groups.find(x => x.id === gid);
+      if (g) {
+        _saveRecent({ type: 'group', id: g.id, name: g.name, avatar: g.avatar });
+      }
+      openGroupThread(gid);
+    });
   });
 }
 
@@ -737,6 +1315,8 @@ function paintChatsList(users, chatMap) {
       (u.username || '').toLowerCase().includes(term) ||
       (u.fullName || '').toLowerCase().includes(term)
     );
+  } else {
+    filtered = users.filter(u => _shouldShowInChatsList(u, chatMap));
   }
   _paintUserRows(filtered, !!term);
   _repaintNoticeBanner();
@@ -826,6 +1406,13 @@ document.addEventListener('presenceChanged', () => {
 export async function openChatThread(uid) {
   if (!uid || !state.me || uid === state.me.uid) return;
   msgMenuReset();
+
+  state.currentChatKind = 'dm';
+  document.getElementById('groupJoinBar')?.remove();
+  document.getElementById('chatHeaderDropdown')?.remove();
+  const inputRow = document.querySelector('.chat-thread-input-row');
+  if (inputRow) inputRow.style.display = '';
+  initChatHeaderMenu();
 
   _injectPresenceCSS();
   $('chatThreadModal').classList.add('show');
@@ -1523,6 +2110,8 @@ function _reattachActiveVoiceUI(box) {
 
 /* ── Yopish chat thread ───────────────────────────────────────────────── */
 export function closeChatThread() {
+  document.getElementById('chatHeaderDropdown')?.remove();
+  document.getElementById('groupJoinBar')?.remove();
   document.dispatchEvent(new Event('chatmedia:close'));
   if (_rt) { _rt.close(); _rt = null; }
   _rtLocal.clear(); _rtRead.clear(); _rtChatId = null;
@@ -1583,6 +2172,18 @@ export async function sendChatMessage() {
   if (_rt && _rtChatId === chatId) _rt.send(id, text);
   // 2b) Peer'ning suhbatlar ro'yxati/unread — suhbat ochiq bo'lmasa ham shu zahoti
   inboxSend(otherUid, { chatId, from: state.me.uid, id, text: text.slice(0, 120), ts: nowMs });
+
+  // Chat ro'yxatida suhbat darhol saqlansin
+  if (!_latestChatMap[otherUid]) {
+    _latestChatMap[otherUid] = {
+      id: chatId, participants: [state.me.uid, otherUid], createdAt: nowMs,
+      lastMessage: text.slice(0, 120), lastSenderId: state.me.uid, lastMessageAt: nowMs, unreadCount: {}
+    };
+  } else {
+    _latestChatMap[otherUid].lastMessage = text.slice(0, 120);
+    _latestChatMap[otherUid].lastMessageAt = nowMs;
+    _latestChatMap[otherUid].lastSenderId = state.me.uid;
+  }
 
   try {
     // 3) Baza (haqiqat manbai) — xuddi shu ID bilan, dedup uchun
@@ -1970,6 +2571,11 @@ async function sendVoiceMessage(blob, duration) {
       duration: Math.round(duration || 0),
     });
     if (error) throw error;
+    if (_latestChatMap[otherUid]) {
+      _latestChatMap[otherUid].lastMessage = '🎤 Ovozli xabar';
+      _latestChatMap[otherUid].lastMessageAt = Date.now();
+      _latestChatMap[otherUid].lastSenderId = state.me.uid;
+    }
     _reloadThread && _reloadThread();
 
   } catch (err) {
@@ -2053,6 +2659,11 @@ async function sendChatFile() {
       file_name: file.name, file_size: file.size,
     });
     if (error) throw error;
+    if (_latestChatMap[otherUid]) {
+      _latestChatMap[otherUid].lastMessage = '📎 ' + (file.name || 'Fayl');
+      _latestChatMap[otherUid].lastMessageAt = Date.now();
+      _latestChatMap[otherUid].lastSenderId = state.me.uid;
+    }
     _reloadThread && _reloadThread();
 
   } catch (err) {
