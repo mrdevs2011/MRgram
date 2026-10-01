@@ -136,7 +136,7 @@ a { color: var(--link); }
 .post-user, .post-dot, .post-time { font-family: var(--font); font-size: 15px; margin: 0; color: var(--text3); }
 .post-user { overflow: hidden; text-overflow: ellipsis; min-width: 0; flex-shrink: 2; }
 .post-dot, .post-time { flex-shrink: 0; }
-.post-caption { padding: 2px 0 0; margin: 0; font-size: 15px; line-height: 1.4; color: var(--text); }
+.post-caption { padding: 2px 0 0; margin: 0; font-size: 15px; line-height: 1.4; color: var(--text); overflow-wrap: anywhere; min-width: 0; }
 /* Media: post kartasining butun kengligiga (chetdan chetga), yumaloq burchak va ramkasiz. Chap tomonda avatar... */
 .post-media, [data-theme] .post-media { width: auto; margin: 12px calc(-1 * var(--post-px)) 0 calc(-1 * (var(--post-px) + var(--post-avi) + var(--post-gap))); border: 0; border-radius: 0; overflow: hidden; }
 /* Nisbati saqlangan (aspect-ratio) media: min-height:180px nisbat orqali kenglikka o'tib, keng rasm/video post kartasidan chiqib ketmasin */
