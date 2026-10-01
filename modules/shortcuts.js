@@ -14,7 +14,7 @@ import { state } from './config.js';
 import { closeChatThread } from './chat.js';
 import { escLocals } from './esc-stack.js';
 
-const isOpen = el => !!el && (el.classList.contains('show') || el.classList.contains('open') || el.id === 'chatCtxOverlay' || el.classList.contains('chat-ctx-overlay'));
+const isOpen = el => !!el && (el.classList.contains('show') || el.classList.contains('open') || el.style.display === 'flex' || el.style.display === 'block' || el.id === 'chatCtxOverlay' || el.classList.contains('chat-ctx-overlay'));
 
 /* Backdrop bosilganda yopiladigan overlaylar uchun */
 const backdrop = id => () => {
@@ -44,6 +44,9 @@ const CLOSERS = [
   ['sbSearchPanel',          () => $('sbSearchPanel')?.classList.remove('show')],
   ['settingsMoreMenu',       () => $('settingsMoreMenu')?.classList.remove('show')],
   ['chatThreadModal',        () => closeChatThread()],
+  ['recoveryEmailInfoModal', () => $('recoveryEmailInfoOkBtn')?.click()],
+  ['forgotPasswordSentModal', () => $('forgotSentOkBtn')?.click()],
+  ['mandatoryPwdOverlay',    () => $('mandatoryPwdSignOutBtn')?.click()],
 ];
 
 const zOf = el => { const z = parseInt(getComputedStyle(el).zIndex, 10); return Number.isFinite(z) ? z : 0; };
@@ -93,8 +96,8 @@ const visible = el => !!el && el.offsetParent !== null && !el.disabled;
 
 // fields — tartib bilan; next:true bo'lsa Enter avval keyingi BO'SH maydonga o'tadi, hammasi to'lgan bo'lsa yuboradi
 const FORMS = [
-  { fields: ['aFullname', 'aUsername', 'aPassword', 'aConfirm'], btn: 'authBtn', next: true },
-  { fields: ['editName', 'editUsername', 'editOldPassword', 'editNewPassword', 'editNewPassword2'], btn: 'saveProfileBtn' },
+  { fields: ['aFullname', 'aRecoveryEmail', 'aUsername', 'aPassword', 'aConfirm'], btn: 'authBtn', next: true },
+  { fields: ['editName', 'editUsername', 'editRecoveryEmail', 'editOldPassword', 'editNewPassword', 'editNewPassword2'], btn: 'saveProfileBtn' },
   { fields: ['grpAddUserInput'], btn: 'grpAddUserSubmitBtn' },
   { fields: ['grpFormName'], btn: 'grpFormCreateBtn' },
   { fields: ['grpEditName'], btn: 'grpEditSaveBtn' },
@@ -113,10 +116,11 @@ document.addEventListener('keydown', e => {
   const t = e.target;
   const onButton = t instanceof HTMLButtonElement || !!t.closest?.('a, button');
 
-  // Tasdiq oynasi / parol ogohlantirishi: Enter = asosiy tugma (fokus tugmada bo'lsa — o'sha tugmaning o'zi ishlaydi)
+  // Tasdiq oynasi / modallar: Enter = asosiy tugma
   if (!onButton) {
     if (isOpen($('confirmOverlay'))) { e.preventDefault(); $('confirmOkBtn')?.click(); return; }
-    if (isOpen($('pwdWarnOverlay'))) { e.preventDefault(); $('pwdWarnOk')?.click(); return; }
+    if (isOpen($('recoveryEmailInfoModal'))) { e.preventDefault(); $('recoveryEmailInfoOkBtn')?.click(); return; }
+    if (isOpen($('forgotPasswordSentModal'))) { e.preventDefault(); $('forgotSentOkBtn')?.click(); return; }
   }
 
   if (t.tagName === 'INPUT' && !NON_TEXT.includes(t.type)) {

@@ -129,9 +129,12 @@ if (authSwitchBtn) {
     $('authTitle').textContent      = isLogin ? 'Hisobingizga kiring' : 'Hisob yaratish';
     $('authBtn').textContent        = isLogin ? 'Kirish' : 'Ro\'yxatdan o\'tish';
     $('authSwitchText').textContent = isLogin ? 'Hisobingiz yo\'qmi? ' : 'Hisobingiz bormi? ';
-    authSwitchBtn.textContent         = isLogin ? 'Ro\'yxatdan o\'tish' : 'Kirish';
+    authSwitchBtn.textContent       = isLogin ? 'Ro\'yxatdan o\'tish' : 'Kirish';
     $('nameRow').style.display      = isLogin ? 'none' : 'block';
     $('confirmRow').style.display   = isLogin ? 'none' : 'block';
+    const recRow = $('recoveryEmailRow');
+    if (recRow) recRow.style.display = isLogin ? 'none' : 'block';
+    _hideForgotPasswordBtn();
     $('authErr').textContent = '';
   };
 }
@@ -186,7 +189,7 @@ if (authBtn) {
       e.textContent = msg;
       if ('vibrate' in navigator) navigator.vibrate([14, 6, 14, 6, 14]);
 
-      ['aUsername','aPassword','aConfirm','aFullname'].forEach(id => {
+      ['aUsername','aPassword','aConfirm','aFullname','aRecoveryEmail'].forEach(id => {
         const el = $(id);
         if (el) el.classList.remove('input-error');
       });
@@ -204,11 +207,14 @@ if (authBtn) {
     };
 
     /* Inputga yozganda qizil border ketadi */
-    ['aUsername','aPassword','aConfirm','aFullname'].forEach(id => {
+    ['aUsername','aPassword','aConfirm','aFullname','aRecoveryEmail'].forEach(id => {
       const el = $(id);
       if (el && !el._errListenerAdded) {
         el._errListenerAdded = true;
-        el.addEventListener('input', () => el.classList.remove('input-error'));
+        el.addEventListener('input', () => {
+          el.classList.remove('input-error');
+          if (id === 'aUsername') _hideForgotPasswordBtn();
+        });
       }
     });
 
@@ -239,6 +245,7 @@ if (authBtn) {
         const email = await _emailForLogin(cleaned);
         const { data, error } = await sb.auth.signInWithPassword({ email, password: p });
         if (error) throw error;
+        _hideForgotPasswordBtn();
         try {
           await sb.from('profiles').update({
             last_login: new Date().toISOString(),
@@ -252,10 +259,25 @@ if (authBtn) {
 
       const fn = $('aFullname').value.trim();
       const c  = $('aConfirm').value;
+      const recEmail = $('aRecoveryEmail')?.value?.trim() || '';
+
       if (!fn) {
         authBtn.disabled = false;
         authBtn.textContent = "Ro'yxatdan o'tish";
         showErr('Ismingizni kiriting', ['aFullname']);
+        return;
+      }
+      if (!recEmail) {
+        authBtn.disabled = false;
+        authBtn.textContent = "Ro'yxatdan o'tish";
+        showErr('Zaxira emailni kiriting', ['aRecoveryEmail']);
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(recEmail)) {
+        authBtn.disabled = false;
+        authBtn.textContent = "Ro'yxatdan o'tish";
+        showErr("Zaxira email formati noto'g'ri", ['aRecoveryEmail']);
         return;
       }
       if (p !== c) {
@@ -287,7 +309,14 @@ if (authBtn) {
         email: uToEmail(cleaned),
         password: p,
         // Profilni DB trigger (handle_new_user) yaratadi; approval doim 'pending'
-        options: { data: { username: cleaned, full_name: fn, avatar: defAvi(fn) } },
+        options: {
+          data: {
+            username: cleaned,
+            full_name: fn,
+            avatar: defAvi(fn),
+            recovery_email: recEmail,
+          }
+        },
       });
       if (error) throw error;
       if (!data.session) {
@@ -306,6 +335,18 @@ if (authBtn) {
       const known = sbErrUz(err);
       if (known === 'Foydalanuvchi nomi yoki parol xato') {
         showErr(known, ['aUsername','aPassword']);
+        if (isLogin) {
+          try {
+            const { data: recInfo } = await sb.rpc('check_user_recovery', { p_username: cleaned });
+            if (recInfo && recInfo.exists) {
+              _showForgotPasswordBtn(cleaned, recInfo);
+            } else {
+              _hideForgotPasswordBtn();
+            }
+          } catch (_) {
+            _hideForgotPasswordBtn();
+          }
+        }
       } else if (known === 'Bu login allaqachon band') {
         showErr(known, ['aUsername']);
       } else if (known === `Parol kamida 6 ta belgi bo'lishi kerak`) {
@@ -319,44 +360,213 @@ if (authBtn) {
   };
 }
 
-/* ── Parol warning modal (signup only) ────────────────────────────── */
-let _pwdWarnShown = false;
+/* ── Zaxira email tushuntiruvchi modal ────────────────────────────── */
+let _recoveryInfoShown = false;
 
-function showPwdWarn() {
-  if (_pwdWarnShown || isLogin) return;
-  _pwdWarnShown = true;
-  const overlay = $('pwdWarnOverlay');
-  if (overlay) overlay.classList.add('show');
+function showRecoveryInfo() {
+  const modal = $('recoveryEmailInfoModal');
+  if (modal) {
+    modal.classList.add('show');
+    modal.style.display = 'flex';
+    lockScroll();
+  }
 }
 
-function hidePwdWarn() {
-  const overlay = $('pwdWarnOverlay');
-  if (overlay) overlay.classList.remove('show');
+function hideRecoveryInfo() {
+  const modal = $('recoveryEmailInfoModal');
+  if (modal) {
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    unlockScroll();
+  }
 }
 
-const aPassword = $('aPassword');
-if (aPassword) {
-  aPassword.addEventListener('focus', () => { if (!isLogin) showPwdWarn(); });
-}
-
-const pwdWarnOk = $('pwdWarnOk');
-if (pwdWarnOk) {
-  pwdWarnOk.addEventListener('click', hidePwdWarn);
-}
-
-const pwdWarnOverlay = $('pwdWarnOverlay');
-if (pwdWarnOverlay) {
-  pwdWarnOverlay.addEventListener('click', e => {
-    if (e.target === pwdWarnOverlay) hidePwdWarn();
+const aRecoveryEmail = $('aRecoveryEmail');
+if (aRecoveryEmail) {
+  aRecoveryEmail.addEventListener('focus', () => {
+    if (!isLogin && !_recoveryInfoShown) {
+      _recoveryInfoShown = true;
+      showRecoveryInfo();
+    }
+  });
+  aRecoveryEmail.addEventListener('click', () => {
+    if (!isLogin && !_recoveryInfoShown) {
+      _recoveryInfoShown = true;
+      showRecoveryInfo();
+    }
   });
 }
 
-/* Reset shown flag when switching back to login */
-if (authSwitchBtn) {
-  authSwitchBtn.addEventListener('click', () => {
-    setTimeout(() => {
-      if (isLogin) { _pwdWarnShown = false; hidePwdWarn(); }
-    }, 0);
+const recoveryEmailInfoBtn = $('recoveryEmailInfoBtn');
+if (recoveryEmailInfoBtn) {
+  recoveryEmailInfoBtn.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    showRecoveryInfo();
+  };
+}
+
+const recoveryEmailInfoOkBtn = $('recoveryEmailInfoOkBtn');
+if (recoveryEmailInfoOkBtn) {
+  recoveryEmailInfoOkBtn.onclick = hideRecoveryInfo;
+}
+
+const recoveryEmailInfoModal = $('recoveryEmailInfoModal');
+if (recoveryEmailInfoModal) {
+  recoveryEmailInfoModal.addEventListener('click', (e) => {
+    if (e.target === recoveryEmailInfoModal) hideRecoveryInfo();
+  });
+}
+
+/* ── Parolni unutdingizmi? (8 xonali vaqtinchalik parol) ───────────── */
+let _lastTestedUsername = '';
+let _lastRecoveryInfo = null;
+
+function _showForgotPasswordBtn(username, recInfo) {
+  _lastTestedUsername = username;
+  _lastRecoveryInfo = recInfo;
+  const wrap = $('forgotPasswordWrap');
+  if (wrap) wrap.style.display = 'block';
+}
+
+function _hideForgotPasswordBtn() {
+  _lastTestedUsername = '';
+  _lastRecoveryInfo = null;
+  const wrap = $('forgotPasswordWrap');
+  if (wrap) wrap.style.display = 'none';
+}
+
+function hideForgotSentModal() {
+  const modal = $('forgotPasswordSentModal');
+  if (modal) {
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    unlockScroll();
+  }
+}
+
+/** 8 xonali aralash vaqtinchalik parol (masalan: Q123eqwe) */
+function gen8CharTempPassword() {
+  const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const lower = 'abcdefghjkmnpqrstuvwxyz';
+  const digits = '23456789';
+  const all = upper + lower + digits;
+
+  // Kamida 1 ta katta harf, raqamlar va kichik harflar
+  const chars = [
+    upper[Math.floor(Math.random() * upper.length)],
+    digits[Math.floor(Math.random() * digits.length)],
+    digits[Math.floor(Math.random() * digits.length)],
+    digits[Math.floor(Math.random() * digits.length)],
+    lower[Math.floor(Math.random() * lower.length)],
+    lower[Math.floor(Math.random() * lower.length)],
+    lower[Math.floor(Math.random() * lower.length)],
+    all[Math.floor(Math.random() * all.length)]
+  ];
+
+  // Chalkashtirish (Fisher-Yates)
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  return chars.join('');
+}
+
+const forgotPasswordBtn = $('forgotPasswordBtn');
+if (forgotPasswordBtn) {
+  forgotPasswordBtn.onclick = async () => {
+    const u = _lastTestedUsername || _cleanUsername($('aUsername')?.value);
+    if (!u) {
+      toast('Foydalanuvchi nomini kiriting', 'error');
+      return;
+    }
+
+    if (_lastRecoveryInfo && !_lastRecoveryInfo.has_recovery) {
+      toast("Ushbu hisobda zaxira email ko'rsatilmagan. Administrator bilan bog'laning", 'warning');
+      return;
+    }
+
+    const tempPassword = gen8CharTempPassword();
+    forgotPasswordBtn.disabled = true;
+    const oldText = forgotPasswordBtn.textContent;
+    forgotPasswordBtn.textContent = 'Yuborilmoqda...';
+
+    try {
+      let result = null;
+      try {
+        const { data, error } = await sb.functions.invoke('send-recovery-email', {
+          body: { username: u, temp_password: tempPassword }
+        });
+        if (!error && data?.ok) {
+          result = data;
+        }
+      } catch (fErr) {
+        console.warn('[send-recovery-email] function invoke error:', fErr);
+      }
+
+      // Agar edge function javob bermasa yoki resend ishlamasa, to'g'ridan-to'g'ri RPC chaqiramiz
+      if (!result) {
+        const { data: rpcData, error: rpcErr } = await sb.rpc('request_password_reset', {
+          p_username: u,
+          p_temp_password: tempPassword,
+        });
+        if (rpcErr) throw rpcErr;
+        result = {
+          ok: true,
+          masked_email: rpcData?.masked_email,
+          dev_code: tempPassword,
+        };
+      }
+
+      // Natija xabarini ko'rsatish
+      const masked = result.masked_email || _lastRecoveryInfo?.masked_email || 'zaxira emailingizga';
+      const emailMaskedEl = $('forgotSentEmailMasked');
+      if (emailMaskedEl) emailMaskedEl.textContent = masked;
+
+      const devWrap = $('forgotDevCodeWrap');
+      const devText = $('forgotDevCodeText');
+      if (result.dev_code) {
+        if (devWrap) devWrap.style.display = 'block';
+        if (devText) devText.textContent = result.dev_code;
+      } else {
+        if (devWrap) devWrap.style.display = 'none';
+      }
+
+      const modal = $('forgotPasswordSentModal');
+      if (modal) {
+        modal.classList.add('show');
+        modal.style.display = 'flex';
+        lockScroll();
+      }
+
+      toast('Vaqtinchalik parol yuborildi!', 'success');
+    } catch (err) {
+      console.error('[forgotPasswordBtn] error:', err);
+      toast(err.message || 'Parolni tiklashda xatolik yuz berdi', 'error');
+    } finally {
+      forgotPasswordBtn.disabled = false;
+      forgotPasswordBtn.textContent = oldText;
+    }
+  };
+}
+
+const forgotSentOkBtn = $('forgotSentOkBtn');
+if (forgotSentOkBtn) {
+  forgotSentOkBtn.onclick = () => {
+    hideForgotSentModal();
+    const pInp = $('aPassword');
+    if (pInp) {
+      const devText = $('forgotDevCodeText')?.textContent;
+      if (devText) pInp.value = devText;
+      pInp.focus();
+    }
+  };
+}
+
+const forgotPasswordSentModal = $('forgotPasswordSentModal');
+if (forgotPasswordSentModal) {
+  forgotPasswordSentModal.addEventListener('click', (e) => {
+    if (e.target === forgotPasswordSentModal) hideForgotSentModal();
   });
 }
 
@@ -590,6 +800,7 @@ function _buildMe(user, p) {
     isAdmin: !!p?.isAdmin,
     mustChangePassword: !!p?.mustChangePassword,
     passwordChangedAt: p?.passwordChangedAt || null,
+    recoveryEmail: p?.recoveryEmail || null,
   };
 }
 
@@ -1326,9 +1537,11 @@ if (editProfileBtn) {
     const editName = $('editName');
     const editBioInput = $('editBioInput');
     const editUsername = $('editUsername');
+    const editRecoveryEmail = $('editRecoveryEmail');
     if (editName) editName.value = d.fullName || '';
     if (editBioInput) editBioInput.value = d.bio || '';
     if (editUsername) editUsername.value = d.username || '';
+    if (editRecoveryEmail) editRecoveryEmail.value = d.recoveryEmail || '';
 
     _peAviPending = null;
     const peAviImg = $('peAviImg');
@@ -1367,9 +1580,19 @@ if (saveProfileBtn) {
     const fn = $('editName')?.value?.trim();
     if (!fn) { toast('Ismingizni kiriting', 'error'); return; }
 
+    const rawRecEmail = $('editRecoveryEmail')?.value?.trim() || '';
+    if (rawRecEmail) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(rawRecEmail)) {
+        toast(`Zaxira email noto'g'ri formatda`, 'error');
+        return;
+      }
+    }
+
     const updates = {
       full_name: fn,
       bio:       $('editBioInput')?.value?.trim() || '',
+      recovery_email: rawRecEmail || null,
     };
 
     const rawUser = $('editUsername')?.value?.trim() || '';
@@ -1437,6 +1660,7 @@ if (saveProfileBtn) {
       state.me.displayName = fn;
       if (updates.username) state.me.username = updates.username;
       if (updates.avatar)   state.me.photoURL = updates.avatar;
+      if (updates.recovery_email !== undefined) state.me.recoveryEmail = updates.recovery_email;
       invalidateUserCache(state.me.uid);
 
       // parol maydonlarini tozalash

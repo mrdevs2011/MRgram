@@ -1,10 +1,10 @@
 # AI Context — .
 
 ## Oxirgi holat
-- Sana: 2026-10-01 22:35
-- Nima qilindi: Parol o'zgartirilishi bilanoq barcha boshqa qurilma va brauzerlardagi sessiyalar darhol (realtime broadcast va DB timestamp orqali) majburiy logout qilinadi; Admin parol reset qilganda eski parol butunlay bekor qilinadi, yangi vaqtinchalik parol taqdim etiladi; Foydalanuvchi reset qilingan parol bilan kirishi bilanoq ekranda majburiy yangi shaxsiy parol o'rnatish modali (2 ta input: Yangi parol va Tasdiqlash) chiqadi va yangi parol o'rnatmaguncha sahifa ichkariga aslo o'tkazmaydi (bu orqali hisobning daxlsizligi kafolatlanadi); Saytdagi barcha alert/prompt/confirm dialoglar olib tashlanib, SpaceMR UI modallari (admin reset modal va nusxalash tugmasi) yaratildi; Migratsiya 020 masofaviy DB ga qo'llandi va Edge Function yangilandi.
-- Hozirgi muammo/blocker: Yo'q. 14/14 smoke va 7/7 rt-mesh testlari muvaffaqiyatli o'tdi.
-- Keyingi qadam: feat/realtime-03s va main ga commit va push.
+- Sana: 2026-10-01 22:55
+- Nima qilindi: Ro'yxatdan o'tishda (hisob yaratishda) haqiqiy emailingiz kiritiladigan "Zaxira email" (recovery email) maydoni va tushuntiruvchi popup (#recoveryEmailInfoModal) qo'shildi; Eski qizil "Parolni unutmang" ogohlantirish oynasi (#pwdWarnOverlay) butunlay olib tashlandi; Login paytida agar kiritilgan username DB da mavjud bo'lib, faqat parol xato bo'lsa "Parolni unutdingizmi?" (#forgotPasswordBtn) tugmasi chiqadi (agar username DB da bo'lmasa bu tugma chiqmaydi); "Parolni unutdingizmi?" tugmasi bosilganda 8 xonali chalkash vaqtinchalik parol (masalan, Q123eqwe kabi) yaratilib, send-recovery-email Edge Function va DB RPC (request_password_reset) orqali zaxira emailga yuboriladi va profiles.must_change_password=true belgilanadi; Foydalanuvchi ushbu 8 xonali vaqtinchalik parol bilan kirishi bilanoq tizim majburiy ravishda yangi shaxsiy parol o'rnatish oynasini (#mandatoryPwdOverlay) ochadi va yangi parol o'rnatilmaguncha app ga kiritmaydi; Profil tahririda ham zaxira email ko'rish va yangilash imkoniyati yaratildi; 021_recovery_email_and_forgot_password.sql migratsiyasi DB ga qo'llandi; send-recovery-email Edge Function deploy qilindi; Barcha smoke (14/14) va mesh (7/7) testlari muvaffaqiyatli o'tdi.
+- Hozirgi muammo/blocker: Yo'q.
+- Keyingi qadam: feat/realtime-03s va main ga commit va push qilish.
 
 ## Muhim fayllar
 - `supabase/migrations/018_group-public-private.sql` — ommaviy va maxfiy guruhlar, username unikal tekshiruvi va invite_code

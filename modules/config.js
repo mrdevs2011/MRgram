@@ -73,6 +73,7 @@ export function mapProfile(r) {
     lastUserAgent: r.last_user_agent || null,
     mustChangePassword: r.must_change_password === true,
     passwordChangedAt: ts(r.password_changed_at),
+    recoveryEmail: r.recovery_email || '',
     createdAt: ts(r.created_at),
   };
 }

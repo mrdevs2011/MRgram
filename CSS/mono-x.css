@@ -314,7 +314,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 .spin-wrap { padding: 32px; }
 .spinner { border-color: var(--line); border-top-color: var(--x-blue); }
 /* ═══════════════════════════════════════════════════════════════════════ Oyna/card orqa foni: ko'kish-kulran... */
-.overlay, [data-theme] .overlay, [data-theme="dark"] .overlay, .ua-modal-overlay, #pwdWarnOverlay::before, #uploadOverlay, :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) { background: var(--overlay); }
+.overlay, [data-theme] .overlay, [data-theme="dark"] .overlay, .ua-modal-overlay, #uploadOverlay, :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) { background: var(--overlay); }
 /* ═══════════════════════════════════════════════════════════════════════ Post hover: yashil gradient chegara... */
 .post::before, .post:hover::before, [data-theme] .post::before, [data-theme] .post:hover::before { content: none; display: none; }
 /* tugmalar orasidagi ajratgich chiziqlar va eski hover fon (dark-theme-fix.css) */
