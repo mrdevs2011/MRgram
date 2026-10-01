@@ -242,12 +242,6 @@ function _applyGroupComposer(g) {
   if (inp) { inp.value = ''; inp.disabled = true; inp.blur(); }
   if (row) {
     row.style.display = 'none';
-    const bar = document.createElement('div');
-    bar.id = 'channelActionBar';
-    bar.className = 'fs-13px c-text2 tac';
-    bar.style.cssText = 'padding:14px 12px;flex-shrink:0;padding-bottom:max(14px, env(safe-area-inset-bottom));';
-    bar.textContent = 'Faqat adminlar xabar yozishi mumkin';
-    row.parentNode.insertBefore(bar, row);
   }
 }
 
