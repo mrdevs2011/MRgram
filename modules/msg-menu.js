@@ -6,6 +6,7 @@
 import { sb, state } from './config.js';
 import { toast } from './toast.js';
 import { $, esc, defAvi, showConfirm } from './utils.js';
+import { onEsc } from './esc-stack.js';
 
 const LONG_MS = 420;
 const MONTHS = ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'];
@@ -480,12 +481,13 @@ export function initMsgMenu(opts) {
     if (e.pointerType === 'touch') suppressUntil = Date.now() + 350;
     closeMenu();
   }, true);
-  document.addEventListener('keydown', e => {
-    if (e.key !== 'Escape') return;
-    if (fwdEl?.classList.contains('show')) fwdEl.classList.remove('show');
-    else if (openId) closeMenu();
-    else if (selMode) exitSelect();
-    else if (editing) cancelEdit(true);
+  // Esc (z = ekrandagi qatlam): uzatish oynasi 620, kontekst menyu 600, tanlash rejimi / tahrirlash-javob — chat ustida (365)
+  onEsc(620, () => { if (!fwdEl?.classList.contains('show')) return false; fwdEl.classList.remove('show'); return true; });
+  onEsc(600, () => { if (!openId) return false; closeMenu(); return true; });
+  onEsc(365, () => {
+    if (selMode) { exitSelect(); return true; }
+    if (editing) { cancelEdit(true); return true; }
+    return false;
   });
   window.addEventListener('resize', closeMenu);
   $('chatReplyClose')?.addEventListener('click', () => cancelEdit(true));

@@ -318,6 +318,7 @@ if (searchInput) {
       }
     } else if (e.key === 'Escape') {
       closeSearchOverlay();
+      e.stopPropagation(); // umumiy Esc (shortcuts.js) ham ishlab, ostidagi chat/oynani yopib yubormasin
     }
   });
 }

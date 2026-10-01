@@ -5,6 +5,7 @@
 import { sb, mapMessage } from './config.js';
 import { esc, fmtSz, defAvi } from './utils.js';
 import { toast } from './toast.js';
+import { onEsc } from './esc-stack.js';
 
 const IMG_EXT = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif'];
 const VID_EXT = ['mp4', 'mov', 'avi', 'mkv', 'webm'];
@@ -65,10 +66,11 @@ function _ensureBound() {
   document.getElementById('upBack')?.addEventListener('click', () => { if (_active) _deactivate(); });
   $modal().addEventListener('click', e => { if (_active && e.target === $modal()) _deactivate(); });
   document.addEventListener('chatmedia:close', closeChatMedia);
-  document.addEventListener('keydown', e => {
-    if (e.key !== 'Escape' || !_active) return;
-    if (_viewer?.classList.contains('show')) _closeViewer();
-    else { closeChatMedia(); }
+  // Rasm/video ko'rish oynasi (z 600) profil sahifasidan (500) ustida; profilning o'zi shortcuts.js da (userProfileModal)
+  onEsc(600, () => {
+    if (!_active || !_viewer?.classList.contains('show')) return false;
+    _closeViewer();
+    return true;
   });
 }
 

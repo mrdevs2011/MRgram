@@ -1,3 +1,4 @@
+import { onEsc } from './esc-stack.js';
 /* emoji-picker.js — telefon klaviaturasi (Gboard) uslubidagi emoji paneli.
    Tepada: qidiruv tugmasi + kategoriya ikonlari (SVG). Pastda: "Oxirgilar" va kategoriyalar
    bo'yicha sahifalar: tablar orasida gorizontal surish, sahifa ichida vertikal skroll. Ma'lumot mahalliy (emoji-data.js), birinchi ochilganda yuklanadi. */
@@ -266,5 +267,5 @@ export function initEmojiPicker({ btn, pop, input }) {
     if (input.contains(e.target)) return; // mobil: input bosilsa pointerdown yopadi; desktop: yozayotganda panel ochiq qoladi
     closePanel();
   });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePanel(); });
+  onEsc(366, () => { if (!pop.classList.contains('show')) return false; closePanel(); return true; });
 }

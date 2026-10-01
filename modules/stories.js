@@ -4,6 +4,7 @@
  */
 import { sb, state, mapProfile, mediaPublicUrl } from './config.js';
 import { $, esc, defAvi } from './utils.js';
+import { onEsc } from './esc-stack.js';
 
 const STORY_MS = 5000; // har bir story ko'rsatish muddati
 
@@ -267,9 +268,10 @@ function ensureDom() {
     });
     // Touch pause
     const media = () => $('svMedia');
+    // Esc: hikoya ko'rgich eng ustki qatlam (shortcuts.js bilan umumiy navbat)
+    onEsc(900, () => { const v = $('storyViewer'); if (!v || v.hidden) return false; closeViewer(); return true; });
     document.addEventListener('keydown', e => {
       if ($('storyViewer')?.hidden) return;
-      if (e.key === 'Escape') closeViewer();
       if (e.key === 'ArrowRight') step(1);
       if (e.key === 'ArrowLeft') step(-1);
     });

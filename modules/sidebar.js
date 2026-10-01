@@ -5,6 +5,7 @@
  */
 import { state } from './config.js';
 import { $, esc, defAvi } from './utils.js';
+import { onEsc } from './esc-stack.js';
 
 let _sig = '';
 
@@ -98,7 +99,7 @@ $('sbAccount')?.addEventListener('click', e => {
 document.addEventListener('click', e => {
   if (_menu && !_menu.contains(e.target)) closeMenu();
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+onEsc(700, () => { if (!_menu) return false; closeMenu(); return true; });
 window.addEventListener('resize', closeMenu);
 
 render();

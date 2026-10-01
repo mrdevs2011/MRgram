@@ -5,6 +5,7 @@
  * Mobil'da (<768px) hech narsa o'zgarmaydi: CSS bu elementlarni yashiradi.
  */
 import { $ } from './utils.js';
+import { onEsc } from './esc-stack.js';
 
 const view = $('chatsView');
 const wrap = $('chatsListWrap');
@@ -85,6 +86,6 @@ if (view && wrap) {
     if (menu) closeMenu(); else openMenu();
   });
   document.addEventListener('click', e => { if (menu && !menu.contains(e.target)) closeMenu(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+  onEsc(700, () => { if (!menu) return false; closeMenu(); return true; });
   window.addEventListener('resize', closeMenu);
 }
