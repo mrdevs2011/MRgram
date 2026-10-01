@@ -85,7 +85,7 @@ import { haptic, addHapticTouch } from './utils.js';
     const btn = e.target.closest(
       '.btn-primary, .btn-ghost, .btn-danger, ' +
       '.hdr-icon-btn, .hdr-new-post-btn, .theme-btn, ' +
-      '.like-btn, .cmt-like-btn, .post-share-btn, ' +
+      '.like-btn, .cmt-like-btn, .post-share-btn, .link-btn, ' +
       '.sheet-close-btn, [data-haptic]'
     );
     if (!btn) return;

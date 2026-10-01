@@ -1,10 +1,10 @@
 # AI Context — .
 
 ## Oxirgi holat
-- Sana: 2026-10-01 21:45
-- Nima qilindi: SpaceMR rebrand; Ovoz pulsatsiyasi Telegram kabi ultra-smooth qilindi; Mobil klaviatura ochilganda input yopilib qolmaydigan visualViewport adaptori qo'shildi; Xabar o'chirish tasdiq oynasi qora (#000000) qilindi; Story ko'rgichda chap/o'ng bosish navigatsiyasi, bosib turganda freeze (muzlatish/pauza) va browser kontekst menyu ("copy image") ni butunlay to'sish; 0% kesh kafolati (SW va runtime storage); Ommaviy va maxfiy guruhlar (ommaviyda @username foydalanuvchilar bilan umumiy band qilinadi, maxfiyda 64-xonali invite link beriladi, ?join_group= deep link orqali avtomatik a'zo bo'lish).
+- Sana: 2026-10-01 22:20
+- Nima qilindi: Postlardagi ulashish (share) tugmasi havola (link) tugmasiga almashtirildi (yangi SVG icon); Bosilganda modal/sheet chiqmasdan to'g'ridan-to'g'ri clipboardga 1 ta bosishda post havolasi nusxalanadi va "Havola nusxalandi" toasti chiqadi; Havola ochilganda login qilgan foydalanuvchi to'g'ridan-to'g'ri o'sha postga silliq (smooth) scroll qilinadi va post tagidan 3 sekund ko'k rangli nur (blue glow) yonib turib o'chadi; Agar foydalanuvchi hali kirmagan bo'lsa, login qilishi bilan avtomatik postga o'tkaziladi va 3s ko'k nur yonadi; Profil tafsilot modalidagi tugma ham yangilandi.
 - Hozirgi muammo/blocker: Yo'q. 14/14 smoke va 7/7 rt-mesh testlari muvaffaqiyatli o'tdi.
-- Keyingi qadam: Main ga merge va push.
+- Keyingi qadam: feat/realtime-03s va main ga commit va push.
 
 ## Muhim fayllar
 - `supabase/migrations/018_group-public-private.sql` — ommaviy va maxfiy guruhlar, username unikal tekshiruvi va invite_code

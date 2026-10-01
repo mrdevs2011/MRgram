@@ -257,7 +257,11 @@ export async function openDetail(id) {
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         <span class="dm-act-count">${cmtCount}</span>
       </button>
-      ${p.mediaUrl ? `<button class="dm-act" id="dmShareBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>` : ''}
+      <button class="dm-act" id="dmShareBtn" title="Havolani nusxalash" aria-label="Havolani nusxalash">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M8 7C5.23858 7 3 9.23858 3 12C3 14.7614 5.23858 17 8 17H10C10.5523 17 11 17.4477 11 18C11 18.5523 10.5523 19 10 19H8C4.13401 19 1 15.866 1 12C1 8.13401 4.13401 5 8 5H10C10.5523 5 11 5.44772 11 6C11 6.55228 10.5523 7 10 7H8ZM13 6C13 5.44772 13.4477 5 14 5H16C19.866 5 23 8.13401 23 12C23 15.866 19.866 19 16 19H14C13.4477 19 13 18.5523 13 18C13 17.4477 13.4477 17 14 17H16C18.7614 17 21 14.7614 21 12C21 9.23858 18.7614 7 16 7H14C13.4477 7 13 6.55228 13 6ZM7 12C7 11.4477 7.44772 11 8 11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H8C7.44772 13 7 12.5523 7 12Z"/>
+        </svg>
+      </button>
       ${isOwn ? `<button class="dm-act dm-del" id="dmDelBtn" title="O'chirish">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/>
@@ -284,7 +288,9 @@ export async function openDetail(id) {
     $('dmLikeCount2').textContent = n;
   };
   $('dmCmtBtn').onclick = () => { closeDetail(); import('./comments.js').then(({ openCmtModal }) => openCmtModal(id)); };
-  $('dmShareBtn')?.addEventListener('click', () => { navigator.clipboard?.writeText(p.mediaUrl); toast('Link nusxalandi','info'); });
+  $('dmShareBtn')?.addEventListener('click', () => {
+    import('./feed.js').then(m => m.copyPostLink(id));
+  });
   $('dmDelBtn')?.addEventListener('click', async () => {
     const { doDelete } = await import('./feed.js');
     await doDelete(id);

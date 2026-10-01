@@ -269,14 +269,13 @@ export async function renderFeedTo(feedEl, posts) {
           </svg>
             <span id="lc-${p.id}">${fmtCount(p.likes || 0)}</span>
           </button>
-          <button class="act-btn share-btn"
+          <button class="act-btn link-btn"
             data-id="${p.id}"
-            data-url="${p.mediaUrl ? esc(p.mediaUrl) : ''}"
-            data-private="${!p.isPublic ? '1' : '0'}">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-          </svg>
+            title="Havolani nusxalash"
+            aria-label="Havolani nusxalash">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M8 7C5.23858 7 3 9.23858 3 12C3 14.7614 5.23858 17 8 17H10C10.5523 17 11 17.4477 11 18C11 18.5523 10.5523 19 10 19H8C4.13401 19 1 15.866 1 12C1 8.13401 4.13401 5 8 5H10C10.5523 5 11 5.44772 11 6C11 6.55228 10.5523 7 10 7H8ZM13 6C13 5.44772 13.4477 5 14 5H16C19.866 5 23 8.13401 23 12C23 15.866 19.866 19 16 19H14C13.4477 19 13 18.5523 13 18C13 17.4477 13.4477 17 14 17H16C18.7614 17 21 14.7614 21 12C21 9.23858 18.7614 7 16 7H14C13.4477 7 13 6.55228 13 6ZM7 12C7 11.4477 7.44772 11 8 11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H8C7.44772 13 7 12.5523 7 12Z"/>
+            </svg>
           </button>
         </div>
       </div>
@@ -306,163 +305,99 @@ export function setupFeedVideoObs(feedEl) {
   feedEl.querySelectorAll('.vid-wrap').forEach(w => state.feedVidObs.observe(w));
 }
 
-/* ── Share popup ─────────────────────────────────────────────────────── */
-function _injectShareCSS() {
-  if (document.getElementById('share-popup-css')) return;
-  const s = document.createElement('style');
-  s.id = 'share-popup-css';
-  s.textContent = `
-.share-popup-overlay {
-  position: fixed; inset: 0; z-index: 9990;
-}
-.share-popup {
-  position: fixed; z-index: 9991;
-  background: var(--bg2, #242424);
-  border: 1px solid color-mix(in srgb, var(--blue, #ffffff) 25%, transparent);
-  border-radius: 16px;
-  padding: 6px;
-  min-width: 210px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0,.45), 0 0 0 1px rgba(255,255,255,.04);
-  transform-origin: top center;
-}
-.share-popup-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px;
-  border-radius: 11px;
-  cursor: pointer;
-  font-size: 13.5px;
-  color: var(--text, #fff);
-  font-weight: 500;
-
-  user-select: none;
-}
-.share-popup-row:hover { background: color-mix(in srgb, var(--blue, #ffffff) 14%, transparent); }
-.share-popup-row:active { background: color-mix(in srgb, var(--blue, #ffffff) 22%, transparent); }
-.share-popup-icon { color: var(--blue, #ffffff); flex-shrink: 0; display: flex; align-items: center; }
-.share-popup-divider { height: 1px; margin: 2px 10px; background: color-mix(in srgb, var(--border, #fff) 12%, transparent); }
-
-/* ── Post highlight glow ── */
-.post-highlight {
-  border-radius: 18px;
-
-}
-`;
-  document.head.appendChild(s);
-}
-
-let _sharePopupEl = null;
-let _shareOverlayEl = null;
-
-function _closeSharePopup() {
-  if (_sharePopupEl) {
-    _sharePopupEl.remove(); _sharePopupEl = null;
+/* ── Init: URL'dan kelgan post id ni saqlab qo'yamiz (login qilmagan bo'lsa ham yo'qolmasligi uchun) ── */
+try {
+  const hash = window.location.hash || '';
+  let initPostId = null;
+  if (hash.startsWith('#post-')) initPostId = hash.slice(6);
+  if (!initPostId) {
+    const p = new URLSearchParams(window.location.search).get('post');
+    if (p) initPostId = p;
   }
-  if (_shareOverlayEl) { _shareOverlayEl.remove(); _shareOverlayEl = null; }
+  if (initPostId) {
+    sessionStorage.setItem('target_post_id', initPostId);
+  }
+} catch (_) {}
+
+export async function copyPostLink(postId) {
+  if (!postId) return;
+  const postUrl = `${window.location.origin}/#post-${postId}`;
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(postUrl);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = postUrl;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }
+    toast('Havola nusxalandi', 'info');
+  } catch (_) {
+    toast('Havola nusxalandi', 'info');
+  }
 }
 
-function showSharePopup(btn) {
-  _injectShareCSS();
-  _closeSharePopup();
-
-  const postId   = btn.dataset.id;
-  const mediaUrl = btn.dataset.url;
-  const isPrivate = btn.dataset.private === '1';
-
-  // Agar private va media yo'q → hech narsa qilamiz
-  if (isPrivate && !mediaUrl) {
-    toast('Bu post private — ulashish imkonsiz', 'error');
-    return;
-  }
-
-  // Agar private → auto nusxa media link
-  if (isPrivate) {
-    navigator.clipboard?.writeText(mediaUrl);
-    toast('Fayl havolasi nusxalandi', 'info');
-    return;
-  }
-
-  // Public post — popup ko'rsatamiz
-  const overlay = document.createElement('div');
-  overlay.className = 'share-popup-overlay';
-  overlay.addEventListener('click', _closeSharePopup);
-  document.body.appendChild(overlay);
-  _shareOverlayEl = overlay;
-
-  const popup = document.createElement('div');
-  popup.className = 'share-popup';
-
-  const rows = [];
-
-  if (mediaUrl) {
-    rows.push({ icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`, label: 'Fayl havolasi', action: () => {
-      navigator.clipboard?.writeText(mediaUrl);
-      toast('Fayl havolasi nusxalandi', 'info');
-      _closeSharePopup();
-    }});
-  }
-
-  if (!isPrivate) {
-    rows.push({ icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`, label: 'Post havolasi', action: () => {
-      const postUrl = window.location.origin + window.location.pathname + '#post-' + postId;
-      navigator.clipboard?.writeText(postUrl);
-      toast('Post havolasi nusxalandi', 'info');
-      _closeSharePopup();
-    }});
-  }
-
-  popup.innerHTML = rows.map((r, i) => `
-    ${i > 0 ? '<div class="share-popup-divider"></div>' : ''}
-    <div class="share-popup-row" data-idx="${i}">
-      <span class="share-popup-icon">${r.icon}</span>
-      <span>${r.label}</span>
-    </div>
-  `).join('');
-
-  document.body.appendChild(popup);
-  _sharePopupEl = popup;
-
-  // Position popup above/below the button
-  const rect = btn.getBoundingClientRect();
-  const popW = 220;
-  let left = rect.left + rect.width / 2 - popW / 2;
-  let top  = rect.top - 8;
-  // Clamp horizontal
-  left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
-  // Show above or below
-  const popH = rows.length * 48 + 20;
-  if (top - popH < 8) top = rect.bottom + 8;
-  else top = top - popH;
-  popup.style.left = left + 'px';
-  popup.style.top  = top  + 'px';
-  popup.style.width = popW + 'px';
-
-  popup.querySelectorAll('.share-popup-row').forEach(row => {
-    row.addEventListener('click', (e) => { e.stopPropagation(); rows[+row.dataset.idx].action(); });
-  });
+export function getTargetPostId() {
+  const hash = window.location.hash || '';
+  if (hash.startsWith('#post-')) return hash.slice(6);
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const p = params.get('post');
+    if (p) return p;
+  } catch (_) {}
+  return sessionStorage.getItem('target_post_id') || null;
 }
 
-/* ── Scroll to post by URL hash ──────────────────────────────────────── */
+let _scrolledTargetId = null;
+
+/* ── Scroll to post by URL hash or query (faqat login qilgan userlar uchun) ── */
 export function scrollToPostFromHash() {
-  const hash = window.location.hash;
-  if (!hash.startsWith('#post-')) return;
-  const postId = hash.slice(6);
+  if (!state.me?.uid) return;
+  const targetId = getTargetPostId();
+  if (!targetId || _scrolledTargetId === targetId) return;
 
   let attempts = 0;
-  const tryScroll = () => {
-    const el = document.querySelector(`.post[data-id="${postId}"]`);
+  const tryScroll = async () => {
+    let el = document.querySelector(`.post[data-id="${targetId}"]`);
     if (el) {
-      el.scrollIntoView({ behavior: 'auto', block: 'center' });
-      // Glow / flash effect
-      el.classList.add('post-highlight');
-      setTimeout(() => el.classList.remove('post-highlight'), 2200);
+      _scrolledTargetId = targetId;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // 3 sekund tagidan ko'k rang yonib turib keyin o'chadi
+      el.classList.add('post-link-highlight');
+      try {
+        if (window.location.hash.startsWith('#post-')) {
+          history.replaceState(null, '', window.location.pathname);
+        }
+      } catch (_) {}
+      setTimeout(() => {
+        el.classList.remove('post-link-highlight');
+        sessionStorage.removeItem('target_post_id');
+      }, 3000);
       return;
     }
-    // Post hali DOM'da yo'q (masalan, postlar hali yuklanmoqda) — bir necha
-    // marta qayta urinib ko'ramiz, shunda ulashilgan link boshqa odamda ham ishlaydi
+
+    if (attempts === 2) {
+      try {
+        const { data: postRow } = await sb.from('posts').select('*').eq('id', targetId).maybeSingle();
+        if (postRow) {
+          const p = mapPost(postRow);
+          if (!state.allPosts.some(x => x.id === p.id)) {
+            state.allPosts.unshift(p);
+            await renderFeed();
+            return;
+          }
+        }
+      } catch (_) {}
+    }
+
     attempts++;
-    if (attempts < 8) setTimeout(tryScroll, 400);
+    if (attempts < 12) setTimeout(tryScroll, 300);
   };
-  setTimeout(tryScroll, 500);
+  setTimeout(tryScroll, 250);
 }
 
 function bindFeedEvents(feedEl) {
@@ -473,9 +408,9 @@ function bindFeedEvents(feedEl) {
     const { openCmtModal } = await import('./comments.js');
     openCmtModal(b.dataset.id);
   }));
-  feedEl.querySelectorAll('.share-btn').forEach(b => b.addEventListener('click', (e) => {
+  feedEl.querySelectorAll('.link-btn, .share-btn').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
-    showSharePopup(b);
+    copyPostLink(b.dataset.id);
   }));
   feedEl.querySelectorAll('.post-media').forEach(m => m.addEventListener('click', async e => {
     if (e.target.closest('.file-dl')) return;
@@ -615,17 +550,14 @@ export async function renderFeed() {
   // pastdagi scrollToPostFromHash uni topa olmay, sukut bilan hech narsa
   // qilmaydi. Shuning uchun avval postni filtered() ro'yxatida topib,
   // kerak bo'lsa visibleN ni shu postgacha (+bir oz zaxira) oshiramiz.
-  if (!_hashPostHandled && window.location.hash.startsWith('#post-')) {
-    const hashId = window.location.hash.slice(6);
+  const targetId = getTargetPostId();
+  if (!_hashPostHandled && targetId) {
     const all = filtered();
-    const idx = all.findIndex(p => String(p.id) === String(hashId));
+    const idx = all.findIndex(p => String(p.id) === String(targetId));
     if (idx !== -1) {
       if (idx >= state.visibleN) state.visibleN = Math.min(idx + 10, all.length);
       _hashPostHandled = true;
     }
-    // idx === -1 bo'lsa — postlar hali to'liq yuklanmagan bo'lishi mumkin,
-    // _hashPostHandled true qilinmaydi va keyingi renderFeed chaqirilganda
-    // (allPosts to'liq kelganda) qayta urinib ko'riladi.
   }
 
   const posts  = filtered().slice(0, state.visibleN);
@@ -638,8 +570,8 @@ export async function renderFeed() {
 
   await renderFeedTo(feedEl, posts);
 
-  // URL hash da post id bo'lsa — o'sha postga smooth scroll
-  if (window.location.hash.startsWith('#post-')) scrollToPostFromHash();
+  // URL hash yoki query da post id bo'lsa — o'sha postga smooth scroll va ko'k yonish
+  if (targetId) scrollToPostFromHash();
 
   if (state.visibleN < filtered().length) {
     feedEl.insertAdjacentHTML('beforeend', '<div class="spin-wrap"><div class="spinner"></div></div>');

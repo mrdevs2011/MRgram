@@ -257,6 +257,54 @@
 .post-stats { padding: 8px 14px; display: flex; gap: 16px; font-size: 11px; color: var(--text3); border-top: 0.5px solid var(--glass-border); border-bottom: 0.5px solid var(--glass-border); font-family: var(--mono); }
 .act-btn { justify-content: center; cursor: pointer;  border-right: 0.5px solid var(--glass-border); }
 .act-btn:last-child { border-right: none; }
+
+/* ── Post Target Blue Glow (3 seconds) ── */
+.post.post-link-highlight {
+  position: relative;
+  border-radius: 16px;
+  animation: postBlueGlow 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.post.post-link-highlight::after {
+  content: '';
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -4px;
+  height: 16px;
+  background: radial-gradient(ellipse at center, rgba(29, 155, 240, 0.95) 0%, rgba(29, 155, 240, 0.5) 45%, transparent 75%);
+  filter: blur(6px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  animation: postUnderglow 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes postBlueGlow {
+  0% {
+    box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.9), 0 8px 30px rgba(29, 155, 240, 0.5);
+    border-color: rgba(29, 155, 240, 0.9);
+  }
+  15% {
+    box-shadow: 0 0 0 2.5px rgba(29, 155, 240, 1), 0 10px 42px rgba(29, 155, 240, 0.7);
+    border-color: rgba(29, 155, 240, 1);
+  }
+  80% {
+    box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.85), 0 8px 25px rgba(29, 155, 240, 0.4);
+    border-color: rgba(29, 155, 240, 0.85);
+  }
+  100% {
+    box-shadow: none;
+    border-color: var(--line, rgba(255, 255, 255, 0.08));
+  }
+}
+
+@keyframes postUnderglow {
+  0% { opacity: 0; transform: scale(0.85); }
+  15% { opacity: 1; transform: scale(1.05); }
+  80% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.9); }
+}
 /* Reel Caption Sheet */
 #reelCapSheet .sheet { background: var(--pal-gray-900); }
 .rcap-user-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }

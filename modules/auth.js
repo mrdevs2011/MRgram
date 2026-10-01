@@ -860,6 +860,17 @@ async function _enterApp(user) {
       const { initStories } = await import('./stories.js');
       initStories();
     } catch (e) { console.warn('[Auth] stories', e?.message || e); }
+
+    // Target post havolasi bilan kelgan bo'lsa (login qilingandan so'ng avtomatik postga o'tish)
+    try {
+      const { scrollToPostFromHash, getTargetPostId } = await import('./feed.js');
+      const targetId = getTargetPostId();
+      if (targetId) {
+        const { navigateTo } = await import('./router.js');
+        navigateTo('home', false);
+        scrollToPostFromHash();
+      }
+    } catch (e) { console.warn('[Auth] target post scroll:', e?.message || e); }
   } finally {
     _entering = false;
   }
