@@ -1,6 +1,6 @@
 /* CSS/layers.css — theme, ui-improvements, local-utility, dark-theme-fix, borderless, chat-dark-redesign, 00-components.core, post-composer, card-sheets, sidebar-x, no-animations (F4.4), style (global reset). Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
 /* ─── theme ─── */
-/* ═══════════════════════════════════════════ MRspace — Theme System MRspace — Theme System ═════════════════... */
+/* ═══════════════════════════════════════════ SpaceMR — Theme System SpaceMR — Theme System ═════════════════... */
 /* PALITRA (primitivlar) — yagona manba. Boshqa fayllarda qattiq hex o'rniga shular ishlatiladi. */
 /* DARK theme — Telegram Dark Palette */
 /* [data-theme="dark"] body/.app/.bot-nav/.sheet/.modal-content → hammasi CSS/dark-theme-fix.css'da (o'sha fay... */
@@ -451,7 +451,7 @@ svg { color: inherit; }
 /* Guruh sozlash (edit) oynasi: group info (520) va chat thread ustida, hamma oddiy modallardan yuqorida */
 #grpEditOverlay, #chatThreadModal #grpEditOverlay { z-index: 700; }
 /* ─── dark-theme-fix ─── */
-/* ═══════════════════════════════════════════════════════════ MRspace — Solid UI Override dark-theme-fix.css... */
+/* ═══════════════════════════════════════════════════════════ SpaceMR — Solid UI Override dark-theme-fix.css... */
 /* ══════════════════════════════════════════ 1. DARK THEME — Rang Tokenlari ═════════════════════════════════... */
 /* ══════════════════════════════════════════ 1. Base palette (--bg, --text, --blue, --red...) is owned by the... */
 /* ══════════════════════════════════════════ 2. DARK — Body wallopaper ══════════════════════════════════════... */
@@ -576,7 +576,7 @@ svg { color: inherit; }
 [data-theme="dark"] .cmt-input:focus { background: var(--pal-gray-900); border-color: var(--pal-white); box-shadow: 0 0 0 3px var(--pal-gray-900); }
 [data-theme="dark"] .cmt-input-row { border-top: 0.5px solid var(--pal-gray-900); }
 /* ─── borderless ─── */
-/* ═══════════════════════════════════════════ MRspace — Borderless / Minimal Override Zamonaviy flat dizayn:... */
+/* ═══════════════════════════════════════════ SpaceMR — Borderless / Minimal Override Zamonaviy flat dizayn:... */
 /* CSS token override: border va shadow tokenlarini o'chiramiz */
 /* Dark: line tokenlar ham yo'qolsin */
 /* ════════════════════════════════ GLOBAL — hamma border lar off ════════════════════════════════ */
@@ -857,7 +857,7 @@ svg { color: inherit; }
 /* Lightbox backdrop */
 #chatLightbox { background: rgba(0, 0, 0,0.92); }
 /* ─── 00-components.core ─── */
-/* ═══════════════════════════════════════════════════════════════ MRspace — CORE COMPONENTS (single source of... */
+/* ═══════════════════════════════════════════════════════════════ SpaceMR — CORE COMPONENTS (single source of... */
 /* 1. Buttons */
 .btn-primary { width: 100%; border: none; color: var(--pal-white); font-family: var(--font); cursor: pointer; margin-top: 4px;  }
 .btn-primary:active { opacity: 0.85; }
@@ -1203,7 +1203,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
 }
 /* ─── style (global reset) ─── */
 /* ═══════════════════════════════════════════
-   MRspace — Master Stylesheet
+   SpaceMR — Master Stylesheet
    iOS 27 Liquid Glass Edition — Step 3
    ═══════════════════════════════════════════ */
 

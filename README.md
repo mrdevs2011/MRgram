@@ -1,4 +1,4 @@
-# MRspace
+# SpaceMR
 
 Yopiq oilaviy messenjer + lenta (PWA). ~50 yaqin odam uchun. Vanilla JS, Supabase, Vercel.
 Reja va holat: `MRSPACE-ROADMAP.md`. Eski to'liq tavsif: `docs/archive/`.

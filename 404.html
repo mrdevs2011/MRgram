@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#000000">
-<title>404 · MRspace</title>
+<title>404 · SpaceMR</title>
 
 <!-- Theme: localStorage dan o'qiladi, toggle yo'q -->
 <script>
   (function(){
-    var t = localStorage.getItem('mrspace_theme') ||
+    var t = localStorage.getItem('spacemr_theme') ||
+            localStorage.getItem('mrspace_theme') ||
             (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
     document.documentElement.setAttribute('data-theme', t);
   })();
@@ -204,7 +205,7 @@ body {
 </div>
 
 <!-- Brand -->
-<div class="err-brand">private database · mrspace</div>
+<div class="err-brand">private database · spacemr</div>
 
 </body>
 </html>

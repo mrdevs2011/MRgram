@@ -126,7 +126,7 @@ export function navigateTo(routeName, pushState = true) {
   state.view = routeName;
 
   // Update document title
-  document.title = `${route.title} - MRspace`;
+  document.title = `${route.title} - SpaceMR`;
 
   // Update nav UI
   updateNavUI(routeName);

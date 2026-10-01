@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
 
   const { data: sender } = await sb.from("profiles")
     .select("full_name").eq("id", r.sender_id ?? r.caller_id).maybeSingle();
-  const senderName = sender?.full_name || "MRspace";
+  const senderName = sender?.full_name || "SpaceMR";
 
   if (table === "messages") {
     const { data } = await sb.from("chat_members").select("user_id")

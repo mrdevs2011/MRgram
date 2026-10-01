@@ -109,3 +109,13 @@
   - Agar maydonda matn yoki fayl bo'lsa, tugma xabarni yuborish vazifasini bajaradi.
 - Fayllar: index.html, modules/chat.js, CSS/features.css, app.css, STATUS.md
 - Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.
+
+---
+### 2026-10-01 20:45
+- Qilindi:
+  - Ilova nomi to'liq `MRspace` dan `SpaceMR` ga o'zgartirildi (HTML sarlavhalari, splash, brend so'zlari, logotip, PWA manifest, service worker, bildirishnomalar, keshlar, kalitlar, JS modullari, SQL migratsiyalari, CSS banner va kommentarilar, package.json va README).
+  - Foydalanuvchilarning mavjud sessiyalari va ma'lumotlari uzilib qolmasligi uchun `spacemr-auth` (fallback: `mrspace-auth`), `spacemr_theme`, `spacemr_emoji_recent`, `spacemr_errors`, `spacemrNotifsEnabled` avtomatik migratsiyasi ta'minlandi.
+  - Yangi logotip manbasi `/svg/SpaceMR.png` yaratildi va PWA keshiga kiritildi.
+- Fayllar: index.html, 404.html, manifest.json, package.json, firebase-messaging-sw.js, README.md, scripts/build-css.mjs, CSS/*.css, app.css, modules/router.js, modules/config.js, modules/auth.js, modules/chat.js, modules/emoji-picker.js, modules/error-log.js, modules/push.js, modules/local-cache.js, modules/script.js, modules/utils.js, modules/groups.js, modules/admin-badge.js, modules/view-actions.js, modules/view-users.js, modules/no-autocomplete.js, supabase/functions/send-push/index.ts, supabase/migrations/005_stories.sql, supabase/migrations/006_stories-caption.sql, svg/SpaceMR.png, STATUS.md
+- Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.
+

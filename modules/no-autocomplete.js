@@ -1,4 +1,4 @@
-/* no-autocomplete.js — brauzerning "yordamchi" takliflari (avval yozilgan matnlar ro'yxati, autofill) MRspace
+/* no-autocomplete.js — brauzerning "yordamchi" takliflari (avval yozilgan matnlar ro'yxati, autofill) SpaceMR
    ichidagi hech bir maydonda chiqmasin. Barcha input/textarea'ga autocomplete="off" qo'yiladi (dinamik yaratilganlarga ham).
    Istisno: parol/login maydonlari (username, current-password, new-password, one-time-code) — parol menejeri ishlashda qoladi. */
 const SKIP_TYPES = new Set(['checkbox', 'radio', 'file', 'hidden', 'button', 'submit', 'reset', 'range', 'color', 'image']);

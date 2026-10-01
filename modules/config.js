@@ -1,5 +1,5 @@
 /**
- * MRspace — config.js (Supabase)
+ * SpaceMR — config.js (Supabase)
  * Bitta Supabase client + state + Firestore-uslubidagi ma'lumotni
  * (camelCase, createdAt = epoch-ms number) Supabase qatorlaridan yasovchi mapperlar.
  * Mapperlar qolgan modullarni bosqichma-bosqich ko'chirish imkonini beradi.
@@ -18,12 +18,18 @@ if (!SB_CONFIGURED) {
   console.error('config.js: SUPABASE_URL va SUPABASE_ANON_KEY hali kiritilmagan');
 }
 
+try {
+  if (typeof localStorage !== 'undefined' && !localStorage.getItem('spacemr-auth') && localStorage.getItem('mrspace-auth')) {
+    localStorage.setItem('spacemr-auth', localStorage.getItem('mrspace-auth'));
+  }
+} catch (_) {}
+
 export const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: false,
-    storageKey: 'mrspace-auth',
+    storageKey: 'spacemr-auth',
   },
   realtime: { params: { eventsPerSecond: 60 } },
 });
@@ -180,7 +186,7 @@ let _verifyClient = null;
 function _getVerifyClient() {
   if (!_verifyClient) {
     _verifyClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'mrspace-verify' },
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'spacemr-verify' },
     });
   }
   return _verifyClient;

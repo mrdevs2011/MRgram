@@ -1,5 +1,5 @@
 /**
- * MRspace — Admin Actions Panel
+ * SpaceMR — Admin Actions Panel
  * Statistika, Foydalanuvchilar va Broadcast birlashtirilgan panel
  * Faqat admin (ADMIN_UID) uchun
  */

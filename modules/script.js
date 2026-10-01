@@ -40,6 +40,7 @@ export function hideSplash(reason) {
 setTimeout(() => hideSplash('timeout'), SPLASH_MAX_MS);
 
 // Boshqa modullar chaqirishi uchun
+window.__spacemrHideSplash = hideSplash;
 window.__mrspaceHideSplash = hideSplash;
 
 /* ── Wire auth → render callbacks ────────────────────────────────────── */

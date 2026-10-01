@@ -166,7 +166,7 @@ export async function clearRuntimeCache() {
   if (!('caches' in window)) return 0;
   try {
     const keys = await caches.keys();
-    const runtimeKeys = keys.filter(k => k.startsWith('mrspace-runtime-'));
+    const runtimeKeys = keys.filter(k => k.startsWith('spacemr-runtime-') || k.startsWith('mrspace-runtime-'));
     await Promise.all(runtimeKeys.map(k => caches.delete(k)));
     return runtimeKeys.length;
   } catch {

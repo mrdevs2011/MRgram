@@ -1,5 +1,5 @@
 /**
- * MRspace — Admin Badge (real-vaqt bildirishnoma)
+ * SpaceMR — Admin Badge (real-vaqt bildirishnoma)
  * Bottom-nav'dagi "Boshqaruv" (Actions) tugmasida — admin boshqa
  * bo'limda bo'lsa ham — yangi pending foydalanuvchi paydo bo'lganda
  * qizil badge ko'rsatadi.

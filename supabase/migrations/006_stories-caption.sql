@@ -1,4 +1,4 @@
--- MRspace Stories: izoh (description). Ixtiyoriy, max 200 belgi.
+-- SpaceMR Stories: izoh (description). Ixtiyoriy, max 200 belgi.
 alter table public.stories add column if not exists caption text;
 
 alter table public.stories drop constraint if exists stories_caption_len;

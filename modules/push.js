@@ -19,11 +19,14 @@ export const VAPID_PUBLIC_KEY = 'BC7D7mT0RhLjM8kes8iFCvavCiTY5crwYaXzGeuEIRclNoR
 // Foydalanuvchi "Sozlamalar" ekranidan bildirishnomalarni o'chirib qo'ysa,
 // keyingi kirishlarda initPush() avtomatik chaqirilmasligi uchun localStorage
 // bayrog'i. Standart holat: yoqilgan (faqat aniq '0' yozilgan bo'lsa o'chirilgan).
-const NOTIF_LS_KEY = 'mrspaceNotifsEnabled';
+const NOTIF_LS_KEY = 'spacemrNotifsEnabled';
 
 /** Foydalanuvchi bildirishnomalarni o'chirib qo'yganmi (Settings orqali)? */
 export function notificationsUserDisabled() {
-  try { return localStorage.getItem(NOTIF_LS_KEY) === '0'; } catch { return false; }
+  try {
+    const v = localStorage.getItem(NOTIF_LS_KEY) ?? localStorage.getItem('mrspaceNotifsEnabled');
+    return v === '0';
+  } catch { return false; }
 }
 
 /** Settings toggle uchun: hozirgi holat yoqilganmi?

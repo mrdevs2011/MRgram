@@ -3,7 +3,7 @@ import { onEsc } from './esc-stack.js';
    Tepada: qidiruv tugmasi + kategoriya ikonlari (SVG). Pastda: "Oxirgilar" va kategoriyalar
    bo'yicha sahifalar: tablar orasida gorizontal surish, sahifa ichida vertikal skroll. Ma'lumot mahalliy (emoji-data.js), birinchi ochilganda yuklanadi. */
 
-const RECENT_KEY = 'mrspace_emoji_recent';
+const RECENT_KEY = 'spacemr_emoji_recent';
 const RECENT_MAX = 24;
 
 const svg = d => `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
@@ -25,8 +25,11 @@ const ICONS = {
 const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 function loadRecent() {
-  try { const a = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); return Array.isArray(a) ? a.slice(0, RECENT_MAX) : []; }
-  catch { return []; }
+  try {
+    const raw = localStorage.getItem(RECENT_KEY) || localStorage.getItem('mrspace_emoji_recent');
+    const a = JSON.parse(raw || '[]');
+    return Array.isArray(a) ? a.slice(0, RECENT_MAX) : [];
+  } catch { return []; }
 }
 function saveRecent(list) { try { localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, RECENT_MAX))); } catch {} }
 

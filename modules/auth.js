@@ -275,7 +275,7 @@ if (authBtn) {
       }
 
       // Onboarding flagi signUp'dan OLDIN — onAuthStateChange tezroq ishlab ketishi mumkin
-      sessionStorage.setItem('mrspace_new_signup', '1');
+      sessionStorage.setItem('spacemr_new_signup', '1');
       const { data, error } = await sb.auth.signUp({
         email: uToEmail(cleaned),
         password: p,
@@ -290,7 +290,10 @@ if (authBtn) {
       // Keyingi qadamni onAuthStateChange bajaradi (pending ekran)
     } catch (err) {
       console.error('Auth error:', err?.code || '', err?.message);
-      if (!isLogin) sessionStorage.removeItem('mrspace_new_signup');
+      if (!isLogin) {
+        sessionStorage.removeItem('spacemr_new_signup');
+        sessionStorage.removeItem('mrspace_new_signup');
+      }
       authBtn.disabled = false;
       authBtn.textContent = isLogin ? 'Kirish' : "Ro'yxatdan o'tish";
       const known = sbErrUz(err);
@@ -567,7 +570,7 @@ async function _fetchProfile(uid) {
 }
 
 function _showOnce(reason, until = null) {
-  try { window.__mrspaceHideSplash?.('gate'); } catch (_) {}
+  try { (window.__spacemrHideSplash || window.__mrspaceHideSplash)?.('gate'); } catch (_) {}
 
   const key = reason + ':' + (until || '');
   if (_shownKey === key) return;
@@ -664,7 +667,7 @@ async function _handleSession(session) {
     const authWrap = $('authWrap');
     if (app) app.classList.remove('show');
     if (authWrap) authWrap.classList.add('show');
-    try { window.__mrspaceHideSplash?.('no-session'); } catch (_) {}
+    try { (window.__spacemrHideSplash || window.__mrspaceHideSplash)?.('no-session'); } catch (_) {}
     return;
   }
 
@@ -747,7 +750,8 @@ async function _enterApp(user) {
     _shownKey = null;
 
     /* Faqat yangi ro'yxatdan o'tgan foydalanuvchilarga onboarding */
-    if (sessionStorage.getItem('mrspace_new_signup')) {
+    if (sessionStorage.getItem('spacemr_new_signup') || sessionStorage.getItem('mrspace_new_signup')) {
+      sessionStorage.removeItem('spacemr_new_signup');
       sessionStorage.removeItem('mrspace_new_signup');
       setTimeout(() => {
         if (typeof window._startOnboarding === 'function') window._startOnboarding(true);
@@ -777,7 +781,7 @@ async function _enterApp(user) {
     } catch (e) {
       console.warn('[Auth] preload:', e?.message || e);
     }
-    try { window.__mrspaceHideSplash?.('app-ready'); } catch (_) {}
+    try { (window.__spacemrHideSplash || window.__mrspaceHideSplash)?.('app-ready'); } catch (_) {}
 
     // Stories bar birinchi yuklanishda ham chiqsin (router auth dan oldin ishlagan bo'lishi mumkin)
     try {
@@ -1123,7 +1127,7 @@ if (saveProfileBtn) {
       if (newPwd.length < 6) { toast("Yangi parol kamida 6 ta belgi bo'lishi kerak", 'error'); return; }
       if (newPwd !== newPwd2) { toast('Yangi parollar mos emas', 'error'); return; }
       try {
-        const email = state.me.email || (state.me.username ? (state.me.username + '@mrspace.local') : null);
+        const email = state.me.email || (state.me.username ? (state.me.username + '@spacemr.local') : null);
         // email DB dan
         let loginEmail = email;
         if (state.me.username) {
@@ -1182,10 +1186,10 @@ export async function logOut() {
   // Qolgan sessiya kalitlarini tozalash
   try {
     Object.keys(localStorage).forEach(k => {
-      if (/supabase|mrspace-auth|sb-/i.test(k)) localStorage.removeItem(k);
+      if (/supabase|spacemr-auth|mrspace-auth|sb-/i.test(k)) localStorage.removeItem(k);
     });
     Object.keys(sessionStorage).forEach(k => {
-      if (/supabase|mrspace|sb-/i.test(k)) sessionStorage.removeItem(k);
+      if (/supabase|spacemr|mrspace|sb-/i.test(k)) sessionStorage.removeItem(k);
     });
   } catch (_) {}
   location.replace('/');
@@ -1338,7 +1342,7 @@ if (deleteAccountBtn) {
           await removePushToken().catch(() => {});
           clearAllCache();
           try { await sb.auth.signOut(); } catch (_) {}
-          try { localStorage.removeItem('mrspace-auth'); } catch (_) {}
+          try { localStorage.removeItem('spacemr-auth'); localStorage.removeItem('mrspace-auth'); } catch (_) {}
           location.replace('/');
         } catch (e) {
           deleteAccountBtn.disabled = false;

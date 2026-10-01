@@ -337,7 +337,7 @@
   #actionsView .ua-row:hover { background: var(--ag-glass-mid); border-color: var(--ag-border-top); box-shadow: var(--ag-specular), var(--ag-shadow-hover); }
 }
 /* ─── admin-plain ─── */
-/* ═══════════════════════════════════════════════════════════════════════ ADMIN PANEL — MRspace uslubida (odd... */
+/* ═══════════════════════════════════════════════════════════════════════ ADMIN PANEL — SpaceMR uslubida (odd... */
 #actionsView { font-size: 13px; font-family: var(--font); }
 /* Bo'lim sarlavhalari */
 #actionsView .actions-divider { display: block; margin: 16px 0 0; padding: 10px 16px 6px; background: transparent; border-top: 1px solid var(--line); border-bottom: none; }

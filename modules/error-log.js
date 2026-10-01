@@ -1,9 +1,9 @@
 /* error-log.js — 7.7: oddiy xato ko'rish. Overengineering YO'Q.
    - window.onerror + unhandledrejection ushlanadi
-   - oxirgi 20 xato localStorage'da (konsolda: __mrErrors())
+   - oxirgi 20 xato localStorage'da (konsolda: __spaceErrors() / __mrErrors())
    - agar bazada `client_errors` jadvali bo'lsa (014 patch), sessiyada eng ko'pi 5 ta yuboriladi
    - jadval yo'q/xato bo'lsa jim to'xtaydi (hech qachon yangi xato yaratmaydi) */
-const KEY = 'mrspace_errors';
+const KEY = 'spacemr_errors';
 const MAX_KEEP = 20;
 const MAX_SEND = 5;
 const IGNORE = /ResizeObserver loop|^Script error\.?$|Non-Error promise rejection/i;
@@ -12,7 +12,7 @@ let _dead = false;
 const _seen = new Set();
 
 function _load() {
-  try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (_) { return []; }
+  try { return JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('mrspace_errors') || '[]'); } catch (_) { return []; }
 }
 function _save(list) {
   try { localStorage.setItem(KEY, JSON.stringify(list.slice(-MAX_KEEP))); } catch (_) {}
@@ -54,5 +54,7 @@ window.addEventListener('unhandledrejection', e => {
   _record(r && r.message ? r.message : r, 'promise', r && r.stack);
 });
 
-window.__mrErrors = () => _load();
-window.__mrErrorsClear = () => { try { localStorage.removeItem(KEY); } catch (_) {} };
+window.__spaceErrors = () => _load();
+window.__mrErrors = window.__spaceErrors;
+window.__spaceErrorsClear = () => { try { localStorage.removeItem(KEY); localStorage.removeItem('mrspace_errors'); } catch (_) {} };
+window.__mrErrorsClear = window.__spaceErrorsClear;

@@ -1,5 +1,5 @@
 /**
- * MRspace — Admin Foydalanuvchilar Panel
+ * SpaceMR — Admin Foydalanuvchilar Panel
  * Faqat admin (profiles.is_admin) uchun
  */
 

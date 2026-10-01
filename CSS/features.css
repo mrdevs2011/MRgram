@@ -571,7 +571,7 @@
 .up-grid-empty-title { font-size: 15px; font-weight: 600; color: var(--text, var(--pal-gray-100)); }
 .up-grid-empty-sub { font-size: 13px; color: var(--text3, var(--pal-gray-500)); max-width: 260px; line-height: 1.4; }
 /* ─── nav ─── */
-/* ═══════════════════════════════════════════ MRspace — Nav, Modals, Sheets MRspace — Komponent Stillari ════... */
+/* ═══════════════════════════════════════════ SpaceMR — Nav, Modals, Sheets SpaceMR — Komponent Stillari ════... */
 /* Fields — Input ── * background/border-radius/color/transition (bazaviy) va border-color/ * background/box-s... */
 .field { width: 100%; padding: 13px 16px; font-family: var(--font); outline: none; margin-bottom: 10px; }
 .field::placeholder { color: var(--text3); }
@@ -1897,7 +1897,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .vmp-close { width: 26px; height: 26px; border-radius: 50%; border: none; background: transparent; color: var(--text2, #9aa0a6); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; }
 .vmp-close:hover { background: var(--pal-white-08); }
 /* ─── groups ─── */
-/* ═══════════════════════════════════════════════════════════════ MRspace — Groups & Channels CSS ═══════════... */
+/* ═══════════════════════════════════════════════════════════════ SpaceMR — Groups & Channels CSS ═══════════... */
 /* "+" button in chats header */
 .chats-hdr { display: flex; align-items: center; justify-content: space-between; }
 .chats-add-btn {

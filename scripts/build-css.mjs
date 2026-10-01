@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const FILES = ['tokens', 'base', 'features', 'layers', 'admin', 'mono-x'].map(n => `CSS/${n}.css`);
 
-const parts = ['/* MRspace app.css — build-css.mjs orqali avtomatik yig\'ilgan. Qo\'lda tahrirlamang! */'];
+const parts = ['/* SpaceMR app.css — build-css.mjs orqali avtomatik yig\'ilgan. Qo\'lda tahrirlamang! */'];
 for (const f of FILES) parts.push(readFileSync(join(ROOT, f), 'utf8').trim());
 
 const out = parts.join('\n') + '\n';
