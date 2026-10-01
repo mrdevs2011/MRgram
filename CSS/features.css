@@ -1202,23 +1202,52 @@
 .chat-attach-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;  }
 /* Voice / Send button */
 .chat-voice-wrap { position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-/* Ovoz balandligiga qarab JS orqali (modules/chat.js, _startPulse) * scale/opacity real-vaqtda yangilanadigan... */
-.cv-pulse {
+.cv-pulse-container {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 38px;
   height: 38px;
-  border-radius: 50%;
-  background: var(--blue);
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%);
   pointer-events: none;
   z-index: 0;
-  will-change: transform, opacity;
 }
-.chat-voice-btn { position: relative; z-index: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--pal-white); cursor: pointer; flex-shrink: 0;  }
-/* .chat-voice-btn.recording lives in the "VOICE BTN — amplitude-based * smooth pulse" section below, which is... */
+.cv-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: opacity 0.15s ease-out;
+}
+.cv-pulse-1 {
+  width: 44px;
+  height: 44px;
+  background: radial-gradient(circle, rgba(42, 171, 238, 0.65) 0%, rgba(42, 171, 238, 0.35) 65%, rgba(42, 171, 238, 0) 100%);
+}
+.cv-pulse-2 {
+  width: 64px;
+  height: 64px;
+  background: radial-gradient(circle, rgba(42, 171, 238, 0.45) 0%, rgba(42, 171, 238, 0.2) 70%, rgba(42, 171, 238, 0) 100%);
+}
+.cv-pulse-3 {
+  width: 88px;
+  height: 88px;
+  background: radial-gradient(circle, rgba(42, 171, 238, 0.3) 0%, rgba(42, 171, 238, 0.08) 75%, rgba(42, 171, 238, 0) 100%);
+}
+.chat-voice-wrap.cancelling .cv-pulse-1 {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.65) 0%, rgba(239, 68, 68, 0.35) 65%, rgba(239, 68, 68, 0) 100%);
+}
+.chat-voice-wrap.cancelling .cv-pulse-2 {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(239, 68, 68, 0.2) 70%, rgba(239, 68, 68, 0) 100%);
+}
+.chat-voice-wrap.cancelling .cv-pulse-3 {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.3) 0%, rgba(239, 68, 68, 0.1) 75%, rgba(239, 68, 68, 0) 100%);
+}
+.chat-voice-btn { position: relative; z-index: 2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--pal-white); cursor: pointer; flex-shrink: 0; touch-action: none; user-select: none; -webkit-user-select: none; }
 /* File preview above input */
 .chat-file-preview { display: none; padding: 8px 12px; background: var(--bg); border-top: 1px solid var(--line); flex-shrink: 0; }
 .chat-file-preview.active { display: block; }
@@ -1596,13 +1625,96 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   padding: 4px 6px 2px;
 }
 .cfm-caption p { margin: 0; }
-/* ═══════════════════════════════════════════════════════════════════════ VOICE BTN — amplitude-based smooth... */
+/* ═══════════════════════════════════════════════════════════════════════
+   VOICE BTN — Telegram-style push-to-talk & live recording
+   ═══════════════════════════════════════════════════════════════════════ */
+#chatThreadModal .chat-voice-btn.recording,
 .chat-voice-btn.recording {
-  border: 0.5px solid #5F5F63;
-  
-  transform: scale(var(--rec-scale, 1.0));
-  box-shadow: inset 0 1px 0 var(--pal-legacy-525257), 0 0 0 calc((var(--rec-scale, 1.0) - 1) * 28px) #232323, 0 0 calc(var(--rec-glow, 0) * 0.4px) var(--pal-gray-700), 0 4px 16px var(--pal-legacy-2e2e2e);
-  
+  background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%) !important;
+  color: #ffffff !important;
+  transform: scale(1.18);
+  box-shadow: 0 4px 20px rgba(42, 171, 238, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.2);
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s ease;
+}
+
+#chatThreadModal .chat-voice-btn.recording.cancelling,
+.chat-voice-btn.recording.cancelling {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RECORDING OVERLAY BAR (Live timer & Slide to cancel)
+   ═══════════════════════════════════════════════════════════════════════ */
+.chat-record-bar {
+  position: absolute;
+  left: 8px;
+  right: 56px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  z-index: 5;
+  background: var(--bg);
+  pointer-events: none;
+  user-select: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.chat-record-bar.active {
+  display: flex;
+  animation: crbFadeIn 0.18s ease-out;
+}
+
+@keyframes crbFadeIn {
+  from { opacity: 0; transform: translateY(-50%) translateX(10px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+
+.crb-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ef4444;
+  flex-shrink: 0;
+  animation: crbBlink 1s infinite alternate;
+}
+
+@keyframes crbBlink {
+  0% { opacity: 0.3; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px rgba(239, 68, 68, 0.8); }
+}
+
+.crb-timer {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  min-width: 36px;
+}
+
+.crb-cancel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--text3);
+  margin-left: auto;
+  transition: color 0.15s ease;
+  animation: crbSlidePrompt 1.6s infinite ease-in-out;
+}
+
+@keyframes crbSlidePrompt {
+  0%, 100% { transform: translateX(0); opacity: 0.7; }
+  50% { transform: translateX(-6px); opacity: 1; }
+}
+
+.chat-record-bar.cancelling .crb-cancel {
+  color: #ef4444;
+  animation: none;
+  font-weight: 600;
 }
 /* ═══════════════════════════════════════════════════════════════════════ PENDING UPLOAD BUBBLE ═════════════... */
 .cpb-wrap { margin-bottom: 4px; }

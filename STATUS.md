@@ -97,3 +97,15 @@
   - Matnli media (caption bor rasm/video): media pufakning eng tepasida hech qanday ramka/paddinglarsiz chekkagacha (flush edge-to-edge) joylashadi, uning tagida esa izoh matni va vaqt chiqadi.
 - Fayllar: modules/chat.js, CSS/features.css, app.css, STATUS.md
 - Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.
+
+---
+### 2026-10-01 20:30
+- Qilindi:
+  - Mikrofonga bosib turib gapirish (Telegram Push-to-Talk) va qo'yib yuborganda darhol yuborilishi joriy qilindi.
+  - Mikrofon bosilganda Telegram uslubidagi jonli pulsatsiya halqalari: 3 qavatli konsentrik radial to'lqinlar (`#cvPulse1`, `#cvPulse2`, `#cvPulse3`) Web Audio API `AnalyserNode` orqali foydalanuvchi ovozi balandligi va nafas olish ritmiga mos ravishda kengayadi va porlaydi.
+  - Ovoz yozish paytida yozuv paneli (`#chatRecordBar`): qizil miltillovchi nuqta, real-vaqt sekundomer taymeri (`0:01`, `0:02`...) va "‹ Bekor qilish uchun suring" animatsiyali ko'rsatmasi chiqadi.
+  - Chapga surish orqali bekor qilish (swipe-to-cancel): 55px dan ortiq chapga surilganda to'lqinlar va matn qizil rangga aylanadi va barmoq qo'yib yuborilsa yozuv bekor qilinadi.
+  - Agar 0.5s dan qisqa bosilsa, bekor qilinib "Ovoz yozish uchun mikrofoni bosib turing" bildirishnomasi chiqadi.
+  - Agar maydonda matn yoki fayl bo'lsa, tugma xabarni yuborish vazifasini bajaradi.
+- Fayllar: index.html, modules/chat.js, CSS/features.css, app.css, STATUS.md
+- Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.

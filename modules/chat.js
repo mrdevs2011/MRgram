@@ -2149,6 +2149,11 @@ function _reattachActiveVoiceUI(box) {
 
 /* ── Yopish chat thread ───────────────────────────────────────────────── */
 export function closeChatThread() {
+  if (_isHoldingVoice) {
+    _isHoldingVoice = false;
+    cancelRecording();
+    _hideRecordBar();
+  }
   document.getElementById('chatHeaderDropdown')?.remove();
   document.getElementById('groupJoinBar')?.remove();
   document.dispatchEvent(new Event('chatmedia:close'));
@@ -2456,116 +2461,211 @@ const PAUSE_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="curren
 // CSS animatsiyasi uchun .cvm-play--loading klassi (CSS/chat.css) bilan birga ishlaydi.
 const LOADING_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" class="cvm-spin"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="42 14"/></svg>`;
 
-/* ── Voice recording (tap-to-toggle) ──────────────────────────────────────
- * Mikrofon tugmasiga BITTA tap = yozish boshlanadi (ushlab turish shart
- * emas). Yozish paytida yana bitta tap = to'xtatadi va darhol yuboradi
- * (bkz. pastdagi 'click' listener). Gapirilayotganda tugma atrofida ovoz
- * balandligiga sezgir, silliq kengayadigan "pulse ring" ko'rinadi
- * (#cvPulse) — AnalyserNode + requestAnimationFrame + lerp. */
-let _mediaRec    = null;
-let _recChunks   = [];
-let _recStartTs  = 0;
-let _pulseCtx    = null;
-let _pulseAnalyser = null;
-let _pulseRaf    = null;
-let _pulseLevel  = 0; // joriy (silliqlashtirilgan) ovoz darajasi, 0..1
+/* ── Voice recording (Telegram-style push-to-talk & live 3-ring pulse) ────
+ * Mikrofonga BOSIB TURIB gapiriladi (hold to record).
+ * Qo'yib yuborilganda — ovoz darhol ketadi.
+ * Chapga surilsa — bekor qilinadi.
+ * Gapirilayotganda tugma atrofida Telegram'dagi kabi 3 qavatli jonli to'lqin
+ * halqalari (#cvPulse1, #cvPulse2, #cvPulse3) ovoz balandligiga mos ravishda kengayadi. */
+let _isHoldingVoice    = false;
+let _voiceCancelled    = false;
+let _voiceStartX       = 0;
+let _voiceStartY       = 0;
+let _voiceStartTime    = 0;
+let _voiceJustHandled  = false;
+let _activePointerId   = null;
+let _recTimerInterval  = null;
+let _recStartTs        = 0;
+let _mediaRec          = null;
+let _recChunks         = [];
+let _mediaStream       = null;
+let _pulseCtx          = null;
+let _pulseAnalyser     = null;
+let _pulseRaf          = null;
+let _pulseLevel        = 0;
+let _voiceStopRequested = false;
 
-function startRecording() {
-  navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(stream => {
-      _recChunks = [];
-      _recStartTs = performance.now();
+function _showRecordBar() {
+  const bar = $('chatRecordBar');
+  const timer = $('chatRecordTimer');
+  const cancelText = $('crbCancelText');
+  if (!bar) return;
+  bar.classList.add('active');
+  bar.classList.remove('cancelling');
+  if (cancelText) cancelText.textContent = 'Bekor qilish uchun suring';
+  if (timer) timer.textContent = '0:00';
+  _voiceStartTime = Date.now();
+  if (_recTimerInterval) clearInterval(_recTimerInterval);
+  _recTimerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - _voiceStartTime) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    if (timer) timer.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+  }, 250);
+}
 
-      const MIME_CANDIDATES = [
-        'audio/webm;codecs=opus',
-        'audio/ogg;codecs=opus',
-        'audio/mp4',
-        'audio/webm',
-      ];
-      const chosenMime = MIME_CANDIDATES.find(m => MediaRecorder.isTypeSupported?.(m));
-      const opts = chosenMime ? { mimeType: chosenMime } : {};
+function _hideRecordBar() {
+  const bar = $('chatRecordBar');
+  if (bar) bar.classList.remove('active', 'cancelling');
+  if (_recTimerInterval) { clearInterval(_recTimerInterval); _recTimerInterval = null; }
+  const wrap = $('chatVoiceWrap');
+  if (wrap) wrap.classList.remove('cancelling');
+}
 
-      _mediaRec = new MediaRecorder(stream, opts);
-      _mediaRec.ondataavailable = e => {
-        if (e.data && e.data.size > 0) _recChunks.push(e.data);
-      };
-      _mediaRec.onstop = () => {
-        stream.getTracks().forEach(t => t.stop());
-        const duration = Math.round((performance.now() - _recStartTs) / 1000);
-        if (!_recChunks.length) {
-          toast('Ovoz yozilmadi, qayta urinib ko\'ring', 'error');
-          return;
-        }
-        const mimeType = _mediaRec.mimeType || chosenMime || 'audio/webm';
-        const blob = new Blob(_recChunks, { type: mimeType });
-        sendVoiceMessage(blob, duration);
-      };
-      _mediaRec.start();
+function _setRecordBarCancelState(isCancelling) {
+  const bar = $('chatRecordBar');
+  const cancelText = $('crbCancelText');
+  const wrap = $('chatVoiceWrap');
+  if (bar) bar.classList.toggle('cancelling', isCancelling);
+  if (wrap) wrap.classList.toggle('cancelling', isCancelling);
+  if (cancelText) {
+    cancelText.textContent = isCancelling ? 'Qo\'yib yuboring — bekor qilish' : 'Bekor qilish uchun suring';
+  }
+}
 
-      _startPulse(stream);
-    })
-    .catch(err => {
-      console.error('Mikrofon xatosi:', err);
-      toast('Mikrofonga ruxsat berilmadi', 'error');
-      $('chatVoiceBtn').classList.remove('active');
-    });
+async function startRecording() {
+  _voiceStopRequested = false;
+  _recChunks = [];
+  _recStartTs = performance.now();
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    _mediaStream = stream;
+
+    if (_voiceStopRequested) {
+      stream.getTracks().forEach(t => t.stop());
+      _mediaStream = null;
+      _stopPulse();
+      return;
+    }
+
+    const MIME_CANDIDATES = [
+      'audio/webm;codecs=opus',
+      'audio/ogg;codecs=opus',
+      'audio/mp4',
+      'audio/webm',
+    ];
+    const chosenMime = MIME_CANDIDATES.find(m => MediaRecorder.isTypeSupported?.(m));
+    const opts = chosenMime ? { mimeType: chosenMime } : {};
+
+    _mediaRec = new MediaRecorder(stream, opts);
+    _mediaRec.ondataavailable = e => {
+      if (e.data && e.data.size > 0) _recChunks.push(e.data);
+    };
+    _mediaRec.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      _mediaStream = null;
+      const duration = Math.round((performance.now() - _recStartTs) / 1000);
+      if (!_recChunks.length) return;
+      const mimeType = _mediaRec.mimeType || chosenMime || 'audio/webm';
+      const blob = new Blob(_recChunks, { type: mimeType });
+      sendVoiceMessage(blob, duration);
+    };
+
+    _mediaRec.start();
+    _startPulse(stream);
+
+  } catch (err) {
+    console.error('Mikrofon xatosi:', err);
+    toast('Mikrofonga ruxsat berilmadi', 'error');
+    $('chatVoiceBtn')?.classList.remove('recording', 'cancelling');
+    _hideRecordBar();
+    _stopPulse();
+    _isHoldingVoice = false;
+  }
 }
 
 function stopRecording() {
-  if (_mediaRec && _mediaRec.state !== 'inactive') _mediaRec.stop();
+  _voiceStopRequested = true;
+  if (_mediaRec && _mediaRec.state !== 'inactive') {
+    _mediaRec.stop();
+  } else if (_mediaStream) {
+    _mediaStream.getTracks().forEach(t => t.stop());
+    _mediaStream = null;
+  }
   _stopPulse();
 }
 
 function cancelRecording() {
+  _voiceStopRequested = true;
   if (_mediaRec) {
     _mediaRec.ondataavailable = null;
     _mediaRec.onstop = null;
     if (_mediaRec.state !== 'inactive') {
-      _mediaRec.stream?.getTracks().forEach(t => t.stop());
       try { _mediaRec.stop(); } catch(_) {}
     }
     _mediaRec = null;
+  }
+  if (_mediaStream) {
+    _mediaStream.getTracks().forEach(t => t.stop());
+    _mediaStream = null;
   }
   _recChunks = [];
   _stopPulse();
 }
 
-/* ── Pulse ring: mikrofon tugmasi atrofida, ovoz balandligiga juda
- * sezgir, lerp bilan silliq kengayadigan/torayadigan doira. ── */
+/* ── 3 qavatli Telegram pulsatsiya to'lqini ────────────────────────────── */
 function _startPulse(stream) {
-  const ring = $('cvPulse');
-  if (!ring) return;
+  const r1 = $('cvPulse1');
+  const r2 = $('cvPulse2');
+  const r3 = $('cvPulse3');
+  if (!r1 && !r2 && !r3) return;
+
   try {
     _pulseCtx = new (window.AudioContext || window.webkitAudioContext)();
     const src = _pulseCtx.createMediaStreamSource(stream);
     const analyser = _pulseCtx.createAnalyser();
     analyser.fftSize = 256;
-    analyser.smoothingTimeConstant = 0.25; // past — o'ta sezgir
+    analyser.smoothingTimeConstant = 0.2;
     src.connect(analyser);
     _pulseAnalyser = analyser;
 
     const data = new Uint8Array(analyser.frequencyBinCount);
-    const MIN_SCALE = 1, MAX_SCALE = 3.4;
-    const MIN_OPAC  = 0.14, MAX_OPAC = 0.55;
-    const LERP = 0.5; // kattaroq = tezroq/sezgirroq reaksiya
+    let lastTime = performance.now();
+    let phase = 0;
 
-    const tick = () => {
+    const tick = (now) => {
       if (!_pulseAnalyser) return;
       analyser.getByteFrequencyData(data);
       let sum = 0;
-      for (let i = 0; i < data.length; i++) sum += data[i];
-      const avg = sum / data.length / 255; // 0..1
-      const target = Math.pow(avg, 0.5); // sqrt — past ovozlarni ham ko'taradi
-      _pulseLevel += (target - _pulseLevel) * LERP;
+      const maxBin = Math.min(48, data.length);
+      for (let i = 2; i < maxBin; i++) sum += data[i];
+      const avg = sum / (maxBin - 2) / 255;
+      const target = Math.min(1, Math.pow(avg * 1.45, 0.7));
 
-      const scale = MIN_SCALE + _pulseLevel * (MAX_SCALE - MIN_SCALE);
-      const opac  = MIN_OPAC + _pulseLevel * (MAX_OPAC - MIN_OPAC);
-      ring.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
-      ring.style.opacity   = opac.toFixed(3);
+      _pulseLevel += (target - _pulseLevel) * 0.42;
+
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+      phase += dt * 3.6;
+
+      const breathe = Math.sin(phase) * 0.06;
+
+      if (r1) {
+        const s1 = 1.0 + (_pulseLevel * 0.75) + breathe * 0.5;
+        const o1 = 0.55 + (_pulseLevel * 0.45);
+        r1.style.transform = `translate(-50%, -50%) scale(${s1.toFixed(3)})`;
+        r1.style.opacity   = o1.toFixed(3);
+      }
+
+      if (r2) {
+        const s2 = 1.25 + (_pulseLevel * 1.4) + Math.sin(phase - 0.7) * 0.08;
+        const o2 = 0.38 + (_pulseLevel * 0.42);
+        r2.style.transform = `translate(-50%, -50%) scale(${s2.toFixed(3)})`;
+        r2.style.opacity   = o2.toFixed(3);
+      }
+
+      if (r3) {
+        const s3 = 1.55 + (_pulseLevel * 2.1) + Math.sin(phase - 1.4) * 0.12;
+        const o3 = 0.22 + (_pulseLevel * 0.35);
+        r3.style.transform = `translate(-50%, -50%) scale(${s3.toFixed(3)})`;
+        r3.style.opacity   = o3.toFixed(3);
+      }
 
       _pulseRaf = requestAnimationFrame(tick);
     };
-    tick();
+
+    _pulseRaf = requestAnimationFrame(tick);
   } catch (e) {
     console.warn('Pulse ring ishga tushmadi:', e?.message || e);
   }
@@ -2576,11 +2676,13 @@ function _stopPulse() {
   if (_pulseCtx) { try { _pulseCtx.close(); } catch(_) {} _pulseCtx = null; }
   _pulseAnalyser = null;
   _pulseLevel = 0;
-  const ring = $('cvPulse');
-  if (ring) {
-    ring.style.transform = 'translate(-50%, -50%) scale(1)';
-    ring.style.opacity = '0';
-  }
+  ['cvPulse1', 'cvPulse2', 'cvPulse3'].forEach(id => {
+    const el = $(id);
+    if (el) {
+      el.style.transform = 'translate(-50%, -50%) scale(1)';
+      el.style.opacity = '0';
+    }
+  });
 }
 
 async function sendVoiceMessage(blob, duration) {
@@ -2850,28 +2952,111 @@ $('chatThreadInput').addEventListener('keydown', e => {
  * ro'yxat, bosilganda kursor turgan joyga qo'shiladi. ── */
 initEmojiPicker({ btn: $('chatEmojiBtn'), pop: $('chatEmojiQuickpick'), input: $('chatThreadInput') });
 
-// Mikrofon/yuborish tugmasi — bitta tugma, uch xil holat:
-//  1) Matn/fayl bor bo'lsa — tap = yuborish.
-//  2) Matn/fayl yo'q va hozir yozilmayotgan bo'lsa — tap = yozishni boshlash
-//     (ushlab turish SHART EMAS).
-//  3) Yozish paytida yana bir tap = to'xtatish va darhol yuborish.
-$('chatVoiceBtn').addEventListener('click', () => {
-  const btn = $('chatVoiceBtn');
-  const hasText = $('chatThreadInput').value.trim().length > 0;
-  const hasFile = !!_chatSelFile;
+// Mikrofon / Yuborish tugmasi — Telegram uslubidagi "Bosib turib gapirish" (Push-to-Talk)
+const _vBtn = $('chatVoiceBtn');
+if (_vBtn) {
+  _vBtn.addEventListener('pointerdown', e => {
+    if (e.button !== undefined && e.button !== 0) return;
 
-  if (hasText || hasFile) { handleSendAction(); return; }
+    const inp = $('chatThreadInput');
+    const hasText = inp?.value?.trim().length > 0;
+    const hasFile = !!_chatSelFile;
 
-  if (btn.classList.contains('active')) {
-    // Ikkinchi tap — yozishni to'xtatish va yuborish
-    btn.classList.remove('active');
-    stopRecording();
-  } else {
-    // Birinchi tap — yozishni boshlash
-    btn.classList.add('active');
+    // Matn yoki fayl bo'lsa — bu yuborish tugmasi (click orqali ishlaydi)
+    if (hasText || hasFile) return;
+
+    e.preventDefault();
+    _activePointerId = e.pointerId;
+    try { _vBtn.setPointerCapture(e.pointerId); } catch (_) {}
+
+    _isHoldingVoice = true;
+    _voiceCancelled = false;
+    _voiceStartX = e.clientX;
+    _voiceStartY = e.clientY;
+    _voiceStartTime = Date.now();
+
+    _vBtn.classList.add('recording');
+    _showRecordBar();
     startRecording();
-  }
-});
+  });
+
+  _vBtn.addEventListener('pointermove', e => {
+    if (!_isHoldingVoice) return;
+    const dx = e.clientX - _voiceStartX;
+    // Chapga 55px dan ortiq surilsa — bekor qilish holati
+    if (dx < -55) {
+      if (!_voiceCancelled) {
+        _voiceCancelled = true;
+        _setRecordBarCancelState(true);
+        _vBtn.classList.add('cancelling');
+      }
+    } else {
+      if (_voiceCancelled) {
+        _voiceCancelled = false;
+        _setRecordBarCancelState(false);
+        _vBtn.classList.remove('cancelling');
+      }
+    }
+  });
+
+  const _finishVoiceHold = () => {
+    if (!_isHoldingVoice) return;
+    _isHoldingVoice = false;
+    _voiceJustHandled = true;
+    setTimeout(() => { _voiceJustHandled = false; }, 350);
+
+    if (_activePointerId !== null) {
+      try { _vBtn.releasePointerCapture(_activePointerId); } catch (_) {}
+      _activePointerId = null;
+    }
+
+    _vBtn.classList.remove('recording', 'cancelling');
+    _hideRecordBar();
+
+    const duration = Date.now() - _voiceStartTime;
+
+    if (_voiceCancelled) {
+      cancelRecording();
+      toast('Ovozli xabar bekor qilindi');
+    } else if (duration < 500) {
+      // Juda qisqa bosish (tap)
+      cancelRecording();
+      toast('Ovoz yozish uchun mikrofoni bosib turing');
+    } else {
+      // Normal qo'yib yuborish: ovoz darhol ketadi!
+      stopRecording();
+    }
+  };
+
+  _vBtn.addEventListener('pointerup', _finishVoiceHold);
+  _vBtn.addEventListener('pointercancel', () => {
+    if (!_isHoldingVoice) return;
+    _voiceCancelled = true;
+    _finishVoiceHold();
+  });
+
+  _vBtn.addEventListener('click', e => {
+    if (_voiceJustHandled) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    const hasText = $('chatThreadInput')?.value?.trim().length > 0;
+    const hasFile = !!_chatSelFile;
+    if (hasText || hasFile) {
+      handleSendAction();
+    } else {
+      toast('Ovoz yozish uchun mikrofoni bosib turing');
+    }
+  });
+
+  window.addEventListener('blur', () => {
+    if (_isHoldingVoice) {
+      _voiceCancelled = true;
+      _finishVoiceHold();
+    }
+  });
+}
 
 
 // File attach
