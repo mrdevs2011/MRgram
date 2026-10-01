@@ -67,3 +67,12 @@
   6) Barcha interfeys va bildirishnomalar to'liq o'zbek tilida.
 - Fayllar: index.html, modules/chat.js, modules/groups.js, STATUS.md
 - Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.
+
+---
+### 2026-10-01 18:15
+- Qilindi:
+  - Barcha 17 ta jadval, ustunlar, cheklovlar, RPC funksiyalari va triggerlar Supabase jonli bazasida tekshirildi.
+  - Guruhda ovozli xabarlar yuborishdagi nosozlik aniqlandi (`duration` ustuni va `group_messages_type_check` constraint da 'voice' turi yo'qligi).
+  - Supabase CLI orqali `016_group-voice.sql` yurgizildi: `group_messages.duration` ustuni qo'shildi, `group_messages_type_check` 'voice' ga kengaytirildi va `on_group_message_insert()` triggeri ovozli xabar uchun `last_message = 'Ovozli xabar'` yozadigan qilindi.
+  - Migratsiya `supabase/migrations/016_group-voice.sql` ga ko'chirildi, `unfulfilled/` bo'shatildi.
+- Fayllar: supabase/migrations/016_group-voice.sql, supabase/migrations/README.md, supabase/unfulfilled/CHECKLIST.md, STATUS.md

@@ -10,3 +10,4 @@ Bazada ISHGA TUSHIRILGAN SQL fayllar, tartib raqami bilan. Yangi bazada `000_sch
 - Dump olganda sirni yashirishni unutma: `sed -E 's/("x-webhook-secret":")[^"]*(")/\1__WEBHOOK_SECRET__\2/g'`.
 - 007-012 (2026-10-01): contract patchlari; jonli bazada allaqachon no-op edi (000_schema dump ko'rsatadi), idempotent. 013 (`posts.views`) `unfulfilled/` da, 2026-10-06 dan keyin.
 - 013 (2026-10-01): `posts.views` + `increment_post_view()` drop; `posts_insert` policy `views = 0` shartisiz qayta yaratildi. `000_schema.sql` dump bundan OLDINGI holat — yangi bazada 000 dan keyin 013 ham kerak.
+- 016 (2026-10-01): `group_messages.duration` ustuni qo'shildi, `group_messages_type_check` 'voice' turiga kengaytirildi va `on_group_message_insert()` triggeri ovozli xabar uchun `last_message = 'Ovozli xabar'` yozadigan qilindi.
