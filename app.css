@@ -4332,6 +4332,223 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 #actionsView .bc-empty { background: transparent; border: 0; border-radius: 0; padding: 8px 0; text-align: left; font-size: 13px; color: var(--text3); }
 #actionsView .bc-empty::before { content: none; }
 #actionsView .bc-current-label, #actionsView .bc-history-label { font-size: 12px; color: var(--text2); }
+
+/* ═══════════════════════ ADMIN RESET PASSWORD MODAL ═══════════════════════ */
+.admin-reset-card {
+  max-width: 410px;
+  width: 92%;
+  margin: auto;
+  background: var(--bg2, #16181f);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 26px 22px 22px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85);
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.admin-reset-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+.admin-reset-icon-wrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(29, 155, 240, 0.12);
+  color: var(--tg-primary-blue, #1d9bf0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  box-shadow: 0 0 24px rgba(29, 155, 240, 0.18);
+}
+.admin-reset-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text, #fff);
+  margin-bottom: 6px;
+  letter-spacing: -0.2px;
+}
+.admin-reset-user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text2, #ccc);
+  max-width: 100%;
+}
+.admin-reset-warn {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  text-align: left;
+}
+.admin-reset-warn-text {
+  font-size: 12.5px;
+  color: #fca5a5;
+  line-height: 1.5;
+}
+.admin-reset-pwd-box {
+  margin-bottom: 22px;
+  text-align: left;
+}
+.admin-reset-pwd-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text3, #888);
+  margin-bottom: 8px;
+}
+.admin-reset-pwd-field {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 4px 6px 4px 14px;
+  gap: 8px;
+  box-sizing: border-box;
+}
+.admin-reset-pwd-field:focus-within {
+  border-color: var(--tg-primary-blue, #1d9bf0);
+  box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.2);
+}
+.admin-reset-pwd-input {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  font-family: var(--mono, monospace) !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  letter-spacing: 2px !important;
+  color: var(--tg-primary-blue, #1d9bf0) !important;
+  padding: 8px 0 !important;
+  margin: 0 !important;
+  user-select: all !important;
+}
+.admin-reset-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text2, #ccc);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+}
+.admin-reset-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.admin-reset-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.admin-reset-btn-cancel {
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text, #fff);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+}
+.admin-reset-btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.admin-reset-btn-submit {
+  height: 44px;
+  border-radius: 12px;
+  background: #ef4444;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  font-family: inherit;
+}
+.admin-reset-btn-submit:hover {
+  background: #dc2626;
+}
+.admin-reset-btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.admin-reset-result-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1.5px solid rgba(29, 155, 240, 0.35);
+  padding: 10px 10px 10px 16px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+.admin-reset-copy-btn {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: var(--tg-primary-blue, #1d9bf0);
+  color: #fff;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 10px rgba(29, 155, 240, 0.3);
+  font-family: inherit;
+}
+.admin-reset-copy-btn:hover {
+  opacity: 0.9;
+}
+.admin-reset-done-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text, #fff);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+.admin-reset-done-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
 /* CSS/mono-x.css — mono, x-design. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
 /* ─── mono ─── */
 /* ═══════════════════════════════════════════ SpaceMR — Monochrome (qora + oq) override Eng OXIRIDA yuklanadi... */

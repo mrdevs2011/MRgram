@@ -807,59 +807,70 @@
 </div>
 
 <!-- ADMIN RESET PASSWORD MODAL (No prompt/alert) -->
-<div id="adminResetPwdOverlay" class="overlay" style="display:none;align-items:center;justify-content:center;z-index:99990;backdrop-filter:blur(10px);background:rgba(0,0,0,0.78);">
-  <div class="auth-card" style="max-width:420px;width:92%;margin:auto;box-shadow:0 16px 48px rgba(0,0,0,0.8);border:1px solid rgba(255,255,255,0.12);">
+<div id="adminResetPwdOverlay" class="overlay" style="display:none;align-items:center;justify-content:center;z-index:99990;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:rgba(0,0,0,0.8);">
+  <div class="admin-reset-card">
     <!-- Step 1: Confirmation & Generation -->
     <div id="adminResetPwdStepConfirm">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-        <div style="width:42px;height:42px;border-radius:50%;background:rgba(234,179,8,0.15);color:var(--amber,#eab308);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="admin-reset-header">
+        <div class="admin-reset-icon-wrap">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 2l-2 2m-6.5 6.5l-3 3-2.5-2.5L2 16l5 5 5-5-2.5-2.5 3-3m5.5-5.5l2-2"/>
             <circle cx="15.5" cy="8.5" r="4.5"/>
           </svg>
         </div>
-        <div>
-          <div style="font-size:1.15rem;font-weight:700;color:var(--text,#fff);">Parolni tiklash</div>
-          <div id="adminResetPwdUserSubtitle" style="font-size:13px;color:var(--text2,#aaa);">Foydalanuvchi hisobi</div>
+        <div class="admin-reset-title">Parolni tiklash</div>
+        <div class="admin-reset-user-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span id="adminResetPwdUserSubtitle" style="font-weight:600;color:var(--text,#fff);">Foydalanuvchi hisobi</span>
         </div>
       </div>
-      <p style="font-size:13.5px;color:var(--text2,#ccc);line-height:1.5;margin-bottom:16px;">
-        Foydalanuvchining joriy paroli bekor qilinadi va yangi vaqtinchalik parol beriladi. <strong>Barcha boshqa qurilmalardagi faol sessiyalar darhol bekor qilinadi.</strong>
-      </p>
-      <div style="margin-bottom:18px;">
-        <label style="display:block;font-size:12px;color:var(--text3,#888);margin-bottom:6px;">Tizim tomonidan tayyorlangan vaqtinchalik parol:</label>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input class="field" id="adminResetTempPwdInput" type="text" readonly style="font-family:var(--mono,monospace);letter-spacing:1px;font-weight:600;font-size:15px;color:var(--tg-primary-blue,#1d9bf0);background:rgba(255,255,255,0.06);margin-bottom:0;">
-          <button type="button" class="btn btn-ghost" id="adminResetRegenBtn" title="Boshqa parol yaratish" style="padding:0 12px;height:42px;flex-shrink:0;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+
+      <div class="admin-reset-warn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px;">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <div class="admin-reset-warn-text">
+          Foydalanuvchining joriy paroli bekor qilinadi va <strong>barcha boshqa qurilmalardagi faol sessiyalar darhol yopiladi.</strong>
+        </div>
+      </div>
+
+      <div class="admin-reset-pwd-box">
+        <div class="admin-reset-pwd-label">Yangi vaqtinchalik parol</div>
+        <div class="admin-reset-pwd-field">
+          <input class="admin-reset-pwd-input" id="adminResetTempPwdInput" type="text" readonly spellcheck="false">
+          <button type="button" class="admin-reset-icon-btn" id="adminResetRegenBtn" title="Boshqa parol yaratish">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
           </button>
         </div>
       </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end;">
-        <button type="button" class="btn btn-ghost" id="adminResetCancelBtn">Bekor qilish</button>
-        <button type="button" class="btn btn-danger" id="adminResetSubmitBtn">Parolni tiklash</button>
+
+      <div class="admin-reset-actions">
+        <button type="button" class="admin-reset-btn-cancel" id="adminResetCancelBtn">Bekor qilish</button>
+        <button type="button" class="admin-reset-btn-submit" id="adminResetSubmitBtn">Parolni tiklash</button>
       </div>
     </div>
 
     <!-- Step 2: Result & Copy -->
     <div id="adminResetPwdStepResult" style="display:none;text-align:center;">
-      <div style="width:54px;height:54px;border-radius:50%;background:rgba(34,197,94,0.15);color:#22c55e;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;">
+      <div style="width:56px;height:56px;border-radius:50%;background:rgba(34,197,94,0.15);color:#22c55e;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 0 24px rgba(34,197,94,0.22);">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
       </div>
-      <div style="font-size:1.2rem;font-weight:700;color:var(--text,#fff);margin-bottom:8px;">Parol muvaffaqiyatli tiklandi!</div>
-      <p style="font-size:13px;color:var(--text2,#aaa);margin-bottom:16px;">
-        Foydalanuvchiga quyidagi vaqtinchalik parolni taqdim eting. U birinchi kirishida yangi shaxsiy parol o'rnatishi shart:
+      <div style="font-size:1.25rem;font-weight:700;color:var(--text,#fff);margin-bottom:6px;">Parol muvaffaqiyatli tiklandi!</div>
+      <p style="font-size:13px;color:var(--text2,#aaa);line-height:1.5;margin-bottom:18px;">
+        Foydalanuvchiga ushbu vaqtinchalik parolni taqdim eting. U birinchi kirishida yangi shaxsiy parol o'rnatishi shart:
       </p>
-      <div style="display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(255,255,255,0.06);padding:12px 16px;border-radius:12px;margin-bottom:20px;border:1px dashed rgba(29,155,240,0.5);">
-        <span id="adminResetResultPwdText" style="font-family:var(--mono,monospace);font-size:1.25rem;font-weight:700;letter-spacing:2px;color:var(--tg-primary-blue,#1d9bf0);"></span>
-        <button type="button" class="btn btn-primary" id="adminResetCopyBtn" style="padding:6px 14px;font-size:13px;display:flex;align-items:center;gap:6px;">
+      <div class="admin-reset-result-box">
+        <span id="adminResetResultPwdText" style="font-family:var(--mono,monospace);font-size:1.25rem;font-weight:700;letter-spacing:2.5px;color:var(--tg-primary-blue,#1d9bf0);user-select:all;overflow:hidden;text-overflow:ellipsis;"></span>
+        <button type="button" class="admin-reset-copy-btn" id="adminResetCopyBtn">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           Nusxalash
         </button>
       </div>
-      <button type="button" class="btn btn-primary" id="adminResetDoneBtn" style="width:100%;height:42px;">Tushunarli</button>
+      <button type="button" class="admin-reset-done-btn" id="adminResetDoneBtn">Tayyor</button>
     </div>
   </div>
 </div>

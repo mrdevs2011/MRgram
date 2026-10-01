@@ -1,10 +1,10 @@
 # AI Context — .
 
 ## Oxirgi holat
-- Sana: 2026-10-01 22:55
-- Nima qilindi: Ro'yxatdan o'tishda (hisob yaratishda) haqiqiy emailingiz kiritiladigan "Zaxira email" (recovery email) maydoni va tushuntiruvchi popup (#recoveryEmailInfoModal) qo'shildi; Eski qizil "Parolni unutmang" ogohlantirish oynasi (#pwdWarnOverlay) butunlay olib tashlandi; Login paytida agar kiritilgan username DB da mavjud bo'lib, faqat parol xato bo'lsa "Parolni unutdingizmi?" (#forgotPasswordBtn) tugmasi chiqadi (agar username DB da bo'lmasa bu tugma chiqmaydi); "Parolni unutdingizmi?" tugmasi bosilganda 8 xonali chalkash vaqtinchalik parol (masalan, Q123eqwe kabi) yaratilib, send-recovery-email Edge Function va DB RPC (request_password_reset) orqali zaxira emailga yuboriladi va profiles.must_change_password=true belgilanadi; Foydalanuvchi ushbu 8 xonali vaqtinchalik parol bilan kirishi bilanoq tizim majburiy ravishda yangi shaxsiy parol o'rnatish oynasini (#mandatoryPwdOverlay) ochadi va yangi parol o'rnatilmaguncha app ga kiritmaydi; Profil tahririda ham zaxira email ko'rish va yangilash imkoniyati yaratildi; 021_recovery_email_and_forgot_password.sql migratsiyasi DB ga qo'llandi; send-recovery-email Edge Function deploy qilindi; Barcha smoke (14/14) va mesh (7/7) testlari muvaffaqiyatli o'tdi.
+- Sana: 2026-10-01 22:58
+- Nima qilindi: Admin parol reset modali (.admin-reset-card) premium dark-glass va mukammal tipografiya bilan butunlay qayta loyihalashtirildi: flex qisilishi va cho'zilishi tufayli g'alati ko'rinib qolgan input va refresh tugmasi to'g'rilandi; 8 xonali chalkash vaqtinchalik parol (Q123eqwe) uchun keng, aniq monospaced maydon va smooth 360-gradus aylanuvchi yangilash tugmasi yaratildi; Ogohlantirish bloki va qizil/kulrang harakat tugmalari simmetrik grid bilan chiroyli qilindi; Escape va backdrop bosilganda yopilish qo'shildi; app.css qayta yig'ildi; Smoke (14/14) va mesh (7/7) testlari muvaffaqiyatli o'tdi.
 - Hozirgi muammo/blocker: Yo'q.
-- Keyingi qadam: feat/realtime-03s va main ga commit va push qilish.
+- Keyingi qadam: main va feat/realtime-03s ga commit va push qilish.
 
 ## Muhim fayllar
 - `supabase/migrations/018_group-public-private.sql` — ommaviy va maxfiy guruhlar, username unikal tekshiruvi va invite_code

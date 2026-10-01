@@ -47,6 +47,7 @@ const CLOSERS = [
   ['recoveryEmailInfoModal', () => $('recoveryEmailInfoOkBtn')?.click()],
   ['forgotPasswordSentModal', () => $('forgotSentOkBtn')?.click()],
   ['mandatoryPwdOverlay',    () => $('mandatoryPwdSignOutBtn')?.click()],
+  ['adminResetPwdOverlay',   () => $('adminResetCancelBtn')?.click()],
 ];
 
 const zOf = el => { const z = parseInt(getComputedStyle(el).zIndex, 10); return Number.isFinite(z) ? z : 0; };

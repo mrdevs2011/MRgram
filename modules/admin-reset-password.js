@@ -15,14 +15,29 @@ import { toast } from './toast.js';
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env.js';
 import { $, lockScroll, unlockScroll } from './utils.js';
 
-/* O'qib bo'ladigan vaqtinchalik parol (0/O/1/l/I harflari yo'q) */
+/* 8 xonali chalkash vaqtinchalik parol (masalan: Q123eqwe) */
 function genTempPassword() {
-  const ABC = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
-  let s = '';
-  const rnd = new Uint32Array(10);
-  crypto.getRandomValues(rnd);
-  for (let i = 0; i < 10; i++) s += ABC[rnd[i] % ABC.length];
-  return s;
+  const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+  const lower = 'abcdefghjkmnpqrstuvwxyz';
+  const digits = '23456789';
+  const all = upper + lower + digits;
+
+  const chars = [
+    upper[Math.floor(Math.random() * upper.length)],
+    digits[Math.floor(Math.random() * digits.length)],
+    digits[Math.floor(Math.random() * digits.length)],
+    digits[Math.floor(Math.random() * digits.length)],
+    lower[Math.floor(Math.random() * lower.length)],
+    lower[Math.floor(Math.random() * lower.length)],
+    lower[Math.floor(Math.random() * lower.length)],
+    all[Math.floor(Math.random() * all.length)]
+  ];
+
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  return chars.join('');
 }
 
 async function copyText(text) {
@@ -47,6 +62,7 @@ async function copyText(text) {
 
 let _currentResetUid = null;
 let _currentTempPwd = '';
+let _regenRot = 0;
 
 export function adminResetPassword(uid, displayName) {
   if (!state.me?.isAdmin) { toast('Ruxsat yo\'q', 'error'); return; }
@@ -80,12 +96,25 @@ export function adminResetPassword(uid, displayName) {
   overlay.style.display = 'flex';
   lockScroll();
 
+  overlay.onclick = (e) => {
+    if (e.target === overlay) {
+      overlay.style.display = 'none';
+      unlockScroll();
+    }
+  };
+
   // Qayta yaratish tugmasi
   const regenBtn = $('adminResetRegenBtn');
   if (regenBtn) {
     regenBtn.onclick = () => {
       _currentTempPwd = genTempPassword();
       if (tempInput) tempInput.value = _currentTempPwd;
+      const svg = regenBtn.querySelector('svg');
+      if (svg) {
+        _regenRot += 360;
+        svg.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+        svg.style.transform = `rotate(${_regenRot}deg)`;
+      }
     };
   }
 
