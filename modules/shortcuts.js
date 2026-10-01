@@ -14,7 +14,7 @@ import { state } from './config.js';
 import { closeChatThread } from './chat.js';
 import { escLocals } from './esc-stack.js';
 
-const isOpen = el => !!el && (el.classList.contains('show') || el.classList.contains('open'));
+const isOpen = el => !!el && (el.classList.contains('show') || el.classList.contains('open') || el.id === 'chatCtxOverlay' || el.classList.contains('chat-ctx-overlay'));
 
 /* Backdrop bosilganda yopiladigan overlaylar uchun */
 const backdrop = id => () => {
@@ -26,6 +26,7 @@ const backdrop = id => () => {
 
 /* Ochiq oynalar. Qaysi biri ustda ekani z-index bo'yicha ish vaqtida aniqlanadi (closeTopmost) */
 const CLOSERS = [
+  ['chatCtxOverlay',         () => $('chatCtxOverlay')?.remove()],
   ['confirmOverlay',         () => $('confirmCancelBtn')?.click()],
   ['zoomModal',              () => $('zoomClose')?.click()],
   ['grpAddUserOverlay',      backdrop('grpAddUserOverlay')],

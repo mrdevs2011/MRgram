@@ -123,5 +123,15 @@
   - Foydalanuvchilarning mavjud sessiyalari va ma'lumotlari uzilib qolmasligi uchun `spacemr-auth` (fallback: `mrspace-auth`), `spacemr_theme`, `spacemr_emoji_recent`, `spacemr_errors`, `spacemrNotifsEnabled` avtomatik migratsiyasi ta'minlandi.
   - Yangi logotip manbasi `/svg/SpaceMR.png` yaratildi va PWA keshiga kiritildi.
 - Fayllar: index.html, 404.html, manifest.json, package.json, firebase-messaging-sw.js, README.md, scripts/build-css.mjs, CSS/*.css, app.css, modules/router.js, modules/config.js, modules/auth.js, modules/chat.js, modules/emoji-picker.js, modules/error-log.js, modules/push.js, modules/local-cache.js, modules/script.js, modules/utils.js, modules/groups.js, modules/admin-badge.js, modules/view-actions.js, modules/view-users.js, modules/no-autocomplete.js, supabase/functions/send-push/index.ts, supabase/migrations/005_stories.sql, supabase/migrations/006_stories-caption.sql, svg/SpaceMR.png, STATUS.md
+---
+### 2026-10-01 22:10
+- Qilindi:
+  1) Story va Postlardagi videolar uchun 2X tezlashtirish va 2X orqaga qaytarish: o'ng tarafga bosib turganda `2X ▶▶` indikatori bilan 2x tezlikda oldinga, chap tarafga bosib turganda `◀◀ 2X` indikatori bilan 2x silliq orqaga qaytarish. Qo'yib yuborganda 1x ijroga qaytadi. Hikoyalarda rasm bo'lsa muzlatish (freeze), qisqa bosganda navigatsiya saqlangan.
+  2) Ovoz yozish paneli (`#chatRecordBar`): "‹ Bekor qilish uchun suring" matni kiritish maydonining to'g'ri o'rtasiga (center) joylashtirildi (`.crb-cancel` flex: 1, justify-content: center).
+  3) Suhbat va guruhlar kontekst menyusi (`#chatCtxOverlay` — Suhbatni qadash / Suhbatni o'chirish): `Escape` tugmasi bosilganda darhol yopilishi ta'minlandi (`modules/chat.js` va `modules/shortcuts.js`).
+  4) Admin tomonidan hisob o'chirilishi (Instant Logout + Cascade Delete):
+     - Agar foydalanuvchi o'sha paytda saytda bo'lsa: `user-session-${uid}` Realtime broadcast orqali o'sha soniyaning o'zidayoq sessiyadan butunlay chiqarib yuboriladi (`_forceSignOut`).
+     - Agar u vaqtda saytda bo'lmagan bo'lsa: keyinchalik saytga kirganda `_fetchProfile` profil yo'qligini aniqlaydi va barcha lokal tokenlar, auth keshlar, push tokenlar tozalangan holda darhol login ekraniga qaytaradi.
+     - Jonli Supabase bazasiga `019_cascade_delete_user.sql` migratsiyasi qo'llandi: `storage.objects` (foydalanuvchining barcha rasm, video, audio fayllari), `push_tokens`, `profiles` (barcha postlar, izohlar, layklar, hikoyalar, xabarlar, chatlar va guruhlar CASCADE bilan) va `auth.users` dan to'liq tozalash.
+- Fayllar: CSS/features.css, app.css, modules/stories.js, modules/utils.js, modules/chat.js, modules/shortcuts.js, modules/auth.js, modules/view-users.js, supabase/migrations/019_cascade_delete_user.sql, supabase/migrations/README.md, STATUS.md
 - Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.
-

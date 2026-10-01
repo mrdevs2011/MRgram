@@ -1956,12 +1956,16 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 }
 
 .crb-cancel {
+  flex: 1;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   font-size: 13px;
   color: var(--text3);
-  margin-left: auto;
+  margin: 0 auto;
+  padding-right: 24px;
+  text-align: center;
   transition: color 0.15s ease;
   animation: crbSlidePrompt 1.6s infinite ease-in-out;
 }

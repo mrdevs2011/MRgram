@@ -592,7 +592,30 @@ function _stopUserWatch() {
 
 async function _forceSignOut() {
   _stopUserWatch();
-  try { await sb.auth.signOut(); } catch (_) {}
+  try { await Promise.race([removePushToken(), new Promise(r => setTimeout(r, 800))]); } catch (_) {}
+  try { clearAllCache(); } catch (_) {}
+  try { await sb.auth.signOut({ scope: 'local' }); } catch (_) {}
+  try { await sb.auth.signOut({ scope: 'global' }); } catch (_) {}
+  try {
+    Object.keys(localStorage).forEach(k => {
+      if (/supabase|spacemr|mrspace|sb-/i.test(k)) localStorage.removeItem(k);
+    });
+    Object.keys(sessionStorage).forEach(k => {
+      if (/supabase|spacemr|mrspace|sb-/i.test(k)) sessionStorage.removeItem(k);
+    });
+  } catch (_) {}
+  state.me = null;
+  _currentUid = null;
+  _shownKey = null;
+  stopChatsWatcher();
+  stopBus();
+  stopCallWatcher();
+  stopPresenceHeartbeat();
+  const app = $('app');
+  const authWrap = $('authWrap');
+  if (app) app.classList.remove('show');
+  if (authWrap) authWrap.classList.add('show');
+  hidePendingScreen();
   location.replace('/');
 }
 
@@ -636,23 +659,60 @@ async function _onLiveProfile(p, me) {
 function _startRealtimeUserWatch(me) {
   _stopUserWatch();
   const uid = me.uid;
-  const ch = sb.channel('profile-' + uid)
+
+  // 1. Jonli signal (broadcast): admin tomonidan hisob o'chirilganda o'sha zahotiyoq logout qilish
+  const sessionCh = sb.channel('user-session-' + uid)
+    .on('broadcast', { event: 'account_deleted' }, async () => {
+      console.warn('[Auth] Hisob admin tomonidan o\'chirildi');
+      await _forceSignOut();
+    })
+    .subscribe();
+
+  // 2. Postgres changes: profiles qatori o'chirilganda (DELETE) yoki o'zgarganda
+  const profileCh = sb.channel('profile-' + uid)
     .on('postgres_changes',
         { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` },
         async payload => {
-          if (payload.eventType === 'DELETE') { await _forceSignOut(); return; }
+          if (payload.eventType === 'DELETE') {
+            await _forceSignOut();
+            return;
+          }
           await _onLiveProfile(mapProfile(payload.new), me);
         })
     .subscribe();
-  const poll = setInterval(async () => {
+
+  // 3. Polling zaxira — har 15s va oyna qayta ochilganda / fokuslanganda
+  const checkProfile = async () => {
     if (!navigator.onLine) return;
     try {
       const p = await _fetchProfile(uid);
-      if (!p) await _forceSignOut();
-      else await _onLiveProfile(p, me);
-    } catch (_) { /* keyingi tikda qayta urinadi */ }
-  }, PROFILE_POLL_MS);
-  _activeUserUnsub = () => { clearInterval(poll); sb.removeChannel(ch); };
+      if (!p) {
+        await _forceSignOut();
+      } else {
+        await _onLiveProfile(p, me);
+      }
+    } catch (err) {
+      if (err?.code === 'PGRST116' || /unauthorized|not found|does not exist|invalid claim/i.test(err?.message || '')) {
+        await _forceSignOut();
+      }
+    }
+  };
+
+  const poll = setInterval(checkProfile, 15 * 1000);
+  const onFocus = () => { checkProfile(); };
+  window.addEventListener('focus', onFocus);
+  const onVisChange = () => {
+    if (document.visibilityState === 'visible') checkProfile();
+  };
+  document.addEventListener('visibilitychange', onVisChange);
+
+  _activeUserUnsub = () => {
+    clearInterval(poll);
+    window.removeEventListener('focus', onFocus);
+    document.removeEventListener('visibilitychange', onVisChange);
+    sb.removeChannel(sessionCh);
+    sb.removeChannel(profileCh);
+  };
 }
 
 /* ── Sessiya boshqaruvi ──────────────────────────────────────────────── */
@@ -710,6 +770,11 @@ async function _handleSession(session) {
       }
       _enterApp(me);
       _startRealtimeUserWatch(me);
+      return;
+    }
+    // Agar hisob o'chirilgan bo'lsa yoki auth user mavjud bo'lmasa — darhol tozalab chiqaramiz
+    if (fetchErr?.code === 'PGRST116' || /unauthorized|not found|does not exist|invalid claim/i.test(fetchErr?.message || '')) {
+      await _forceSignOut();
       return;
     }
     // Onlayn, lekin server xato berdi — ruxsatsiz kiritmaymiz

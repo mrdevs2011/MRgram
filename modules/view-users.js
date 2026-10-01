@@ -229,6 +229,24 @@ async function _confirmAction() {
 
   try {
     if (type === 'delete') {
+      // Foydalanuvchi hozir saytda bo'lsa, o'sha zahotiyoq logout qilish uchun jonli signal
+      try {
+        const kickCh = sb.channel('user-session-' + uid);
+        kickCh.subscribe(status => {
+          if (status === 'SUBSCRIBED') {
+            kickCh.send({
+              type: 'broadcast',
+              event: 'account_deleted',
+              payload: { uid }
+            }).finally(() => {
+              setTimeout(() => sb.removeChannel(kickCh), 1000);
+            });
+          }
+        });
+      } catch (e) {
+        console.warn('[view-users] Kick signal yuborilmadi:', e);
+      }
+
       await purgeUserMedia(uid);
       const { error: delErr } = await sb.rpc('admin_delete_user', { p_uid: uid });
       if (delErr) throw delErr;

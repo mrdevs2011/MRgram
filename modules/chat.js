@@ -601,7 +601,19 @@ function _openChatContextMenu(row) {
 
   document.body.appendChild(overlay);
 
-  const close = () => { overlay.remove(); };
+  const onKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      close();
+    }
+  };
+  window.addEventListener('keydown', onKeyDown);
+
+  const close = () => {
+    window.removeEventListener('keydown', onKeyDown);
+    overlay.remove();
+  };
   overlay.addEventListener('click', (e) => {
     if (e.target === overlay) close();
   });
