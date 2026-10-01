@@ -29,6 +29,7 @@ let drag = null, scrollRaf = 0; // surib belgilash holati
 const sel = new Set();
 
 const isDM = () => !state.currentChatKind || state.currentChatKind === 'dm';
+const tbl = () => isDM() ? 'messages' : 'group_messages';
 const msgOf = id => (api?.getMsgs() || []).find(m => m.id === id);
 const isMine = m => m && m.senderId === state.me?.uid;
 const rowOf = el => el?.closest?.('.chat-msg[data-msg-id]:not([data-msg-id=""])') || null;
@@ -46,7 +47,7 @@ function rowAtPoint(target, y) {
   return bd <= 3 ? best : null;
 }
 // Mobilda bitta bosish menyu ochadi — lekin bu elementlar o'z ishini qiladi (play, havola, rasm/video, avatar)
-const TAP_KEEP = 'a, button, video, audio, input, textarea, [data-cm-open], .msg-avi-btn';
+const TAP_KEEP = 'a, button, video, audio, input, textarea, [data-cm-open], .msg-avi-btn, .grp-sender-name[data-uid]';
 const coarse = () => window.matchMedia('(pointer: coarse)').matches;
 const pad = n => String(n).padStart(2, '0');
 
@@ -157,7 +158,7 @@ function remove(ids) {
   const own = ids.filter(id => isMine(msgOf(id)));
   if (!own.length) return;
   showConfirm(own.length > 1 ? `${own.length} ta xabar o‘chirilsinmi?` : 'Xabar o‘chirilsinmi?', async () => {
-    const { error } = await sb.from('messages').delete().in('id', own);
+    const { error } = await sb.from(tbl()).delete().in('id', own);
     if (error) { console.warn('[MsgMenu] delete:', error.message); toast('O‘chirilmadi', 'error'); return; }
     if (editing && own.includes(editing.id)) cancelEdit(true);
     exitSelect();
@@ -195,7 +196,7 @@ export async function commitEdit(rawText) {
   const text = (rawText || '').trim();
   if (!text) return true;
   if (text === (ed.text || '').trim()) { cancelEdit(true); return true; }
-  const { error } = await sb.from('messages')
+  const { error } = await sb.from(tbl())
     .update({ text, edited_at: new Date().toISOString() }).eq('id', ed.id);
   if (error) { console.warn('[MsgMenu] edit:', error.message); toast('Tahrirlanmadi', 'error'); return true; }
   cancelEdit(true);
@@ -391,7 +392,7 @@ export function initMsgMenu(opts) {
   // Desktop: o'ng tugma. Sensorli qurilmada brauzerning o'z menyusini bostiramiz (long-press o'zimiz ushlaymiz).
   box.addEventListener('contextmenu', e => {
     const row = rowAtPoint(e.target, e.clientY);
-    if (!row || !isDM()) return;
+    if (!row) return;
     e.preventDefault();
     if (coarse() || selMode) return;
     openMenu(row, e.clientX, e.clientY);
@@ -399,7 +400,7 @@ export function initMsgMenu(opts) {
 
   // Mobil: bosib turish -> belgilash, suring -> oradagilar ham belgilanadi
   box.addEventListener('touchstart', e => {
-    if (!isDM() || e.touches.length !== 1) return;
+    if (e.touches.length !== 1) return;
     const t = e.touches[0];
     const row = rowAtPoint(e.target, t.clientY);
     if (!row) return;
@@ -429,7 +430,7 @@ export function initMsgMenu(opts) {
   // Desktop: sichqonchani bosib turing (yoki tanlash rejimida shunchaki suring) — xuddi shu mantiq
   let ms = null, msTimer = null;
   box.addEventListener('mousedown', e => {
-    if (e.button !== 0 || coarse() || !isDM()) return;
+    if (e.button !== 0 || coarse()) return;
     if (!selMode && e.target.closest('a,button,input,textarea,audio,video,[contenteditable]')) return;
     const row = rowAtPoint(e.target, e.clientY);
     if (!row) return;
@@ -457,7 +458,7 @@ export function initMsgMenu(opts) {
     if (Date.now() < suppressUntil) { e.stopPropagation(); e.preventDefault(); return; }
     if (!selMode) {
       // Mobil: xabar (yoki uning qatori) ustiga bitta bosish -> menyu
-      if (!coarse() || !isDM()) return;
+      if (!coarse()) return;
       const r = rowAtPoint(e.target, e.clientY);
       if (!r) return;
       const keep = e.target.closest?.(TAP_KEEP);

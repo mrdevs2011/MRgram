@@ -253,7 +253,7 @@ import { busOn, inboxSend, inboxWarm, isUidOnline } from './rt-bus.js';
 import {
   startGroupsWatcher, stopGroupsWatcher, bindGroupsRealtime,
   openGroupThread, closeGroupThread,
-  sendGroupMessage, sendGroupFile,
+  sendGroupMessage, sendGroupFile, sendGroupVoice, groupTypingInput, reloadGroupThread,
   injectGroupsDOM, openCreateChoice, getGroupRows,
   getCurrentGroupId
 } from './groups.js';
@@ -763,7 +763,7 @@ function _setTyping(isTyping) {
 
 function _onChatInputTyping() {
   // Faqat 1v1 (DM) chatda ishlaydi — guruh/kanalda alohida mantiq kerak
-  if (state.currentChatKind && state.currentChatKind !== 'dm') return;
+  if (state.currentChatKind && state.currentChatKind !== 'dm') { groupTypingInput(); return; }
   _setTyping(true);
   clearTimeout(_typingTimeout);
   _typingTimeout = setTimeout(() => _setTyping(false), 2500);
@@ -1240,7 +1240,7 @@ export function _dateSepLabel(ts) {
     : `${d.getDate()}-${_UZ_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-function paintMessages(msgs) {
+function paintMessages(msgs, grp = null) {
   const box = $('chatThreadMessages');
   if (!box) return;
   _curMsgs = msgs;
@@ -1274,7 +1274,7 @@ function paintMessages(msgs) {
       // URL ni esc() orqali o'tkazmaymiz — & belgisi buziladi!
       // data-* attributga to'g'ridan-to'g'ri qo'yamiz
       const safeUrl = (voiceMedia.url || '').replace(/"/g, '&quot;');
-      const _mpName = (mine ? 'Siz' : ($('chatThreadName')?.textContent || 'Ovozli xabar')).replace(/"/g, '&quot;');
+      const _mpName = (mine ? 'Siz' : (grp ? (grp.names?.[m.senderId]?.fullName || 'Ovozli xabar') : ($('chatThreadName')?.textContent || 'Ovozli xabar'))).replace(/"/g, '&quot;');
       bubbleContent = `<div class="chat-voice-msg" data-url="${safeUrl}" data-dur="${voiceMedia.duration||0}" data-bar-count="${barCount}" data-chat-id="${state.currentChatId||''}" data-chat-uid="${state.currentChatUid||''}" data-name="${_mpName}">
         <button class="cvm-play" onclick="window._chatPlayVoice(this)">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -1333,6 +1333,13 @@ function paintMessages(msgs) {
     const isNew = !!m.id && !_seenMsgIds.has(m.id);
     if (m.id) _seenMsgIds.add(m.id);
 
+    // Guruh: har bir pufak sarlavhasida yuboruvchi ismi (yagona farq)
+    let gHead = '';
+    if (grp) {
+      const sn = mine ? 'Siz' : (grp.names?.[m.senderId]?.fullName || 'Foydalanuvchi');
+      gHead = `<div class="grp-sender-name"${mine ? '' : ` data-uid="${esc(m.senderId)}"`}>${esc(sn)}</div>`;
+    }
+
     // Kun almashgan bo'lsa — Telegram uslubidagi "Bugun"/"Kecha"/sana pill'i
     let dateSep = '';
     const prevMsg = msgs[idx - 1];
@@ -1346,7 +1353,7 @@ function paintMessages(msgs) {
 
       <div class="chat-bubble">
         <div class="chat-bubble-wrap">
-          ${bubbleContent}
+          ${gHead}${bubbleContent}
           <span class="chat-msg-meta">
             ${m.editedAt ? '<span class="chat-msg-edited">tahrirlangan</span>' : ''}<span class="chat-msg-time">${time}</span>
             ${mine ? renderTicks(m.status) : ''}
@@ -1362,6 +1369,13 @@ function paintMessages(msgs) {
   }
 
   // "theirs" xabarlaridagi avatar bosilganda profil ochamiz
+  box.querySelectorAll('.grp-sender-name[data-uid]').forEach(el => {
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', async () => {
+      const { openUserProfileModal } = await import('./profile.js');
+      openUserProfileModal(el.dataset.uid);
+    });
+  });
   box.querySelectorAll('.msg-avi-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const uid = btn.dataset.uid;
@@ -1385,6 +1399,13 @@ function paintMessages(msgs) {
   // qidirib topilgan tugma/waveform'ga qayta bog'laymiz.
   _reattachActiveVoiceUI(box);
   msgMenuAfterPaint();
+}
+
+/** Guruh thread'i shu yagona painter bilan chiziladi (DM bilan bir xil UI/mantiq) */
+export function paintGroupThread(msgs, names) { paintMessages(msgs, { names: names || {} }); }
+/** Guruh almashganda "yangi xabar" animatsiyasi hisobini boshidan boshlash */
+export function resetSeenMsgs(key) {
+  if (_seenMsgIdsChatId !== key) { _seenMsgIds = new Set(); _seenMsgIdsChatId = key; }
 }
 
 /**
@@ -1895,6 +1916,7 @@ function _stopPulse() {
 }
 
 async function sendVoiceMessage(blob, duration) {
+  if (state.currentChatKind && state.currentChatKind !== 'dm') return sendGroupVoice(blob, duration);
   if (!state.currentChatId || !state.me) return;
   if (!rateOk('msg', 8, 10000)) return;
   const chatId   = state.currentChatId;
@@ -2014,7 +2036,7 @@ async function sendChatFile() {
 
 
 /* ── Pending bubble (upload progress) ───────────────────────────────── */
-function _showPendingBubble(id, type, size, name = '', mime = '') {
+export function _showPendingBubble(id, type, size, name = '', mime = '') {
   const box = $('chatThreadMessages');
   if (!box) return;
   const szTxt = size ? fmtSz(size) : '';
@@ -2051,20 +2073,20 @@ function _showPendingBubble(id, type, size, name = '', mime = '') {
   box.scrollTop = box.scrollHeight;
 }
 
-function _updatePendingProgress(id, pct) {
+export function _updatePendingProgress(id, pct) {
   const fill = document.getElementById(id + '_fill');
   const lbl  = document.getElementById(id + '_pct');
   if (fill) fill.style.width = pct + '%';
   if (lbl)  lbl.textContent  = Math.round(pct) + '%';
 }
 
-function _removePendingBubble(id) {
+export function _removePendingBubble(id) {
   const el = document.getElementById(id);
   if (el) el.remove();
 }
 
 /* ── XHR upload with progress (Supabase direct upload) ─────────────── */
-async function uploadViaControllerProgress(file, folder, onProgress) {
+export async function uploadViaControllerProgress(file, folder, onProgress) {
   const { data: { session } } = await sb.auth.getSession();
   const token = session?.access_token;
   if (!token || !state.me) throw new Error('Tizimga kirilmagan');
@@ -2106,7 +2128,7 @@ $('chatThreadBack').onclick = closeChatThread;
 initMsgMenu({
   box: $('chatThreadMessages'),
   getMsgs: () => _curMsgs,
-  reload: () => { if (_reloadThread) _reloadThread(); },
+  reload: () => { if (state.currentChatKind && state.currentChatKind !== 'dm') reloadGroupThread(); else if (_reloadThread) _reloadThread(); },
   syncInput: updateVoiceSendBtn,
   getUsers: async () => (_usersCache && _usersCache.length) ? _usersCache : await _fetchChatUsers(),
   chatIdFor: async uid => {

@@ -27,7 +27,10 @@ import { rateOk }                                   from './rate-limit.js';
 import { emojiOnlyClass }                            from './emoji-only.js';
 import { openRtGroup }                              from './rt-chat.js';
 import { busOn, groupJoin, groupInboxSend, isUidOnline } from './rt-bus.js';
-import { updateVoiceSendBtn, _toDateSafe, _isSameDay, _dateSepLabel } from './chat.js';
+import { updateVoiceSendBtn, _toDateSafe, _isSameDay, _dateSepLabel,
+         paintGroupThread, resetSeenMsgs, _showPendingBubble, _updatePendingProgress, _removePendingBubble,
+         uploadViaControllerProgress } from './chat.js';
+import { isEditing, commitEdit }                    from './msg-menu.js';
 
 /* ─────────────────────────────────────────────────────────────────────
    STATE
@@ -312,8 +315,22 @@ export async function openGroupThread(groupId) {
   // Tezkor yo'l: a'zolar bilan to'liq mesh (WebRTC DataChannel); baza baribir asosiy
   if (_gRt) { _gRt.close(); _gRt = null; }
   _gRt = openRtGroup(groupId, (_currentGroupData || groupData)?.members || [], {
-    onMsg: (m) => _gIncoming(groupId, m),
+    onMsg: (m) => { _gOnTyping(false, m.from); _gIncoming(groupId, m); },
+    onTyping: (v, from) => _gOnTyping(v, from),
+    onRetract: (id) => {
+      if (!_gPending.has(id) || _currentGroupId !== groupId) return;   // faqat hali bazada tasdiqlanmagan nusxa
+      _gPending.delete(id);
+      _gMsgs = _gMsgs.filter(x => x.id !== id);
+      paintGroupMessages(_gMsgs, _currentGroupData);
+    },
   });
+  _gTyp.forEach(t => clearTimeout(t)); _gTyp.clear(); _gIamTyping = false;
+  resetSeenMsgs('g:' + groupId);
+  // Yuboruvchi ismlarini oldindan isitamiz (birinchi chizishda "Foydalanuvchi" bo'lib qolmasin)
+  _profilesByIds((_currentGroupData || groupData)?.members || []).then(r => {
+    Object.assign(_senderCache, r);
+    if (_currentGroupId === groupId && _gLoaded) paintGroupMessages(_gMsgs, _currentGroupData);
+  }).catch(() => {});
   const loadMsgs = async () => {
     const { data, error } = await sb.from('group_messages').select('*')
       .eq('group_id', groupId).order('created_at', { ascending: false }).limit(1000);
@@ -371,6 +388,7 @@ export async function openGroupThread(groupId) {
 }
 
 export function closeGroupThread() {
+  _gTyp.forEach(t => clearTimeout(t)); _gTyp.clear(); clearTimeout(_gTypTimer); _gSetTyping(false);
   if (_groupThreadUnsub) { _groupThreadUnsub(); _groupThreadUnsub = null; }
 
   // Restore call buttons
@@ -417,103 +435,68 @@ export function closeGroupThread() {
 /* ─────────────────────────────────────────────────────────────────────
    PAINT GROUP MESSAGES (reuses same bubble structure as DM)
    ───────────────────────────────────────────────────────────────────── */
+const _senderCache = {};   // uid → profil (ism/avatar) — har chizishda tarmoqqa bormaslik uchun
+let _paintSeq = 0;
 async function paintGroupMessages(msgs, groupData) {
-  const box = $('chatThreadMessages');
-  if (!box) return;
-
-  // Build a cache of sender names for non-DM display
-  const senderIds = [...new Set(msgs.map(m => m.senderId).filter(Boolean))];
-  const senderMap = await _profilesByIds(senderIds);
-
-  if (!msgs.length) {
-    box.innerHTML = `<div class="empty pt-30vh tac">
-      <div class="fs-14px fw-600 c-text mb-6px">Hozircha xabarlar yo'q</div>
-      <div class="fs-13px c-text2">Birinchi xabar yuboring!</div>
-    </div>`;
-    return;
-  }
-
-  box.innerHTML = msgs.map((m, idx) => {
-    const mine   = m.senderId === state.me?.uid;
-    const sender = senderMap[m.senderId] || {};
-    const sName  = sender.fullName || 'Foydalanuvchi';
-    const time   = fmtTime(m.createdAt);
-    let bubbleContent = '';
-    let emoCls = '';
-
-    if (m.type === 'file') {
-      const fname  = esc(m.fileName || 'file');
-      const fsz    = m.fileSize ? fmtSz(m.fileSize) : '';
-      const safeUrl = (m.mediaUrl || '').replace(/"/g, '&quot;');
-      const _ext   = (m.fileName || '').toLowerCase().split('.').pop() || '';
-      const _mime  = (m.mediaType || '').toLowerCase();
-      const _isImg = _mime.startsWith('image') || ['jpg','jpeg','png','gif','webp','svg','avif'].includes(_ext);
-      const _isVid = _mime.startsWith('video') || ['mp4','mov','avi','mkv','webm'].includes(_ext);
-      if (_isImg) {
-        bubbleContent = `<div class="cfm-media-wrap"><a href="${safeUrl}" target="_blank" rel="noopener" class="cfm-img-link"><img class="cfm-img-preview" src="${safeUrl}" alt="${fname}" loading="lazy"></a>${fsz?`<div class="cfm-media-meta">${fname} · ${fsz}</div>`:''}</div>`;
-      } else if (_isVid) {
-        bubbleContent = `<div class="cfm-media-wrap"><video class="cfm-video-preview" src="${safeUrl}" controls playsinline preload="metadata"></video>${fsz?`<div class="cfm-media-meta">${fname} · ${fsz}</div>`:''}</div>`;
-      } else {
-        bubbleContent = `<div class="chat-file-msg"><div class="cfm-info"><a class="cfm-name cfm-name--link" href="${safeUrl}" target="_blank">${fname}</a>${fsz?`<div class="cfm-size">${fsz}</div>`:''}</div><a class="cfm-dl" href="${safeUrl}" download="${fname}" target="_blank"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></a></div>`;
-      }
-    } else {
-      bubbleContent = `<div class="chat-bubble-text">${renderMarkdown(m.text || '')}</div>`;
-      emoCls = emojiOnlyClass(m.text);
-    }
-
-    const senderAvi = sender.avatar || defAvi(sName);
-    const senderLine = !mine
-      ? `<div class="grp-sender-name">${esc(sName)}</div>`
-      : '';
-
-    let dateSep = '';
-    const prevMsg = msgs[idx - 1];
-    const curDate  = _toDateSafe(m.createdAt);
-    const prevDate = prevMsg ? _toDateSafe(prevMsg.createdAt) : null;
-    if (curDate && (!prevDate || !_isSameDay(curDate, prevDate))) {
-      dateSep = `<div class="chat-date-sep"><span>${_dateSepLabel(m.createdAt)}</span></div>`;
-    }
-
-    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${emoCls}">
-      ${!mine ? `<button class="msg-avi-btn" data-uid="${esc(m.senderId)}" title="${esc(sName)} profilini ko'rish">
-        <img src="${esc(senderAvi)}" onerror="this.style.display='none'">
-      </button>` : ''}
-      <div class="chat-bubble">
-        <div class="chat-bubble-wrap">
-          ${senderLine}
-          ${bubbleContent}
-          <span class="chat-msg-meta">
-            <span class="chat-msg-time">${time}</span>
-          </span>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-
-  setTimeout(() => { box.scrollTop = box.scrollHeight; }, 60);
-
-  // "theirs" xabarlaridagi avatar bosilganda profil ochamiz
-  box.querySelectorAll('.msg-avi-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const uid = btn.dataset.uid;
-      if (!uid || uid === state.me?.uid) return;
-      const { openUserProfileModal } = await import('./profile.js');
-      openUserProfileModal(uid);
-    });
-  });
+  if (!$('chatThreadMessages')) return;
+  // DM bilan BIR XIL painter (chat.js paintMessages); yagona farq — pufak sarlavhasida yuboruvchi ismi.
+  // Avval keshdagi ismlar bilan darhol chizamiz, yetishmaganlari kelgach qayta chizamiz.
+  paintGroupThread(msgs, _senderCache);
+  const missing = [...new Set(msgs.map(m => m.senderId).filter(u => u && !_senderCache[u]))];
+  if (!missing.length) return;
+  const seq = ++_paintSeq;
+  const got = await _profilesByIds(missing);
+  Object.assign(_senderCache, got);
+  missing.forEach(u => { if (!_senderCache[u]) _senderCache[u] = { fullName: 'Foydalanuvchi', avatar: '' }; });
+  if (seq === _paintSeq && _currentGroupId && _gLoaded) paintGroupThread(_gMsgs, _senderCache);
 }
+
+/* ── "Yozmoqda..." (DM bilan bir xil, sarlavhada; guruhda kim yozayotgani) ── */
+const _gTyp = new Map();   // uid → timer
+let _gIamTyping = false, _gTypTimer = null;
+function _gPaintSub() {
+  const el = $('chatTypingStatus');
+  if (!el || !_currentGroupData) return;
+  if (_gTyp.size) {
+    const names = [..._gTyp.keys()].map(u => (_senderCache[u]?.fullName || 'Kimdir').split(' ')[0]);
+    el.textContent = (names.length > 2 ? `${names.length} kishi` : names.join(', ')) + ' yozmoqda...';
+    el.classList.add('online');
+  } else {
+    el.textContent = `${(_currentGroupData.members || []).length} ta a'zo`;
+    el.classList.remove('online');
+  }
+}
+function _gOnTyping(v, from) {
+  clearTimeout(_gTyp.get(from));
+  if (v) _gTyp.set(from, setTimeout(() => { _gTyp.delete(from); _gPaintSub(); }, 5000));
+  else _gTyp.delete(from);
+  _gPaintSub();
+}
+function _gSetTyping(v) {
+  if (_gIamTyping === v) return;
+  _gIamTyping = v;
+  try { _gRt?.sendTyping(v); } catch (_) {}
+}
+export function groupTypingInput() {
+  _gSetTyping(true);
+  clearTimeout(_gTypTimer);
+  _gTypTimer = setTimeout(() => _gSetTyping(false), 2500);
+}
+export function reloadGroupThread() { _reloadGroupThread && _reloadGroupThread(); }
 
 /* ─────────────────────────────────────────────────────────────────────
    SEND MESSAGE TO GROUP / CHANNEL
    ───────────────────────────────────────────────────────────────────── */
 export async function sendGroupMessage() {
   if (!_currentGroupId || !state.me) return;
+  if (isEditing()) { await commitEdit($('chatThreadInput')?.value); return; }
   const inp  = $('chatThreadInput');
   const text = inp?.value?.trim();
   if (!text) return;
   if (!rateOk('msg', 8, 10000)) return;
   inp.value = '';
   updateVoiceSendBtn();
+  clearTimeout(_gTypTimer); _gSetTyping(false);
 
   const groupId = _currentGroupId;
   const groupData = _currentGroupData;
@@ -538,6 +521,7 @@ export async function sendGroupMessage() {
     console.error('[Groups] send failed:', err);
     toast('Xabar yuborilmadi', 'error');
     _gPending.delete(mid);
+    _gRt?.retract(mid);
     _gMsgs = _gMsgs.filter(x => x.id !== mid);
     if (_currentGroupId === groupId) paintGroupMessages(_gMsgs, groupData);
     inp.value = text;
@@ -548,13 +532,13 @@ export async function sendGroupMessage() {
 
 export async function sendGroupFile(file) {
   if (!_currentGroupId || !state.me || !file) return;
-  const groupId   = _currentGroupId;
-  const groupData = _currentGroupData;
-  const members   = groupData?.members || [];
-
-  toast('Fayl yuklanmoqda...', 'info', 3000);
+  const groupId = _currentGroupId;
+  // DM bilan bir xil: yuklanish progressli pufak
+  const pendingId = 'pending_file_' + Date.now();
+  _showPendingBubble(pendingId, 'file', file.size, file.name, file.type);
   try {
-    const result = await uploadViaController(file, 'group-files');
+    const result = await uploadViaControllerProgress(file, 'group-files', pct => _updatePendingProgress(pendingId, pct));
+    _removePendingBubble(pendingId);
     const { error } = await sb.from('group_messages').insert({
       group_id: groupId, sender_id: state.me.uid, type: 'file',
       media_path: result.path, media_type: file.type || null,
@@ -562,10 +546,36 @@ export async function sendGroupFile(file) {
     });
     if (error) throw error;
     _reloadGroupThread && _reloadGroupThread();
-    toast('Fayl yuborildi', 'success');
   } catch (err) {
     console.error('[Groups] file send failed:', err);
+    _removePendingBubble(pendingId);
     toast('Fayl yuborilmadi', 'error');
+  }
+}
+
+/** Ovozli xabar (DM bilan bir xil oqim). Bazada `group_messages.duration` va type='voice' kerak: supabase/unfulfilled/016_group-voice.sql */
+export async function sendGroupVoice(blob, duration) {
+  if (!_currentGroupId || !state.me || !blob) return;
+  if (!rateOk('msg', 8, 10000)) return;
+  const groupId = _currentGroupId;
+  const pendingId = 'pending_voice_' + Date.now();
+  _showPendingBubble(pendingId, 'voice', blob.size);
+  try {
+    const ext = blob.type.includes('ogg') ? 'ogg' : 'webm';
+    const file = new File([blob], `voice_${Date.now()}.${ext}`, { type: blob.type });
+    const result = await uploadViaControllerProgress(file, 'chat-voice', pct => _updatePendingProgress(pendingId, pct));
+    _removePendingBubble(pendingId);
+    const { error } = await sb.from('group_messages').insert({
+      group_id: groupId, sender_id: state.me.uid, type: 'voice',
+      media_path: result.path, media_type: blob.type || null,
+      duration: Math.round(duration || 0),
+    });
+    if (error) throw error;
+    _reloadGroupThread && _reloadGroupThread();
+  } catch (err) {
+    console.error('[Groups] voice send failed:', err);
+    _removePendingBubble(pendingId);
+    toast('Ovozli xabar yuborilmadi', 'error');
   }
 }
 
