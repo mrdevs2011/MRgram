@@ -465,7 +465,7 @@
 .ufb-pct { font-size: 11px; font-weight: 600; color: var(--blue); flex-shrink: 0; min-width: 32px; text-align: right; }
 /* ═══════════════════════════════════════════ THEME AWARE ENHANCEMENTS ══════════════════════════════════════... */
 /* Dark mode: stronger borders and shadows */
-[data-theme="dark"] .post:hover { box-shadow: 0 4px 20px var(--pal-black); }
+[data-theme="dark"] .post:hover { box-shadow: none; }
 /* Light mode: softer shadows */
 /* box-shadow o'chirildi — borderless.css:43 (.post guruhida) bir xil specificity bilan keyinroq yuklanadi, bo... */
 /* Video controls - theme aware */
@@ -3901,7 +3901,7 @@ body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
 .field:focus, input:focus, textarea:focus { background: var(--bg); border-color: var(--link); box-shadow: none; border-radius: 12px; }
 /* 4. Post: kartasiz qator + ingichka ajratgich (X uslubi) */
 .post, [data-theme="dark"] .post { background: transparent; border: none; border-bottom: 1px solid var(--line); border-radius: 0; }
-.post:hover { background: var(--bg3); border-color: var(--line); }
+.post:hover { border-color: var(--line); }
 /* 5. Header va navigatsiya: ingichka chiziq */
 .app-hdr, [data-theme="dark"] .app-hdr { background: var(--bg); border-bottom: 1px solid var(--line); }
 @media (max-width: 1099px) {
@@ -4064,7 +4064,7 @@ nav.bot-nav .nav-btn:hover, nav.bot-nav .sb-search-toggle:hover, nav.bot-nav .sb
 nav.bot-nav #createBtn.nav-center-btn { background: var(--x-blue); }
 nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 /* Post qatori: X hover va harakat ranglari */
-.post:hover, [data-theme] .post:hover { background: var(--hover); border-color: var(--line); }
+.post:hover, [data-theme] .post:hover { border-color: var(--line); }
 .act-btn svg { border-radius: 0; }
 .act-btn:hover { background: none; color: var(--x-blue); }
 .act-btn:hover svg { background: none; box-shadow: none; }
