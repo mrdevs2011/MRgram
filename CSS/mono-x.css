@@ -112,13 +112,13 @@ a { color: var(--link); }
 @media (min-width: 1100px) {
   :root { --center-w: 600px; }
   #homeView.on, #followingView.on { padding-top: 0; padding-bottom: 0; }
-  .feed, #followingView .feed { max-width: var(--center-w); padding: 0; border-left: 1px solid var(--line); border-right: 1px solid var(--line); min-height: 100dvh; }
+  .feed, #followingView .feed { max-width: var(--center-w); padding: 0; min-height: 100dvh; }
 }
 /* Keng ekran (≥1260px): sidebar + markaz + o'ng ustun, butun guruh markazda */
 @media (min-width: 1260px) {
   :root { --gutter: max(0px, calc((100vw - 1240px) / 2)); --sidebar: calc(260px + var(--gutter)); --content-left: var(--sidebar); }
   nav.bot-nav { padding-left: calc(12px + var(--gutter)); }
-  .feed, #followingView .feed { margin: 0; border-left: none; }
+  .feed, #followingView .feed { margin: 0; }
 }
 /* O'ng ustun tarkibi */
 /* ═══════════════════════════════════════════════════════════════════════ Header YO'Q (mobil ham) + Post: X u... */
