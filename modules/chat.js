@@ -1906,6 +1906,7 @@ function paintMessages(msgs, grp = null) {
       const _mime = (m.mediaType || '').toLowerCase();
       const _isImage = _mime.startsWith('image') || ['jpg','jpeg','png','gif','webp','svg','avif'].includes(_ext);
       const _isVideo = _mime.startsWith('video') || ['mp4','mov','avi','mkv','webm'].includes(_ext);
+      const captionHtml = m.text ? `<div class="chat-bubble-text cfm-caption">${renderMarkdown(m.text)}</div>` : '';
 
       if (_isImage) {
         /* ── Image preview inline ── */
@@ -1914,6 +1915,7 @@ function paintMessages(msgs, grp = null) {
             <img class="cfm-img-preview" src="${safeUrl}" alt="${fname}" loading="lazy" onload="this.classList.add('loaded')">
           </a>
           ${fsz ? `<div class="cfm-media-meta">${fname} · ${fsz}</div>` : ''}
+          ${captionHtml}
         </div>`;
       } else if (_isVideo) {
         /* ── Video preview inline ── */
@@ -1922,18 +1924,22 @@ function paintMessages(msgs, grp = null) {
             <a href="${safeUrl}" target="_blank" rel="noopener">${fname}</a>
           </video>
           ${fsz ? `<div class="cfm-media-meta">${fname} · ${fsz}</div>` : ''}
+          ${captionHtml}
         </div>`;
       } else {
         /* ── Other files — name is clickable link ── */
-        bubbleContent = `<div class="chat-file-msg">
-          <div class="cfm-icon">${getChatFileIcon(m.fileName, m.mediaType)}</div>
-          <div class="cfm-info">
-            <a class="cfm-name cfm-name--link" href="${safeUrl}" target="_blank" rel="noopener" title="Ochish">${fname}</a>
-            ${fsz ? `<div class="cfm-size">${fsz}</div>` : ''}
+        bubbleContent = `<div class="cfm-file-wrap">
+          <div class="chat-file-msg">
+            <div class="cfm-icon">${getChatFileIcon(m.fileName, m.mediaType)}</div>
+            <div class="cfm-info">
+              <a class="cfm-name cfm-name--link" href="${safeUrl}" target="_blank" rel="noopener" title="Ochish">${fname}</a>
+              ${fsz ? `<div class="cfm-size">${fsz}</div>` : ''}
+            </div>
+            <a class="cfm-dl" href="${safeUrl}" download="${fname}" target="_blank" title="Yuklab olish">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            </a>
           </div>
-          <a class="cfm-dl" href="${safeUrl}" download="${fname}" target="_blank" title="Yuklab olish">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-          </a>
+          ${captionHtml}
         </div>`;
       }
     } else {
@@ -2627,19 +2633,24 @@ export function updateVoiceSendBtn() {
   if (send) send.style.display = showSend ? ''      : 'none';
 }
 
-async function sendChatFile() {
-  if (!_chatSelFile || !state.me) return;
+async function sendChatFile(fileOverride = null, captionOverride = null) {
+  const file = fileOverride || _chatSelFile;
+  if (!file || !state.me) return;
   if (!rateOk('file', 5, 30000)) return;
+
+  const caption = (captionOverride !== null && captionOverride !== undefined
+    ? captionOverride
+    : ($('chatThreadInput')?.value || '')
+  ).trim();
+
   // Route to group file send if in group mode
   if (state.currentChatKind && state.currentChatKind !== 'dm') {
-    const file = _chatSelFile;
     clearChatFile();
-    return sendGroupFile(file);
+    return sendGroupFile(file, caption);
   }
   if (!state.currentChatId) return;
   const chatId   = state.currentChatId;
   const otherUid = state.currentChatUid;
-  const file = _chatSelFile;
 
   clearChatFile();
 
@@ -2657,18 +2668,23 @@ async function sendChatFile() {
       chat_id: chatId, sender_id: state.me.uid, type: 'file',
       media_path: result.path, media_type: file.type || null,
       file_name: file.name, file_size: file.size,
+      text: caption || null,
     });
     if (error) throw error;
+    const previewText = caption ? ('📎 ' + caption) : ('📎 ' + (file.name || 'Fayl'));
     if (_latestChatMap[otherUid]) {
-      _latestChatMap[otherUid].lastMessage = '📎 ' + (file.name || 'Fayl');
+      _latestChatMap[otherUid].lastMessage = previewText.slice(0, 120);
       _latestChatMap[otherUid].lastMessageAt = Date.now();
       _latestChatMap[otherUid].lastSenderId = state.me.uid;
     }
+    inboxSend(otherUid, { chatId, from: state.me.uid, id: pendingId, text: previewText.slice(0, 120), ts: Date.now() });
     _reloadThread && _reloadThread();
 
   } catch (err) {
     console.error('File send failed:', err);
     _removePendingBubble(pendingId);
+    const inp = $('chatThreadInput');
+    if (inp && caption) { inp.value = caption; updateVoiceSendBtn(); }
     toast('Fayl yuborilmadi', 'error');
   }
 }
@@ -2842,10 +2858,14 @@ document.addEventListener('chat:attach-file', e => {
 
 async function handleSendAction() {
   if (_chatSelFile) {
-    await sendChatFile();
-    // If there's also text, send it after
-    const text = $('chatThreadInput').value.trim();
-    if (text) await sendChatMessage();
+    const inp = $('chatThreadInput');
+    const text = inp ? inp.value.trim() : '';
+    if (inp) {
+      inp.value = '';
+      inp.style.height = '';
+    }
+    updateVoiceSendBtn();
+    await sendChatFile(null, text);
   } else {
     await sendChatMessage();
   }

@@ -76,3 +76,15 @@
   - Supabase CLI orqali `016_group-voice.sql` yurgizildi: `group_messages.duration` ustuni qo'shildi, `group_messages_type_check` 'voice' ga kengaytirildi va `on_group_message_insert()` triggeri ovozli xabar uchun `last_message = 'Ovozli xabar'` yozadigan qilindi.
   - Migratsiya `supabase/migrations/016_group-voice.sql` ga ko'chirildi, `unfulfilled/` bo'shatildi.
 - Fayllar: supabase/migrations/016_group-voice.sql, supabase/migrations/README.md, supabase/unfulfilled/CHECKLIST.md, STATUS.md
+
+---
+### 2026-10-01 18:30
+- Qilindi:
+  - Fayl va uning tagidagi matn (caption) tarqoq 2 ta xabar bo'lib emas, bitta xabarda yuborilishi ta'minlandi.
+  - `handleSendAction()` fayl tanlanganda matnni alohida matnli xabar qilib yubormasdan, `sendChatFile(null, text)` ga caption qilib uzatadi va inputni tozalaydi.
+  - `sendChatFile()` va `sendGroupFile()` funksiyalari `caption` parametrini qabul qilib, DB (`messages` va `group_messages`) ga `text: caption || null` sifatida saqlaydi, peer inbox va suhbatlar ro'yxatida prevyuni `📎 <caption matni>` qilib yangilaydi.
+  - `paintMessages()` da fayl (rasm, video va boshqa hujjatlar) pufagi ichida agar `m.text` bo'lsa, fayl ostida `.cfm-caption` matn bloki chiziladi.
+  - `CSS/features.css` ga `.cfm-caption` va `.cfm-file-wrap` stillari qo'shildi va `app.css` qayta yig'ildi.
+  - Supabase jonli bazasida `on_message_insert()` va `on_group_message_insert()` triggerlari yangilangan (migratsiya: `017_file-caption.sql`).
+- Fayllar: modules/chat.js, modules/groups.js, CSS/features.css, app.css, supabase/migrations/017_file-caption.sql, STATUS.md
+- Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.

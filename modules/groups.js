@@ -604,9 +604,10 @@ export async function sendGroupMessage() {
   }
 }
 
-export async function sendGroupFile(file) {
+export async function sendGroupFile(file, caption = '') {
   if (!_currentGroupId || !state.me || !file) return;
   const groupId = _currentGroupId;
+  const captionText = (typeof caption === 'string' ? caption : '').trim();
   // DM bilan bir xil: yuklanish progressli pufak
   const pendingId = 'pending_file_' + Date.now();
   _showPendingBubble(pendingId, 'file', file.size, file.name, file.type);
@@ -617,12 +618,17 @@ export async function sendGroupFile(file) {
       group_id: groupId, sender_id: state.me.uid, type: 'file',
       media_path: result.path, media_type: file.type || null,
       file_name: file.name, file_size: file.size,
+      text: captionText || null,
     });
     if (error) throw error;
+    const previewText = captionText ? ('📎 ' + captionText) : ('📎 ' + (file.name || 'Fayl'));
+    groupInboxSend(groupId, { gid: groupId, from: state.me.uid, id: pendingId, text: previewText.slice(0, 120), ts: Date.now() });
     _reloadGroupThread && _reloadGroupThread();
   } catch (err) {
     console.error('[Groups] file send failed:', err);
     _removePendingBubble(pendingId);
+    const inp = $('chatThreadInput');
+    if (inp && captionText) { inp.value = captionText; updateVoiceSendBtn(); }
     toast('Fayl yuborilmadi', 'error');
   }
 }

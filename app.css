@@ -1668,6 +1668,15 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* mine bubble — rasmlar uchun padding olib tashlanadi */
 .chat-msg.mine .chat-bubble:has(.cfm-media-wrap) { padding: 4px 4px 6px; }
 .chat-msg.theirs .chat-bubble:has(.cfm-media-wrap) { padding: 4px 4px 6px; }
+/* File caption & container */
+.cfm-file-wrap { display: flex; flex-direction: column; gap: 4px; min-width: 180px; max-width: 260px; }
+.cfm-caption {
+  font-size: 14.5px;
+  line-height: 1.4;
+  word-break: break-word;
+  padding: 4px 6px 2px;
+}
+.cfm-caption p { margin: 0; }
 /* ═══════════════════════════════════════════════════════════════════════ VOICE BTN — amplitude-based smooth... */
 .chat-voice-btn.recording {
   border: 0.5px solid #5F5F63;
