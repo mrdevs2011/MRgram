@@ -769,8 +769,13 @@ async function initiateCall(isVideo) {
     }
     if (!_pc) return;
 
-    if (data.answer && _pc.signalingState === 'have-local-offer') {
-      await _pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+    // FAQAT birinchi (boshlang'ich) answer uchun. Aks holda qo'ng'iroq ichida video yoqilganda
+    // (signalingState yana 'have-local-offer') eski answer qayta qo'llanib xato berardi va
+    // _handleRenego (video_answer) hech qachon ishlamay qolardi.
+    if (data.answer && !_pc.remoteDescription && _pc.signalingState === 'have-local-offer') {
+      try {
+        await _pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+      } catch (e) { console.error('[Call] answer qo\'llanmadi:', e); }
     }
 
     // Callee ICE candidates
