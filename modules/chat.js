@@ -2023,6 +2023,13 @@ $('chatFileInput')?.addEventListener('change', e => {
   if (f) setChatFile(f);
 });
 $('cfpRemove')?.addEventListener('click', clearChatFile);
+// Ctrl+V / drag-drop (upload.js) — fayl suhbatga biriktiriladi (xuddi "skrepka" bilan tanlangandek), Enter/yuborish bilan ketadi
+document.addEventListener('chat:attach-file', e => {
+  const f = e.detail?.file;
+  if (!f || !$('chatFilePreview')) return;
+  setChatFile(f);
+  $('chatThreadInput')?.focus({ preventScroll: true });
+});
 
 async function handleSendAction() {
   if (_chatSelFile) {

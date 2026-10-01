@@ -601,11 +601,22 @@ $('uploadDrop').addEventListener('drop', e => {
   const f = e.dataTransfer.files[0]; if (f) pickFile(f);
 });
 
+/* Suhbat (chat) ochiq bo'lsa, paste / drag-drop qilingan fayl post composer'iga emas, shu suhbatga biriktiriladi.
+   Chat ustida boshqa oyna (profil, izoh, sozlamalar...) ochiq bo'lsa — oddiy holat (composer). */
+const _isOpenEl = id => { const el = $(id); return !!el && (el.classList.contains('show') || el.classList.contains('open')); };
+const _chatCtx = () => _isOpenEl('chatThreadModal') && ![
+  'uploadOverlay', 'userProfileModal', 'detailModal', 'settingsOverlay', 'profileEditOverlay',
+  'cmtModal', 'zoomModal', 'grpInfoOverlay', 'grpEditOverlay', 'confirmOverlay',
+].some(_isOpenEl);
+const _toChat = f => document.dispatchEvent(new CustomEvent('chat:attach-file', { detail: { file: f } }));
+
 window.addEventListener('paste', e => {
   for (const item of (e.clipboardData?.items || [])) {
     if (item.kind === 'file') {
       const f = item.getAsFile();
-      if (f) { pickFile(f); $('uploadOverlay').classList.add('show'); lockScroll(); break; }
+      if (!f) continue;
+      if (_chatCtx()) { e.preventDefault(); _toChat(f); break; }
+      pickFile(f); $('uploadOverlay').classList.add('show'); lockScroll(); break;
     }
   }
 });
@@ -638,6 +649,7 @@ window.addEventListener('drop', e => {
   if (!state.me) return;
   const f = e.dataTransfer.files[0];
   if (!f) return;
+  if (_chatCtx()) { _toChat(f); return; } // suhbat ochiq — post composer ochilmaydi
   if (!$('uploadOverlay').classList.contains('show')) openComposer();
   pickFile(f);
   setTimeout(() => $('captionInput')?.focus({ preventScroll: true }), 50);
