@@ -9,7 +9,11 @@ export function rateOk(bucket, max, windowMs, silent = false) {
   const now = Date.now();
   const list = (_hits[bucket] = (_hits[bucket] || []).filter(t => now - t < windowMs));
   if (list.length >= max) {
-    if (!silent) toast('Juda tez yuboryapsiz, bir oz kuting', 'error');
+    if (!silent) {
+      const oldest = list[0];
+      const remaining = Math.ceil((windowMs - (now - oldest)) / 1000);
+      toast(`Juda tez yuboryapsiz, ${remaining}s kuting`, 'error');
+    }
     return false;
   }
   list.push(now);
