@@ -248,6 +248,7 @@ import { initMsgMenu, msgMenuAfterPaint, msgMenuReset, isEditing, commitEdit } f
 import { rateOk }           from './rate-limit.js';
 import { initEmojiPicker } from './emoji-picker.js';
 import { emojiOnlyClass } from './emoji-only.js';
+import { openRt } from './rt-chat.js';
 import {
   startGroupsWatcher, stopGroupsWatcher, bindGroupsRealtime,
   openGroupThread, closeGroupThread,
@@ -297,6 +298,62 @@ async function _refreshUsersPresence() {
 
 let _threadUnsub = null;
 let _reloadThread = null;
+
+/* ── Tezkor yo'l (rt-chat.js): WebRTC DataChannel / broadcast ─────────────
+ * _rtLocal — hali DB'dan tasdiqlanmagan (optimistik yoki p2p kelgan) xabarlar.
+ * _rtRead  — p2p orqali "o'qildi" deb tasdiqlangan ID'lar (DB yangilanguncha). */
+let _rt = null;
+let _rtChatId = null;
+const _rtLocal = new Map();
+const _rtRead = new Set();
+const _uuid = () => (crypto.randomUUID ? crypto.randomUUID()
+  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
+
+function _rtMerge(msgs) {
+  if (_rtLocal.size) {
+    const have = new Set(msgs.map(m => m.id));
+    for (const [id, m] of _rtLocal) {
+      if (have.has(id) || Date.now() - m._at > 20000) _rtLocal.delete(id);
+      else msgs.push(m);
+    }
+  }
+  if (_rtRead.size) for (const m of msgs) if (_rtRead.has(m.id)) m.status = 'read';
+  return msgs;
+}
+
+function _rtIncoming(m) {
+  if (!m?.id || state.currentChatId !== _rtChatId) return;
+  if (_rtLocal.has(m.id) || _curMsgs.some(x => x.id === m.id)) return;
+  const now = Date.now();
+  const msg = {
+    id: m.id, chatId: _rtChatId, senderId: state.currentChatUid, type: 'text', text: m.text,
+    mediaPath: null, mediaUrl: '', mediaType: null, fileName: null, fileSize: null, duration: null,
+    status: 'sent', readAt: null, editedAt: null, createdAt: now, _at: now,
+  };
+  _rtLocal.set(m.id, msg);
+  paintMessages([..._curMsgs, msg]);
+  // Thread ochiq va ko'rinib turgan bo'lsa — "o'qildi"ni shu zahoti p2p yuboramiz
+  if (document.visibilityState === 'visible' && $('chatThreadModal')?.classList.contains('show')) {
+    _rt?.sendRead([m.id]);
+  }
+}
+
+function _rtReadAck(ids) {
+  const me = state.me?.uid;
+  let changed = false;
+  const next = _curMsgs.map(x => {
+    if (x.senderId === me && ids.includes(x.id) && x.status !== 'read') { changed = true; return { ...x, status: 'read' }; }
+    return x;
+  });
+  ids.forEach(id => { if (_curMsgs.some(x => x.id === id && x.senderId === me)) _rtRead.add(id); });
+  if (changed) paintMessages(next);
+}
+
+function _rtRetract(id) {
+  if (!_rtLocal.has(id)) return; // DB'da tasdiqlangan bo'lsa tegmaymiz
+  _rtLocal.delete(id);
+  paintMessages(_curMsgs.filter(x => x.id !== id));
+}
 let _curMsgs = [];   // msg-menu.js uchun: paintMessages() ning oxirgi xabarlar ro'yxati
 let _chatSelFile = null;
 
@@ -814,6 +871,12 @@ export async function openChatThread(uid) {
     };
   }
 
+  // Tezkor yo'l: WebRTC DataChannel (zaxira: broadcast). Baza baribir asosiy.
+  if (_rt) { _rt.close(); _rt = null; }
+  _rtLocal.clear(); _rtRead.clear();
+  _rtChatId = chatId;
+  _rt = openRt(chatId, uid, { onMsg: _rtIncoming, onRead: _rtReadAck, onRetract: _rtRetract });
+
   // Chat get_or_create_chat() bilan yaratilgan. Men ochyapman — o'qilmaganlarim nolga.
   sb.from('chat_members').update({ unread_count: 0 })
     .eq('chat_id', chatId).eq('user_id', state.me.uid)
@@ -849,7 +912,7 @@ export async function openChatThread(uid) {
       return;
     }
     const msgs = (data || []).map(mapMessage).reverse();
-    paintMessages(msgs);
+    paintMessages(_rtMerge(msgs.slice()));
     cacheThreadMessages(chatId, msgs);
     // Thread ochiq turgan bo'lsa — kelgan xabarlarni shu zahoti "read" qilamiz
     if (state.currentChatId === chatId && $('chatThreadModal').classList.contains('show')) {
@@ -1348,6 +1411,8 @@ function _reattachActiveVoiceUI(box) {
 /* ── Yopish chat thread ───────────────────────────────────────────────── */
 export function closeChatThread() {
   document.dispatchEvent(new Event('chatmedia:close'));
+  if (_rt) { _rt.close(); _rt = null; }
+  _rtLocal.clear(); _rtRead.clear(); _rtChatId = null;
   msgMenuReset();
   if (_threadUnsub) { _threadUnsub(); _threadUnsub = null; }
   if (_peerUserUnsub) { _peerUserUnsub(); _peerUserUnsub = null; }
@@ -1391,15 +1456,32 @@ export async function sendChatMessage() {
   clearTimeout(_typingTimeout);
   _setTyping(false);
 
+  // 1) Optimistik: o'z xabarimiz shu zahoti ekranda (DB javobini kutmaymiz)
+  const id = _uuid();
+  const nowMs = Date.now();
+  const localMsg = {
+    id, chatId, senderId: state.me.uid, type: 'text', text,
+    mediaPath: null, mediaUrl: '', mediaType: null, fileName: null, fileSize: null, duration: null,
+    status: 'sent', readAt: null, editedAt: null, createdAt: nowMs, _at: nowMs,
+  };
+  _rtLocal.set(id, localMsg);
+  paintMessages([..._curMsgs, localMsg]);
+  // 2) Peer'ga to'g'ridan-to'g'ri (WebRTC DataChannel; ulanmagan bo'lsa broadcast)
+  if (_rt && _rtChatId === chatId) _rt.send(id, text);
+
   try {
+    // 3) Baza (haqiqat manbai) — xuddi shu ID bilan, dedup uchun
     const { error } = await sb.from('messages')
-      .insert({ chat_id: chatId, sender_id: state.me.uid, type: 'text', text });
+      .insert({ id, chat_id: chatId, sender_id: state.me.uid, type: 'text', text });
     if (error) throw error;
     _reloadThread && _reloadThread();
     // Push bildirishnoma push.js bosqichida ulanadi (Edge Function / DB webhook)
   } catch (err) {
     console.error('sendChatMessage failed:', err.message);
     toast('Xabar yuborilmadi', 'error');
+    _rtLocal.delete(id);
+    if (_rt && _rtChatId === chatId) _rt.retract(id);
+    if (state.currentChatId === chatId) paintMessages(_curMsgs.filter(x => x.id !== id));
     inp.value = text; // qaytarib qo'yamiz, user qayta yuborishi uchun
     updateVoiceSendBtn();
   }

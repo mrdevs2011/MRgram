@@ -126,6 +126,7 @@ const PRECACHE_URLS = [
   '/modules/view-users.js',
   '/modules/admin-reset-password.js',
   '/modules/chats-x.js',
+  '/modules/rt-chat.js',
   '/modules/compress.js',
   '/modules/right-rail.js',
   '/modules/shortcuts.js',
