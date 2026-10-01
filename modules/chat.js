@@ -410,12 +410,17 @@ function _renderSearchBox(container) {
       (u.fullName || '').toLowerCase().includes(term)
     );
     let matchedGroups = getGroupRows().filter(g =>
-      (g.name || '').toLowerCase().includes(term)
+      (g.name || '').toLowerCase().includes(term) ||
+      (g.username || '').toLowerCase().includes(term)
     );
-    if (!matchedGroups.length && term) {
+    if (term) {
       try {
         const extra = await searchGroups(term);
-        if (extra && extra.length) matchedGroups = extra;
+        if (extra && extra.length) {
+          const map = new Map(matchedGroups.map(g => [g.id, g]));
+          extra.forEach(g => map.set(g.id, g));
+          matchedGroups = Array.from(map.values());
+        }
       } catch (_) {}
     }
     const totalMatches = matchedUsers.length + matchedGroups.length;
@@ -1230,16 +1235,17 @@ async function _appendGroupRows(root, term = '') {
 
   let groups = getGroupRows();
   if (term) {
-    const local = groups.filter(g => (g.name || '').toLowerCase().includes(term));
-    if (local.length) {
+    const local = groups.filter(g =>
+      (g.name || '').toLowerCase().includes(term) ||
+      (g.username || '').toLowerCase().includes(term)
+    );
+    try {
+      const remote = await searchGroups(term);
+      const map = new Map(local.map(g => [g.id, g]));
+      (remote || []).forEach(g => map.set(g.id, g));
+      groups = Array.from(map.values());
+    } catch (_) {
       groups = local;
-    } else {
-      try {
-        const remote = await searchGroups(term);
-        groups = remote || [];
-      } catch (_) {
-        groups = [];
-      }
     }
   }
   if (!groups.length) return;
@@ -1266,6 +1272,7 @@ async function _appendGroupRows(root, term = '') {
       const typeIcon = `<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
       const badgeClass = 'chat-row-grp-badge--group';
       const pinHtml = pinned ? `<span class="chat-row-pin-ico" title="Qadalgan"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2l-2-2z"/></svg></span>` : '';
+      const unameHtml = g.username ? `<span style="font-size:11.5px;color:var(--blue,#4a9eff);font-weight:500;margin-left:6px;">@${esc(g.username)}</span>` : '';
 
       return `<div class="chat-row${unread ? ' unread' : ''}" data-gid="${g.id}">
         <div class="chat-avi">
@@ -1273,7 +1280,7 @@ async function _appendGroupRows(root, term = '') {
           <div class="chat-row-grp-badge ${badgeClass}">${typeIcon}</div>
         </div>
         <div class="chat-row-body">
-          <div class="chat-row-name">${esc(g.name || 'Guruh')}</div>
+          <div class="chat-row-name">${esc(g.name || 'Guruh')}${unameHtml}</div>
           <div class="chat-row-preview">${preview}</div>
         </div>
         <div class="chat-row-right">
@@ -2174,7 +2181,11 @@ export function closeChatThread() {
   }
   state.currentChatUid = null;
   state.currentChatId  = null;
-  $('chatThreadModal').classList.remove('show');
+  const modal = $('chatThreadModal');
+  if (modal) {
+    modal.classList.remove('show');
+    modal.style.bottom = '0px';
+  }
   // Chat ro'yxatini yangilash — oxirgi xabar/preview yangi bo'lishi uchun
   if (state.view === 'chats') renderChatsList();
   // Ovoz hali ijro etilayotgan bo'lsa — endi bu chat yopilgani uchun
@@ -2604,60 +2615,69 @@ function cancelRecording() {
   _stopPulse();
 }
 
-/* ── 3 qavatli Telegram pulsatsiya to'lqini ────────────────────────────── */
+/* ── 3 qavatli Telegram pulsatsiya to'lqini (Ultra-smooth Telegram physics) ─ */
 function _startPulse(stream) {
   const r1 = $('cvPulse1');
   const r2 = $('cvPulse2');
   const r3 = $('cvPulse3');
+  const vBtn = $('chatVoiceBtn');
   if (!r1 && !r2 && !r3) return;
 
   try {
     _pulseCtx = new (window.AudioContext || window.webkitAudioContext)();
     const src = _pulseCtx.createMediaStreamSource(stream);
     const analyser = _pulseCtx.createAnalyser();
-    analyser.fftSize = 256;
-    analyser.smoothingTimeConstant = 0.2;
+    analyser.fftSize = 512;
+    analyser.smoothingTimeConstant = 0.85; // ultra-smooth audio analysis (no jitter)
     src.connect(analyser);
     _pulseAnalyser = analyser;
 
     const data = new Uint8Array(analyser.frequencyBinCount);
     let lastTime = performance.now();
     let phase = 0;
+    _pulseLevel = 0.08;
 
     const tick = (now) => {
       if (!_pulseAnalyser) return;
       analyser.getByteFrequencyData(data);
       let sum = 0;
-      const maxBin = Math.min(48, data.length);
+      const maxBin = Math.min(64, data.length);
       for (let i = 2; i < maxBin; i++) sum += data[i];
       const avg = sum / (maxBin - 2) / 255;
-      const target = Math.min(1, Math.pow(avg * 1.45, 0.7));
+      const target = Math.min(1, Math.max(0, (avg - 0.02) * 2.2));
 
-      _pulseLevel += (target - _pulseLevel) * 0.42;
+      // Asymmetric spring-like smoothing: fast attack, gentle decay
+      const speed = target > _pulseLevel ? 0.35 : 0.12;
+      _pulseLevel += (target - _pulseLevel) * speed;
 
       const dt = (now - lastTime) / 1000;
       lastTime = now;
-      phase += dt * 3.6;
+      phase += dt * 2.8;
 
-      const breathe = Math.sin(phase) * 0.06;
+      const breathe = Math.sin(phase) * 0.05;
+
+      if (vBtn && !_voiceCancelled) {
+        const btnScale = 1.18 + (_pulseLevel * 0.14) + breathe * 0.3;
+        vBtn.style.transform = `scale(${btnScale.toFixed(3)})`;
+      }
 
       if (r1) {
-        const s1 = 1.0 + (_pulseLevel * 0.75) + breathe * 0.5;
-        const o1 = 0.55 + (_pulseLevel * 0.45);
+        const s1 = 1.05 + (_pulseLevel * 0.65) + breathe * 0.4;
+        const o1 = 0.55 + (_pulseLevel * 0.42);
         r1.style.transform = `translate(-50%, -50%) scale(${s1.toFixed(3)})`;
         r1.style.opacity   = o1.toFixed(3);
       }
 
       if (r2) {
-        const s2 = 1.25 + (_pulseLevel * 1.4) + Math.sin(phase - 0.7) * 0.08;
-        const o2 = 0.38 + (_pulseLevel * 0.42);
+        const s2 = 1.32 + (_pulseLevel * 1.35) + Math.sin(phase - 0.6) * 0.07;
+        const o2 = 0.38 + (_pulseLevel * 0.4);
         r2.style.transform = `translate(-50%, -50%) scale(${s2.toFixed(3)})`;
         r2.style.opacity   = o2.toFixed(3);
       }
 
       if (r3) {
-        const s3 = 1.55 + (_pulseLevel * 2.1) + Math.sin(phase - 1.4) * 0.12;
-        const o3 = 0.22 + (_pulseLevel * 0.35);
+        const s3 = 1.68 + (_pulseLevel * 2.05) + Math.sin(phase - 1.2) * 0.1;
+        const o3 = 0.22 + (_pulseLevel * 0.32);
         r3.style.transform = `translate(-50%, -50%) scale(${s3.toFixed(3)})`;
         r3.style.opacity   = o3.toFixed(3);
       }
@@ -2676,10 +2696,12 @@ function _stopPulse() {
   if (_pulseCtx) { try { _pulseCtx.close(); } catch(_) {} _pulseCtx = null; }
   _pulseAnalyser = null;
   _pulseLevel = 0;
+  const vBtn = $('chatVoiceBtn');
+  if (vBtn) vBtn.style.transform = '';
   ['cvPulse1', 'cvPulse2', 'cvPulse3'].forEach(id => {
     const el = $(id);
     if (el) {
-      el.style.transform = 'translate(-50%, -50%) scale(1)';
+      el.style.transform = 'translate(-50%, -50%) scale(0.8)';
       el.style.opacity = '0';
     }
   });
@@ -3057,6 +3079,48 @@ if (_vBtn) {
     }
   });
 }
+
+/* ── Mobil klaviatura moslashuvi (keyboard inputni yopib qo'ymasligi uchun) ── */
+function initKeyboardAdaptation() {
+  const modal = $('chatThreadModal');
+  const inp   = $('chatThreadInput');
+  const msgs  = $('chatThreadMessages');
+  if (!modal) return;
+
+  const adapt = () => {
+    if (!modal.classList.contains('show')) return;
+    if (window.visualViewport) {
+      const vv = window.visualViewport;
+      // Klaviatura ochilgandagi balandlik farqi
+      const offset = Math.max(0, window.innerHeight - (vv.height + vv.offsetTop));
+      if (offset > 20) {
+        modal.style.bottom = `${offset}px`;
+        if (msgs) msgs.scrollTop = msgs.scrollHeight;
+      } else {
+        modal.style.bottom = '0px';
+      }
+    }
+  };
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', adapt);
+    window.visualViewport.addEventListener('scroll', adapt);
+  }
+
+  if (inp) {
+    inp.addEventListener('focus', () => {
+      setTimeout(adapt, 120);
+      setTimeout(adapt, 280);
+      setTimeout(() => { if (msgs) msgs.scrollTop = msgs.scrollHeight; }, 300);
+    });
+    inp.addEventListener('blur', () => {
+      setTimeout(() => {
+        if (modal) modal.style.bottom = '0px';
+      }, 100);
+    });
+  }
+}
+initKeyboardAdaptation();
 
 
 // File attach

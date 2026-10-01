@@ -98,6 +98,7 @@ async function _loadGroups() {
   if (_currentGroupId && _currentGroupData) _applyGroupComposer(_currentGroupData);
   // Notify chat.js list to repaint
   if (state.view === 'chats') document.dispatchEvent(new CustomEvent('groupsUpdated'));
+  handleGroupDeepLinks();
 }
 
 async function _addMembers(groupId, uids) {
@@ -300,9 +301,11 @@ function _applyGroupComposer(g) {
 export async function searchGroups(term) {
   if (!term) return [];
   try {
+    const clean = term.replace(/^@/, '').trim();
+    if (!clean) return [];
     const { data, error } = await sb.from('groups')
       .select('*, group_members(user_id, role, unread_count)')
-      .ilike('name', `%${term}%`)
+      .or(`username.ilike.%${clean}%,name.ilike.%${clean}%`)
       .limit(20);
     if (error || !data) return [];
     const res = data.map(mapGroup);
@@ -741,7 +744,30 @@ export async function openGroupInfo(groupId) {
   if (nameEl)  nameEl.textContent  = g.name || '';
   if (badgeEl) badgeEl.textContent = typeLabel;
 
-  if (linkRow) linkRow.style.display = 'none';
+  if (linkRow && linkTxt) {
+    if (!g.isPrivate && g.username) {
+      linkRow.style.display = 'flex';
+      linkRow.style.cursor = 'pointer';
+      linkTxt.textContent = '@' + g.username;
+      linkRow.onclick = () => {
+        const url = `${window.location.origin}/?g=${g.username}`;
+        navigator.clipboard?.writeText(url);
+        toast(`Havola nusxalandi: @${g.username}`, 'success');
+      };
+    } else if (g.isPrivate && g.inviteCode) {
+      linkRow.style.display = 'flex';
+      linkRow.style.cursor = 'pointer';
+      linkTxt.textContent = `Maxfiy havola: ${g.inviteCode.slice(0, 14)}...`;
+      linkRow.onclick = () => {
+        const url = `${window.location.origin}/?join_group=${g.inviteCode}`;
+        navigator.clipboard?.writeText(url);
+        toast('Maxfiy taklif havolasi nusxalandi', 'success');
+      };
+    } else {
+      linkRow.style.display = 'none';
+      linkRow.onclick = null;
+    }
+  }
 
   if (descEl) {
     if (g.description) { descEl.textContent = g.description; descEl.style.display = ''; }
@@ -898,8 +924,49 @@ export async function openGroupInfo(groupId) {
 /* ─────────────────────────────────────────────────────────────────────
    EDIT GROUP / CHANNEL — owner & admin can update everything
    ───────────────────────────────────────────────────────────────────── */
+export function generate64HexToken() {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
+
+export async function checkGroupUsernameAvailable(rawUsername, currentGroupId = null) {
+  const clean = (rawUsername || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
+  if (clean.length < 2) return { ok: false, error: "Username kamida 2 ta belgi bo'lishi kerak (a-z, 0-9, _)" };
+  if (clean.length > 40) return { ok: false, error: "Username 40 ta belgidan oshmasligi kerak" };
+
+  try {
+    const { data: free, error } = await sb.rpc('username_available', { p_username: clean });
+    if (!error && free === false) {
+      if (currentGroupId) {
+        const { data: cur } = await sb.from('groups').select('id').eq('id', currentGroupId).ilike('username', clean).maybeSingle();
+        if (cur) return { ok: true, username: clean };
+      }
+      return { ok: false, error: 'Bu nom allaqachon band' };
+    }
+  } catch (_) {}
+
+  // Double check profiles
+  try {
+    const { data: prof } = await sb.from('profiles').select('id').ilike('username', clean).limit(1);
+    if (prof && prof.length > 0) return { ok: false, error: 'Bu nom allaqachon band' };
+  } catch (_) {}
+
+  // Double check groups
+  try {
+    let q = sb.from('groups').select('id').ilike('username', clean);
+    if (currentGroupId) q = q.neq('id', currentGroupId);
+    const { data: grps } = await q.limit(1);
+    if (grps && grps.length > 0) return { ok: false, error: 'Bu nom allaqachon band' };
+  } catch (_) {}
+
+  return { ok: true, username: clean };
+}
+
 let _editingGroupId = null;
 let _grpEditPendingAviUrl = null;
+let _editIsPublic = true;
+let _editPendingInviteCode = null;
 
 export function openGroupEdit(groupId, g) {
   const panel = document.getElementById('grpEditOverlay');
@@ -907,12 +974,59 @@ export function openGroupEdit(groupId, g) {
 
   _editingGroupId = groupId;
   _grpEditPendingAviUrl = null;
+  _editIsPublic = !g.isPrivate;
+  _editPendingInviteCode = g.inviteCode || generate64HexToken();
 
   const typeLabel = 'Guruh';
   panel.querySelector('#grpEditTitle').textContent = `${typeLabel}ni sozlash`;
   panel.querySelector('#grpEditNameLabel').textContent = `${typeLabel} nomi *`;
   panel.querySelector('#grpEditName').value = g.name || '';
   panel.querySelector('#grpEditDesc').value = g.description || '';
+
+  const pubBtn = panel.querySelector('#grpEditPublicBtn');
+  const privBtn = panel.querySelector('#grpEditPrivateBtn');
+  const pubSec = panel.querySelector('#grpEditPublicSection');
+  const privSec = panel.querySelector('#grpEditPrivateSection');
+  const tokenEl = panel.querySelector('#grpEditInviteToken');
+  const uInp = panel.querySelector('#grpEditUsername');
+  if (uInp) uInp.value = g.username || '';
+
+  const updateEditPrivacyUI = () => {
+    if (_editIsPublic) {
+      pubBtn?.classList.add('active');
+      privBtn?.classList.remove('active');
+      if (pubSec) pubSec.style.display = '';
+      if (privSec) privSec.style.display = 'none';
+    } else {
+      privBtn?.classList.add('active');
+      pubBtn?.classList.remove('active');
+      if (pubSec) pubSec.style.display = 'none';
+      if (privSec) privSec.style.display = '';
+      if (tokenEl) tokenEl.textContent = `${window.location.origin}/?join_group=${_editPendingInviteCode}`;
+    }
+  };
+  updateEditPrivacyUI();
+
+  if (pubBtn) pubBtn.onclick = () => { _editIsPublic = true; updateEditPrivacyUI(); };
+  if (privBtn) privBtn.onclick = () => { _editIsPublic = false; updateEditPrivacyUI(); };
+
+  const copyBtn = panel.querySelector('#grpEditCopyInviteBtn');
+  if (copyBtn) {
+    copyBtn.onclick = () => {
+      const link = `${window.location.origin}/?join_group=${_editPendingInviteCode}`;
+      navigator.clipboard?.writeText(link);
+      toast('Taklif havolasi nusxalandi', 'success');
+    };
+  }
+
+  const regenBtn = panel.querySelector('#grpEditRegenInviteBtn');
+  if (regenBtn) {
+    regenBtn.onclick = () => {
+      _editPendingInviteCode = generate64HexToken();
+      if (tokenEl) tokenEl.textContent = `${window.location.origin}/?join_group=${_editPendingInviteCode}`;
+      toast('Yangi 64-xonali taklif havolasi yaratildi', 'info');
+    };
+  }
 
   // Avatar preview
   const av = g.avatar || defAvi(g.name || 'G');
@@ -947,15 +1061,27 @@ export function openGroupEdit(groupId, g) {
 
     const updates = { name, description: desc };
     if (_grpEditPendingAviUrl) updates.avatar = _grpEditPendingAviUrl;
-
     updates.msg_permission = panel.querySelector('#grpEditMsgPerm').value;
+
+    if (_editIsPublic) {
+      const rawUser = panel.querySelector('#grpEditUsername')?.value?.trim();
+      if (!rawUser) { toast('Ommaviy guruh uchun username kiriting', 'error'); return; }
+      const avail = await checkGroupUsernameAvailable(rawUser, groupId);
+      if (!avail.ok) { toast(avail.error || 'Bu nom allaqachon band', 'error'); return; }
+      updates.is_private = false;
+      updates.username = avail.username;
+      updates.invite_code = null;
+    } else {
+      updates.is_private = true;
+      updates.username = null;
+      updates.invite_code = _editPendingInviteCode;
+    }
 
     try {
       await _updateGroup(groupId, updates);
       panel.classList.remove('show');
       unlockScroll();
       toast(`${typeLabel} yangilandi`, 'success');
-      // Refresh info panel if re-opened
       openGroupInfo(groupId);
     } catch(e) { toast('Xato: ' + e.message, 'error'); }
   };
@@ -980,17 +1106,56 @@ let _createType    = 'group';
 let _selectedMembers = new Set();
 let _pendingPhotoUrl = null;
 let _usersForPicker = [];
+let _createIsPublic = true;
+let _pendingInviteCode = null;
+
 export function openCreateForm(type) {
   _createType      = type;
   _selectedMembers = new Set();
   _pendingPhotoUrl = null;
   _usersForPicker  = [];
+  _createIsPublic  = true;
+  _pendingInviteCode = generate64HexToken();
 
   const overlay = document.getElementById('grpCreateFormOverlay');
   if (!overlay) return;
 
   overlay.querySelector('.grp-form-title').textContent = 'Yangi guruh';
   overlay.querySelector('#grpFormDescWrap').style.display = '';
+  overlay.querySelector('#grpFormPrivacyWrap').style.display = '';
+  overlay.querySelector('.grp-form-avi-wrap').style.display = '';
+  overlay.querySelector('#grpFormName').style.display = '';
+  overlay.querySelector('#grpFormCreateBtn').textContent = 'Yaratish';
+  overlay.dataset.addMode = '';
+
+  const pubBtn = overlay.querySelector('#grpCreatePublicBtn');
+  const privBtn = overlay.querySelector('#grpCreatePrivateBtn');
+  const pubSec = overlay.querySelector('#grpCreatePublicSection');
+  const privSec = overlay.querySelector('#grpCreatePrivateSection');
+  const tokenEl = overlay.querySelector('#grpCreateInviteToken');
+
+  const updateCreatePrivacyUI = () => {
+    if (_createIsPublic) {
+      pubBtn?.classList.add('active');
+      privBtn?.classList.remove('active');
+      if (pubSec) pubSec.style.display = '';
+      if (privSec) privSec.style.display = 'none';
+    } else {
+      privBtn?.classList.add('active');
+      pubBtn?.classList.remove('active');
+      if (pubSec) pubSec.style.display = 'none';
+      if (privSec) privSec.style.display = '';
+      if (tokenEl) tokenEl.textContent = `${window.location.origin}/?join_group=${_pendingInviteCode}`;
+    }
+  };
+  updateCreatePrivacyUI();
+
+  if (pubBtn) pubBtn.onclick = () => { _createIsPublic = true; updateCreatePrivacyUI(); };
+  if (privBtn) privBtn.onclick = () => { _createIsPublic = false; updateCreatePrivacyUI(); };
+
+  overlay.querySelector('#grpFormUsername').value = '';
+  overlay.querySelector('#grpFormName').value = '';
+  overlay.querySelector('#grpFormDesc').value = '';
   overlay.querySelector('.grp-form-desc-hint').textContent = '';
   const _perm = overlay.querySelector('#grpFormMsgPerm');
   if (_perm) _perm.value = 'all';
@@ -1005,8 +1170,6 @@ export function openCreateForm(type) {
     _renderMemberPicker(pickerSection, users);
   });
 
-  overlay.querySelector('#grpFormName').value = '';
-  overlay.querySelector('#grpFormDesc').value = '';
   overlay.querySelector('.grp-form-avi-img').src = '';
   overlay.querySelector('.grp-form-avi-img').style.display = 'none';
   overlay.querySelector('.grp-form-avi-placeholder').style.display = '';
@@ -1138,6 +1301,9 @@ export async function openMemberPicker(groupId, mode) {
 
   overlay.querySelector('.grp-form-title').textContent = "A'zo qo'shish";
   overlay.querySelector('#grpFormDescWrap').style.display = 'none';
+  overlay.querySelector('#grpFormPrivacyWrap').style.display = 'none';
+  overlay.querySelector('#grpCreatePublicSection').style.display = 'none';
+  overlay.querySelector('#grpCreatePrivateSection').style.display = 'none';
   overlay.querySelector('.grp-form-avi-wrap').style.display = 'none';
   overlay.querySelector('.grp-form-desc-hint').textContent = '';
   overlay.querySelector('#grpFormName').style.display = 'none';
@@ -1180,6 +1346,19 @@ export async function submitCreateGroup() {
   const name = overlay?.querySelector('#grpFormName').value?.trim();
   if (!name) { toast('Nom kiriting', 'error'); return; }
 
+  let groupUsername = null;
+  let inviteCode = null;
+
+  if (_createIsPublic) {
+    const rawUser = overlay?.querySelector('#grpFormUsername')?.value?.trim();
+    if (!rawUser) { toast('Ommaviy guruh uchun username kiriting', 'error'); return; }
+    const avail = await checkGroupUsernameAvailable(rawUser);
+    if (!avail.ok) { toast(avail.error || 'Bu nom allaqachon band', 'error'); return; }
+    groupUsername = avail.username;
+  } else {
+    inviteCode = _pendingInviteCode || generate64HexToken();
+  }
+
   const btn = overlay?.querySelector('#grpFormCreateBtn');
   btn.disabled = true;
   btn.textContent = 'Yaratilmoqda...';
@@ -1195,7 +1374,9 @@ export async function submitCreateGroup() {
       description: overlay.querySelector('#grpFormDesc')?.value?.trim() || '',
       msg_permission: overlay.querySelector('#grpFormMsgPerm')?.value === 'admins' ? 'admins' : 'all',
       owner_id:    state.me.uid,
-      is_private:  true,   // Q1=B: faqat taklif orqali (a'zolarni yaratuvchi/admin qo'shadi)
+      is_private:  !_createIsPublic,
+      username:    groupUsername,
+      invite_code: inviteCode,
     });
     if (gErr) throw gErr;
     // Egasi trigger orqali qo'shiladi; tanlangan a'zolarni qo'shamiz
@@ -1281,6 +1462,40 @@ export function injectGroupsDOM() {
 
         <!-- Name -->
         <input class="field mb-12px" id="grpFormName" placeholder="Guruh nomi" maxlength="64" autocomplete="off">
+
+        <!-- Privacy Toggle (Ommaviy / Maxfiy) -->
+        <div class="grp-form-privacy-wrap mb-12px" id="grpFormPrivacyWrap">
+          <div class="pe-field-label">Guruh turi</div>
+          <div class="grp-privacy-toggle">
+            <button type="button" class="grp-privacy-btn active" id="grpCreatePublicBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              Ommaviy
+            </button>
+            <button type="button" class="grp-privacy-btn" id="grpCreatePrivateBtn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Maxfiy
+            </button>
+          </div>
+        </div>
+
+        <!-- Ommaviy username -->
+        <div id="grpCreatePublicSection" class="mb-12px">
+          <div class="pe-field-label">Ommaviy username (@) *</div>
+          <div class="grp-username-input-wrap">
+            <span class="grp-username-prefix">@</span>
+            <input class="field" id="grpFormUsername" placeholder="username (masalan: spacemr_uz)" maxlength="40" autocomplete="off">
+          </div>
+          <div class="grp-form-desc-hint" id="grpFormUsernameHint">Ommaviy guruh username orqali topiladi va hamma qo'shila oladi</div>
+        </div>
+
+        <!-- Maxfiy invite link preview -->
+        <div id="grpCreatePrivateSection" class="mb-12px" style="display:none">
+          <div class="pe-field-label">Maxfiy taklif havolasi (64 xonali)</div>
+          <div class="grp-invite-preview">
+            <span class="grp-invite-token" id="grpCreateInviteToken"></span>
+          </div>
+          <div class="grp-form-desc-hint">Faqat ushbu maxfiy havola orqali guruhga qo'shilish mumkin</div>
+        </div>
 
         <!-- Tavsif + xabar yuborish huquqi (a'zo qo'shish rejimida yashiriladi) -->
         <div id="grpFormDescWrap">
@@ -1405,6 +1620,42 @@ export function injectGroupsDOM() {
           <div class="pe-field-label" id="grpEditNameLabel">Guruh nomi *</div>
           <input class="field" type="text" id="grpEditName" placeholder="Guruh nomi">
 
+          <!-- Privacy Toggle in Settings -->
+          <div class="grp-form-privacy-wrap mb-12px" id="grpEditPrivacyWrap">
+            <div class="pe-field-label">Guruh turi</div>
+            <div class="grp-privacy-toggle">
+              <button type="button" class="grp-privacy-btn" id="grpEditPublicBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Ommaviy
+              </button>
+              <button type="button" class="grp-privacy-btn" id="grpEditPrivateBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Maxfiy
+              </button>
+            </div>
+          </div>
+
+          <!-- Ommaviy Username in Settings -->
+          <div id="grpEditPublicSection" class="mb-12px">
+            <div class="pe-field-label">Ommaviy username (@) *</div>
+            <div class="grp-username-input-wrap">
+              <span class="grp-username-prefix">@</span>
+              <input class="field" id="grpEditUsername" placeholder="username" maxlength="40" autocomplete="off">
+            </div>
+            <div class="grp-form-desc-hint" id="grpEditUsernameHint">Ommaviy guruh username orqali topiladi</div>
+          </div>
+
+          <!-- Maxfiy 64-xonali invite link in Settings -->
+          <div id="grpEditPrivateSection" class="mb-12px" style="display:none">
+            <div class="pe-field-label">Maxfiy taklif havolasi (64 xonali)</div>
+            <div class="grp-invite-preview">
+              <span class="grp-invite-token" id="grpEditInviteToken"></span>
+              <button type="button" class="grp-invite-copy-btn" id="grpEditCopyInviteBtn">Nusxa</button>
+              <button type="button" class="grp-invite-regen-btn" id="grpEditRegenInviteBtn" title="Yangi havola yaratish">&#x21bb;</button>
+            </div>
+            <div class="grp-form-desc-hint">Ushbu 64 xonali havola orqali a'zolar qo'shiladi</div>
+          </div>
+
           <div class="pe-field-label">Tavsif</div>
           <textarea class="ta" id="grpEditDesc" rows="3" placeholder="Guruh haqida..."></textarea>
 
@@ -1466,3 +1717,49 @@ export function getGroupRows() {
 
 export function getCurrentGroupId() { return _currentGroupId; }
 export function getCurrentGroupData() { return _currentGroupData; }
+
+let _deepLinkHandled = false;
+try {
+  const p = new URLSearchParams(window.location.search);
+  const t = p.get('join_group') || p.get('join') || p.get('g');
+  if (t) sessionStorage.setItem('spacemr_pending_group', t);
+} catch (_) {}
+
+export async function handleGroupDeepLinks() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('join_group') || params.get('join') || params.get('g') || sessionStorage.getItem('spacemr_pending_group');
+  if (!token) return;
+  if (!state.me?.uid) {
+    sessionStorage.setItem('spacemr_pending_group', token);
+    return;
+  }
+  if (_deepLinkHandled) return;
+  _deepLinkHandled = true;
+
+  try {
+    let targetGid = null;
+    const { data: rpcRes, error: rpcErr } = await sb.rpc('join_group_by_token', { p_token: token });
+    if (!rpcErr && rpcRes && rpcRes.success) {
+      targetGid = rpcRes.group_id;
+    } else {
+      const { data: rows } = await sb.from('groups')
+        .select('id, name, is_private, invite_code, username')
+        .or(`invite_code.eq.${token},username.ilike.${token}`)
+        .limit(1);
+      if (rows && rows.length > 0) {
+        targetGid = rows[0].id;
+        await joinGroup(targetGid);
+      }
+    }
+
+    if (targetGid) {
+      sessionStorage.removeItem('spacemr_pending_group');
+      toast("Guruhga muvaffaqiyatli qo'shildingiz!", "success");
+      const cleanUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+      setTimeout(() => openGroupThread(targetGid), 300);
+    }
+  } catch (e) {
+    console.warn('[Groups] deep link error:', e);
+  }
+}

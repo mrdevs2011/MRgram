@@ -166,10 +166,12 @@ export async function clearRuntimeCache() {
   if (!('caches' in window)) return 0;
   try {
     const keys = await caches.keys();
-    const runtimeKeys = keys.filter(k => k.startsWith('spacemr-runtime-') || k.startsWith('mrspace-runtime-'));
-    await Promise.all(runtimeKeys.map(k => caches.delete(k)));
-    return runtimeKeys.length;
+    await Promise.all(keys.map(k => caches.delete(k)));
+    return keys.length;
   } catch {
     return 0;
   }
 }
+
+// 0% kesh kafolati: modul yuklanganda barcha keshni tozalash
+try { clearRuntimeCache(); } catch (_) {}

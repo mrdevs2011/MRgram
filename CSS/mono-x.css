@@ -856,23 +856,28 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 
 /* Tasdiq oynasi (showConfirm) doim eng ustida: umumiy .overlay z-index=200 < chat oynasi 360, shuning uchun chat ochiq paytda "O'chirilsinmi?" orqada qolardi */
 #confirmOverlay { z-index: 640; }
-/* Tasdiq oynasi — Telegram Desktop uslubida: markazda qora (dark) karta, chapga tekislangan matn, pastda o'ngda matnli tugmalar (sarlavhasiz) */
-#confirmOverlay { align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, .6); }
+/* Tasdiq oynasi — Telegram uslubida: to'liq qora (dark #000000) karta, qizil tasdiq tugmasi, xiralashtirilgan fon */
+#confirmOverlay { align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, .75); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 #confirmOverlay .sheet {
-  display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px;
-  width: 100%; max-width: 340px; margin: 0; padding: 22px 16px 12px 22px;
-  background: #17181b; border: 1px solid rgba(255, 255, 255, .08); border-radius: 14px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, .55); overflow: visible;
+  display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px;
+  width: 100%; max-width: 340px; margin: 0; padding: 24px 20px 16px 24px;
+  background: #000000; border: 1px solid rgba(255, 255, 255, .14); border-radius: 16px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, .9); overflow: visible;
 }
 #confirmOverlay.show .sheet { animation: cfmIn .18s cubic-bezier(.2, .8, .2, 1); }
 @keyframes cfmIn { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
 #confirmOverlay #confirmTitle { display: none; }
-#confirmOverlay #confirmMsg { flex: 0 0 100%; margin: 0 6px 18px 0; text-align: left; font-size: 15px; line-height: 1.4; color: var(--text, #e7e9ea); }
+#confirmOverlay #confirmMsg { flex: 0 0 100%; margin: 0 0 20px 0; text-align: left; font-size: 15px; line-height: 1.45; color: #f1f3f5; font-weight: 500; }
 #confirmOverlay #confirmOkBtn, #confirmOverlay #confirmCancelBtn {
-  width: auto; margin: 0; padding: 9px 14px; background: transparent; border: 0; border-radius: 8px;
-  font-size: 14px; font-weight: 600; letter-spacing: .1px; color: var(--blue, #4a9eff); cursor: pointer; transition: background .15s;
+  width: auto; margin: 0; padding: 9px 18px; border: 0; border-radius: 10px;
+  font-size: 14px; font-weight: 600; letter-spacing: .1px; cursor: pointer; transition: all .15s ease;
 }
-#confirmOverlay #confirmCancelBtn { order: 1; }
-#confirmOverlay #confirmOkBtn { order: 2; }
-#confirmOverlay #confirmOkBtn:hover, #confirmOverlay #confirmCancelBtn:hover { background: rgba(255, 255, 255, .07); }
+#confirmOverlay #confirmCancelBtn {
+  order: 1; background: rgba(255, 255, 255, .08); color: #c0c4c9;
+}
+#confirmOverlay #confirmCancelBtn:hover { background: rgba(255, 255, 255, .14); color: #ffffff; }
+#confirmOverlay #confirmOkBtn {
+  order: 2; background: #e0245e; color: #ffffff;
+}
+#confirmOverlay #confirmOkBtn:hover { background: #f43f5e; box-shadow: 0 2px 12px rgba(224, 36, 94, .4); }
 @media (prefers-reduced-motion: reduce) { #confirmOverlay.show .sheet { animation: none; } }

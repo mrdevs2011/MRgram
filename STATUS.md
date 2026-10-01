@@ -1,16 +1,22 @@
 # AI Context — .
 
 ## Oxirgi holat
-- Sana:
-- Nima qilindi:
-- Hozirgi muammo/blocker:
-- Keyingi qadam:
+- Sana: 2026-10-01 21:45
+- Nima qilindi: SpaceMR rebrand; Ovoz pulsatsiyasi Telegram kabi ultra-smooth qilindi; Mobil klaviatura ochilganda input yopilib qolmaydigan visualViewport adaptori qo'shildi; Xabar o'chirish tasdiq oynasi qora (#000000) qilindi; Story ko'rgichda chap/o'ng bosish navigatsiyasi, bosib turganda freeze (muzlatish/pauza) va browser kontekst menyu ("copy image") ni butunlay to'sish; 0% kesh kafolati (SW va runtime storage); Ommaviy va maxfiy guruhlar (ommaviyda @username foydalanuvchilar bilan umumiy band qilinadi, maxfiyda 64-xonali invite link beriladi, ?join_group= deep link orqali avtomatik a'zo bo'lish).
+- Hozirgi muammo/blocker: Yo'q. 14/14 smoke va 7/7 rt-mesh testlari muvaffaqiyatli o'tdi.
+- Keyingi qadam: Main ga merge va push.
 
 ## Muhim fayllar
--
+- `supabase/migrations/018_group-public-private.sql` — ommaviy va maxfiy guruhlar, username unikal tekshiruvi va invite_code
+- `modules/stories.js` — story ko'rgich freeze va tap navigatsiyasi
+- `modules/groups.js` — guruh sozlamalari, 64-xonali invite URL va deep link
+- `modules/chat.js` — ultra-smooth ovoz pulsatsiyasi, mobil klaviatura adaptori, guruh qidiruvi
+- `modules/auth.js` — ro'yxatdan o'tishda profil va guruh username larini birgalikda tekshirish
+- `CSS/mono-x.css`, `CSS/features.css`, `app.css` — dark popup va guruh interfeysi
 
 ## Eslatmalar (arxitektura, qarorlar, "buni qilma" kabi)
--
+- Git push uchun doim `GIT_ASKPASS="$HOME/.gh-askpass.sh" GIT_TERMINAL_PROMPT=0` ishlatiladi.
+- 0% kesh talabi: service worker va runtime cache hech qachon sahifani keshlamaydi.
 
 ---
 ### 2026-09-29 22:45

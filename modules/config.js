@@ -263,7 +263,7 @@ export function mapGroup(r) {
     members,
     isPrivate: r.is_private === true,
     inviteCode: r.invite_code || null,
-    username: '',
+    username: r.username || '',
     msgPermission: r.msg_permission || 'all',
     lastMessage: r.last_message || '',
     lastSenderId: r.last_sender_id || null,

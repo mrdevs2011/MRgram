@@ -155,113 +155,24 @@ function _isStaticAsset(request) {
   return dest === 'style' || dest === 'script' || dest === 'image' || dest === 'font';
 }
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then((cache) => Promise.allSettled(
-        // cache.addAll() bitta URL xato bersa BARCHASINI bekor qiladi —
-        // shuning uchun har birini alohida, bir-biriga bog'liqmasdan
-        // yuklaymiz. Bitta fayl (masalan CDN sekinlik qilib) muvaffaqiyatsiz
-        // bo'lsa ham, qolganlari baribir keshda qoladi.
-        PRECACHE_URLS.map((u) =>
-          cache.add(u).catch((err) => console.warn('[SW] Precache xato:', u, err.message))
-        )
-      ))
-  );
+/* ── 0% KESH (Hech narsa keshlanmaydi) ── */
+self.addEventListener('install', () => {
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
-      // Eski versiyadagi cache'larni tozalaymiz
+      // 0% cache: barcha mavjud kesh xotiralarni to'liq tozalash
       const keys = await caches.keys();
-      await Promise.all(
-        keys
-          .filter((key) => key !== STATIC_CACHE && key !== RUNTIME_CACHE)
-          .map((key) => caches.delete(key))
-      );
+      await Promise.all(keys.map((key) => caches.delete(key)));
       await clients.claim();
     })()
   );
 });
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  const url = event.request.url;
-  if (_isBypassed(url)) return;
-
-  const isNavigation = event.request.mode === 'navigate' ||
-    event.request.destination === 'document';
-
-  // ── HTML sahifa (navigatsiya): CACHE-FIRST + fonda yangilash ──
-  if (isNavigation) {
-    event.respondWith(
-      (async () => {
-        const cached = await caches.match(event.request) || await caches.match('/index.html') || await caches.match('/');
-        const networkFetch = fetch(event.request)
-          .then((response) => {
-            if (response && response.status === 200 && response.type === 'basic') {
-              const cloned = response.clone();
-              caches.open(RUNTIME_CACHE).then((cache) => cache.put(event.request, cloned));
-            }
-            return response;
-          })
-          .catch(() => null);
-
-        if (cached) {
-          return cached;
-        }
-        const net = await networkFetch;
-        if (net) return net;
-        return new Response('Offline — internet aloqasi yo\'q', {
-          status: 503,
-          statusText: 'Service Unavailable',
-          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
-        });
-      })()
-    );
-    return;
-  }
-
-  // ── Statik fayllar (CSS/JS/rasm/font): cache-first + fonda yangilash ──
-  if (_isStaticAsset(event.request)) {
-    event.respondWith(
-      caches.match(event.request).then((cached) => {
-        const networkFetch = fetch(event.request)
-          .then((response) => {
-            const cacheable = response && response.status === 200 && response.type === 'basic';
-            if (cacheable) {
-              const cloned = response.clone();
-              caches.open(STATIC_CACHE).then((cache) => cache.put(event.request, cloned));
-            }
-            return response;
-          })
-          .catch(() => cached);
-        return cached || networkFetch;
-      })
-    );
-    return;
-  }
-
-  // ── Qolgan hammasi: network-first, cache fallback ──
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        if (response && response.status === 200 && response.type === 'basic') {
-          const cloned = response.clone();
-          caches.open(RUNTIME_CACHE).then((cache) => cache.put(event.request, cloned));
-        }
-        return response;
-      })
-      .catch(async () => {
-        const cached = await caches.match(event.request);
-        if (cached) return cached;
-        return new Response('Offline', {
-          status: 503,
-          statusText: 'Service Unavailable',
-          headers: { 'Content-Type': 'text/plain' }
-        });
-      })
-  );
+// Barcha tarmoq so'rovlari bevosita serverdan keshsiz olinadi
+self.addEventListener('fetch', () => {
+  return;
 });
+

@@ -267,10 +267,17 @@ if (authBtn) {
 
       const { data: free, error: freeErr } = await sb.rpc('username_available', { p_username: cleaned });
       if (freeErr) throw freeErr;
-      if (!free) {
+      let isFree = free;
+      if (isFree) {
+        try {
+          const { data: grpRows } = await sb.from('groups').select('id').ilike('username', cleaned).limit(1);
+          if (grpRows && grpRows.length) isFree = false;
+        } catch (_) {}
+      }
+      if (!isFree) {
         authBtn.disabled = false;
         authBtn.textContent = "Ro'yxatdan o'tish";
-        showErr(sbErrUz({ code: 'user_already_exists' }), ['aUsername']);
+        showErr('Bu nom allaqachon band', ['aUsername']);
         return;
       }
 
@@ -1112,6 +1119,12 @@ if (saveProfileBtn) {
       const cleaned = rawUser.toLowerCase().replace(/[^a-z0-9_]/g, '');
       if (cleaned.length < 2) { toast("Username kamida 2 ta belgi bo'lishi kerak (a-z, 0-9, _)", 'error'); return; }
       if (cleaned.length > 20) { toast("Username 20 ta belgidan oshmasligi kerak", 'error'); return; }
+      if (cleaned !== _peOriginalUsername) {
+        try {
+          const { data: grpRows } = await sb.from('groups').select('id').ilike('username', cleaned).limit(1);
+          if (grpRows && grpRows.length) { toast('Bu nom allaqachon band', 'error'); return; }
+        } catch (_) {}
+      }
       updates.username = cleaned;
     }
 

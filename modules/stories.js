@@ -16,6 +16,11 @@ let _timer = null;
 let _progressRaf = null;
 let _startedAt = 0;
 let _paused = false;
+let _pausedAt = 0;
+let _holdTimer = null;
+let _isHolding = false;
+let _startX = 0;
+let _startY = 0;
 let _bound = false;
 
 
@@ -163,6 +168,9 @@ function ensureStoriesCss() {
   display: flex; align-items: center; justify-content: center;
   background: #000;
   z-index: 1;
+  user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  pointer-events: none;
 }
 .sv-media img,
 .sv-media video {
@@ -170,6 +178,9 @@ function ensureStoriesCss() {
   width: 100%; height: 100%;
   object-fit: contain;
   display: block;
+  user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: none; -webkit-user-drag: none;
+  pointer-events: none;
 }
 
 .sv-caption {
@@ -178,11 +189,15 @@ function ensureStoriesCss() {
   background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0));
   color: #fff; font-size: 16px; line-height: 1.4; text-align: center;
   white-space: pre-wrap; overflow-wrap: anywhere; pointer-events: none;
+  user-select: none; -webkit-user-select: none;
 }
 
 .sv-nav {
   position: absolute; top: 0; bottom: 0;
   width: 35%; z-index: 3; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 .sv-prev { left: 0; }
 .sv-next { right: 0; }
@@ -252,22 +267,87 @@ function ensureDom() {
         </button>
       </div>
       <div class="sv-media" id="svMedia"></div>
-      <div class="sv-nav sv-prev" id="svPrev"></div>
-      <div class="sv-nav sv-next" id="svNext"></div>
     `;
     document.body.appendChild(v);
   }
 
   if (!_bound) {
     _bound = true;
-    $('svClose')?.addEventListener('click', closeViewer);
-    $('svPrev')?.addEventListener('click', () => step(-1));
-    $('svNext')?.addEventListener('click', () => step(1));
-    $('storyViewer')?.addEventListener('click', e => {
-      if (e.target === $('storyViewer')) closeViewer();
+    const v = $('storyViewer');
+    $('svClose')?.addEventListener('click', e => {
+      e.stopPropagation();
+      closeViewer();
     });
-    // Touch pause
-    const media = () => $('svMedia');
+
+    // Kontekst menyu (Copy image, Copy link va h.k.) ni butunlay bloklash
+    v?.addEventListener('contextmenu', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    });
+    v?.addEventListener('dragstart', e => {
+      e.preventDefault();
+      return false;
+    });
+
+    // Touch va sichqoncha bilan boshqaruv:
+    // Bosib turganda — story freeze (muzlatish)
+    // Qo'yib yuborganda — unfreeze (davom etish)
+    // Qisqa bosish (tap): o'ng taraf -> keyingi story, chap taraf -> oldingi story
+    if (v) {
+      v.addEventListener('pointerdown', e => {
+        if (e.target.closest('#svClose') || e.target.closest('.sv-user')) return;
+        _isHolding = false;
+        _startX = e.clientX;
+        _startY = e.clientY;
+        clearTimeout(_holdTimer);
+        _holdTimer = setTimeout(() => {
+          _isHolding = true;
+          freezeStory();
+        }, 140);
+      });
+
+      v.addEventListener('pointermove', e => {
+        if (!_isHolding && (Math.abs(e.clientX - _startX) > 14 || Math.abs(e.clientY - _startY) > 14)) {
+          clearTimeout(_holdTimer);
+        }
+      });
+
+      const handlePointerEnd = e => {
+        clearTimeout(_holdTimer);
+        if (_isHolding) {
+          _isHolding = false;
+          unfreezeStory();
+          return;
+        }
+        if (e.target.closest('#svClose') || e.target.closest('.sv-user')) return;
+        // Bir marta qisqa bosish: chap/o'ng navigatsiya
+        const rect = v.getBoundingClientRect();
+        const ratio = (e.clientX - rect.left) / (rect.width || window.innerWidth || 1);
+        if (ratio < 0.40) {
+          step(-1);
+        } else {
+          step(1);
+        }
+      };
+
+      v.addEventListener('pointerup', handlePointerEnd);
+      v.addEventListener('pointercancel', () => {
+        clearTimeout(_holdTimer);
+        if (_isHolding) {
+          _isHolding = false;
+          unfreezeStory();
+        }
+      });
+      v.addEventListener('pointerleave', () => {
+        clearTimeout(_holdTimer);
+        if (_isHolding) {
+          _isHolding = false;
+          unfreezeStory();
+        }
+      });
+    }
+
     // Esc: hikoya ko'rgich eng ustki qatlam (shortcuts.js bilan umumiy navbat)
     onEsc(900, () => { const v = $('storyViewer'); if (!v || v.hidden) return false; closeViewer(); return true; });
     document.addEventListener('keydown', e => {
@@ -460,7 +540,34 @@ function openViewer(groupIdx, itemIdx) {
   showCurrent();
 }
 
+function freezeStory() {
+  if (_paused) return;
+  _paused = true;
+  _pausedAt = performance.now();
+  const vid = $('svMedia')?.querySelector('video');
+  if (vid) {
+    try { vid.pause(); } catch (_) {}
+  }
+}
+
+function unfreezeStory() {
+  if (!_paused) return;
+  _paused = false;
+  if (_pausedAt) {
+    _startedAt += (performance.now() - _pausedAt);
+    _pausedAt = 0;
+  }
+  const vid = $('svMedia')?.querySelector('video');
+  if (vid) {
+    try { vid.play().catch(() => {}); } catch (_) {}
+  }
+}
+
 function closeViewer() {
+  clearTimeout(_holdTimer);
+  _isHolding = false;
+  _paused = false;
+  _pausedAt = 0;
   clearTimeout(_timer);
   cancelAnimationFrame(_progressRaf);
   const v = $('storyViewer');
@@ -468,7 +575,7 @@ function closeViewer() {
   document.body.style.overflow = '';
   const media = $('svMedia');
   if (media) {
-    media.querySelector('video')?.pause();
+    try { media.querySelector('video')?.pause(); } catch (_) {}
     media.innerHTML = '';
   }
   loadStories(); // ringlarni yangilash
@@ -590,8 +697,30 @@ async function markViewed(item) {
 }
 
 function step(dir) {
-  _itemIdx += dir;
-  showCurrent();
+  if (dir < 0) {
+    // Chap tomonga bosilganda: agar oldingi story bo'lsa o'tadi
+    if (_itemIdx > 0) {
+      _itemIdx--;
+      showCurrent();
+    } else if (_viewerIdx > 0) {
+      _viewerIdx--;
+      _itemIdx = Math.max(0, _groups[_viewerIdx].items.length - 1);
+      showCurrent();
+    }
+  } else {
+    // O'ng tomonga bosilganda: agar o'ng tomonda story bo'lsa o'tadi
+    const g = _groups[_viewerIdx];
+    if (g && _itemIdx + 1 < g.items.length) {
+      _itemIdx++;
+      showCurrent();
+    } else if (_viewerIdx + 1 < _groups.length && _groups[_viewerIdx + 1].items.length) {
+      _viewerIdx++;
+      _itemIdx = 0;
+      showCurrent();
+    } else {
+      closeViewer();
+    }
+  }
 }
 
 export function initStories() {
