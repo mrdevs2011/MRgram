@@ -1,8 +1,8 @@
 # AI Context — .
 
 ## Oxirgi holat
-- Sana: 2026-10-01 22:20
-- Nima qilindi: Postlardagi ulashish (share) tugmasi havola (link) tugmasiga almashtirildi (yangi SVG icon); Bosilganda modal/sheet chiqmasdan to'g'ridan-to'g'ri clipboardga 1 ta bosishda post havolasi nusxalanadi va "Havola nusxalandi" toasti chiqadi; Havola ochilganda login qilgan foydalanuvchi to'g'ridan-to'g'ri o'sha postga silliq (smooth) scroll qilinadi va post tagidan 3 sekund ko'k rangli nur (blue glow) yonib turib o'chadi; Agar foydalanuvchi hali kirmagan bo'lsa, login qilishi bilan avtomatik postga o'tkaziladi va 3s ko'k nur yonadi; Profil tafsilot modalidagi tugma ham yangilandi.
+- Sana: 2026-10-01 22:35
+- Nima qilindi: Parol o'zgartirilishi bilanoq barcha boshqa qurilma va brauzerlardagi sessiyalar darhol (realtime broadcast va DB timestamp orqali) majburiy logout qilinadi; Admin parol reset qilganda eski parol butunlay bekor qilinadi, yangi vaqtinchalik parol taqdim etiladi; Foydalanuvchi reset qilingan parol bilan kirishi bilanoq ekranda majburiy yangi shaxsiy parol o'rnatish modali (2 ta input: Yangi parol va Tasdiqlash) chiqadi va yangi parol o'rnatmaguncha sahifa ichkariga aslo o'tkazmaydi (bu orqali hisobning daxlsizligi kafolatlanadi); Saytdagi barcha alert/prompt/confirm dialoglar olib tashlanib, SpaceMR UI modallari (admin reset modal va nusxalash tugmasi) yaratildi; Migratsiya 020 masofaviy DB ga qo'llandi va Edge Function yangilandi.
 - Hozirgi muammo/blocker: Yo'q. 14/14 smoke va 7/7 rt-mesh testlari muvaffaqiyatli o'tdi.
 - Keyingi qadam: feat/realtime-03s va main ga commit va push.
 

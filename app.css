@@ -2598,6 +2598,28 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   font-size: 14px;
   font-weight: 500;
 }
+
+/* ── Password Eye Toggle & Reset Modals ── */
+.pwd-field-wrap {
+  position: relative;
+  width: 100%;
+}
+.pwd-eye-btn {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  user-select: none;
+}
+.pwd-eye-btn:hover {
+  opacity: 0.85;
+}
+.pwd-eye-btn:active {
+  transform: translateY(-50%) scale(0.92);
+}
+#mandatoryPwdOverlay .auth-card {
+  animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+#adminResetPwdOverlay .auth-card {
+  animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 /* CSS/layers.css — theme, ui-improvements, local-utility, dark-theme-fix, borderless, chat-dark-redesign, 00-components.core, post-composer, card-sheets, sidebar-x, no-animations (F4.4), style (global reset). Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
 /* ─── theme ─── */
 /* ═══════════════════════════════════════════ SpaceMR — Theme System SpaceMR — Theme System ═════════════════... */

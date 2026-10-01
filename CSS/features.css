@@ -2402,3 +2402,24 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   font-weight: 500;
 }
 
+/* ── Password Eye Toggle & Reset Modals ── */
+.pwd-field-wrap {
+  position: relative;
+  width: 100%;
+}
+.pwd-eye-btn {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  user-select: none;
+}
+.pwd-eye-btn:hover {
+  opacity: 0.85;
+}
+.pwd-eye-btn:active {
+  transform: translateY(-50%) scale(0.92);
+}
+#mandatoryPwdOverlay .auth-card {
+  animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+#adminResetPwdOverlay .auth-card {
+  animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

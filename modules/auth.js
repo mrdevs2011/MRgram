@@ -547,6 +547,39 @@ let _entering = false;    // _enterApp ikki marta parallel ishlamasin
 let _shownKey = null;     // bir xil pending/blocked ekran qayta-qayta chizilmasin
 const PROFILE_POLL_MS = 60 * 1000;
 
+function _getDeviceId() {
+  let id = sessionStorage.getItem('spacemr_device_session_id');
+  if (!id) {
+    id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36));
+    sessionStorage.setItem('spacemr_device_session_id', id);
+  }
+  return id;
+}
+
+function _getLocalPwdTs(uid) {
+  return Number(localStorage.getItem(`spacemr_pwd_ts_${uid}`) || 0);
+}
+function _setLocalPwdTs(uid, ts) {
+  if (uid && ts) localStorage.setItem(`spacemr_pwd_ts_${uid}`, String(ts));
+}
+
+export async function notifyPasswordChanged(uid) {
+  if (!uid) return;
+  const now = Date.now();
+  _setLocalPwdTs(uid, now);
+  try {
+    const ch = sb.channel('user-session-' + uid);
+    await ch.subscribe();
+    await ch.send({
+      type: 'broadcast',
+      event: 'password_changed',
+      payload: { sessionId: _getDeviceId(), at: now }
+    });
+  } catch (err) {
+    console.warn('[Auth] notifyPasswordChanged broadcast error:', err?.message);
+  }
+}
+
 function _buildMe(user, p) {
   return {
     uid: user.id,
@@ -555,6 +588,8 @@ function _buildMe(user, p) {
     photoURL: p?.avatar || null,
     username: p?.username || '',
     isAdmin: !!p?.isAdmin,
+    mustChangePassword: !!p?.mustChangePassword,
+    passwordChangedAt: p?.passwordChangedAt || null,
   };
 }
 
@@ -592,6 +627,7 @@ function _stopUserWatch() {
 
 async function _forceSignOut() {
   _stopUserWatch();
+  _hideMandatoryPasswordResetModal();
   try { await Promise.race([removePushToken(), new Promise(r => setTimeout(r, 800))]); } catch (_) {}
   try { clearAllCache(); } catch (_) {}
   try { await sb.auth.signOut({ scope: 'local' }); } catch (_) {}
@@ -619,6 +655,113 @@ async function _forceSignOut() {
   location.replace('/');
 }
 
+let _mandatoryModalActive = false;
+
+function _showMandatoryPasswordResetModal(me) {
+  _mandatoryModalActive = true;
+  const overlay = $('mandatoryPwdOverlay');
+  if (!overlay) return;
+
+  overlay.style.display = 'flex';
+  lockScroll();
+
+  const errEl = $('mandatoryPwdErr');
+  if (errEl) errEl.textContent = '';
+
+  const newInp = $('mNewPassword');
+  const confInp = $('mConfirmPassword');
+  const saveBtn = $('mandatoryPwdSaveBtn');
+  const outBtn = $('mandatoryPwdSignOutBtn');
+
+  if (newInp) { newInp.value = ''; newInp.classList.remove('input-error'); }
+  if (confInp) { confInp.value = ''; confInp.classList.remove('input-error'); }
+
+  overlay.querySelectorAll('.pwd-eye-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.preventDefault();
+      const targetId = btn.dataset.target;
+      const inp = $(targetId);
+      if (!inp) return;
+      const isPwd = inp.type === 'password';
+      inp.type = isPwd ? 'text' : 'password';
+      btn.innerHTML = isPwd
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    };
+  });
+
+  if (outBtn) {
+    outBtn.onclick = async () => {
+      _hideMandatoryPasswordResetModal();
+      await _forceSignOut();
+    };
+  }
+
+  if (saveBtn) {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Parolni saqlash va kirish';
+
+    saveBtn.onclick = async () => {
+      const p1 = newInp?.value || '';
+      const p2 = confInp?.value || '';
+
+      if (errEl) errEl.textContent = '';
+      newInp?.classList.remove('input-error');
+      confInp?.classList.remove('input-error');
+
+      if (!p1 || p1.length < 6) {
+        if (errEl) errEl.textContent = `Yangi parol kamida 6 ta belgi bo'lishi kerak`;
+        newInp?.classList.add('input-error');
+        newInp?.focus();
+        return;
+      }
+      if (p1 !== p2) {
+        if (errEl) errEl.textContent = 'Parollar bir-biriga mos kelmadi';
+        confInp?.classList.add('input-error');
+        confInp?.focus();
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saqlanmoqda...';
+
+      try {
+        const { error: pErr } = await sb.auth.updateUser({ password: p1 });
+        if (pErr) throw pErr;
+
+        try {
+          await sb.rpc('user_password_updated');
+        } catch (_) {
+          await sb.from('profiles').update({
+            must_change_password: false,
+            password_changed_at: new Date().toISOString()
+          }).eq('id', me.uid);
+        }
+
+        await notifyPasswordChanged(me.uid);
+
+        me.mustChangePassword = false;
+        _hideMandatoryPasswordResetModal();
+
+        toast("Yangi parolingiz muvaffaqiyatli o'rnatildi!", 'success');
+        await _enterApp(me);
+      } catch (err) {
+        console.error('[MandatoryPwdReset]', err);
+        if (errEl) errEl.textContent = err.message || 'Xatolik yuz berdi';
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Parolni saqlash va kirish';
+      }
+    };
+  }
+}
+
+function _hideMandatoryPasswordResetModal() {
+  _mandatoryModalActive = false;
+  const overlay = $('mandatoryPwdOverlay');
+  if (overlay) overlay.style.display = 'none';
+  unlockScroll();
+}
+
 /** Profilning eng so'nggi holatiga qarab ekranni to'g'irlaydi (idempotent). */
 async function _onLiveProfile(p, me) {
   if (!p) return;
@@ -628,7 +771,16 @@ async function _onLiveProfile(p, me) {
   const appEl = $('app');
   const isInApp = !!(appEl && appEl.classList.contains('show'));
 
-  // Bloklangan (muddati o'tmagan)
+  // 0. Boshqa qurilmada parol yangilangan bo'lsa darhol logout qilish
+  const knownPwdTs = _getLocalPwdTs(me.uid);
+  if (p.passwordChangedAt && knownPwdTs && p.passwordChangedAt > knownPwdTs + 1500) {
+    console.warn('[Auth] Parol boshqa qurilmada yangilandi (ts tekshiruvi). Chiqilmoqda...');
+    toast('Parolingiz boshqa qurilmada o\'zgartirildi. Iltimos, qayta kiring', 'warning');
+    await _forceSignOut();
+    return;
+  }
+
+  // 1. Bloklangan (muddati o'tmagan)
   if (_isBlockedNow(p)) {
     if (isInApp) {
       stopChatsWatcher();
@@ -641,7 +793,23 @@ async function _onLiveProfile(p, me) {
     return;
   }
 
-  // Ruxsat berilgan
+  // 2. Parolni majburiy yangilash talabi (admin tomonidan reset qilingan)
+  if (p.mustChangePassword === true) {
+    if (isInApp) {
+      stopChatsWatcher();
+      stopBus();
+      stopCallWatcher();
+      stopPresenceHeartbeat();
+      appEl.classList.remove('show');
+    }
+    hidePendingScreen();
+    _showMandatoryPasswordResetModal(me);
+    return;
+  } else {
+    _hideMandatoryPasswordResetModal();
+  }
+
+  // 3. Ruxsat berilgan
   if (p.approved === true) {
     if (!isInApp && !_entering) {
       hidePendingScreen();
@@ -651,7 +819,7 @@ async function _onLiveProfile(p, me) {
     return;
   }
 
-  // Pending yoki rejected
+  // 4. Pending yoki rejected
   if (isInApp) { await _forceSignOut(); return; }
   _showOnce(p.approved === 'rejected' ? 'rejected' : 'pending');
 }
@@ -660,10 +828,19 @@ function _startRealtimeUserWatch(me) {
   _stopUserWatch();
   const uid = me.uid;
 
-  // 1. Jonli signal (broadcast): admin tomonidan hisob o'chirilganda o'sha zahotiyoq logout qilish
+  // 1. Jonli signal (broadcast): hisob o'chirilganda yoki parol boshqa qurilmada o'zgarganda darhol logout qilish
   const sessionCh = sb.channel('user-session-' + uid)
     .on('broadcast', { event: 'account_deleted' }, async () => {
       console.warn('[Auth] Hisob admin tomonidan o\'chirildi');
+      await _forceSignOut();
+    })
+    .on('broadcast', { event: 'password_changed' }, async payload => {
+      const fromSession = payload?.payload?.sessionId;
+      if (fromSession && fromSession === _getDeviceId()) {
+        return; // o'z qurilmamiz parolni o'zgartirgan
+      }
+      console.warn('[Auth] Parol boshqa qurilmada o\'zgartirildi (broadcast). Darhol chiqilmoqda...');
+      toast('Parolingiz boshqa qurilmada o\'zgartirildi. Barcha sessiyalar yopildi', 'warning');
       await _forceSignOut();
     })
     .subscribe();
@@ -790,6 +967,11 @@ async function _handleSession(session) {
     const { applyAdminNav } = await import('./router.js');
     applyAdminNav();
   } catch (_) {}
+
+  // Sessiyadagi joriy parol vaqtini muhrlaymiz
+  if (!_getLocalPwdTs(me.uid)) {
+    _setLocalPwdTs(me.uid, p.passwordChangedAt || Date.now());
+  }
 
   // Faqat serverdan haqiqatan olingan holat — tasdiqlangan holat sifatida saqlanadi
   await _onLiveProfile(p, me);
@@ -1240,6 +1422,17 @@ if (saveProfileBtn) {
       if (wantsPwd) {
         const { error: pErr } = await sb.auth.updateUser({ password: newPwd });
         if (pErr) throw pErr;
+
+        try {
+          await sb.rpc('user_password_updated');
+        } catch (_) {
+          await sb.from('profiles').update({
+            must_change_password: false,
+            password_changed_at: new Date().toISOString()
+          }).eq('id', state.me.uid);
+        }
+
+        await notifyPasswordChanged(state.me.uid);
       }
       state.me.displayName = fn;
       if (updates.username) state.me.username = updates.username;

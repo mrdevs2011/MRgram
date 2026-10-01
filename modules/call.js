@@ -20,6 +20,7 @@ export {
 
 import { sb, state } from './config.js';
 import { $ } from './utils.js';
+import { toast } from './toast.js';
 import { TURN_URLS, TURN_USERNAME, TURN_CREDENTIAL } from './env.js';
 
 /* calls qatori (snake_case) → eski Firestore ko'rinishi */
@@ -650,7 +651,7 @@ async function _enableLocalVideo() {
       track.enabled = true;
     }
   } catch (err) {
-    alert('Kameraga ruxsat yo\'q: ' + err.message);
+    toast('Kameraga ruxsat yo\'q: ' + err.message, 'error');
     return;
   }
 
@@ -703,7 +704,7 @@ async function initiateCall(isVideo) {
       isVideo ? { audio: true, video: { facingMode: _facingMode } } : { audio: true }
     );
   } catch (err) {
-    alert('Mikrofon/kameraga ruxsat yo\'q: ' + err.message);
+    toast('Mikrofon/kameraga ruxsat yo\'q: ' + err.message, 'error');
     return;
   }
 
@@ -745,7 +746,7 @@ async function initiateCall(isVideo) {
   });
   if (insErr) {
     console.error("[Call] Qo'ng'iroq yozuvini yaratib bo'lmadi:", insErr.message);
-    alert("Qo'ng'iroqni boshlab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring.");
+    toast("Qo'ng'iroqni boshlab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring.", 'error');
     _hideActiveCallModal();
     _stopRingback();
     if (_localStream) { _localStream.getTracks().forEach(t => t.stop()); _localStream = null; }
@@ -807,7 +808,7 @@ async function _acceptIncomingCall(callData, callId) {
       _callIsVideo ? { audio: true, video: { facingMode: _facingMode } } : { audio: true }
     );
   } catch (err) {
-    alert("Mikrofon/kameraga ruxsat yo'q: " + err.message);
+    toast("Mikrofon/kameraga ruxsat yo'q: " + err.message, 'error');
     try { await _updateCall(callId, { status: 'declined' }); } catch (e) { console.warn('[call]', e?.message || e); }
     _callId = null;
     return;
@@ -1104,7 +1105,7 @@ async function _switchCamera() {
       const lv = document.getElementById('callLocalVideo');
       if (lv) { lv.srcObject = null; lv.srcObject = _localStream; }
     } catch (_) {}
-    alert('Kamerani almashtirib bo\'lmadi. Qurilmangizda faqat bitta kamera bo\'lishi mumkin.');
+    toast('Kamerani almashtirib bo\'lmadi. Qurilmangizda faqat bitta kamera bo\'lishi mumkin.', 'error');
   } finally {
     _switchingCam = false;
     btn?.classList.remove('active');

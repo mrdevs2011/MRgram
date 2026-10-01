@@ -71,7 +71,8 @@ export function mapProfile(r) {
     lastSeenAt: ts(r.last_seen),
     lastLoginAt: ts(r.last_login),
     lastUserAgent: r.last_user_agent || null,
-    lastPlatform: r.last_platform || null,
+    mustChangePassword: r.must_change_password === true,
+    passwordChangedAt: ts(r.password_changed_at),
     createdAt: ts(r.created_at),
   };
 }

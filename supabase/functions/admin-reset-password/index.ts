@@ -51,6 +51,11 @@ Deno.serve(async (req) => {
   const { error } = await admin.auth.admin.updateUserById(uid, { password: String(password) });
   if (error) return json({ error: error.message }, 500);
 
+  await admin.from('profiles').update({
+    must_change_password: true,
+    password_changed_at: new Date().toISOString(),
+  }).eq('id', uid);
+
   return json({ ok: true });
 });
 

@@ -13,3 +13,4 @@ Bazada ISHGA TUSHIRILGAN SQL fayllar, tartib raqami bilan. Yangi bazada `000_sch
 - 016 (2026-10-01): `group_messages.duration` ustuni qo'shildi, `group_messages_type_check` 'voice' turiga kengaytirildi va `on_group_message_insert()` triggeri ovozli xabar uchun `last_message = 'Ovozli xabar'` yozadigan qilindi.
 - 018 (2026-10-01): `groups.group_username` va `groups.group_invite_token` ustunlari, `claim_group_username()` RPC, va umumiy nomlar fazosi (profiles username bilan ziddiyatsiz).
 - 019 (2026-10-01): `profiles` uchun REPLICA IDENTITY FULL, `admin_delete_user()` va `delete_my_account()` orqali storage.objects, profiles (CASCADE) va auth.users ni to'liq tozalash.
+- 020 (2026-10-01): `profiles.must_change_password` va `password_changed_at` ustunlari, `admin_reset_user_password()` va `user_password_updated()` RPC lari. Parol o'zgarganda boshqa barcha qurilmalardan force logout va admin resetdan keyin birinchi kirishda majburiy yangi parol o'rnatish.
