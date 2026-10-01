@@ -1333,11 +1333,11 @@ function paintMessages(msgs, grp = null) {
     const isNew = !!m.id && !_seenMsgIds.has(m.id);
     if (m.id) _seenMsgIds.add(m.id);
 
-    // Guruh: har bir pufak sarlavhasida yuboruvchi ismi (yagona farq)
+    // Guruh: faqat boshqa foydalanuvchi xabarlarida yuboruvchi ismi
     let gHead = '';
-    if (grp) {
-      const sn = mine ? 'Siz' : (grp.names?.[m.senderId]?.fullName || 'Foydalanuvchi');
-      gHead = `<div class="grp-sender-name"${mine ? '' : ` data-uid="${esc(m.senderId)}"`}>${esc(sn)}</div>`;
+    if (grp && !mine) {
+      const sn = grp.names?.[m.senderId]?.fullName || 'Foydalanuvchi';
+      gHead = `<div class="grp-sender-name" data-uid="${esc(m.senderId)}">${esc(sn)}</div>`;
     }
 
     // Kun almashgan bo'lsa — Telegram uslubidagi "Bugun"/"Kecha"/sana pill'i
