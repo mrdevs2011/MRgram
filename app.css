@@ -2287,9 +2287,6 @@ svg { color: inherit; }
 /* Matn post — pastroq */
 .grid-cell--text, .up-grid-cell--text { grid-row: span 1; min-height: 72px; aspect-ratio: auto; }
 .grid-cell img, .grid-cell video, .up-grid-cell img, .up-grid-cell video { width: 100%; height: 100%; object-fit: cover;  }
-.grid-cell:hover img,
-.grid-cell:hover video,
-.up-grid-cell:hover img,
 .grid-cell-overlay,
 .up-grid-cell-overlay {
   position: absolute;
@@ -4636,6 +4633,7 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 }
 /* Chat media: yuklanmagan rasm katakchasi */
 .up-grid-cell.cm-broken { background: var(--bg3); }
+.up-grid-cell.cm-broken::after { content: 'Yuklanmadi'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text3, #777); }
 
 /* Emoji paneli (mobil + desktop): input qatori TEPASIDA, suhbat ustuni bo'ylab to'liq enli, xabarlar ustida SUZIB turadi (layout surilmaydi), chegarasiz — input qatori bilan bir xil #000 */
 #chatThreadModal { --ep-h: clamp(260px, 40dvh, 360px); }

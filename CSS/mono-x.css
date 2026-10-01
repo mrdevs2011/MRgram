@@ -765,6 +765,7 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 }
 /* Chat media: yuklanmagan rasm katakchasi */
 .up-grid-cell.cm-broken { background: var(--bg3); }
+.up-grid-cell.cm-broken::after { content: 'Yuklanmadi'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text3, #777); }
 
 /* Emoji paneli (mobil + desktop): input qatori TEPASIDA, suhbat ustuni bo'ylab to'liq enli, xabarlar ustida SUZIB turadi (layout surilmaydi), chegarasiz — input qatori bilan bir xil #000 */
 #chatThreadModal { --ep-h: clamp(260px, 40dvh, 360px); }

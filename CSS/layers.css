@@ -170,9 +170,6 @@ svg { color: inherit; }
 /* Matn post — pastroq */
 .grid-cell--text, .up-grid-cell--text { grid-row: span 1; min-height: 72px; aspect-ratio: auto; }
 .grid-cell img, .grid-cell video, .up-grid-cell img, .up-grid-cell video { width: 100%; height: 100%; object-fit: cover;  }
-.grid-cell:hover img,
-.grid-cell:hover video,
-.up-grid-cell:hover img,
 .grid-cell-overlay,
 .up-grid-cell-overlay {
   position: absolute;
