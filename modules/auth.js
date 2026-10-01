@@ -423,6 +423,13 @@ function _showForgotPasswordBtn(username, recInfo) {
   _lastRecoveryInfo = recInfo;
   const wrap = $('forgotPasswordWrap');
   if (wrap) wrap.style.display = 'block';
+  const btn = $('forgotPasswordBtn');
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Parolni unutdingizmi?';
+    btn.style.color = 'var(--tg-primary-blue,#1d9bf0)';
+    btn.style.cursor = 'pointer';
+  }
 }
 
 function _hideForgotPasswordBtn() {
@@ -430,14 +437,12 @@ function _hideForgotPasswordBtn() {
   _lastRecoveryInfo = null;
   const wrap = $('forgotPasswordWrap');
   if (wrap) wrap.style.display = 'none';
-}
-
-function hideForgotSentModal() {
-  const modal = $('forgotPasswordSentModal');
-  if (modal) {
-    modal.classList.remove('show');
-    modal.style.display = 'none';
-    unlockScroll();
+  const btn = $('forgotPasswordBtn');
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Parolni unutdingizmi?';
+    btn.style.color = 'var(--tg-primary-blue,#1d9bf0)';
+    btn.style.cursor = 'pointer';
   }
 }
 
@@ -484,7 +489,8 @@ if (forgotPasswordBtn) {
 
     const tempPassword = gen8CharTempPassword();
     forgotPasswordBtn.disabled = true;
-    const oldText = forgotPasswordBtn.textContent;
+    forgotPasswordBtn.style.color = 'var(--text3, #888)';
+    forgotPasswordBtn.style.cursor = 'default';
     forgotPasswordBtn.textContent = 'Yuborilmoqda...';
 
     try {
@@ -500,7 +506,7 @@ if (forgotPasswordBtn) {
         console.warn('[send-recovery-email] function invoke error:', fErr);
       }
 
-      // Agar edge function javob bermasa yoki resend ishlamasa, to'g'ridan-to'g'ri RPC chaqiramiz
+      // Agar edge function javob bermasa, to'g'ridan-to'g'ri RPC chaqiramiz
       if (!result) {
         const { data: rpcData, error: rpcErr } = await sb.rpc('request_password_reset', {
           p_username: u,
@@ -510,60 +516,33 @@ if (forgotPasswordBtn) {
         result = {
           ok: true,
           masked_email: rpcData?.masked_email,
-          dev_code: tempPassword,
         };
       }
 
-      // Natija xabarini ko'rsatish
-      const masked = result.masked_email || _lastRecoveryInfo?.masked_email || 'zaxira emailingizga';
-      const emailMaskedEl = $('forgotSentEmailMasked');
-      if (emailMaskedEl) emailMaskedEl.textContent = masked;
+      // Tugma kulrang (disabled) bo'lib "Yuborildi" deb qoladi
+      forgotPasswordBtn.disabled = true;
+      forgotPasswordBtn.style.color = 'var(--text3, #888)';
+      forgotPasswordBtn.style.cursor = 'default';
+      forgotPasswordBtn.textContent = 'Yuborildi';
 
-      const devWrap = $('forgotDevCodeWrap');
-      const devText = $('forgotDevCodeText');
-      if (result.dev_code) {
-        if (devWrap) devWrap.style.display = 'block';
-        if (devText) devText.textContent = result.dev_code;
-      } else {
-        if (devWrap) devWrap.style.display = 'none';
+      // Parol inputini tozalash va fokus berish
+      const pInp = $('aPassword');
+      if (pInp) {
+        pInp.value = '';
+        pInp.placeholder = 'Emailga kelgan 8 xonali parol';
+        pInp.focus();
       }
 
-      const modal = $('forgotPasswordSentModal');
-      if (modal) {
-        modal.classList.add('show');
-        modal.style.display = 'flex';
-        lockScroll();
-      }
-
-      toast('Vaqtinchalik parol yuborildi!', 'success');
+      toast('Vaqtinchalik parol emailingizga yuborildi', 'info');
     } catch (err) {
       console.error('[forgotPasswordBtn] error:', err);
-      toast(err.message || 'Parolni tiklashda xatolik yuz berdi', 'error');
-    } finally {
       forgotPasswordBtn.disabled = false;
-      forgotPasswordBtn.textContent = oldText;
+      forgotPasswordBtn.style.color = 'var(--tg-primary-blue,#1d9bf0)';
+      forgotPasswordBtn.style.cursor = 'pointer';
+      forgotPasswordBtn.textContent = 'Parolni unutdingizmi?';
+      toast(err.message || 'Parolni tiklashda xatolik yuz berdi', 'error');
     }
   };
-}
-
-const forgotSentOkBtn = $('forgotSentOkBtn');
-if (forgotSentOkBtn) {
-  forgotSentOkBtn.onclick = () => {
-    hideForgotSentModal();
-    const pInp = $('aPassword');
-    if (pInp) {
-      const devText = $('forgotDevCodeText')?.textContent;
-      if (devText) pInp.value = devText;
-      pInp.focus();
-    }
-  };
-}
-
-const forgotPasswordSentModal = $('forgotPasswordSentModal');
-if (forgotPasswordSentModal) {
-  forgotPasswordSentModal.addEventListener('click', (e) => {
-    if (e.target === forgotPasswordSentModal) hideForgotSentModal();
-  });
 }
 
 /* ── Ruxsat kutish ekrani ────────────────────────────────────────────── */

@@ -1,5 +1,6 @@
 // SpaceMR — send-recovery-email Edge Function
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import nodemailer from 'npm:nodemailer@6.9.9';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -46,12 +47,39 @@ Deno.serve(async (req) => {
     return json({ error: 'Zaxira email topilmadi' }, 400);
   }
 
-  // 2. Email xabarini jo'natish
-  const resendApiKey = Deno.env.get('RESEND_API_KEY');
-  let emailSent = false;
+  const emailSubject = 'SpaceMR: Hisobingiz uchun vaqtinchalik parol';
+  const emailHtml = `
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:500px;margin:auto;padding:28px 24px;border:1px solid #1a1a1a;border-radius:14px;background:#050505;color:#f0f0f0;">
+      <div style="display:flex;align-items:center;margin-bottom:16px;">
+        <div style="font-size:20px;font-weight:700;letter-spacing:-0.5px;color:#ffffff;">SpaceMR</div>
+      </div>
+      <h2 style="color:#ffffff;font-size:18px;font-weight:600;margin:0 0 12px 0;">Parolni tiklash so'rovi</h2>
+      <p style="color:#aaaaaa;font-size:14px;line-height:1.55;margin:0 0 16px 0;">
+        Hurmatli <strong>@${username}</strong>,<br>
+        Hisobingiz uchun 8 xonali vaqtinchalik parol tayyorlandi:
+      </p>
+      <div style="margin:20px 0;padding:18px;background:#111111;border:1px solid #222222;border-radius:10px;text-align:center;font-size:26px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-weight:700;letter-spacing:3px;color:#1d9bf0;">
+        ${temp_password}
+      </div>
+      <p style="color:#aaaaaa;font-size:13.5px;line-height:1.5;margin:0 0 14px 0;">
+        Ushbu vaqtinchalik parolni login oynasida kiriting. Kirishingiz bilanoq tizim sizdan <strong>yangi shaxsiy parol</strong> o'rnatishni so'raydi.
+      </p>
+      <p style="color:#666666;font-size:12px;margin:22px 0 0 0;border-top:1px solid #1a1a1a;padding-top:14px;line-height:1.4;">
+        Agar siz parolni tiklashni so'ramagan bo'lsangiz, ushbu xabarni e'tiborsiz qoldiring yoki darhol administrator bilan bog'laning.
+      </p>
+    </div>
+  `;
 
+  let emailSent = false;
+  let sendError: string | null = null;
+
+  // 2. Email jo'natish provayderlari (Resend, Brevo, SMTP)
+
+  // Provayder A: Resend API
+  const resendApiKey = Deno.env.get('RESEND_API_KEY');
   if (resendApiKey) {
     try {
+      const fromAddr = Deno.env.get('RESEND_FROM') || 'SpaceMR <onboarding@resend.dev>';
       const emailRes = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -59,32 +87,80 @@ Deno.serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'SpaceMR Xavfsizlik <security@spacemr.com>',
+          from: fromAddr,
           to: recoveryEmail,
-          subject: 'SpaceMR: Hisobingiz uchun vaqtinchalik parol',
-          html: `
-            <div style="font-family:sans-serif;max-width:500px;margin:auto;padding:24px;border:1px solid #e5e7eb;border-radius:12px;">
-              <h2 style="color:#111;margin-bottom:8px;">SpaceMR hisobingiz parolini tiklash</h2>
-              <p style="color:#555;font-size:14px;line-height:1.5;">
-                Hurmatli <strong>@${username}</strong>,<br>
-                Hisobingiz uchun yangi 8 xonali vaqtinchalik parol tayyorlandi:
-              </p>
-              <div style="margin:20px 0;padding:16px;background:#f3f4f6;border-radius:8px;text-align:center;font-size:24px;font-family:monospace;font-weight:bold;letter-spacing:2px;color:#1d9bf0;">
-                ${temp_password}
-              </div>
-              <p style="color:#555;font-size:13px;line-height:1.5;">
-                Ushbu vaqtinchalik parol bilan hisobingizga kiring. Kirishingiz bilanoq tizim sizdan <strong>yangi shaxsiy parol</strong> o'rnatishni so'raydi.
-              </p>
-              <p style="color:#999;font-size:12px;margin-top:20px;border-top:1px solid #eee;padding-top:12px;">
-                Agar siz parolni tiklashni so'ramagan bo'lsangiz, zudlik bilan administrator bilan bog'laning.
-              </p>
-            </div>
-          `,
+          subject: emailSubject,
+          html: emailHtml,
         }),
       });
-      if (emailRes.ok) emailSent = true;
-    } catch (e) {
-      console.warn('[send-recovery-email] Resend xatosi:', e);
+      if (emailRes.ok) {
+        emailSent = true;
+      } else {
+        const errJson = await emailRes.json().catch(() => null);
+        console.error('[send-recovery-email] Resend error:', emailRes.status, errJson);
+        sendError = `Resend: ${errJson?.message || emailRes.statusText}`;
+      }
+    } catch (e: any) {
+      console.error('[send-recovery-email] Resend exception:', e);
+      sendError = `Resend exception: ${e?.message}`;
+    }
+  }
+
+  // Provayder B: Brevo (Sendinblue) API
+  const brevoApiKey = Deno.env.get('BREVO_API_KEY');
+  if (!emailSent && brevoApiKey) {
+    try {
+      const senderEmail = Deno.env.get('BREVO_SENDER_EMAIL') || 'mrbir460@gmail.com';
+      const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': brevoApiKey,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          sender: { name: 'SpaceMR', email: senderEmail },
+          to: [{ email: recoveryEmail }],
+          subject: emailSubject,
+          htmlContent: emailHtml,
+        }),
+      });
+      if (brevoRes.ok) {
+        emailSent = true;
+      } else {
+        const bErr = await brevoRes.json().catch(() => null);
+        console.error('[send-recovery-email] Brevo error:', brevoRes.status, bErr);
+        sendError = `Brevo: ${bErr?.message || brevoRes.statusText}`;
+      }
+    } catch (e: any) {
+      console.error('[send-recovery-email] Brevo exception:', e);
+      sendError = `Brevo exception: ${e?.message}`;
+    }
+  }
+
+  // Provayder C: Standart SMTP (Gmail App Password, Mailtrap va h.k.)
+  const smtpHost = Deno.env.get('SMTP_HOST');
+  const smtpUser = Deno.env.get('SMTP_USER');
+  const smtpPass = Deno.env.get('SMTP_PASS');
+  if (!emailSent && smtpHost && smtpUser && smtpPass) {
+    try {
+      const smtpPort = Number(Deno.env.get('SMTP_PORT') || 465);
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: { user: smtpUser, pass: smtpPass },
+      });
+      await transporter.sendMail({
+        from: Deno.env.get('SMTP_FROM') || `SpaceMR <${smtpUser}>`,
+        to: recoveryEmail,
+        subject: emailSubject,
+        html: emailHtml,
+      });
+      emailSent = true;
+    } catch (e: any) {
+      console.error('[send-recovery-email] SMTP exception:', e);
+      sendError = `SMTP exception: ${e?.message}`;
     }
   }
 
@@ -93,7 +169,7 @@ Deno.serve(async (req) => {
     ok: true,
     masked_email: maskedEmail,
     email_sent: emailSent,
-    dev_code: emailSent ? null : temp_password,
+    error_detail: emailSent ? null : (sendError || 'Email provayder sozlanmagan'),
   });
 });
 
