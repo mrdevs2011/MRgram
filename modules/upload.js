@@ -1,3 +1,4 @@
+import { busEmit } from './rt-bus.js';
 import { sb, state, MAX_FILE, MAX_VIDEO_RAW, uploadViaController } from './config.js';
 import { compressVideo } from './compress.js';
 import { $, esc, fmtSz, lockScroll, unlockScroll, defAvi } from './utils.js';
@@ -544,7 +545,7 @@ $('uploadBtn').onclick = async () => {
       fileSize     = file.size;
     }
 
-    const { error: postErr } = await sb.from('posts').insert({
+    const { data: _newPost, error: postErr } = await sb.from('posts').insert({
       user_id:        state.me.uid,
       user_full_name: ud?.full_name || state.me.displayName || 'Foydalanuvchi',
       text:           caption || null,
@@ -555,12 +556,15 @@ $('uploadBtn').onclick = async () => {
       file_name:      fileName,
       file_size:      fileSize,
       is_public:      !!isPublic,
-    });
+    }).select('*').maybeSingle();
     if (postErr) {
       // Post yozilmadi — yuklangan faylni yetim qoldirmaymiz
       if (mediaPath) sb.storage.from('media').remove([mediaPath]).catch(() => {});
       throw postErr;
     }
+
+    // Ochiq post bo'lsa — hammaga shu zahoti (shaxsiy post faqat DB/RLS orqali)
+    if (_newPost && _newPost.is_public) busEmit('post', { op: 'new', row: _newPost });
 
     revokeObjUrl();
 

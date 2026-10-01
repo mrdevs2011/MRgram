@@ -25,7 +25,7 @@ export const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     detectSessionInUrl: false,
     storageKey: 'mrspace-auth',
   },
-  realtime: { params: { eventsPerSecond: 10 } },
+  realtime: { params: { eventsPerSecond: 60 } },
 });
 
 /* ── Vaqt: hamma joyda oddiy epoch-millisekund (number) ─────────────── */

@@ -184,7 +184,7 @@ function _paintUserRows(users, animate = false) {
   const html = rows.map(({ u, c }, idx) => {
     const av = u.avatar || defAvi(u.fullName || 'U');
     const isContact = _myContacts.has(u.uid);
-    const online = isOnline(u.lastSeenAt);
+    const online = isUidOnline(u.uid, isOnline(u.lastSeenAt));
     const preview = c
       ? `${c.lastSenderId === state.me.uid ? 'You: ' : ''}${esc((c.lastMessage || '').slice(0, 46))}`
       : isContact ? 'Kontakt' : 'Yangi suhbat boshlash';
@@ -249,6 +249,7 @@ import { rateOk }           from './rate-limit.js';
 import { initEmojiPicker } from './emoji-picker.js';
 import { emojiOnlyClass } from './emoji-only.js';
 import { openRt } from './rt-chat.js';
+import { busOn, inboxSend, inboxWarm, isUidOnline } from './rt-bus.js';
 import {
   startGroupsWatcher, stopGroupsWatcher, bindGroupsRealtime,
   openGroupThread, closeGroupThread,
@@ -724,6 +725,7 @@ let _peerStatusTick = null;
 let _peerLastSeenAt = null;
 let _chatDocUnsub = null;
 let _peerTyping = false;
+let _onPeerTyping = () => {};
 let _iAmTyping = false;
 let _typingTimeout = null;
 let _typingCh = null;      // joriy DM uchun BITTA doimiy broadcast kanal (yuborish + qabul)
@@ -738,8 +740,8 @@ function _paintPeerStatus(lastSeenAt) {
     el.classList.add('online');
     return;
   }
-  const online = isOnline(lastSeenAt);
-  el.textContent = formatLastSeen(lastSeenAt);
+  const online = isUidOnline(state.currentChatUid, isOnline(lastSeenAt));
+  el.textContent = online ? 'onlayn' : formatLastSeen(lastSeenAt);
   el.classList.toggle('online', online);
 }
 
@@ -751,9 +753,10 @@ function _paintPeerStatus(lastSeenAt) {
 function _setTyping(isTyping) {
   if (!state.currentChatId || !state.me) return;
   if (_iAmTyping === isTyping) return; // ortiqcha yuborishlarni oldini olish
-  if (!_typingCh || !_typingChReady) return; // kanal hali ulanmagan
+  if (!(_rt?.isP2P()) && (!_typingCh || !_typingChReady)) return; // kanal hali ulanmagan
   _iAmTyping = isTyping;
   try {
+    if (_rt?.isP2P()) { _rt.sendTyping(isTyping); return; }
     _typingCh.send({ type: 'broadcast', event: 'typing', payload: { uid: state.me.uid, typing: isTyping } });
   } catch (_) {}
 }
@@ -765,6 +768,31 @@ function _onChatInputTyping() {
   clearTimeout(_typingTimeout);
   _typingTimeout = setTimeout(() => _setTyping(false), 2500);
 }
+
+/* ── Tezkor kirish qutisi: boshqa tomondan kelgan xabar ro'yxatni shu zahoti yangilaydi ── */
+busOn('inbox', (o) => {
+  const me = state.me?.uid;
+  if (!me || !o || !o.from || o.from === me || typeof o.chatId !== 'string') return;
+  if (state.currentChatId === o.chatId && $('chatThreadModal')?.classList.contains('show')) return; // ochiq thread p2p/DB orqali
+  const prev = _latestChatMap[o.from];
+  if (prev && prev.lastMessageId === o.id) return;
+  const unread = { ...(prev?.unreadCount || {}) };
+  unread[me] = (unread[me] || 0) + 1;
+  _latestChatMap = {
+    ..._latestChatMap,
+    [o.from]: {
+      ...(prev || { id: o.chatId, participants: [me, o.from], createdAt: o.ts }),
+      lastMessage: String(o.text || '').slice(0, 120), lastMessageId: o.id,
+      lastSenderId: o.from, lastMessageAt: o.ts || Date.now(), unreadCount: unread,
+    },
+  };
+  updateChatBadge(Object.values(_latestChatMap).reduce((n, c) => n + (c.unreadCount?.[me] || 0), 0));
+  if (state.view === 'chats') paintChatsList(_usersCache || [], _latestChatMap);
+});
+document.addEventListener('presenceChanged', () => {
+  if (state.view === 'chats' && _usersCache) paintChatsList(_usersCache, _latestChatMap);
+  if (state.currentChatUid && $('chatTypingStatus')) _paintPeerStatus(_peerLastSeenAt);
+});
 
 /* ── Open chat thread ─────────────────────────────────────────────────── */
 export async function openChatThread(uid) {
@@ -860,13 +888,16 @@ export async function openChatThread(uid) {
   if (_chatDocUnsub) { _chatDocUnsub(); _chatDocUnsub = null; }
   {
     let tTimer = null;
+    _onPeerTyping = (v) => {
+      clearTimeout(tTimer);
+      _peerTyping = !!v;
+      if (_peerTyping) tTimer = setTimeout(() => { _peerTyping = false; _paintPeerStatus(_peerLastSeenAt); }, 5000);
+      _paintPeerStatus(_peerLastSeenAt);
+    };
     const tch = sb.channel('typing-bc-' + chatId)
       .on('broadcast', { event: 'typing' }, ({ payload }) => {
         if (!payload || payload.uid !== uid) return;
-        clearTimeout(tTimer);
-        _peerTyping = !!payload.typing;
-        if (_peerTyping) tTimer = setTimeout(() => { _peerTyping = false; _paintPeerStatus(_peerLastSeenAt); }, 5000);
-        _paintPeerStatus(_peerLastSeenAt);
+        _onPeerTyping(payload.typing);
       })
       .subscribe(st => { if (tch === _typingCh) _typingChReady = (st === 'SUBSCRIBED'); });
     _typingCh = tch;
@@ -882,7 +913,8 @@ export async function openChatThread(uid) {
   if (_rt) { _rt.close(); _rt = null; }
   _rtLocal.clear(); _rtRead.clear();
   _rtChatId = chatId;
-  _rt = openRt(chatId, uid, { onMsg: _rtIncoming, onRead: _rtReadAck, onRetract: _rtRetract });
+  _rt = openRt(chatId, uid, { onMsg: _rtIncoming, onRead: _rtReadAck, onRetract: _rtRetract, onTyping: (v) => _onPeerTyping(v) });
+  inboxWarm(uid);
 
   // Chat get_or_create_chat() bilan yaratilgan. Men ochyapman — o'qilmaganlarim nolga.
   sb.from('chat_members').update({ unread_count: 0 })
@@ -1500,6 +1532,8 @@ export async function sendChatMessage() {
   paintMessages([..._curMsgs, localMsg]);
   // 2) Peer'ga to'g'ridan-to'g'ri (WebRTC DataChannel; ulanmagan bo'lsa broadcast)
   if (_rt && _rtChatId === chatId) _rt.send(id, text);
+  // 2b) Peer'ning suhbatlar ro'yxati/unread — suhbat ochiq bo'lmasa ham shu zahoti
+  inboxSend(otherUid, { chatId, from: state.me.uid, id, text: text.slice(0, 120), ts: nowMs });
 
   try {
     // 3) Baza (haqiqat manbai) — xuddi shu ID bilan, dedup uchun

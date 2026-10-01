@@ -2,9 +2,11 @@ import { sb, state, isAdmin, getMediaUrl, mapProfile } from './config.js';
 import { $, esc, renderMarkdown, defAvi, fmtCount, fmt }     from './utils.js';
 import { toast }                   from './toast.js';
 import { rateOk }                   from './rate-limit.js';
+import { busEmit, busOn }          from './rt-bus.js';
 
 /* ── Duplicate load oldini olish ──────────────────────────────────────── */
 let _loading = false;
+let _myName = null;
 let _mode = null; // 'inline' | 'rail'
 
 function isDesktopCmt() {
@@ -255,6 +257,67 @@ function _cmtLive(postId, listId) {
     .subscribe();
 }
 
+/* ── Izohlar ro'yxatini chizish (keshdan — tarmoqsiz) ───────────────────── */
+let _cmtCache = null;   // { postId, listId, cmts, aMap } — ochiq ro'yxatning joriy holati
+function _cmtCount(postId, n) {
+  const ccSpan = document.getElementById(`cc-${postId}`);
+  if (ccSpan) ccSpan.textContent = fmtCount(n);
+  const rcc = document.querySelector(`.rcmt-${postId}`);
+  if (rcc) rcc.textContent = `${n}`;
+  const post = state.allPosts.find(p => p.id === postId);
+  if (post) post.commentCount = n;
+}
+function _paintCmts(postId, listId, cmts, aMap) {
+  const list = $(listId);
+  if (!list) return;
+  if (!cmts.length) { list.innerHTML = emptyHtml(); return; }
+  list.innerHTML = cmts.map(c => `<div class="cmt-row" data-cmt-id="${c.id}">
+      <div class="cmt-avi user-avi-btn" data-uid="${c.userId}">
+        <img src="${aMap[c.userId]}" onerror="this.style.display='none'">
+      </div>
+      <div class="cmt-body">
+        <div class="cmt-head"><span class="cmt-name">${esc(c.userName)}</span><span class="cmt-time">· ${fmt(c.createdAt)}</span></div>
+        <div class="cmt-text">${renderMarkdown(c.text)}</div>
+      </div>
+      ${(state.me?.uid === c.userId || isAdmin())
+        ? `<button class="cmt-del" data-post="${postId}" data-cmt="${c.id}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/>
+            </svg></button>`
+        : ''}
+    </div>`).join('');
+
+    list.querySelectorAll('.cmt-del').forEach(b => b.addEventListener('click', async () => {
+      if (b.disabled) return;
+      b.disabled = true;
+      try {
+        const { error: delErr } = await sb.from('comments').delete().eq('id', b.dataset.cmt);
+        if (delErr) throw delErr;
+        toast('Izoh o\'chirildi', 'success');
+        const _left = cmts.filter(x => String(x.id) !== String(b.dataset.cmt));
+        _cmtCache = { postId, listId, cmts: _left, aMap };
+        _paintCmts(postId, listId, _left, aMap);
+        _cmtCount(postId, _left.length);
+        busEmit('cmt', { op: 'del', postId, id: b.dataset.cmt, n: _left.length });
+      } catch (e) {
+        console.error('Comment delete failed:', e);
+        toast('Izohni o\'chirib bo\'lmadi', 'error');
+        b.disabled = false;
+      }
+    }));
+
+    list.querySelectorAll('.user-avi-btn').forEach(b => b.addEventListener('click', async () => {
+      if (b.dataset.uid !== state.me?.uid) {
+        if (_mode === 'inline') closeAllInline();
+        if (_mode === 'rail') closeRailCmt();
+        const { openUserProfileModal } = await import('./profile.js');
+        openUserProfileModal(b.dataset.uid);
+      }
+    }));
+
+    list.scrollTop = list.scrollHeight;
+}
+
 async function loadComments(postId, listId) {
   if (_loading) return;
   _loading = true;
@@ -291,47 +354,8 @@ async function loadComments(postId, listId) {
       aMap[u] = d.avatar || defAvi(d.fullName);
     });
 
-    list.innerHTML = cmts.map(c => `<div class="cmt-row" data-cmt-id="${c.id}">
-      <div class="cmt-avi user-avi-btn" data-uid="${c.userId}">
-        <img src="${aMap[c.userId]}" onerror="this.style.display='none'">
-      </div>
-      <div class="cmt-body">
-        <div class="cmt-head"><span class="cmt-name">${esc(c.userName)}</span><span class="cmt-time">· ${fmt(c.createdAt)}</span></div>
-        <div class="cmt-text">${renderMarkdown(c.text)}</div>
-      </div>
-      ${(state.me?.uid === c.userId || isAdmin())
-        ? `<button class="cmt-del" data-post="${postId}" data-cmt="${c.id}">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/>
-            </svg></button>`
-        : ''}
-    </div>`).join('');
-
-    list.querySelectorAll('.cmt-del').forEach(b => b.addEventListener('click', async () => {
-      if (b.disabled) return;
-      b.disabled = true;
-      try {
-        const { error: delErr } = await sb.from('comments').delete().eq('id', b.dataset.cmt);
-        if (delErr) throw delErr;
-        toast('Izoh o\'chirildi', 'success');
-        await loadComments(b.dataset.post, listId);
-      } catch (e) {
-        console.error('Comment delete failed:', e);
-        toast('Izohni o\'chirib bo\'lmadi', 'error');
-        b.disabled = false;
-      }
-    }));
-
-    list.querySelectorAll('.user-avi-btn').forEach(b => b.addEventListener('click', async () => {
-      if (b.dataset.uid !== state.me?.uid) {
-        if (_mode === 'inline') closeAllInline();
-        if (_mode === 'rail') closeRailCmt();
-        const { openUserProfileModal } = await import('./profile.js');
-        openUserProfileModal(b.dataset.uid);
-      }
-    }));
-
-    list.scrollTop = list.scrollHeight;
+    _cmtCache = { postId, listId, cmts, aMap };
+    _paintCmts(postId, listId, cmts, aMap);
 
   } catch (e) {
     console.error('Izohlar load failed:', e);
@@ -340,6 +364,24 @@ async function loadComments(postId, listId) {
     _loading = false;
   }
 }
+
+/* ── Tezkor shina: boshqa foydalanuvchining izohi ro'yxatga shu zahoti qo'shiladi ── */
+busOn('cmt', o => {
+  const c = _cmtCache;
+  if (!c || c.postId !== o.postId) return;
+  const l = $(c.listId);
+  if (!l || !l.isConnected || l.getClientRects().length === 0) return;
+  if (o.op === 'add' && o.row?.id) {
+    if (c.cmts.some(x => String(x.id) === String(o.row.id))) return;
+    c.cmts = [...c.cmts, o.row];
+    if (o.avatar) c.aMap = { ...c.aMap, [o.row.userId]: o.avatar };
+    else if (!c.aMap[o.row.userId]) c.aMap = { ...c.aMap, [o.row.userId]: defAvi(o.row.userName) };
+  } else if (o.op === 'del') {
+    c.cmts = c.cmts.filter(x => String(x.id) !== String(o.id));
+  } else return;
+  _paintCmts(c.postId, c.listId, c.cmts, c.aMap);
+  _cmtCount(c.postId, c.cmts.length);
+});
 
 /* ── Send comment ─────────────────────────────────────────────────────── */
 export async function sendCmtModal() {
@@ -373,14 +415,18 @@ async function sendComment(mode) {
   if (sendBtn) sendBtn.disabled = true;
 
   try {
-    const { data: ud } = await sb.from('profiles').select('full_name').eq('id', state.me.uid).maybeSingle();
+    if (!_myName) {
+      const { data: ud } = await sb.from('profiles').select('full_name').eq('id', state.me.uid).maybeSingle();
+      _myName = ud?.full_name || state.me.displayName || 'Foydalanuvchi';
+    }
+    const postId = state.cmtPostId;
 
-    const { error: insErr } = await sb.from('comments').insert({
-      post_id:   state.cmtPostId,
+    const { data: row, error: insErr } = await sb.from('comments').insert({
+      post_id:   postId,
       user_id:   state.me.uid,
-      user_name: ud?.full_name || state.me.displayName || 'Foydalanuvchi',
+      user_name: _myName,
       text,
-    });
+    }).select('*').maybeSingle();
     if (insErr) throw insErr;
 
     if (inp) inp.value = '';
@@ -390,19 +436,24 @@ async function sendComment(mode) {
       cnt.className = 'cmt-char-count';
     }
 
-    const newCount = (state.allPosts.find(p => p.id === state.cmtPostId)?.commentCount || 0) + 1;
-
-    const ccSpan = document.getElementById(`cc-${state.cmtPostId}`);
-    if (ccSpan) ccSpan.textContent = fmtCount(newCount);
-
-    const rccSpan = document.querySelector(`.rcmt-${state.cmtPostId}`);
-    if (rccSpan) rccSpan.textContent = `${newCount}`;
-
-    const post = state.allPosts.find(p => p.id === state.cmtPostId);
-    if (post) post.commentCount = newCount;
+    // Ro'yxatga shu zahoti qo'shamiz (qayta yuklamasdan) va hammaga yuboramiz
+    const mine = { id: row?.id ?? ('tmp-' + Date.now()), userId: state.me.uid, userName: _myName, text, createdAt: row?.created_at || new Date().toISOString() };
+    if (!(_cmtCache && _cmtCache.postId === postId)) {
+      // Ro'yxat hali yuklanmagan — to'liq yuklaymiz (eski yo'l)
+      busEmit('cmt', { op: 'add', postId, n: (state.allPosts.find(p => p.id === postId)?.commentCount || 0) + 1, row: mine });
+      toast('Izoh qo\'shildi', 'success');
+      await loadComments(postId, listId);
+      return;
+    }
+    const base = _cmtCache;
+    const av = state._userCache?.[state.me.uid]?.avatar || base.aMap[state.me.uid] || defAvi(_myName);
+    const cmts = base.cmts.some(x => String(x.id) === String(mine.id)) ? base.cmts : [...base.cmts, mine];
+    _cmtCache = { postId, listId, cmts, aMap: { ...base.aMap, [state.me.uid]: av } };
+    _paintCmts(postId, listId, cmts, _cmtCache.aMap);
+    _cmtCount(postId, cmts.length);
+    busEmit('cmt', { op: 'add', postId, n: cmts.length, avatar: av, row: mine });
 
     toast('Izoh qo\'shildi', 'success');
-    await loadComments(state.cmtPostId, listId);
 
   } catch (e) {
     console.error('Comment send failed:', e);

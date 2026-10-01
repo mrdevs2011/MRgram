@@ -1,3 +1,4 @@
+import { busEmit } from './rt-bus.js';
 import { sb, state, CAP_LIMIT, getMediaUrl, isAdmin, mapProfile, MEDIA_BUCKET } from './config.js';
 import { $, esc, renderMarkdown, fmt, fmtSz, defAvi,
          initVidWrap, showConfirm,
@@ -540,6 +541,9 @@ export async function doLike(postId, btn) {
     setTimeout(() => btn.classList.remove('like-pop'), 400);
   }
 
+  // Boshqalarga shu zahoti (DB trigger/postgres_changes kutilmaydi)
+  busEmit('like', { postId, n: post?.likes ?? (wasLiked ? Math.max(0, cur-1) : cur+1), on: !wasLiked });
+
   // Like sonini DB trigger yangilaydi (post_likes → posts.likes_count)
   try {
     if (wasLiked) {
@@ -571,6 +575,7 @@ export async function doDelete(id) {
   state.allPosts = state.allPosts.filter(p => p.id !== id);
   document.querySelector(`.post[data-id="${id}"]`)?.remove();
   document.querySelector(`.grid-cell[data-id="${id}"]`)?.remove();
+  busEmit('post', { op: 'del', id });
   toast("Post o'chirildi", 'success');
   document.dispatchEvent(new CustomEvent('postsUpdated'));
 }

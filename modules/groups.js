@@ -25,6 +25,8 @@ import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, lockScroll, unlock
 import { toast }                                    from './toast.js';
 import { rateOk }                                   from './rate-limit.js';
 import { emojiOnlyClass }                            from './emoji-only.js';
+import { openRtGroup }                              from './rt-chat.js';
+import { busOn, groupJoin, groupInboxSend, isUidOnline } from './rt-bus.js';
 import { updateVoiceSendBtn, _toDateSafe, _isSameDay, _dateSepLabel } from './chat.js';
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -38,6 +40,7 @@ let _currentGroupId  = null;
 let _currentGroupData = null;
 let _gMsgs = [];            // joriy guruh threadidagi xabarlar (realtime payload shu ro'yxatga qo'llanadi)
 let _gLoaded = false;
+let _gRt = null;            // guruh uchun WebRTC mesh (zaxira: broadcast)
 const _gPending = new Map(); // bazadan hali tasdiqlanmagan optimistik xabarlar
 const _gUuid = () => (crypto.randomUUID ? crypto.randomUUID()
   : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
@@ -86,6 +89,7 @@ async function _loadGroups() {
     _latestGroupMap[g.id] = g;
     groupListItems.push(g);
   });
+  ids.forEach(groupJoin);
   if (_currentGroupId && _latestGroupMap[_currentGroupId]) _currentGroupData = _latestGroupMap[_currentGroupId];
   // Thread ochiq bo'lsa — admin sozlamani o'zgartirgan bo'lishi mumkin: input qatorini qayta hisoblaymiz
   if (_currentGroupId && _currentGroupData) _applyGroupComposer(_currentGroupData);
@@ -167,6 +171,37 @@ export function stopGroupsWatcher() {
   _currentGroupId  = null;
   _currentGroupData = null;
 }
+
+/** P2P/broadcast orqali kelgan guruh xabari — bazadan oldin ko'rsatiladi (id bo'yicha dedup) */
+function _gIncoming(groupId, m) {
+  if (!m?.id || _currentGroupId !== groupId || !_gLoaded) return;
+  if (_gPending.has(m.id) || _gMsgs.some(x => x.id === m.id)) return;
+  if (m.from === state.me?.uid) return;
+  if (!(_currentGroupData?.members || []).includes(m.from)) return;
+  const now = Date.now();
+  const msg = mapMessage({ id: m.id, group_id: groupId, sender_id: m.from, type: 'text', text: m.text, created_at: new Date(now).toISOString() });
+  msg._at = now;
+  _gPending.set(m.id, msg);
+  _gMsgs = [..._gMsgs, msg];
+  paintGroupMessages(_gMsgs, _currentGroupData);
+  if (document.visibilityState === 'visible') _resetGroupUnread(groupId);
+}
+
+/* ── Tezkor kirish qutisi: guruh ro'yxati preview/unread shu zahoti ── */
+busOn('ginbox', (o) => {
+  const me = state.me?.uid;
+  if (!me || !o || !o.gid || o.from === me) return;
+  const g = _latestGroupMap[o.gid];
+  if (!g) return;
+  if (_currentGroupId === o.gid) return;            // ochiq thread o'zi yangilanadi
+  if (g._lastId === o.id) return;
+  g._lastId = o.id;
+  g.lastMessage = String(o.text || '').slice(0, 120);
+  g.lastSenderId = o.from;
+  g.lastMessageAt = o.ts || Date.now();
+  g.unreadCount = { ...(g.unreadCount || {}), [me]: ((g.unreadCount || {})[me] || 0) + 1 };
+  if (state.view === 'chats') document.dispatchEvent(new CustomEvent('groupsUpdated'));
+});
 
 /* ─────────────────────────────────────────────────────────────────────
    OPEN GROUP/CHANNEL THREAD
@@ -274,6 +309,11 @@ export async function openGroupThread(groupId) {
   if (_groupThreadUnsub) { _groupThreadUnsub(); _groupThreadUnsub = null; }
   let _gDead = false, _gTimer = null;
   _gMsgs = []; _gLoaded = false; _gPending.clear();
+  // Tezkor yo'l: a'zolar bilan to'liq mesh (WebRTC DataChannel); baza baribir asosiy
+  if (_gRt) { _gRt.close(); _gRt = null; }
+  _gRt = openRtGroup(groupId, (_currentGroupData || groupData)?.members || [], {
+    onMsg: (m) => _gIncoming(groupId, m),
+  });
   const loadMsgs = async () => {
     const { data, error } = await sb.from('group_messages').select('*')
       .eq('group_id', groupId).order('created_at', { ascending: false }).limit(1000);
@@ -323,6 +363,7 @@ export async function openGroupThread(groupId) {
     .subscribe(st => { if (st === 'SUBSCRIBED') sched(); });
   _groupThreadUnsub = () => {
     _gDead = true; clearTimeout(_gTimer); sb.removeChannel(gch);
+    if (_gRt) { _gRt.close(); _gRt = null; }
     if (_reloadGroupThread === loadMsgs) _reloadGroupThread = null;
   };
   _reloadGroupThread = loadMsgs;
@@ -486,6 +527,8 @@ export async function sendGroupMessage() {
   _gPending.set(mid, localMsg);
   _gMsgs = [..._gMsgs, localMsg];
   paintGroupMessages(_gMsgs, groupData);
+  _gRt?.send(mid, text);
+  groupInboxSend(groupId, { gid: groupId, from: state.me.uid, id: mid, text: text.slice(0, 120), ts: nowMs });
 
   try {
     const { error } = await sb.from('group_messages')
@@ -670,7 +713,7 @@ export async function openGroupInfo(groupId) {
             const av   = u.avatar || defAvi(u.fullName || 'U');
             const role = uid === g.ownerId ? 'Egasi' : (g.adminIds||[]).includes(uid) ? 'Admin' : '';
             const isSelf = uid === state.me?.uid;
-            const online = isOnline(u.lastSeenAt);
+            const online = isUidOnline(u.uid, isOnline(u.lastSeenAt));
             return `<div class="grp-member-row" data-uid="${uid}">
               <div class="grp-member-avi-wrap">
                 <div class="grp-member-avi"><img src="${av}" onerror="this.style.display='none'"></div>

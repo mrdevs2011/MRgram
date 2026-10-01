@@ -3,6 +3,7 @@ import { $, esc, defAvi, uToEmail, lockScroll, unlockScroll, showConfirm } from 
 import { toast }                       from './toast.js';
 import { initPush, removePushToken, areNotificationsEnabled, setNotificationsEnabled, notificationsUserDisabled } from './push.js';
 import { startChatsWatcher, stopChatsWatcher, repaintNoticeBanner } from './chat.js';
+import { startBus, stopBus, busOn } from './rt-bus.js';
 import { startCallWatcher, stopCallWatcher } from './call.js';
 import { clearAllCache, cachePosts, getCachedPosts, clearRuntimeCache, getCachedProfile } from './local-cache.js';
 
@@ -598,6 +599,7 @@ async function _onLiveProfile(p, me) {
   if (_isBlockedNow(p)) {
     if (isInApp) {
       stopChatsWatcher();
+      stopBus();
       stopCallWatcher();
       stopPresenceHeartbeat();
       appEl.classList.remove('show');
@@ -655,6 +657,7 @@ async function _handleSession(session) {
     if (_postsUnsub) { _postsUnsub(); _postsUnsub = null; }
     hidePendingScreen();
     stopChatsWatcher();
+    stopBus();
     stopCallWatcher();
     stopPresenceHeartbeat();
     const app = $('app');
@@ -753,6 +756,7 @@ async function _enterApp(user) {
 
     listenPosts();
     if (!notificationsUserDisabled()) initPush();
+    startBus();          // tezkor shina: like/izoh/post/presence/kirish qutisi
     startChatsWatcher(); // ichida startGroupsWatcher ham
     startCallWatcher();
 
@@ -914,7 +918,7 @@ export function listenPosts() {
   let _renderDebounceTimer = null;
   function _scheduleRender() {
     clearTimeout(_renderDebounceTimer);
-    _renderDebounceTimer = setTimeout(() => { render(); }, 16);
+    _renderDebounceTimer = setTimeout(() => { render(); }, 0);
   }
 
   // ── KESH-BIRINCHI: oldingi safar saqlangan postlarni darhol ko'rsatamiz ──
@@ -1016,7 +1020,25 @@ export function listenPosts() {
       }
     });
 
-  _postsUnsub = () => { clearTimeout(_renderDebounceTimer); sb.removeChannel(ch); };
+  // Tezkor shina: yozuvchidan to'g'ridan-to'g'ri keladi (postgres_changes kutilmaydi); keyin DB hodisasi to'g'rilaydi
+  const _offBus = [
+    busOn('post', o => {
+      if (o.op === 'new' && o.row?.id) byId.set(o.row.id, mapPost(o.row));
+      else if (o.op === 'del' && o.id) byId.delete(o.id);
+      else return;
+      _scheduleRender();
+    }),
+    busOn('like', o => {
+      const p = byId.get(o.postId);
+      if (p && Number.isFinite(o.n)) { byId.set(o.postId, { ...p, likes: o.n }); _scheduleRender(); }
+    }),
+    busOn('cmt', o => {
+      const p = byId.get(o.postId);
+      if (p && Number.isFinite(o.n)) { byId.set(o.postId, { ...p, commentCount: o.n }); _scheduleRender(); }
+    }),
+  ];
+
+  _postsUnsub = () => { clearTimeout(_renderDebounceTimer); _offBus.forEach(f => f()); sb.removeChannel(ch); };
 }
 
 /* ── Profil edit / logout — to'liq implementatsiya ─────────────────── */
