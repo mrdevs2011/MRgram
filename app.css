@@ -4338,11 +4338,12 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
   max-width: 410px;
   width: 92%;
   margin: auto;
-  background: var(--bg2, #16181f);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #000000 !important;
+  background-color: #000000 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   border-radius: 24px;
   padding: 26px 22px 22px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.04) !important;
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
@@ -5432,3 +5433,69 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 }
 #confirmOverlay #confirmOkBtn:hover { background: #f43f5e; box-shadow: 0 2px 12px rgba(224, 36, 94, .4); }
 @media (prefers-reduced-motion: reduce) { #confirmOverlay.show .sheet { animation: none; } }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ULTRA-DARK OLED (#000000) CARDS & MODALS SYSTEM
+   ═══════════════════════════════════════════════════════════════════════ */
+/* Barcha cardlar, modallar va oynalar toza deep pitch black #000000 */
+.auth-card,
+[data-theme="dark"] .auth-card,
+.admin-reset-card,
+.ua-modal,
+[data-theme="dark"] .ua-modal,
+.modal-card,
+.modal-content,
+.composer-sheet,
+.sheet,
+[data-theme] .sheet,
+.profile-card,
+.grp-card,
+.confirm-box,
+.detail-modal-card {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.04) !important;
+}
+
+#authWrap {
+  background: #000000 !important;
+  background-color: #000000 !important;
+}
+
+#authWrap .auth-card {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.95) !important;
+}
+
+/* Auth card maydonlari: professional dark fon */
+#authWrap .field,
+#authWrap input.field,
+#authWrap input:not([type="checkbox"]):not([type="radio"]) {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+#authWrap .field:focus,
+#authWrap input.field:focus {
+  background: #000000 !important;
+  border-color: var(--tg-primary-blue, #1d9bf0) !important;
+  box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.25) !important;
+}
+
+/* Modallar foni: chuqur qorong'u blur */
+.overlay,
+[data-theme] .overlay,
+[data-theme="dark"] .overlay,
+.ua-modal-overlay,
+#mandatoryPwdOverlay,
+#adminResetPwdOverlay,
+#recoveryEmailInfoModal,
+#forgotPasswordSentModal {
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  background: rgba(0, 0, 0, 0.82) !important;
+}

@@ -1,8 +1,8 @@
 # AI Context — .
 
 ## Oxirgi holat
-- Sana: 2026-10-01 22:58
-- Nima qilindi: Admin parol reset modali (.admin-reset-card) premium dark-glass va mukammal tipografiya bilan butunlay qayta loyihalashtirildi: flex qisilishi va cho'zilishi tufayli g'alati ko'rinib qolgan input va refresh tugmasi to'g'rilandi; 8 xonali chalkash vaqtinchalik parol (Q123eqwe) uchun keng, aniq monospaced maydon va smooth 360-gradus aylanuvchi yangilash tugmasi yaratildi; Ogohlantirish bloki va qizil/kulrang harakat tugmalari simmetrik grid bilan chiroyli qilindi; Escape va backdrop bosilganda yopilish qo'shildi; app.css qayta yig'ildi; Smoke (14/14) va mesh (7/7) testlari muvaffaqiyatli o'tdi.
+- Sana: 2026-10-01 23:03
+- Nima qilindi: Barcha cardlar, modallar va login cardlar to'liq OLED pitch-black (#000000) rangiga o'tkazildi; .admin-reset-card, .auth-card, .ua-modal, .sheet, .composer-sheet va barcha overlay modallari chuqur qora (#000000) fon, 1px oq shaffof hoshiya va 0 24px 70px qora soya bilan professional darajaga keltirildi; Zaxira email maydoni (sign-up va profil tahririda) "Zaxira email (ixtiyoriy)" shaklida belgilandi va ro'yxatdan o'tishda ixtiyoriy qilindi (kiritilsa formati tekshiriladi, kiritilmasa majburiy qilinmaydi); app.css qayta yig'ildi; Smoke (14/14) va mesh (7/7) testlari muvaffaqiyatli o'tdi.
 - Hozirgi muammo/blocker: Yo'q.
 - Keyingi qadam: main va feat/realtime-03s ga commit va push qilish.
 

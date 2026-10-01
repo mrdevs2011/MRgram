@@ -267,18 +267,14 @@ if (authBtn) {
         showErr('Ismingizni kiriting', ['aFullname']);
         return;
       }
-      if (!recEmail) {
-        authBtn.disabled = false;
-        authBtn.textContent = "Ro'yxatdan o'tish";
-        showErr('Zaxira emailni kiriting', ['aRecoveryEmail']);
-        return;
-      }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(recEmail)) {
-        authBtn.disabled = false;
-        authBtn.textContent = "Ro'yxatdan o'tish";
-        showErr("Zaxira email formati noto'g'ri", ['aRecoveryEmail']);
-        return;
+      if (recEmail) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(recEmail)) {
+          authBtn.disabled = false;
+          authBtn.textContent = "Ro'yxatdan o'tish";
+          showErr("Zaxira email formati noto'g'ri", ['aRecoveryEmail']);
+          return;
+        }
       }
       if (p !== c) {
         authBtn.disabled = false;
