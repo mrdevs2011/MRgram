@@ -82,6 +82,8 @@ async function _loadGroups() {
     groupListItems.push(g);
   });
   if (_currentGroupId && _latestGroupMap[_currentGroupId]) _currentGroupData = _latestGroupMap[_currentGroupId];
+  // Thread ochiq bo'lsa — admin sozlamani o'zgartirgan bo'lishi mumkin: input qatorini qayta hisoblaymiz
+  if (_currentGroupId && _currentGroupData) _applyGroupComposer(_currentGroupData);
   // Notify chat.js list to repaint
   if (state.view === 'chats') document.dispatchEvent(new CustomEvent('groupsUpdated'));
 }
@@ -170,6 +172,40 @@ function _restoreInputRow() {
   // Input row ni qayta ko'rsatish
   const inputRow = document.querySelector('.chat-thread-input-row');
   if (inputRow) inputRow.style.display = '';
+  // Cheklangan guruhdan chiqqanda DM inputi qulflangan qolib ketmasin
+  const inp = document.getElementById('chatThreadInput');
+  if (inp) { inp.disabled = false; inp.placeholder = 'Xabar...'; }
+  ['chatAttachBtn', 'chatVoiceBtn'].forEach(id => {
+    const el = document.getElementById(id); if (el) { el.style.opacity = ''; el.style.pointerEvents = ''; }
+  });
+}
+
+/** "Faqat adminlar yozadi" rejimi: oddiy a'zoda input qatori UMUMAN ko'rinmaydi, o'rnida izoh chiqadi.
+ *  Admin rejimni o'chirsa — input qaytadi (groups realtime orqali _loadGroups() shuni qayta chaqiradi). */
+function _applyGroupComposer(g) {
+  if (!g || !state.me) return;
+  const me  = state.me.uid;
+  const can = g.ownerId === me || (g.adminIds || []).includes(me) || g.msgPermission !== 'admins';
+  const row = document.querySelector('.chat-thread-input-row');
+  const inp = $('chatThreadInput');
+  document.getElementById('channelActionBar')?.remove();
+  const resetBtn = id => { const el = $(id); if (el) { el.style.opacity = ''; el.style.pointerEvents = ''; } };
+  if (can) {
+    if (row) row.style.display = '';
+    if (inp) { inp.disabled = false; inp.placeholder = 'Xabar yozing...'; }
+    resetBtn('chatAttachBtn'); resetBtn('chatVoiceBtn');
+    return;
+  }
+  if (inp) { inp.value = ''; inp.disabled = true; inp.blur(); }
+  if (row) {
+    row.style.display = 'none';
+    const bar = document.createElement('div');
+    bar.id = 'channelActionBar';
+    bar.className = 'fs-13px c-text2 tac';
+    bar.style.cssText = 'padding:14px 12px;flex-shrink:0;padding-bottom:max(14px, env(safe-area-inset-bottom));';
+    bar.textContent = 'Faqat adminlar xabar yozishi mumkin';
+    row.parentNode.insertBefore(bar, row);
+  }
 }
 
 export async function openGroupThread(groupId) {
@@ -211,34 +247,8 @@ export async function openGroupThread(groupId) {
     const el = $(id); if (el) el.style.display = 'none';
   });
 
-  // Input area logic
-  const isOwner    = groupData.ownerId === state.me.uid;
-  const isGrpAdmin = (groupData.adminIds || []).includes(state.me.uid);
-  // "Xabar yuborish huquqi: Faqat adminlar" sozlamasi bo'lsa —
-  // oddiy a'zolar yoza olmaydi (faqat egasi/admin).
-  const msgRestricted = groupData.msgPermission === 'admins';
-  const canPost    = isOwner || isGrpAdmin || !msgRestricted;
-
-  if (!canPost) {
-    // Guruh — "faqat adminlar yozsin" yoqilgan va bu oddiy a'zo:
-    // input qatorini ko'rsatamiz, lekin yozish taqiqlangan holatda.
-    _restoreInputRow();
-    $('chatThreadInput').disabled    = true;
-    $('chatThreadInput').placeholder = "Faqat adminlar xabar yozishi mumkin";
-    $('chatAttachBtn') && ($('chatAttachBtn').style.opacity = '0.4');
-    $('chatAttachBtn') && ($('chatAttachBtn').style.pointerEvents = 'none');
-    $('chatVoiceBtn')  && ($('chatVoiceBtn').style.opacity = '0.4');
-    $('chatVoiceBtn')  && ($('chatVoiceBtn').style.pointerEvents = 'none');
-  } else {
-    // Oddiy input (yozish huquqi bor)
-    _restoreInputRow();
-    $('chatThreadInput').disabled    = false;
-    $('chatThreadInput').placeholder = 'Xabar yozing...';
-    $('chatAttachBtn') && ($('chatAttachBtn').style.opacity = '');
-    $('chatAttachBtn') && ($('chatAttachBtn').style.pointerEvents = '');
-    $('chatVoiceBtn')  && ($('chatVoiceBtn').style.opacity = '');
-    $('chatVoiceBtn')  && ($('chatVoiceBtn').style.pointerEvents = '');
-  }
+  // Input qatori: yozish huquqiga qarab ko'rsatiladi/yashiriladi (keyin ham jonli yangilanadi)
+  _applyGroupComposer(groupData);
 
   // Info button (tap header → group info)
   $('chatThreadAvi').style.cursor  = 'pointer';
