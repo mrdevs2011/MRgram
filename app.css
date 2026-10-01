@@ -351,8 +351,26 @@
   animation: spin .8s linear infinite;
   pointer-events: none;
 }
-.vid-wrap { position: relative; width: 100%; background: var(--pal-black); overflow: hidden; }
-.vid-overlay { position: absolute; inset: 0; bottom: 36px; cursor: pointer; z-index: 1; }
+.vid-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--pal-black);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.vid-overlay {
+  position: absolute;
+  inset: 0;
+  bottom: 36px;
+  cursor: pointer;
+  z-index: 1;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
 .vid-controls { position: absolute; bottom: 0; left: 0; right: 0; height: 36px; display: flex; align-items: center; gap: 6px; padding: 0 8px; z-index: 2; }
 .vc-play, .vc-mute, .vc-fs { border: none; color: var(--pal-white); cursor: pointer; padding: 4px; flex-shrink: 0; }
 .vc-play svg, .vc-mute svg, .vc-fs svg { width: 16px; height: 16px; }
@@ -360,6 +378,51 @@
 .vc-bar { height: 3px; background: var(--pal-legacy-525257); border-radius: 2px; overflow: hidden; }
 .vc-fill { height: 100%; background: var(--pal-white); width: 0%; border-radius: 2px;  }
 .vc-time { font-size: 11px; color: var(--pal-white); flex-shrink: 0; min-width: 28px; }
+
+/* ═══════════════════════ VIDEO 2X SPEED / REWIND BADGE ═══════════════════════ */
+.vid-speed-badge {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(15, 15, 18, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 20;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  animation: vidSpeedBadgePop 0.16s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.vid-speed-badge svg {
+  display: block;
+}
+.story-viewer .vid-speed-badge {
+  top: calc(max(24px, calc(env(safe-area-inset-top, 0px) + 16px)) + 52px);
+  z-index: 25;
+}
+@keyframes vidSpeedBadgePop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -6px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
 /* Caption */
 .cap-more { color: var(--text3); font-size: 12px; cursor: pointer; font-weight: 500; margin-left: 2px;  }
 .cap-more:hover { color: var(--text2); }

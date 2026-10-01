@@ -229,6 +229,131 @@ export function initVidWrap(wrap) {
   vid.addEventListener('ended', () => setPlayState(wrap, false));
   vid.addEventListener('play',  () => setPlayState(wrap, true));
   vid.addEventListener('pause', () => setPlayState(wrap, false));
+
+  // 2X oldinga (o'ng) va 2X orqaga qaytarish (chap)
+  let holdTimer = null;
+  let isHolding = false;
+  let wasPlaying = false;
+  let rewindRaf = null;
+  let currentDir = null; // 'forward' | 'rewind'
+  let startX = 0;
+  let startY = 0;
+
+  const updateProgress = () => {
+    if (!vid.duration) return;
+    const pct = (vid.currentTime / vid.duration) * 100;
+    const fill = wrap.querySelector('.vc-fill');
+    const timeEl = wrap.querySelector('.vc-time');
+    if (fill) fill.style.width = pct + '%';
+    if (timeEl) timeEl.textContent = fmtVidTime(vid.currentTime);
+  };
+
+  const showBadge = (type) => {
+    wrap.querySelectorAll('.vid-speed-badge').forEach(b => b.remove());
+    const badge = document.createElement('div');
+    badge.className = `vid-speed-badge vid-speed-badge--${type}`;
+    if (type === 'forward') {
+      badge.innerHTML = `<span>2X</span><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,4 15,12 5,20"/><polygon points="13,4 23,12 13,20"/></svg>`;
+    } else {
+      badge.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,20 9,12 19,4"/><polygon points="11,20 1,12 11,4"/></svg><span>2X</span>`;
+    }
+    wrap.appendChild(badge);
+  };
+
+  const hideBadge = () => {
+    wrap.querySelectorAll('.vid-speed-badge').forEach(b => b.remove());
+  };
+
+  const startHoldSpeed = (isRight) => {
+    isHolding = true;
+    wrap._justHeldSpeed = true;
+    currentDir = isRight ? 'forward' : 'rewind';
+    cancelAnimationFrame(rewindRaf);
+
+    if (isRight) {
+      vid.playbackRate = 2.0;
+      if (vid.paused) {
+        vid.muted = state.globalMuted;
+        vid.play().catch(() => {});
+      }
+      showBadge('forward');
+    } else {
+      vid.playbackRate = 1.0;
+      vid.pause();
+      showBadge('rewind');
+      let lastTime = performance.now();
+      const loop = (now) => {
+        if (!isHolding || currentDir !== 'rewind') return;
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
+        lastTime = now;
+        if (vid.currentTime > 0) {
+          vid.currentTime = Math.max(0, vid.currentTime - dt * 2.0);
+          updateProgress();
+        }
+        rewindRaf = requestAnimationFrame(loop);
+      };
+      rewindRaf = requestAnimationFrame(loop);
+    }
+  };
+
+  const stopHoldSpeed = () => {
+    clearTimeout(holdTimer);
+    cancelAnimationFrame(rewindRaf);
+    hideBadge();
+
+    if (isHolding) {
+      isHolding = false;
+      currentDir = null;
+      vid.playbackRate = 1.0;
+      if (wasPlaying) {
+        vid.play().catch(() => {});
+      }
+      setTimeout(() => {
+        wrap._justHeldSpeed = false;
+      }, 140);
+    }
+  };
+
+  const overlay = wrap.querySelector('.vid-overlay') || wrap;
+
+  overlay.addEventListener('pointerdown', e => {
+    if (e.button && e.button !== 0) return;
+    if (e.target.closest('.vid-controls')) return;
+    clearTimeout(holdTimer);
+    isHolding = false;
+    wasPlaying = !vid.paused;
+    startX = e.clientX;
+    startY = e.clientY;
+    const rect = wrap.getBoundingClientRect();
+    const isRight = (e.clientX - rect.left) >= (rect.width / 2);
+
+    holdTimer = setTimeout(() => {
+      startHoldSpeed(isRight);
+    }, 140);
+  });
+
+  overlay.addEventListener('pointermove', e => {
+    if (isHolding) {
+      const rect = wrap.getBoundingClientRect();
+      const isRight = (e.clientX - rect.left) >= (rect.width / 2);
+      const newDir = isRight ? 'forward' : 'rewind';
+      if (newDir !== currentDir) {
+        startHoldSpeed(isRight);
+      }
+    } else if (Math.abs(e.clientX - startX) > 12 || Math.abs(e.clientY - startY) > 12) {
+      clearTimeout(holdTimer);
+    }
+  });
+
+  overlay.addEventListener('pointerup', stopHoldSpeed);
+  overlay.addEventListener('pointercancel', stopHoldSpeed);
+  overlay.addEventListener('pointerleave', stopHoldSpeed);
+  overlay.addEventListener('contextmenu', e => {
+    if (isHolding || wrap._justHeldSpeed) {
+      e.preventDefault();
+      return false;
+    }
+  });
 }
 
 export function toggleVidPlay(el) {
@@ -272,6 +397,7 @@ export function reqFullscreen(wrap) {
 document.addEventListener('click', e => {
   const wrap = e.target.closest('.vid-wrap');
   if (!wrap) return;
+  if (wrap._justHeldSpeed) return;
   if (e.target.closest('.vc-play') || e.target.closest('.vid-overlay')) {
     toggleVidPlay(wrap);
   } else if (e.target.closest('.vc-mute')) {

@@ -19,6 +19,9 @@ let _paused = false;
 let _pausedAt = 0;
 let _holdTimer = null;
 let _isHolding = false;
+let _speedHolding = false;
+let _speedDir = null;
+let _rewindRaf = null;
 let _startX = 0;
 let _startY = 0;
 let _bound = false;
@@ -226,6 +229,38 @@ function ensureStoriesCss() {
   .sv-prev { left: calc(50% - min(210px, 46vw)); }
   .sv-next { right: calc(50% - min(210px, 46vw)); left: auto; }
 }
+
+.vid-speed-badge {
+  position: absolute;
+  top: calc(max(24px, calc(env(safe-area-inset-top, 0px) + 16px)) + 52px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(15, 15, 18, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 25;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  animation: vidSpeedBadgePop 0.16s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.vid-speed-badge svg { display: block; }
+@keyframes vidSpeedBadgePop {
+  from { opacity: 0; transform: translate(-50%, -6px) scale(0.92); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
 `;
   document.head.appendChild(s);
 }
@@ -296,25 +331,48 @@ function ensureDom() {
     // Qisqa bosish (tap): o'ng taraf -> keyingi story, chap taraf -> oldingi story
     if (v) {
       v.addEventListener('pointerdown', e => {
+        if (e.button && e.button !== 0) return;
         if (e.target.closest('#svClose') || e.target.closest('.sv-user')) return;
         _isHolding = false;
+        _speedHolding = false;
         _startX = e.clientX;
         _startY = e.clientY;
+        const mediaEl = $('svMedia') || v;
+        const rect = mediaEl.getBoundingClientRect();
+        const isRight = (e.clientX - rect.left) >= (rect.width / 2);
+
         clearTimeout(_holdTimer);
         _holdTimer = setTimeout(() => {
-          _isHolding = true;
-          freezeStory();
+          const vid = $('svMedia')?.querySelector('video');
+          if (vid) {
+            startSpeed2X(isRight);
+          } else {
+            _isHolding = true;
+            freezeStory();
+          }
         }, 140);
       });
 
       v.addEventListener('pointermove', e => {
-        if (!_isHolding && (Math.abs(e.clientX - _startX) > 14 || Math.abs(e.clientY - _startY) > 14)) {
+        if (_speedHolding) {
+          const mediaEl = $('svMedia') || v;
+          const rect = mediaEl.getBoundingClientRect();
+          const isRight = (e.clientX - rect.left) >= (rect.width / 2);
+          const newDir = isRight ? 'forward' : 'rewind';
+          if (newDir !== _speedDir) {
+            startSpeed2X(isRight);
+          }
+        } else if (!_isHolding && (Math.abs(e.clientX - _startX) > 14 || Math.abs(e.clientY - _startY) > 14)) {
           clearTimeout(_holdTimer);
         }
       });
 
       const handlePointerEnd = e => {
         clearTimeout(_holdTimer);
+        if (_speedHolding) {
+          stopSpeed2X();
+          return;
+        }
         if (_isHolding) {
           _isHolding = false;
           unfreezeStory();
@@ -322,8 +380,9 @@ function ensureDom() {
         }
         if (e.target.closest('#svClose') || e.target.closest('.sv-user')) return;
         // Bir marta qisqa bosish: chap/o'ng navigatsiya
-        const rect = v.getBoundingClientRect();
-        const ratio = (e.clientX - rect.left) / (rect.width || window.innerWidth || 1);
+        const mediaEl = $('svMedia') || v;
+        const rect = mediaEl.getBoundingClientRect();
+        const ratio = (e.clientX - rect.left) / (rect.width || 1);
         if (ratio < 0.40) {
           step(-1);
         } else {
@@ -334,6 +393,7 @@ function ensureDom() {
       v.addEventListener('pointerup', handlePointerEnd);
       v.addEventListener('pointercancel', () => {
         clearTimeout(_holdTimer);
+        if (_speedHolding) stopSpeed2X();
         if (_isHolding) {
           _isHolding = false;
           unfreezeStory();
@@ -341,6 +401,7 @@ function ensureDom() {
       });
       v.addEventListener('pointerleave', () => {
         clearTimeout(_holdTimer);
+        if (_speedHolding) stopSpeed2X();
         if (_isHolding) {
           _isHolding = false;
           unfreezeStory();
@@ -540,6 +601,67 @@ function openViewer(groupIdx, itemIdx) {
   showCurrent();
 }
 
+function showStorySpeedBadge(type) {
+  hideStorySpeedBadge();
+  const v = $('storyViewer');
+  if (!v) return;
+  const badge = document.createElement('div');
+  badge.className = `vid-speed-badge vid-speed-badge--${type}`;
+  if (type === 'forward') {
+    badge.innerHTML = `<span>2X</span><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,4 15,12 5,20"/><polygon points="13,4 23,12 13,20"/></svg>`;
+  } else {
+    badge.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,20 9,12 19,4"/><polygon points="11,20 1,12 11,4"/></svg><span>2X</span>`;
+  }
+  v.appendChild(badge);
+}
+
+function hideStorySpeedBadge() {
+  $('storyViewer')?.querySelectorAll('.vid-speed-badge').forEach(b => b.remove());
+}
+
+function startSpeed2X(isRight) {
+  const vid = $('svMedia')?.querySelector('video');
+  if (!vid) return;
+  _speedHolding = true;
+  _speedDir = isRight ? 'forward' : 'rewind';
+  cancelAnimationFrame(_rewindRaf);
+
+  if (isRight) {
+    vid.playbackRate = 2.0;
+    if (vid.paused) vid.play().catch(() => {});
+    showStorySpeedBadge('forward');
+  } else {
+    vid.playbackRate = 1.0;
+    vid.pause();
+    showStorySpeedBadge('rewind');
+    let lastTime = performance.now();
+    const loop = (now) => {
+      if (!_speedHolding || _speedDir !== 'rewind') return;
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+      if (vid.currentTime > 0) {
+        vid.currentTime = Math.max(0, vid.currentTime - dt * 2.0);
+      }
+      _rewindRaf = requestAnimationFrame(loop);
+    };
+    _rewindRaf = requestAnimationFrame(loop);
+  }
+}
+
+function stopSpeed2X() {
+  cancelAnimationFrame(_rewindRaf);
+  hideStorySpeedBadge();
+  const vid = $('svMedia')?.querySelector('video');
+  if (vid) {
+    vid.playbackRate = 1.0;
+    if (_speedHolding) {
+      vid.play().catch(() => {});
+    }
+  }
+  _speedHolding = false;
+  _speedDir = null;
+}
+
 function freezeStory() {
   if (_paused) return;
   _paused = true;
@@ -566,6 +688,7 @@ function unfreezeStory() {
 function closeViewer() {
   clearTimeout(_holdTimer);
   _isHolding = false;
+  stopSpeed2X();
   _paused = false;
   _pausedAt = 0;
   clearTimeout(_timer);
@@ -584,17 +707,24 @@ function closeViewer() {
 function buildProgress(n, active, ratio) {
   const el = $('svProgress');
   if (!el) return;
-  el.innerHTML = Array.from({ length: n }, (_, i) => {
+  if (el.children.length !== n) {
+    el.innerHTML = Array.from({ length: n }, () =>
+      `<div class="sv-seg"><div class="sv-seg-fill"></div></div>`
+    ).join('');
+  }
+  const fills = el.querySelectorAll('.sv-seg-fill');
+  fills.forEach((fill, i) => {
     let w = '0%';
     if (i < active) w = '100%';
-    else if (i === active) w = Math.round(ratio * 100) + '%';
-    return `<div class="sv-seg"><div class="sv-seg-fill" style="width:${w}"></div></div>`;
-  }).join('');
+    else if (i === active) w = Math.min(100, Math.max(0, ratio * 100)) + '%';
+    fill.style.width = w;
+  });
 }
 
 async function showCurrent() {
   clearTimeout(_timer);
   cancelAnimationFrame(_progressRaf);
+  stopSpeed2X();
   _paused = false;
 
   const g = _groups[_viewerIdx];
@@ -643,6 +773,7 @@ async function showCurrent() {
       vid.onerror = res;
       setTimeout(res, 2000);
     });
+    vid.onended = () => step(1);
     vid.play().catch(() => {});
   } else {
     const img = document.createElement('img');
@@ -669,7 +800,13 @@ async function showCurrent() {
       _progressRaf = requestAnimationFrame(tick);
       return;
     }
-    const ratio = Math.min(1, (now - _startedAt) / duration);
+    const vid = media.querySelector('video');
+    let ratio = 0;
+    if (vid && vid.duration > 0) {
+      ratio = Math.min(1, Math.max(0, vid.currentTime / vid.duration));
+    } else {
+      ratio = Math.min(1, (now - _startedAt) / duration);
+    }
     buildProgress(n, _itemIdx, ratio);
     if (ratio >= 1) {
       step(1);
