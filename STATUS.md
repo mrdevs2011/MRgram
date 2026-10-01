@@ -88,3 +88,12 @@
   - Supabase jonli bazasida `on_message_insert()` va `on_group_message_insert()` triggerlari yangilangan (migratsiya: `017_file-caption.sql`).
 - Fayllar: modules/chat.js, modules/groups.js, CSS/features.css, app.css, supabase/migrations/017_file-caption.sql, STATUS.md
 - Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.
+
+---
+### 2026-10-01 18:35
+- Qilindi:
+  - Rasm va videolar pufakka (bubble) o'ralib qolmasligi ta'minlandi (Telegram/WhatsApp uslubi).
+  - Standalone media (matnsiz rasm/video): pufak foni, ramkasi va paddingi to'liq olib tashlandi (`.bubble-media-only`), media 16px burchaklar bilan o'zi chiqadi, vaqt va chek belgisi rasm ustida suzuvchi yarim shaffof nishon (`.cfm-media-badge`) sifatida ko'rsatiladi, fayl nomi/hajmi yozuvi olib tashlandi.
+  - Matnli media (caption bor rasm/video): media pufakning eng tepasida hech qanday ramka/paddinglarsiz chekkagacha (flush edge-to-edge) joylashadi, uning tagida esa izoh matni va vaqt chiqadi.
+- Fayllar: modules/chat.js, CSS/features.css, app.css, STATUS.md
+- Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.

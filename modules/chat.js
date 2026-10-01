@@ -1880,6 +1880,8 @@ function paintMessages(msgs, grp = null) {
     const time = fmtTime(m.createdAt);
     let bubbleContent = '';
     let emoCls = '';
+    let bubbleClassExtra = '';
+    let metaOutside = true;
 
     if (m.type === 'voice') {
       /* ── Voice message ── */
@@ -1906,26 +1908,55 @@ function paintMessages(msgs, grp = null) {
       const _mime = (m.mediaType || '').toLowerCase();
       const _isImage = _mime.startsWith('image') || ['jpg','jpeg','png','gif','webp','svg','avif'].includes(_ext);
       const _isVideo = _mime.startsWith('video') || ['mp4','mov','avi','mkv','webm'].includes(_ext);
-      const captionHtml = m.text ? `<div class="chat-bubble-text cfm-caption">${renderMarkdown(m.text)}</div>` : '';
+      const hasCaption = !!(m.text && m.text.trim());
+      const captionHtml = hasCaption ? `<div class="chat-bubble-text cfm-caption">${renderMarkdown(m.text)}</div>` : '';
 
       if (_isImage) {
         /* ── Image preview inline ── */
-        bubbleContent = `<div class="cfm-media-wrap">
-          <a href="${safeUrl}" target="_blank" rel="noopener" class="cfm-img-link">
-            <img class="cfm-img-preview" src="${safeUrl}" alt="${fname}" loading="lazy" onload="this.classList.add('loaded')">
-          </a>
-          ${fsz ? `<div class="cfm-media-meta">${fname} · ${fsz}</div>` : ''}
-          ${captionHtml}
-        </div>`;
+        if (!hasCaption) {
+          bubbleClassExtra = ' bubble-media-only';
+          metaOutside = false;
+          bubbleContent = `<div class="cfm-media-wrap cfm-media-wrap--standalone">
+            <a href="${safeUrl}" target="_blank" rel="noopener" class="cfm-img-link">
+              <img class="cfm-img-preview" src="${safeUrl}" alt="${fname}" loading="lazy" onload="this.classList.add('loaded')">
+            </a>
+            <span class="chat-msg-meta cfm-media-badge">
+              ${m.editedAt ? '<span class="chat-msg-edited">tahrirlangan</span>' : ''}<span class="chat-msg-time">${time}</span>
+              ${mine ? renderTicks(m.status) : ''}
+            </span>
+          </div>`;
+        } else {
+          bubbleClassExtra = ' bubble-media-caption';
+          bubbleContent = `<div class="cfm-media-wrap">
+            <a href="${safeUrl}" target="_blank" rel="noopener" class="cfm-img-link">
+              <img class="cfm-img-preview" src="${safeUrl}" alt="${fname}" loading="lazy" onload="this.classList.add('loaded')">
+            </a>
+            ${captionHtml}
+          </div>`;
+        }
       } else if (_isVideo) {
         /* ── Video preview inline ── */
-        bubbleContent = `<div class="cfm-media-wrap">
-          <video class="cfm-video-preview" src="${safeUrl}" controls playsinline preload="metadata">
-            <a href="${safeUrl}" target="_blank" rel="noopener">${fname}</a>
-          </video>
-          ${fsz ? `<div class="cfm-media-meta">${fname} · ${fsz}</div>` : ''}
-          ${captionHtml}
-        </div>`;
+        if (!hasCaption) {
+          bubbleClassExtra = ' bubble-media-only';
+          metaOutside = false;
+          bubbleContent = `<div class="cfm-media-wrap cfm-media-wrap--standalone cfm-media-wrap--video">
+            <video class="cfm-video-preview" src="${safeUrl}" controls playsinline preload="metadata">
+              <a href="${safeUrl}" target="_blank" rel="noopener">${fname}</a>
+            </video>
+            <span class="chat-msg-meta cfm-media-badge cfm-media-badge--video">
+              ${m.editedAt ? '<span class="chat-msg-edited">tahrirlangan</span>' : ''}<span class="chat-msg-time">${time}</span>
+              ${mine ? renderTicks(m.status) : ''}
+            </span>
+          </div>`;
+        } else {
+          bubbleClassExtra = ' bubble-media-caption';
+          bubbleContent = `<div class="cfm-media-wrap cfm-media-wrap--video">
+            <video class="cfm-video-preview" src="${safeUrl}" controls playsinline preload="metadata">
+              <a href="${safeUrl}" target="_blank" rel="noopener">${fname}</a>
+            </video>
+            ${captionHtml}
+          </div>`;
+        }
       } else {
         /* ── Other files — name is clickable link ── */
         bubbleContent = `<div class="cfm-file-wrap">
@@ -1970,15 +2001,17 @@ function paintMessages(msgs, grp = null) {
       dateSep = `<div class="chat-date-sep"><span>${_dateSepLabel(m.createdAt)}</span></div>`;
     }
 
+    const outerMeta = metaOutside ? `<span class="chat-msg-meta">
+      ${m.editedAt ? '<span class="chat-msg-edited">tahrirlangan</span>' : ''}<span class="chat-msg-time">${time}</span>
+      ${mine ? renderTicks(m.status) : ''}
+    </span>` : '';
+
     return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}${emoCls}" data-msg-id="${m.id || ''}">
 
-      <div class="chat-bubble">
+      <div class="chat-bubble${bubbleClassExtra}">
         <div class="chat-bubble-wrap">
           ${gHead}${bubbleContent}
-          <span class="chat-msg-meta">
-            ${m.editedAt ? '<span class="chat-msg-edited">tahrirlangan</span>' : ''}<span class="chat-msg-time">${time}</span>
-            ${mine ? renderTicks(m.status) : ''}
-          </span>
+          ${outerMeta}
         </div>
       </div>
     </div>`;
