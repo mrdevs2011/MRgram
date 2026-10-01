@@ -233,9 +233,32 @@ export async function loadCmtModal(postId) {
   else await loadComments(postId, 'cmtModalList');
 }
 
+/* ── Jonli izohlar: ochiq postning izohlari o'zgarsa ro'yxat shu zahoti yangilanadi ── */
+let _cmtCh = null, _cmtLivePost = null, _cmtLiveList = null;
+function _cmtLive(postId, listId) {
+  _cmtLiveList = listId;
+  if (_cmtCh && _cmtLivePost === postId) return;
+  if (_cmtCh) { try { sb.removeChannel(_cmtCh); } catch (_) {} _cmtCh = null; }
+  _cmtLivePost = postId;
+  const reload = () => { if (_loading) setTimeout(reload, 100); else loadComments(postId, _cmtLiveList); };
+  _cmtCh = sb.channel('cmt-live-' + postId)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'comments', filter: `post_id=eq.${postId}` }, () => {
+      const l = _cmtLiveList && document.getElementById(_cmtLiveList);
+      if (!l || !l.isConnected || l.getClientRects().length === 0) {
+        // izohlar oynasi yopilgan — kanalni yopamiz
+        try { sb.removeChannel(_cmtCh); } catch (_) {}
+        _cmtCh = null; _cmtLivePost = null;
+        return;
+      }
+      reload();
+    })
+    .subscribe();
+}
+
 async function loadComments(postId, listId) {
   if (_loading) return;
   _loading = true;
+  _cmtLive(postId, listId);
 
   const list = $(listId);
   if (!list) { _loading = false; return; }

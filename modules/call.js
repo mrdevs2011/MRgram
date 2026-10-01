@@ -991,7 +991,13 @@ export function startCallWatcher() {
   };
 
   const ch = sb.channel('incoming-calls-' + me)
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'calls', filter: 'callee_id=eq.' + me }, refresh)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'calls', filter: 'callee_id=eq.' + me }, p => {
+      // Payload'ning o'zidan DARHOL jiringlaymiz (qo'shimcha select kutmaymiz); keyin refresh holatni tekshiradi
+      const row = p.new;
+      if (row && row.status === 'ringing' && Date.now() - Date.parse(row.created_at) < RING_WINDOW_MS) {
+        Promise.resolve(_handleIncomingRow(mapCall(row))).catch(() => {});
+      } else refresh();
+    })
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'calls', filter: 'callee_id=eq.' + me }, refresh)
     .subscribe(st => { if (st === 'SUBSCRIBED') refresh(); });
 

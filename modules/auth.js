@@ -914,7 +914,7 @@ export function listenPosts() {
   let _renderDebounceTimer = null;
   function _scheduleRender() {
     clearTimeout(_renderDebounceTimer);
-    _renderDebounceTimer = setTimeout(() => { render(); }, 120);
+    _renderDebounceTimer = setTimeout(() => { render(); }, 16);
   }
 
   // ── KESH-BIRINCHI: oldingi safar saqlangan postlarni darhol ko'rsatamiz ──

@@ -36,6 +36,11 @@ let _latestGroupMap  = {};   // groupId → group data (for list rendering)
 export let groupListItems = []; // exported so chat.js can merge
 let _currentGroupId  = null;
 let _currentGroupData = null;
+let _gMsgs = [];            // joriy guruh threadidagi xabarlar (realtime payload shu ro'yxatga qo'llanadi)
+let _gLoaded = false;
+const _gPending = new Map(); // bazadan hali tasdiqlanmagan optimistik xabarlar
+const _gUuid = () => (crypto.randomUUID ? crypto.randomUUID()
+  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
 let _groupChatSelFile = null;
 let _reloadGroupThread = null;
 let _groupsTick = null;
@@ -140,7 +145,7 @@ export function startGroupsWatcher() {
 }
 
 let _groupsTimer = null;
-const _groupsSched = () => { clearTimeout(_groupsTimer); _groupsTimer = setTimeout(_loadGroups, 250); };
+const _groupsSched = () => { clearTimeout(_groupsTimer); _groupsTimer = setTimeout(_loadGroups, 0); };
 
 /** Guruh o'zgarishlarini berilgan (hali subscribe qilinmagan) kanalga ulaydi. */
 export function bindGroupsRealtime(ch) {
@@ -268,6 +273,7 @@ export async function openGroupThread(groupId) {
   // Subscribe to messages
   if (_groupThreadUnsub) { _groupThreadUnsub(); _groupThreadUnsub = null; }
   let _gDead = false, _gTimer = null;
+  _gMsgs = []; _gLoaded = false; _gPending.clear();
   const loadMsgs = async () => {
     const { data, error } = await sb.from('group_messages').select('*')
       .eq('group_id', groupId).order('created_at', { ascending: false }).limit(1000);
@@ -278,13 +284,42 @@ export async function openGroupThread(groupId) {
       return;
     }
     const msgs = (data || []).map(mapMessage).reverse();
+    // Hali bazadan tasdiqlanmagan (optimistik) xabarlarni yo'qotmaymiz
+    if (_gPending.size) {
+      const have = new Set(msgs.map(m => m.id));
+      for (const [pid, pm] of _gPending) {
+        if (have.has(pid) || Date.now() - pm._at > 20000) _gPending.delete(pid); else msgs.push(pm);
+      }
+    }
+    _gMsgs = msgs; _gLoaded = true;
     paintGroupMessages(msgs, _currentGroupData || groupData);
     // Thread ochiq turganda kelgan xabarlar o'qilmagan bo'lib qolmasin
     if ((_latestGroupMap[groupId]?.unreadCount?.[state.me.uid] || 0) > 0) _resetGroupUnread(groupId);
   };
-  const sched = () => { clearTimeout(_gTimer); _gTimer = setTimeout(loadMsgs, 80); };
+  const sched = () => { clearTimeout(_gTimer); _gTimer = setTimeout(loadMsgs, 0); };
+  // Realtime payload'ni qayta yuklamasdan shu zahoti qo'llaymiz
+  const applyGroupPayload = (p) => {
+    if (_gDead || _currentGroupId !== groupId) return;
+    if (!_gLoaded) { sched(); return; }
+    if (p.eventType === 'DELETE') {
+      const did = p.old?.id;
+      if (!did) { sched(); return; }
+      _gPending.delete(did);
+      _gMsgs = _gMsgs.filter(x => x.id !== did);
+    } else {
+      const m = mapMessage(p.new);
+      if (!m || !m.id) { sched(); return; }
+      _gPending.delete(m.id);
+      const i = _gMsgs.findIndex(x => x.id === m.id);
+      if (i >= 0) { _gMsgs = _gMsgs.slice(); _gMsgs[i] = m; }
+      else if (p.eventType === 'INSERT') _gMsgs = [..._gMsgs, m];
+      else { sched(); return; }
+      if ((_latestGroupMap[groupId]?.unreadCount?.[state.me.uid] || 0) > 0 || m.senderId !== state.me.uid) _resetGroupUnread(groupId);
+    }
+    paintGroupMessages(_gMsgs, _currentGroupData || groupData);
+  };
   const gch = sb.channel('gthread-' + groupId)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_messages', filter: `group_id=eq.${groupId}` }, sched)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'group_messages', filter: `group_id=eq.${groupId}` }, applyGroupPayload)
     .subscribe(st => { if (st === 'SUBSCRIBED') sched(); });
   _groupThreadUnsub = () => {
     _gDead = true; clearTimeout(_gTimer); sb.removeChannel(gch);
@@ -443,14 +478,25 @@ export async function sendGroupMessage() {
   const groupData = _currentGroupData;
   const members   = groupData?.members || [];
 
+  // Optimistik: o'z xabarimiz shu zahoti ekranda, baza orqada (xuddi shu ID bilan — dedup)
+  const mid = _gUuid();
+  const nowMs = Date.now();
+  const localMsg = mapMessage({ id: mid, group_id: groupId, sender_id: state.me.uid, type: 'text', text, created_at: new Date(nowMs).toISOString() });
+  localMsg._at = nowMs;
+  _gPending.set(mid, localMsg);
+  _gMsgs = [..._gMsgs, localMsg];
+  paintGroupMessages(_gMsgs, groupData);
+
   try {
     const { error } = await sb.from('group_messages')
-      .insert({ group_id: groupId, sender_id: state.me.uid, type: 'text', text });
+      .insert({ id: mid, group_id: groupId, sender_id: state.me.uid, type: 'text', text });
     if (error) throw error;
-    _reloadGroupThread && _reloadGroupThread();
   } catch (err) {
     console.error('[Groups] send failed:', err);
     toast('Xabar yuborilmadi', 'error');
+    _gPending.delete(mid);
+    _gMsgs = _gMsgs.filter(x => x.id !== mid);
+    if (_currentGroupId === groupId) paintGroupMessages(_gMsgs, groupData);
     inp.value = text;
     updateVoiceSendBtn();
     return;

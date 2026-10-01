@@ -504,7 +504,14 @@ export function startChatsWatcher() {
       if (_usersCache) cacheChatsList(state.me.uid, _usersCache, chatMap);
       if (state.view === 'chats') paintChatsList(_usersCache || [], chatMap);
     };
-    const schedChats = () => { clearTimeout(_chTimer); _chTimer = setTimeout(loadChats, 200); };
+    // Realtime hodisa kelishi bilan DARHOL yuklaymiz (debounce yo'q); yuklanish paytida kelganlari birlashtiriladi
+    let _chBusy = false, _chAgain = false;
+    const schedChats = async () => {
+      if (_chBusy) { _chAgain = true; return; }
+      _chBusy = true;
+      try { do { _chAgain = false; await loadChats(); } while (_chAgain && !_chDead); }
+      finally { _chBusy = false; }
+    };
     const chBase = sb.channel('chats-watcher')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_notice' }, () => { _loadNoticeFn?.(); })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'chats' }, schedChats)
@@ -897,7 +904,7 @@ export async function openChatThread(uid) {
 
   if (_threadUnsub) { _threadUnsub(); _threadUnsub = null; }
 
-  let _tDead = false, _tTimer = null;
+  let _tDead = false, _tTimer = null, _tLoaded = false;
   const loadThread = async () => {
     const { data, error } = await sb.from('messages').select('*')
       .eq('chat_id', chatId).order('created_at', { ascending: false }).limit(MSG_LIMIT);
@@ -913,15 +920,40 @@ export async function openChatThread(uid) {
     }
     const msgs = (data || []).map(mapMessage).reverse();
     paintMessages(_rtMerge(msgs.slice()));
+    _tLoaded = true;
     cacheThreadMessages(chatId, msgs);
     // Thread ochiq turgan bo'lsa — kelgan xabarlarni shu zahoti "read" qilamiz
     if (state.currentChatId === chatId && $('chatThreadModal').classList.contains('show')) {
       markThreadRead(chatId, uid, msgs);
     }
   };
-  const schedThread = () => { clearTimeout(_tTimer); _tTimer = setTimeout(loadThread, 80); };
+  const schedThread = () => { clearTimeout(_tTimer); _tTimer = setTimeout(loadThread, 0); };
+  // Realtime payload'ni qayta yuklamasdan shu zahoti qo'llaymiz (INSERT/UPDATE/DELETE)
+  const applyThreadPayload = (p) => {
+    if (_tDead || state.currentChatId !== chatId) return;
+    if (!_tLoaded) { schedThread(); return; }
+    const ev = p.eventType;
+    if (ev === 'DELETE') {
+      const delId = p.old?.id;
+      if (!delId) { schedThread(); return; }
+      _rtLocal.delete(delId);
+      paintMessages(_curMsgs.filter(x => x.id !== delId));
+      return;
+    }
+    const m = mapMessage(p.new);
+    if (!m || !m.id) { schedThread(); return; }
+    _rtLocal.delete(m.id);
+    if (_rtRead.has(m.id)) m.status = 'read';
+    const list = _curMsgs.slice();
+    const i = list.findIndex(x => x.id === m.id);
+    if (i >= 0) list[i] = m;
+    else if (ev === 'INSERT') list.push(m);
+    else { schedThread(); return; }
+    paintMessages(list);
+    if (m.senderId === uid && $('chatThreadModal')?.classList.contains('show')) markThreadRead(chatId, uid, [m]);
+  };
   const mch = sb.channel('thread-' + chatId)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `chat_id=eq.${chatId}` }, schedThread)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `chat_id=eq.${chatId}` }, applyThreadPayload)
     .subscribe(st => { if (st === 'SUBSCRIBED') schedThread(); });
   _threadUnsub = () => { _tDead = true; clearTimeout(_tTimer); sb.removeChannel(mch); };
   _reloadThread = loadThread;
