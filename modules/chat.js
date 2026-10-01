@@ -36,12 +36,11 @@ function _injectSearchCSS() {
   s.id = 'chat-search-css';
   s.textContent = `
 .ulist-search-wrap {
-  position: relative; display: flex; align-items: center; gap: 12px;
+  position: relative; display: flex; align-items: center; gap: 10px;
   margin: 12px 14px 8px; height: 44px; padding: 0 16px;
   background: transparent;
   border: 1px solid #2f3336;
   border-radius: 999px;
-
 }
 .ulist-search-wrap:focus-within { border-color: var(--x-blue, #1d9bf0); box-shadow: none; }
 .ulist-search-icon {
@@ -55,9 +54,14 @@ function _injectSearchCSS() {
   box-shadow: none; color: var(--text, #fff); font-size: 15px; line-height: 1.4;
 }
 .ulist-search-input::placeholder { color: var(--text3, #767676); }
+.ulist-search-clear {
+  background: none; border: none; padding: 4px; color: var(--text3, #767676);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; flex-shrink: 0;
+}
+.ulist-search-clear:hover { color: var(--text, #fff); }
 .ulist-search-result { margin: 0 18px 10px; font-size: 12.5px; font-weight: 500; color: var(--text3, #767676); }
 .ulist-search-result.not-found { color: var(--red, #ef4444); }
-
 `;
   document.head.appendChild(s);
 }
@@ -70,12 +74,15 @@ function _renderSearchBox(container) {
   wrap.id = 'chatSearchBoxWrap';
   wrap.innerHTML = `
     <div class="ulist-search-wrap">
-      <div class="ulist-search-icon" id="chatSearchBtn" title="Havola bo'yicha qidirish">
+      <div class="ulist-search-icon" id="chatSearchBtn" title="Qidirish">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="7"/><line x1="17" y1="17" x2="22" y2="22"/>
         </svg>
       </div>
-      <input class="ulist-search-input" id="chatSearchInput" placeholder="Havola kiriting (username yoki link)..." autocomplete="off" spellcheck="false">
+      <input class="ulist-search-input" id="chatSearchInput" placeholder="Qidirish (ism yoki username)..." autocomplete="off" spellcheck="false">
+      <button type="button" class="ulist-search-clear d-none" id="chatSearchClear" aria-label="Tozalash">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
     <div class="ulist-search-result d-none" id="chatSearchResult"></div>
@@ -84,61 +91,81 @@ function _renderSearchBox(container) {
 
   const inp = document.getElementById('chatSearchInput');
   const btn = document.getElementById('chatSearchBtn');
+  const clearBtn = document.getElementById('chatSearchClear');
   const res = document.getElementById('chatSearchResult');
 
-  /* ── Havola bo'yicha qidirish ───────────────────────────────────────
-     Xavfsizlik/maxfiylik uchun: yozayotganda (har harfda) HECH QANDAY
-     natija ko'rsatilmaydi va fullName/username bo'yicha qisman (substring)
-     moslik izlanmaydi. Faqat Enter bosilganda (yoki qidiruv belgisi
-     bosilganda) qidiruv boshlanadi va faqat:
-       1) to'liq mos username ("@username" yoki "username"), yoki
-       2) to'liq mos guruh/kanal havolasi (maxfiy yoki ochiq)
-     bo'yicha ANIQ (exact) moslik izlanadi. Muvaffaqiyatli holatda
-     har doim faqat 1 ta natija chiqadi; aks holda "topilmadi" deyiladi. */
-  function doSearch() {
+  function updateClearBtn() {
+    if (clearBtn) {
+      clearBtn.classList.toggle('d-none', !inp.value);
+    }
+  }
+
+  async function doSearch() {
     const raw = inp.value.trim();
+    updateClearBtn();
     if (!raw) {
       _searchQuery = '';
-      res.classList.add('d-none');
-      const contacts = (_usersCache || []).filter(u => _myContacts.has(u.uid));
-      _paintUserRows(contacts);
+      if (res) res.classList.add('d-none');
+      paintChatsList(_usersCache || [], _latestChatMap);
       return;
     }
     _searchQuery = raw;
-    _paintSearchSpinner();
-    res.textContent = 'Qidirilmoqda...';
-    res.className = 'ulist-search-result';
-    res.classList.remove('d-none');
-    setTimeout(async () => {
-      // Qidiruv paytida input o'zgargan bo'lsa (masalan foydalanuvchi
-      // qayta yozgan) — eskirgan natijani chizmaymiz
-      if (inp.value.trim() !== raw) return;
 
-      const uname = raw.startsWith('@') ? raw.slice(1) : raw;
-      const foundUser = (_usersCache || []).find(u => (u.username || '').toLowerCase() === uname.toLowerCase());
-      if (foundUser) {
-        res.textContent = 'Natija topildi';
+    if (!_usersCache) {
+      try { _usersCache = await _fetchChatUsers(); } catch (_) {}
+    }
+
+    const term = (raw.startsWith('@') ? raw.slice(1) : raw).toLowerCase();
+    const matchedUsers = (_usersCache || []).filter(u =>
+      (u.username || '').toLowerCase().includes(term) ||
+      (u.fullName || '').toLowerCase().includes(term)
+    );
+    const matchedGroups = getGroupRows().filter(g =>
+      (g.name || '').toLowerCase().includes(term)
+    );
+    const totalMatches = matchedUsers.length + matchedGroups.length;
+
+    if (res) {
+      if (totalMatches > 0) {
+        res.textContent = `${totalMatches} ta natija topildi`;
         res.className = 'ulist-search-result';
         res.classList.remove('d-none');
-        _paintUserRows([foundUser], true /* animate */);
-        return;
+      } else {
+        res.textContent = `"${raw}" — topilmadi`;
+        res.className = 'ulist-search-result not-found';
+        res.classList.remove('d-none');
       }
-
-      res.textContent = `"${raw}" — topilmadi`;
-      res.className = 'ulist-search-result not-found';
-      _paintUserRows([], true);
-    }, 420);
+    }
+    paintChatsList(_usersCache || [], _latestChatMap);
   }
 
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
-  btn.addEventListener('click', doSearch);
+  let debounceTimer = null;
   inp.addEventListener('input', () => {
-    if (!inp.value.trim()) {
-      _searchQuery = '';
-      res.classList.add('d-none');
-      const contacts = (_usersCache || []).filter(u => _myContacts.has(u.uid));
-      _paintUserRows(contacts);
+    updateClearBtn();
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      doSearch();
+    }, 120);
+  });
+
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      clearTimeout(debounceTimer);
+      doSearch();
     }
+  });
+
+  btn.addEventListener('click', () => {
+    clearTimeout(debounceTimer);
+    doSearch();
+  });
+
+  clearBtn?.addEventListener('click', () => {
+    inp.value = '';
+    clearTimeout(debounceTimer);
+    doSearch();
+    inp.focus();
   });
 }
 
@@ -436,11 +463,13 @@ export function startChatsWatcher() {
       // _usersCache hali o'rnatilmagan bo'lishi mumkin (masalan foydalanuvchi
       // "Suhbatlar" bo'limini hali ochmagan bo'lsa) — shu holatda ham
       // to'g'ridan-to'g'ri localStorage'dagi keshdan o'qib olamiz.
-      if (!_usersCache) {
+      if (!_usersCache || !_usersCache.length) {
         const cached = getCachedChatsList(state.me.uid);
         _usersCache = cached?.users || [];
       }
-    } else {
+    }
+    // Agar kesh bo'sh bo'lsa (yangi hisob ochilganda) — baribir serverdan yuklaymiz
+    if (!_usersCache || !_usersCache.length) {
       try {
         _usersCache = await _fetchChatUsers();
         cacheChatsList(state.me.uid, _usersCache, _latestChatMap);
@@ -577,7 +606,10 @@ export async function renderChatsList() {
   try {
     await startChatsWatcher();
 
-    if (!_usersCache || !_usersCache.length) {
+    const hasUsers = !!(_usersCache && _usersCache.length);
+    const hasGroups = !!(getGroupRows() && getGroupRows().length);
+
+    if (!hasUsers && !hasGroups) {
       root.innerHTML = `<div class="empty pt-30vh tac">
         <div class="fs-14px fw-600 c-text mb-6px">Hozircha boshqa foydalanuvchilar yo'q</div>
         <div class="fs-13px c-text2">Odamlar MRspace ga qo'shilgach, shu yerda ko'rinadi</div>
@@ -585,7 +617,7 @@ export async function renderChatsList() {
       return;
     }
 
-    paintChatsList(_usersCache, _latestChatMap);
+    paintChatsList(_usersCache || [], _latestChatMap);
     // Ro'yxat ochilganda darhol yangi last_seen — nuqtalar kesh bilan eskirmasin
     _refreshUsersPresence().then(changed => {
       if (changed && state.view === 'chats') paintChatsList(_usersCache || [], _latestChatMap);
@@ -643,11 +675,14 @@ function _repaintNoticeBanner() {
 export function repaintNoticeBanner() { _repaintNoticeBanner(); }
 
 /* ── Append group/channel rows to chats list ─────────────────────────── */
-function _appendGroupRows(root) {
+function _appendGroupRows(root, term = '') {
   // Remove old group section if any
   root.querySelector('.grp-rows-section')?.remove();
 
-  const groups = getGroupRows();
+  let groups = getGroupRows();
+  if (term) {
+    groups = groups.filter(g => (g.name || '').toLowerCase().includes(term));
+  }
   if (!groups.length) return;
 
   const section = document.createElement('div');
@@ -690,29 +725,22 @@ function paintChatsList(users, chatMap) {
   const root = $('chatsListWrap');
   if (!root) return;
 
-  // Search box endi hamma uchun (admin va oddiy user) ko'rsatiladi
+  // Search box hamma uchun ko'rsatiladi
   _renderSearchBox(root);
 
-  const admin = isAdmin();
-  const q = _searchQuery;
-  let filtered;
-  if (q) {
-    // Qidiruv faol — faqat ANIQ mos username natijasini ko'rsatamiz
-    // (substring/fullName bo'yicha qidirish YO'Q — maxfiylik uchun)
-    const uname = q.startsWith('@') ? q.slice(1) : q;
-    const exact = users.find(u => (u.username || '').toLowerCase() === uname.toLowerCase());
-    filtered = exact ? [exact] : [];
-  } else if (admin) {
-    // Admin uchun: qidiruv bo'sh bo'lsa to'liq ro'yxat ko'rinadi
-    filtered = users;
-  } else {
-    // Oddiy user uchun: qidiruv bo'sh bo'lsa faqat kontaktlar ko'rinadi
-    // (eski chat tarixi hisobga olinmaydi — hammada 0dan boshlanadi)
-    filtered = users.filter(u => _myContacts.has(u.uid));
+  const rawQ = (_searchQuery || '').trim();
+  const term = (rawQ.startsWith('@') ? rawQ.slice(1) : rawQ).toLowerCase();
+
+  let filtered = users;
+  if (term) {
+    filtered = users.filter(u =>
+      (u.username || '').toLowerCase().includes(term) ||
+      (u.fullName || '').toLowerCase().includes(term)
+    );
   }
-  _paintUserRows(filtered);
+  _paintUserRows(filtered, !!term);
   _repaintNoticeBanner();
-  _appendGroupRows(root);
+  _appendGroupRows(root, term);
 }
 
 /* ── Other user avatar cache for DM messages ─────────────────────────── */
@@ -2218,6 +2246,13 @@ export function destroyChatsView() {
   if (_threadUnsub) { _threadUnsub(); _threadUnsub = null; }
   // Thread modal'ni yopish
   try { closeChatThread(); } catch (_) {}
+  _searchQuery = '';
+  const inp = document.getElementById('chatSearchInput');
+  if (inp) inp.value = '';
+  const clearBtn = document.getElementById('chatSearchClear');
+  if (clearBtn) clearBtn.classList.add('d-none');
+  const res = document.getElementById('chatSearchResult');
+  if (res) res.classList.add('d-none');
   // chatsWatcher'ni to'xtatmaymiz — u background notification uchun kerak
   // (auth.js stopChatsWatcher logout paytida chaqiradi)
 }

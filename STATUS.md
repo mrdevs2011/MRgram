@@ -50,3 +50,8 @@
 - Qilindi: guruh UI/logika DM bilan bir xil
 - Keyingi qadam: MR sinaydi; 016 SQL; keyin main
 - Git holati: 1db9e0f feat(groups): guruh thread DM bilan bir xil painter/menyu/yozmoqda/fayl/ovoz; yagona farq — pufak sarlavhasida yuboruvchi ismi
+
+---
+### 2026-10-01 17:30
+- Qilindi: chatlar ro'yxatida barcha foydalanuvchilar ko'rinishi (yangi hisob ochilganda faqat bo'sh _myContacts bilan cheklanib qolmaslik) va qidiruv (search) to'g'rilandi: jonli debounced qidiruv (ism, username va guruhlar bo'yicha), tozalash tugmasi (clear btn) qo'shildi.
+- Fayllar: modules/chat.js
