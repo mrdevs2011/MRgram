@@ -448,6 +448,8 @@ svg { color: inherit; }
 #grpInfoOverlay, #grpCreateChoiceOverlay, #grpCreateFormOverlay, #grpJoinLinkOverlay, #grpAddUserOverlay { z-index: 520; }
 /* Chat thread ichidagi .overlay ham ustida tursin */
 #chatThreadModal .overlay { z-index: 520; }
+/* Guruh sozlash (edit) oynasi: group info (520) va chat thread ustida, hamma oddiy modallardan yuqorida */
+#grpEditOverlay, #chatThreadModal #grpEditOverlay { z-index: 700; }
 /* ─── dark-theme-fix ─── */
 /* ═══════════════════════════════════════════════════════════ MRspace — Solid UI Override dark-theme-fix.css... */
 /* ══════════════════════════════════════════ 1. DARK THEME — Rang Tokenlari ═════════════════════════════════... */
