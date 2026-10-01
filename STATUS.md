@@ -38,3 +38,15 @@
 
 ## Eslatmalar
 - Contract SQL'ni kod bilan bir vaqtda yurgizma (roadmap 3-qoida). 013: eng erta 2026-10-06, zaxiradan keyin.
+
+---
+### 2026-10-01 16:00
+- Qilindi: realtime <=0.3s: guruh mesh, rt-bus, presence, inbox, like/izoh/post broadcast
+- Keyingi qadam: MR 2 qurilmada sinaydi, keyin main ga merge/push
+- Git holati: 145b58e feat(realtime): <=0.3s — guruh WebRTC mesh, global broadcast shina (like/izoh/post), presence, kirish qutisi (DM/guruh ro'yxati), P2P typing, eventsPerSecond 60
+
+---
+### 2026-10-01 16:03
+- Qilindi: guruh UI/logika DM bilan bir xil
+- Keyingi qadam: MR sinaydi; 016 SQL; keyin main
+- Git holati: 1db9e0f feat(groups): guruh thread DM bilan bir xil painter/menyu/yozmoqda/fayl/ovoz; yagona farq — pufak sarlavhasida yuboruvchi ismi
