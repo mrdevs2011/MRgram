@@ -150,7 +150,10 @@ export async function purgeUserMedia(uid) {
 }
 
 // Constants
-export const MAX_FILE = 25 * 1024 * 1024;
+// Yuklash limiti: 49.9 MB (Supabase Free storage chegarasi 50 MB dan oshmasin)
+export const MAX_FILE = Math.floor(49.9 * 1024 * 1024);
+// Video siqishdan OLDINGI xom limit (telefon videolari katta; brauzerda siqiladi)
+export const MAX_VIDEO_RAW = 300 * 1024 * 1024;
 export const CAP_LIMIT = 100;
 
 /** Joriy foydalanuvchi admin (profiles.is_admin) */

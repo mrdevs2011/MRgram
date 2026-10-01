@@ -1,4 +1,5 @@
-import { sb, state, MAX_FILE, uploadViaController } from './config.js';
+import { sb, state, MAX_FILE, MAX_VIDEO_RAW, uploadViaController } from './config.js';
+import { compressVideo } from './compress.js';
 import { $, esc, fmtSz, lockScroll, unlockScroll, defAvi } from './utils.js';
 import { toast }                                   from './toast.js';
 
@@ -226,7 +227,6 @@ function _measureSelectedMedia(file, objUrl) {
 /* ── Composer rejimi: 'post' (odatiy) yoki 'story' (24 soatlik hikoya) ──
    Story ham xuddi shu composer kartasida ochiladi — faqat matn maydoni o'rniga
    qisqa izoh, faqat rasm/video, tugma "Story". */
-const STORY_MAX = 25 * 1024 * 1024;
 const STORY_CAPTION_MAX = 200;
 const _POST_ACCEPT = $('fileInput').accept;
 const _POST_PLACEHOLDER = $('captionInput').placeholder;
@@ -290,18 +290,23 @@ export function pickFile(f) {
       toast('Faqat rasm yoki video', 'error');
       return;
     }
-    if (f.size > STORY_MAX) {
-      $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 25 MB`;
-      toast('Fayl juda katta (max 25MB)', 'error');
+  }
+  {
+    const isVid = f.type.startsWith('video/');
+    const lim = isVid ? MAX_VIDEO_RAW : MAX_FILE;
+    if (f.size > lim) {
+      const limTxt = isVid ? '300 MB' : '49.9 MB';
+      $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit ${limTxt}`;
+      toast(`Fayl hajmi ${limTxt} dan oshmasligi kerak`, 'error');
       return;
     }
+    if (isVid) {
+      $('sizeWarn').textContent = f.size > MAX_FILE
+        ? `Video ${fmtSz(f.size)} — yuklashda avtomatik siqiladi (49.9 MB gacha)`
+        : '';
+    }
   }
-  if (f.size > MAX_FILE) {
-    $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit 25 MB`;
-    toast('Fayl hajmi 25 MB dan oshmasligi kerak', 'error');
-    return;
-  }
-  $('sizeWarn').textContent = '';
+  if (!f.type.startsWith('video/')) $('sizeWarn').textContent = '';
   revokeObjUrl();
   state.selFile = f;
   state._objUrl = URL.createObjectURL(f);
@@ -352,6 +357,25 @@ function clearFile() {
 
 /* ── Yuklash / Post ───────────────────────────────────────────────────── */
 /* ── Float bar helpers ───────────────────────────────────────────────── */
+
+/* Video bo'lsa kerak bo'lganda siqadi (hisoblagich compress.js da). Float bar'da foiz ko'rsatiladi. */
+async function _prepareUploadFile(file, label) {
+  if (!file || !file.type.startsWith('video/')) return file;
+  try {
+    const r = await compressVideo(file, {
+      maxBytes: MAX_FILE,
+      onProgress: pct => {
+        const n = $('ufbName');
+        if (n) n.textContent = 'Siqilmoqda… ' + label;
+        floatBarUpdate(Math.min(pct, 94));
+      },
+    });
+    if (r.changed) console.info('[compress] video:', r.note, fmtSz(file.size), '→', fmtSz(r.file.size));
+    const n = $('ufbName'); if (n) n.textContent = label;
+    return r.file;
+  } finally { /* progress keyingi bosqichda qayta boshlanadi */ }
+}
+
 function floatBarShow(name) {
   const bar = $('uploadFloatBar');
   if (!bar) return;
@@ -401,7 +425,7 @@ function floatBarDone(success) {
 /* ── Yuklash / Post ───────────────────────────────────────────────────── */
 /* ── Story yuklash (composer 'story' rejimida) ─────────────────────── */
 async function submitStory() {
-  const file = state.selFile;
+  let file = state.selFile;
   if (!file || !state.me) return;
   const caption = $('captionInput').value.trim().slice(0, STORY_CAPTION_MAX);
 
@@ -420,6 +444,15 @@ async function submitStory() {
       floatBarUpdate(simPct);
     }, 200);
 
+    clearInterval(simInterval);
+    file = await _prepareUploadFile(file, file.name.length > 28 ? file.name.slice(0, 26) + '…' : file.name);
+    floatBarUpdate(0);
+    simPct = 0;
+    simInterval = setInterval(() => {
+      const step = Math.max(0.3, (3 - (file.size / (10 * 1024 * 1024))) * Math.random());
+      simPct = Math.min(simPct + step, 88);
+      floatBarUpdate(simPct);
+    }, 200);
     const { path } = await uploadViaController(file, 'stories');
     clearInterval(simInterval);
     floatBarUpdate(100);
@@ -486,7 +519,9 @@ $('uploadBtn').onclick = async () => {
 
     /* ── Private / Public uchun Firestore ── */
     if (hasFile) {
-      const file = state.selFile;
+      let file = state.selFile;
+      file = await _prepareUploadFile(file, state.selFile.name.length > 28 ? state.selFile.name.slice(0, 26) + '…' : state.selFile.name);
+      floatBarUpdate(0);
 
       let simPct = 0;
       let lastTick = Date.now();

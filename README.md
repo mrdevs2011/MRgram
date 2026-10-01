@@ -5,7 +5,7 @@ Reja va holat: `MRSPACE-ROADMAP.md`. Eski to'liq tavsif: `docs/archive/`.
 
 ## Nima qila oladi
 - **Kirish:** faqat username + parol (email yo'q). Ro'yxatdan o'tgach hisob "kutish" holatida — admin tasdiqlaydi yoki rad etadi.
-- **Lenta:** rasm/video/fayl post (≤ 25 MB), like, izoh, markdown; hikoyalar (stories).
+- **Lenta:** rasm/video/fayl post (≤ 49.9 MB; og'ir videolar yuklashda avtomatik siqiladi), like, izoh, markdown; hikoyalar (stories).
 - **Chat:** 1v1, matn, ovozli xabar, fayl, reply, qidiruv, o'qildi belgisi, "yozmoqda", onlayn holat, Web Push.
 - **Guruh:** faqat taklif orqali (yopiq). "Faqat adminlar yozadi" rejimi = eski kanal.
 - **Qo'ng'iroq:** WebRTC audio/video, signalizatsiya Supabase Realtime orqali. TURN: Cloudflare (`/api/turn`, qisqa muddatli kredensial); sozlanmasa statik `TURN_*`, u ham bo'lmasa OpenRelay (beqaror).

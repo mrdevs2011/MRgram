@@ -11,8 +11,8 @@ Vizual CSS o'zgarishi bo'lsa: dark/light va mobil/desktop'ni **ko'z bilan** ko'r
 - [ ] Bloklangan user kira olmaydi; blok tugagach kiradi
 
 ## Lenta
-- [ ] Rasm/video post yuklanadi (≤ 25 MB), lentada ko'rinadi
-- [ ] 25 MB dan katta fayl rad etiladi
+- [ ] Rasm/video post yuklanadi (≤ 49.9 MB; katta video siqiladi), lentada ko'rinadi
+- [ ] 49.9 MB dan katta (video bo'lmasa) fayl rad etiladi; S21 kabi og'ir video siqilib yuklanadi
 - [ ] Like, izoh ishlaydi; markdown (qalin/egik) chiqadi
 
 ## Chat
