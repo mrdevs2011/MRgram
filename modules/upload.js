@@ -656,15 +656,12 @@ function _syncHomeUi() {
   if (!row || !inp) return;
 
   const has = _homeHasContent();
-  const showAttach = _homeFocused || has;
 
   row.classList.toggle('is-active', _homeFocused);
   row.classList.toggle('has-content', has);
 
-  if (attach) {
-    if (showAttach) attach.removeAttribute('hidden');
-    else attach.setAttribute('hidden', '');
-  }
+  // attach doim ko'rinadi
+  if (attach) attach.removeAttribute('hidden');
   if (btn) btn.disabled = !has;
 
   // textarea auto-height
