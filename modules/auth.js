@@ -672,21 +672,17 @@ if (forgotPasswordBtn) {
       return;
     }
 
-    // Avtomatik email yubormaymiz! Avval tushuntirish va tasdiqlash modalini ochamiz:
-    _openRecoveryConfirmModal(u, recInfo.masked_email || 'Emailingiz');
+    // Avtomatik email yubormaymiz! Yagona sodda tiklash kartasini ochamiz:
+    _openRecoveryModal(u, recInfo.masked_email || 'Emailingiz');
   };
 }
 
-/* ── Parolni tiklash oynasi (2 bosqichli) ────────────────────────── */
+/* ── Parolni tiklash oynasi (Yagona sodda karta) ──────────────────── */
 const recoveryModal = $('recoveryModal');
-const recoveryStepConfirm = $('recoveryStepConfirm');
-const recoveryStepInput = $('recoveryStepInput');
 const recoveryTargetEmail = $('recoveryTargetEmail');
-const recoveryConfirmErr = $('recoveryConfirmErr');
-const recoveryConfirmBackBtn = $('recoveryConfirmBackBtn');
+const recoveryModalSubtitle = $('recoveryModalSubtitle');
 const recoverySendBtn = $('recoverySendBtn');
-const recoveryHaveCodeBtn = $('recoveryHaveCodeBtn');
-
+const recoverySendStatus = $('recoverySendStatus');
 const recoveryBackBtn = $('recoveryBackBtn');
 const recoverySubmitBtn = $('recoverySubmitBtn');
 const recoveryCodeInp = $('recoveryCodeInp');
@@ -696,48 +692,22 @@ const recoveryErr = $('recoveryErr');
 
 let _activeRecoveryUsername = '';
 let _activeMaskedEmail = '';
+let _sendCooldownTimer = null;
 
-/** 1-Bosqich: Tushuntirish va Jo'natishni tasdiqlash modali */
-function _openRecoveryConfirmModal(username, maskedEmail) {
-  _activeRecoveryUsername = username;
-  _activeMaskedEmail = maskedEmail || '';
-  if (!recoveryModal) return;
-
-  if (recoveryTargetEmail) {
-    recoveryTargetEmail.textContent = maskedEmail || 'Zaxira email';
-  }
-  if (recoveryConfirmErr) {
-    recoveryConfirmErr.style.display = 'none';
-    recoveryConfirmErr.textContent = '';
-  }
-  if (recoverySendBtn) {
-    recoverySendBtn.disabled = false;
-    recoverySendBtn.textContent = "Jo'natish";
-  }
-
-  if (recoveryStepConfirm) recoveryStepConfirm.style.display = 'block';
-  if (recoveryStepInput) recoveryStepInput.style.display = 'none';
-
-  recoveryModal.style.display = 'flex';
-}
-
-/** 2-Bosqich: Kodni kiritish va yangi parol o'rnatish modali */
-function _openRecoveryInputModal(username, maskedEmail, prefilledCode = '') {
+function _openRecoveryModal(username, maskedEmail, prefilledCode = '') {
   _activeRecoveryUsername = username;
   _activeMaskedEmail = maskedEmail || _activeMaskedEmail || '';
   if (!recoveryModal) return;
 
-  if (recoveryStepConfirm) recoveryStepConfirm.style.display = 'none';
-  if (recoveryStepInput) recoveryStepInput.style.display = 'block';
+  if (recoveryTargetEmail) {
+    recoveryTargetEmail.textContent = _activeMaskedEmail || 'Zaxira emailingiz';
+  }
 
-  const subtitle = $('recoveryModalSubtitle');
-  if (subtitle) {
+  if (recoveryModalSubtitle) {
     if (prefilledCode) {
-      subtitle.innerHTML = `Emailga yuborilgan tasdiqlash kodi qabul qilindi.<br><strong style="color:#fff;">Hisobga kirish uchun yangi parol belgilang.</strong>`;
+      recoveryModalSubtitle.innerHTML = `Emailingiz: <strong style="color:var(--tg-primary-blue,#1d9bf0);">${_activeMaskedEmail || 'zaxira email'}</strong><br><span style="color:#22c55e;">Kod qabul qilindi. Yangi parolni belgilang:</span>`;
     } else {
-      subtitle.innerHTML = _activeMaskedEmail
-        ? `Tasdiqlash kodi <strong style="color:#fff;">${_activeMaskedEmail}</strong> ga yuborildi.<br>Kod va yangi parolingizni kiriting.`
-        : `Tasdiqlash kodi emailingizga yuborildi.<br>Kod va yangi parolingizni kiriting.`;
+      recoveryModalSubtitle.innerHTML = `Emailingiz: <strong style="color:var(--tg-primary-blue,#1d9bf0);">${_activeMaskedEmail || 'zaxira email'}</strong>`;
     }
   }
 
@@ -759,58 +729,37 @@ function _openRecoveryInputModal(username, maskedEmail, prefilledCode = '') {
   }, 100);
 }
 
-function _openRecoveryModal(username, maskedEmail, prefilledCode = '') {
-  _openRecoveryInputModal(username, maskedEmail, prefilledCode);
-}
-
 function _closeRecoveryModal() {
   if (recoveryModal) recoveryModal.style.display = 'none';
-  if (recoveryStepConfirm) recoveryStepConfirm.style.display = 'none';
-  if (recoveryStepInput) recoveryStepInput.style.display = 'none';
   if (recoveryErr) {
     recoveryErr.style.display = 'none';
     recoveryErr.textContent = '';
   }
-  if (recoveryConfirmErr) {
-    recoveryConfirmErr.style.display = 'none';
-    recoveryConfirmErr.textContent = '';
-  }
 }
 
-// 1-bosqich: Orqaga tugmasi
-if (recoveryConfirmBackBtn) {
-  recoveryConfirmBackBtn.onclick = () => {
-    _closeRecoveryModal();
-    $('aPassword')?.focus();
-  };
-}
-
-// 1-bosqich: "Menda kod bor (Kodni kiritish)" tugmasi
-if (recoveryHaveCodeBtn) {
-  recoveryHaveCodeBtn.onclick = () => {
-    _openRecoveryInputModal(_activeRecoveryUsername, _activeMaskedEmail, '');
-  };
-}
-
-// 1-bosqich: "Jo'natish" tugmasi
+// "Emailga kod yuborish" tugmasi (kartaning ichida)
 if (recoverySendBtn) {
   recoverySendBtn.onclick = async () => {
     const u = _activeRecoveryUsername || $('aUsername')?.value.trim().toLowerCase();
-    if (!u) return;
+    if (!u) {
+      toast('Foydalanuvchi nomini kiriting', 'error');
+      return;
+    }
 
     const showErr = (msg) => {
-      if (recoveryConfirmErr) {
-        recoveryConfirmErr.textContent = msg;
-        recoveryConfirmErr.style.display = 'block';
+      if (recoveryErr) {
+        recoveryErr.textContent = msg;
+        recoveryErr.style.display = 'block';
       }
       toast(msg, 'error');
     };
 
     recoverySendBtn.disabled = true;
     recoverySendBtn.textContent = 'Yuborilmoqda...';
-    if (recoveryConfirmErr) recoveryConfirmErr.style.display = 'none';
+    if (recoveryErr) recoveryErr.style.display = 'none';
 
     try {
+      // Har safar yangi kod yaratiladi — bazada eski barcha kodlar avtomatik eskiradi!
       const tempPassword = gen8CharTempPassword();
       const resp = await sb.functions.invoke('send-recovery-email', {
         body: { username: u, temp_password: tempPassword }
@@ -830,38 +779,48 @@ if (recoverySendBtn) {
       }
 
       const masked = data.masked_email || _activeMaskedEmail || '';
-      toast(
-        masked ? `Tasdiqlash kodi ${masked} ga yuborildi.` : `Tasdiqlash kodi emailingizga yuborildi.`,
-        'success',
-        6000
-      );
+      if (masked && recoveryTargetEmail) recoveryTargetEmail.textContent = masked;
 
-      // Kod muvaffaqiyatli yuborildi — 2-bosqichga (kodni kiritish) o'tamiz
-      _openRecoveryInputModal(u, masked, '');
+      toast(`Yangi kod ${masked || 'emailingiz'} ga yuborildi. Eski kodlar bekor qilindi!`, 'success', 6000);
+
+      if (recoverySendStatus) {
+        recoverySendStatus.style.display = 'block';
+        recoverySendStatus.innerHTML = `<span style="color:#22c55e;">✓ Yangi kod yuborildi!</span> (Eski kodlar bekor qilindi)`;
+      }
+
+      if (recoveryCodeInp) {
+        recoveryCodeInp.value = '';
+        recoveryCodeInp.placeholder = 'Eng oxirgi kelgan kod';
+        recoveryCodeInp.focus();
+      }
+
+      // 60 soniyali qayta yuborish taymeri
+      let sec = 60;
+      if (_sendCooldownTimer) clearInterval(_sendCooldownTimer);
+      recoverySendBtn.disabled = true;
+      recoverySendBtn.textContent = `Qayta yuborish (${sec}s)`;
+      _sendCooldownTimer = setInterval(() => {
+        sec--;
+        if (sec <= 0) {
+          clearInterval(_sendCooldownTimer);
+          _sendCooldownTimer = null;
+          recoverySendBtn.disabled = false;
+          recoverySendBtn.textContent = 'Qayta kod yuborish';
+        } else {
+          recoverySendBtn.textContent = `Qayta yuborish (${sec}s)`;
+        }
+      }, 1000);
 
     } catch (err) {
       console.error('[recoverySendBtn] error:', err);
       showErr(err.message || 'Email yuborishda xatolik yuz berdi');
       recoverySendBtn.disabled = false;
-      recoverySendBtn.textContent = "Jo'natish";
+      recoverySendBtn.textContent = 'Emailga kod yuborish';
     }
   };
 }
 
-const recoveryEnterCodeBtn = $('recoveryEnterCodeBtn');
-if (recoveryEnterCodeBtn) {
-  recoveryEnterCodeBtn.onclick = () => {
-    const u = $('aUsername')?.value.trim().toLowerCase() || _lastTestedUsername;
-    if (!u) {
-      toast('Avval foydalanuvchi nomingizni kiriting', 'error');
-      $('aUsername')?.focus();
-      return;
-    }
-    _openRecoveryInputModal(u, _activeMaskedEmail || '', '');
-  };
-}
-
-// 2-bosqich: Orqaga tugmasi (Eski parolim esimda)
+// "Ortga (Eski parolim esimda)" tugmasi
 if (recoveryBackBtn) {
   recoveryBackBtn.onclick = () => {
     _closeRecoveryModal();
