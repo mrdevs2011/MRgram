@@ -7758,3 +7758,87 @@ button:focus-visible,
   background: var(--x-blue) !important;
   color: var(--pal-white) !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   4-COLOR SYSTEM: Final pass — amber→red, green→blue/white, missing spots
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Amber: ki warning/pending → qizil */
+:root {
+  --amber: #f59e0b;
+}
+
+/* Green: approved status → xozir oq bilan, unblock tugmasi */
+:root {
+  --green: #00ba7c;
+  --green-glow: rgba(0, 186, 124, 0.12);
+}
+
+/* ── Admin badges ─────────────────────────────────────────────────── */
+.ua-badge--approved { color: #00ba7c !important; border-color: rgba(0,186,124,0.3) !important; }
+.ua-badge--pending { color: var(--amber) !important; }
+.ua-unblock-btn { color: #00ba7c !important; border-color: rgba(0,186,124,0.3) !important; }
+.ua-modal-confirm--safe { background: #00ba7c !important; color: var(--pal-white) !important; }
+.ua-modal-confirm--warn { background: var(--amber) !important; color: var(--pal-white) !important; }
+
+/* ── Toast icons ─────────────────────────────────────────────────── */
+.toast-icon.success { color: #00ba7c !important; }
+#toast.toast-success { border-color: #00ba7c !important; }
+.toast-icon.warning { color: var(--amber) !important; }
+#toast.toast-warning { border-color: var(--amber) !important; }
+
+/* ── Reply/quote bar accent line: blue ───────────────────────────── */
+.crb-line { background: var(--x-blue) !important; }
+.crb-name { color: var(--x-blue) !important; }
+
+/* ── "Typing..." indicator: blue ────────────────────────────────── */
+.chat-thread-typing { color: var(--x-blue) !important; }
+
+/* ── Sender name in group chat: blue ─────────────────────────────── */
+.grp-sender-name { color: var(--x-blue) !important; }
+
+/* ── Group member role badge: blue ───────────────────────────────── */
+.grp-member-role { color: var(--x-blue) !important; }
+
+/* ── Comment author name: blue ───────────────────────────────────── */
+.cmt-name { color: var(--x-blue) !important; }
+
+/* ── Links (@username, hyperlinks): blue ────────────────────────── */
+a, .md-link { color: var(--x-blue) !important; }
+.dm-name:hover { color: var(--x-blue) !important; }
+
+/* ── Search active icon: blue ───────────────────────────────────── */
+#sbSearchToggle.search-active svg { stroke: var(--x-blue) !important; }
+.chat-search-btn.active { color: var(--x-blue) !important; }
+.chat-search-input:focus { border-color: var(--x-blue) !important; }
+
+/* ── Input focus: blue border, blue caret ───────────────────────── */
+input:focus, textarea:focus, .field:focus {
+  border-color: var(--x-blue) !important;
+  caret-color: var(--x-blue) !important;
+}
+.cmt-input:focus, .ta:focus { box-shadow: inset 0 0 0 1px var(--x-blue) !important; }
+
+/* ── Char count warning: amber, over: red ───────────────────────── */
+.cmt-char-count.warn { color: var(--amber) !important; }
+.cmt-char-count.over { color: var(--red) !important; }
+
+/* ── Profile grid active tab ─────────────────────────────────────── */
+[data-theme="dark"] .profile-grid-tab.active,
+.profile-grid-tab.active {
+  color: var(--x-blue) !important;
+  border-bottom-color: var(--x-blue) !important;
+}
+
+/* ── Nav bot underline: blue dot ────────────────────────────────── */
+.nav-btn.on::before { background: var(--x-blue) !important; box-shadow: 0 0 8px var(--x-blue) !important; }
+
+/* ── Online "presence" dot: green ───────────────────────────────── */
+.presence-status.online,
+.peer-status.online { color: #00ba7c !important; }
+
+/* ── Swipe-to-reply icon: blue ──────────────────────────────────── */
+.cmt-swipe-icon { color: var(--x-blue) !important; }
+
+/* ── Toast progress bar: blue ───────────────────────────────────── */
+.toast-progress { background: var(--x-blue) !important; }
