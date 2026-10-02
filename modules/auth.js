@@ -1976,90 +1976,93 @@ if (editProfileBtn) {
   };
 }
 
+let _isSavingProfile = false;
 const saveProfileBtn = $('saveProfileBtn');
 if (saveProfileBtn) {
   saveProfileBtn.onclick = async () => {
     if (!state.me) return;
-    const fn = $('editName')?.value?.trim();
-    if (!fn) { toast('Ismingizni kiriting', 'error'); return; }
-
-    const rawRecEmail = $('editRecoveryEmail')?.value?.trim() || '';
-    if (rawRecEmail) {
-      const emailRes = validateStrictEmail(rawRecEmail);
-      if (!emailRes.ok) {
-        toast(emailRes.error, 'error');
-        return;
-      }
-    }
-
-    const updates = {
-      full_name: fn,
-      bio:       $('editBioInput')?.value?.trim() || '',
-      recovery_email: rawRecEmail || null,
-    };
-
-    const rawUser = $('editUsername')?.value?.trim() || '';
-    if (rawUser) {
-      const cleaned = rawUser.toLowerCase().replace(/[^a-z0-9_]/g, '');
-      if (cleaned.length < 2) { toast("Username kamida 2 ta belgi bo'lishi kerak (a-z, 0-9, _)", 'error'); return; }
-      if (cleaned.length > 20) { toast("Username 20 ta belgidan oshmasligi kerak", 'error'); return; }
-      if (cleaned !== _peOriginalUsername) {
-        try {
-          const { data: grpRows } = await sb.from('groups').select('id').ilike('username', cleaned).limit(1);
-          if (grpRows && grpRows.length) { toast('Bu nom allaqachon band', 'error'); return; }
-        } catch (_) {}
-      }
-      updates.username = cleaned;
-    }
-
-    if (_peAviPending)   updates.avatar    = _peAviPending;
-
-    // Parol o'zgartirish (ixtiyoriy)
-    const oldPwd = $('editOldPassword')?.value || '';
-    const newPwd = $('editNewPassword')?.value || '';
-    const newPwd2 = $('editNewPassword2')?.value || '';
-    const wantsPwd = !!(oldPwd || newPwd || newPwd2);
-    if (wantsPwd) {
-      if (!oldPwd) { toast('Joriy parolni kiriting', 'error'); return; }
-      if (newPwd.length < 6) { toast("Yangi parol kamida 6 ta belgi bo'lishi kerak", 'error'); return; }
-      if (newPwd !== newPwd2) { toast('Yangi parollar mos emas', 'error'); return; }
-      try {
-        const email = state.me.email || (state.me.username ? (state.me.username + '@spacemr.local') : null);
-        // email DB dan
-        let loginEmail = email;
-        if (state.me.username) {
-          const { data: em } = await sb.rpc('email_for_username', { p_username: state.me.username });
-          if (em) loginEmail = em;
-        }
-        if (!loginEmail) { toast('Email topilmadi', 'error'); return; }
-        await verifyPassword(loginEmail, oldPwd);
-      } catch (err) {
-        toast(err.code === 'wrong-password' ? "Joriy parol noto'g'ri" : ('Parol tekshiruvi: ' + err.message), 'error');
-        return;
-      }
-    }
+    if (_isSavingProfile) return;
+    _isSavingProfile = true;
+    saveProfileBtn.disabled = true;
+    const origHtml = saveProfileBtn.innerHTML;
+    saveProfileBtn.textContent = 'Saqlanmoqda...';
 
     try {
+      const fn = $('editName')?.value?.trim();
+      if (!fn) { toast('Ismingizni kiriting', 'error'); return; }
+
+      const rawRecEmail = $('editRecoveryEmail')?.value?.trim() || '';
+      if (rawRecEmail) {
+        const emailRes = validateStrictEmail(rawRecEmail);
+        if (!emailRes.ok) {
+          toast(emailRes.error, 'error');
+          return;
+        }
+      }
+
+      const updates = {
+        full_name: fn,
+        bio:       $('editBioInput')?.value?.trim() || '',
+        recovery_email: rawRecEmail || null,
+      };
+
+      const rawUser = $('editUsername')?.value?.trim() || '';
+      if (rawUser) {
+        const cleaned = rawUser.toLowerCase().replace(/[^a-z0-9_]/g, '');
+        if (cleaned.length < 2) { toast("Username kamida 2 ta belgi bo'lishi kerak (a-z, 0-9, _)", 'error'); return; }
+        if (cleaned.length > 20) { toast("Username 20 ta belgidan oshmasligi kerak", 'error'); return; }
+        if (cleaned !== _peOriginalUsername) {
+          try {
+            const { data: grpRows } = await sb.from('groups').select('id').ilike('username', cleaned).limit(1);
+            if (grpRows && grpRows.length) { toast('Bu nom allaqachon band', 'error'); return; }
+          } catch (_) {}
+        }
+        updates.username = cleaned;
+      }
+
+      if (_peAviPending) updates.avatar = _peAviPending;
+
+      // Parol o'zgartirish (ixtiyoriy)
+      const oldPwd = $('editOldPassword')?.value || '';
+      const newPwd = $('editNewPassword')?.value || '';
+      const newPwd2 = $('editNewPassword2')?.value || '';
+      const wantsPwd = !!(oldPwd || newPwd || newPwd2);
+
+      if (wantsPwd) {
+        if (!oldPwd) { toast('Joriy parolni kiriting', 'error'); return; }
+        if (newPwd.length < 6) { toast("Yangi parol kamida 6 ta belgi bo'lishi kerak", 'error'); return; }
+        if (newPwd !== newPwd2) { toast('Yangi parollar mos emas', 'error'); return; }
+
+        // Baza darajasida xavfsiz va atomik tekshirib o'zgartirish (notif mos bo'lishi uchun):
+        const { data: pRes, error: pErr } = await sb.rpc('change_my_password', {
+          p_old_password: oldPwd,
+          p_new_password: newPwd,
+        });
+
+        if (pErr) {
+          const msg = pErr.message || '';
+          if (/Joriy parol noto/i.test(msg)) {
+            toast("Joriy parol noto'g'ri", 'error');
+          } else {
+            toast(msg || "Parolni o'zgartirishda xatolik yuz berdi", 'error');
+          }
+          return;
+        }
+
+        if (!pRes?.ok) {
+          toast(pRes?.message || "Parolni o'zgartirishda xatolik", 'error');
+          return;
+        }
+
+        await notifyPasswordChanged(state.me.uid);
+      }
+
       const { error } = await sb.from('profiles').update(updates).eq('id', state.me.uid);
       if (error) {
         if (error.code === '23505') { toast('Bu username band', 'error'); return; }
         throw error;
       }
-      if (wantsPwd) {
-        const { error: pErr } = await sb.auth.updateUser({ password: newPwd });
-        if (pErr) throw pErr;
 
-        try {
-          await sb.rpc('user_password_updated');
-        } catch (_) {
-          await sb.from('profiles').update({
-            must_change_password: false,
-            password_changed_at: new Date().toISOString()
-          }).eq('id', state.me.uid);
-        }
-
-        await notifyPasswordChanged(state.me.uid);
-      }
       state.me.displayName = fn;
       if (updates.username) state.me.username = updates.username;
       if (updates.avatar)   state.me.photoURL = updates.avatar;
@@ -2076,9 +2079,15 @@ if (saveProfileBtn) {
 
       const profileEditOverlay = $('profileEditOverlay');
       if (profileEditOverlay) { profileEditOverlay.classList.remove('show'); unlockScroll(); }
-      toast(wantsPwd ? 'Profil va parol yangilandi' : 'Profil yangilandi', 'success');
+      toast(wantsPwd ? 'Profil va yangi parol saqlandi' : 'Profil saqlandi', 'success');
       _cb.renderProfile?.();
-    } catch(e) { toast('Xato: ' + e.message, 'error'); }
+    } catch(e) {
+      toast('Xato: ' + e.message, 'error');
+    } finally {
+      _isSavingProfile = false;
+      saveProfileBtn.disabled = false;
+      saveProfileBtn.innerHTML = origHtml;
+    }
   };
 }
 
