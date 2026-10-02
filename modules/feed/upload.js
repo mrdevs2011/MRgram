@@ -296,8 +296,8 @@ export function pickFile(f) {
     const isVid = f.type.startsWith('video/');
     const lim = isVid ? MAX_VIDEO_RAW : MAX_FILE;
     if (f.size > lim) {
-      const limTxt = isVid ? '300 MB' : '49.9 MB';
-      $('sizeWarn').textContent = `File ${fmtSz(f.size)} — limit ${limTxt}`;
+      const limTxt = '49.9 MB';
+      $('sizeWarn').textContent = `Fayl ${fmtSz(f.size)} — limit ${limTxt}`;
       toast(`Fayl hajmi ${limTxt} dan oshmasligi kerak`, 'error');
       return;
     }

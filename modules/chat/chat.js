@@ -611,7 +611,7 @@ function _paintUserRows(users, animate = false) {
  */
 import {
   sb, state, uploadViaController, isAdmin, fetchAllRows, mapProfile, mapChat, mapMessage,
-  mediaPublicUrl, ts, SUPABASE_URL, SUPABASE_ANON_KEY, MEDIA_BUCKET
+  mediaPublicUrl, ts, SUPABASE_URL, SUPABASE_ANON_KEY, MEDIA_BUCKET, MAX_FILE
 } from '../core/config.js';
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLastSeen, isActiveUser } from '../core/utils.js';
 import { toast }            from '../ui/toast.js';
@@ -1873,6 +1873,10 @@ function getChatFileIcon(name = '', mime = '') {
 
 /* ── Chat file attach ──────────────────────────────────────────────────── */
 function setChatFile(file) {
+  if (file.size > MAX_FILE) {
+    import('../ui/toast.js').then(m => m.toast('Fayl hajmi 50 MB dan oshmasligi kerak', 'error'));
+    return;
+  }
   chatState._chatSelFile = file;
   $('cfpIcon').innerHTML = getChatFileIcon(file.name, file.type);
   $('cfpName').textContent = file.name.length > 36 ? file.name.slice(0, 34) + '…' : file.name;
