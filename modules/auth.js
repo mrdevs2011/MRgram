@@ -155,7 +155,7 @@ function sbErrUz(err) {
     return `Juda ko'p urinish. Biroz kuting`;
   }
   if (msg.includes('failed to fetch') || msg.includes('network') || err?.name === 'AuthRetryableFetchError') {
-    return `Internet aloqasi yo'q`;
+    return `Internet aloqasi yo'q yoki serverga ulanish mumkin emas`;
   }
   if (msg.includes('banned') || msg.includes('disabled')) {
     return 'Bu hisob bloklangan';
