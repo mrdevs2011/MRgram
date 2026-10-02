@@ -1191,6 +1191,7 @@ let _seenMsgIds = new Set();
 let _seenBaselineDone = false;
 let _msgAnimStart = new Map();
 let _dissolving = new Map();
+const MSG_ANIM_MS = 250;
 
 export async function openChatThread(uid) {
   if (!uid || !state.me || uid === state.me.uid) return;

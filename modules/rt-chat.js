@@ -12,18 +12,28 @@
  */
 import { sb, state } from './config.js';
 
+import { TURN_URLS, TURN_USERNAME, TURN_CREDENTIAL } from './env.js';
+
 const STUN = [{ urls: 'stun:stun.l.google.com:19302' }];
 let _ice = { iceServers: STUN };
 let _iceAt = 0;
 let _icePromise = null;
-const MAX_MESH = 12;   // shundan katta guruhda P2P o'rniga faqat WebSocket broadcast
+const MAX_MESH = 12;
 
-/** TURN kredensialini /api/turn dan oladi (call.js bilan bir xil manba); bo'lmasa faqat STUN. */
+const _turnList = (TURN_URLS || '').split(',').map(x => x.trim()).filter(Boolean);
+if (_turnList.length) {
+  _ice.iceServers.push({ urls: _turnList, username: TURN_USERNAME, credential: TURN_CREDENTIAL });
+}
+
 function ensureIce() {
   if (Date.now() - _iceAt < 6 * 3600e3) return Promise.resolve(_ice);
   if (_icePromise) return _icePromise;
   _icePromise = (async () => {
     try {
+      if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
+        _icePromise = null;
+        return _ice;
+      }
       const { data: { session } } = await sb.auth.getSession();
       const token = session?.access_token;
       if (token) {

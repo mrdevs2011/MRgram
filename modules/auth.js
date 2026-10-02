@@ -439,6 +439,7 @@ function validateStrictEmail(email) {
  * so'rov (realtime uzilib qolsa ham blok/ruxsat kechikmasin).
  * ─────────────────────────────────────────────────────────────────────── */
 let _activeUserUnsub = null;
+let _approvalListener = null;
 let _currentUid = null;   // hozir ishlanayotgan sessiya (takroriy SIGNED_IN'dan himoya)
 let _entering = false;    // _enterApp ikki marta parallel ishlamasin
 let _shownKey = null;     // bir xil pending/blocked ekran qayta-qayta chizilmasin
