@@ -1,4 +1,4 @@
-// SpaceMR — send-recovery-email Edge Function
+// SpaceMR — send-recovery-email Edge Function (Multi-provider resilient email pipeline)
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import nodemailer from 'npm:nodemailer@6.9.9';
 
@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
 
-  // 1. request_password_reset RPC ni chaqiramiz
+  // 1. request_password_reset RPC ni chaqiramiz (vaqtinchalik parol o'rnatish)
   const { data: resData, error: resErr } = await admin.rpc('request_password_reset', {
     p_username: username,
     p_temp_password: temp_password,
@@ -72,49 +72,54 @@ Deno.serve(async (req) => {
 
   let emailSent = false;
   let sendError: string | null = null;
+  let providerUsed: string | null = null;
 
-  // 2. Email jo'natish provayderlari (Resend, Brevo, SMTP)
+  // ═══════════════════════════════════════════════════════════════════════
+  // 2. KENG VA CHEKLOVSIZ EMAIL QUVURI (Multi-Provider Waterfall)
+  // ═══════════════════════════════════════════════════════════════════════
 
-  // Provayder A: Resend API
-  const resendApiKey = Deno.env.get('RESEND_API_KEY');
-  if (resendApiKey) {
+  // 1-Yo'l: Gmail SMTP / Standart SMTP (Kuniga 500-2000 ta email, 100% tekin, provayder blokirovkasisiz)
+  const smtpUser = Deno.env.get('SMTP_USER');
+  const smtpPass = Deno.env.get('SMTP_PASS');
+  const smtpHost = Deno.env.get('SMTP_HOST') || (smtpUser?.includes('@gmail.com') ? 'smtp.gmail.com' : '');
+
+  if (!emailSent && smtpHost && smtpUser && smtpPass) {
     try {
-      const fromAddr = Deno.env.get('RESEND_FROM') || 'SpaceMR <onboarding@resend.dev>';
-      const emailRes = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json',
+      const isGmail = smtpHost.includes('gmail.com');
+      const smtpPort = Number(Deno.env.get('SMTP_PORT') || (isGmail ? 465 : 587));
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: {
+          user: smtpUser.trim(),
+          pass: smtpPass.replace(/\s+/g, ''), // Google 16 xonali app password bo'shliqlarini olib tashlash
         },
-        body: JSON.stringify({
-          from: fromAddr,
-          to: recoveryEmail,
-          subject: emailSubject,
-          html: emailHtml,
-        }),
       });
-      if (emailRes.ok) {
-        emailSent = true;
-      } else {
-        const errJson = await emailRes.json().catch(() => null);
-        console.error('[send-recovery-email] Resend error:', emailRes.status, errJson);
-        sendError = `Resend: ${errJson?.message || emailRes.statusText}`;
-      }
+      await transporter.sendMail({
+        from: Deno.env.get('SMTP_FROM') || `SpaceMR <${smtpUser.trim()}>`,
+        to: recoveryEmail,
+        subject: emailSubject,
+        html: emailHtml,
+      });
+      emailSent = true;
+      providerUsed = 'SMTP (' + smtpHost + ')';
+      console.log('[send-recovery-email] SMTP orqali muvaffaqiyatli jo\'natildi');
     } catch (e: any) {
-      console.error('[send-recovery-email] Resend exception:', e);
-      sendError = `Resend exception: ${e?.message}`;
+      console.error('[send-recovery-email] SMTP xatosi:', e);
+      sendError = `SMTP: ${e?.message}`;
     }
   }
 
-  // Provayder B: Brevo (Sendinblue) API
+  // 2-Yo'l: Brevo (Sendinblue) API (Oyiga 9,000 ta, kuniga 300 ta xat bepul)
   const brevoApiKey = Deno.env.get('BREVO_API_KEY');
   if (!emailSent && brevoApiKey) {
     try {
-      const senderEmail = Deno.env.get('BREVO_SENDER_EMAIL') || 'mrbir460@gmail.com';
+      const senderEmail = Deno.env.get('BREVO_SENDER_EMAIL') || smtpUser || 'mrbir460@gmail.com';
       const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
-          'api-key': brevoApiKey,
+          'api-key': brevoApiKey.trim(),
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
@@ -127,40 +132,49 @@ Deno.serve(async (req) => {
       });
       if (brevoRes.ok) {
         emailSent = true;
+        providerUsed = 'Brevo API';
+        console.log('[send-recovery-email] Brevo orqali muvaffaqiyatli jo\'natildi');
       } else {
         const bErr = await brevoRes.json().catch(() => null);
-        console.error('[send-recovery-email] Brevo error:', brevoRes.status, bErr);
+        console.error('[send-recovery-email] Brevo xatosi:', brevoRes.status, bErr);
         sendError = `Brevo: ${bErr?.message || brevoRes.statusText}`;
       }
     } catch (e: any) {
       console.error('[send-recovery-email] Brevo exception:', e);
-      sendError = `Brevo exception: ${e?.message}`;
+      sendError = `Brevo: ${e?.message}`;
     }
   }
 
-  // Provayder C: Standart SMTP (Gmail App Password, Mailtrap va h.k.)
-  const smtpHost = Deno.env.get('SMTP_HOST');
-  const smtpUser = Deno.env.get('SMTP_USER');
-  const smtpPass = Deno.env.get('SMTP_PASS');
-  if (!emailSent && smtpHost && smtpUser && smtpPass) {
+  // 3-Yo'l: Resend API (Oyiga 3,000 ta xat bepul)
+  const resendApiKey = Deno.env.get('RESEND_API_KEY');
+  if (!emailSent && resendApiKey) {
     try {
-      const smtpPort = Number(Deno.env.get('SMTP_PORT') || 465);
-      const transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpPort === 465,
-        auth: { user: smtpUser, pass: smtpPass },
+      const fromAddr = Deno.env.get('RESEND_FROM') || 'SpaceMR <onboarding@resend.dev>';
+      const emailRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendApiKey.trim()}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: fromAddr,
+          to: recoveryEmail,
+          subject: emailSubject,
+          html: emailHtml,
+        }),
       });
-      await transporter.sendMail({
-        from: Deno.env.get('SMTP_FROM') || `SpaceMR <${smtpUser}>`,
-        to: recoveryEmail,
-        subject: emailSubject,
-        html: emailHtml,
-      });
-      emailSent = true;
+      if (emailRes.ok) {
+        emailSent = true;
+        providerUsed = 'Resend API';
+        console.log('[send-recovery-email] Resend orqali muvaffaqiyatli jo\'natildi');
+      } else {
+        const errJson = await emailRes.json().catch(() => null);
+        console.error('[send-recovery-email] Resend xatosi:', emailRes.status, errJson);
+        sendError = `Resend: ${errJson?.message || emailRes.statusText}`;
+      }
     } catch (e: any) {
-      console.error('[send-recovery-email] SMTP exception:', e);
-      sendError = `SMTP exception: ${e?.message}`;
+      console.error('[send-recovery-email] Resend exception:', e);
+      sendError = `Resend: ${e?.message}`;
     }
   }
 
@@ -169,7 +183,8 @@ Deno.serve(async (req) => {
     ok: true,
     masked_email: maskedEmail,
     email_sent: emailSent,
-    error_detail: emailSent ? null : (sendError || 'Email provayder sozlanmagan'),
+    provider: providerUsed,
+    error_detail: emailSent ? null : (sendError || 'Email provayder kaliti sozlanmagan'),
   });
 });
 
