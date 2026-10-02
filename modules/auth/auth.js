@@ -1161,7 +1161,7 @@ async function _preloadForSplash(uid) {
     } catch (_) {}
   })());
 
-  await Promise.allSettled(tasks);
+  await Promise.race([Promise.allSettled(tasks), new Promise(r => setTimeout(r, 600))]);
   // right-rail qayta chizsin
   try {
     const rr = await import('../ui/right-rail.js');

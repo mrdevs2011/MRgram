@@ -15,7 +15,7 @@ import './explore.js';
 
 /* ── Splash: min 0.8s, max 12s; ma'lumot tayyor bo'lguncha kutadi ── */
 const _splashT0 = Date.now();
-const SPLASH_MIN_MS = 800;
+const SPLASH_MIN_MS = 200;
 const SPLASH_MAX_MS = 12000;
 let _splashDone = false;
 
