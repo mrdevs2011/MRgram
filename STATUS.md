@@ -135,3 +135,22 @@
      - Jonli Supabase bazasiga `019_cascade_delete_user.sql` migratsiyasi qo'llandi: `storage.objects` (foydalanuvchining barcha rasm, video, audio fayllari), `push_tokens`, `profiles` (barcha postlar, izohlar, layklar, hikoyalar, xabarlar, chatlar va guruhlar CASCADE bilan) va `auth.users` dan to'liq tozalash.
 - Fayllar: CSS/features.css, app.css, modules/stories.js, modules/utils.js, modules/chat.js, modules/shortcuts.js, modules/auth.js, modules/view-users.js, supabase/migrations/019_cascade_delete_user.sql, supabase/migrations/README.md, STATUS.md
 - Testlar: smoke.mjs (14/14), rt-mesh.mjs (7/7) muvaffaqiyatli o'tdi.
+
+---
+### 2026-10-02 18:50
+- Qilindi:
+  1) Right-rail desktopda doimiy floating: border + border-radius 16px + shadow (CSS/mono-x.css → app.css).
+  2) modules/ domen papkalarga ajratildi: core, auth, chat, feed, ui, call, profile, admin, vendor.
+  3) chat.js / groups.js umumiy logikasi `modules/chat/chat-shared.js` ga ajratildi (sana, post-share matn, pending bubble, progress upload). chat.js re-export saqlanadi.
+- Fayllar: CSS/mono-x.css, app.css, modules/**, index.html, docs/ARCHITECTURE.md
+- Keyingi: brauzerda smoke; chat/groups funksionalligini tekshirish; kerak bo'lsa paintMessages yanada bo'linadi.
+
+---
+### 2026-10-02 19:05
+- Qilindi (davomi):
+  1) router.js view importlari: `./profile/view-*.js`
+  2) scripts/build-env.mjs → `modules/core/env.js`
+  3) sw.js PRECACHE_URLS yangi papka yo'llariga
+  4) tests/rt-mesh.mjs yo'llari tuzatildi
+  5) README error-log yo'li
+- Testlar: smoke 14/14, rt-mesh 7/7 muvaffaqiyatli

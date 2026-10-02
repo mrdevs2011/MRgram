@@ -29,7 +29,7 @@ export const sb = { channel: mk, removeChannel: c => c._close(), auth: { getSess
 const MIME = { '.html': 'text/html', '.js': 'text/javascript' };
 const srv = http.createServer(async (req, rsp) => {
   const u = req.url.split('?')[0];
-  if (u === '/modules/config.js') { rsp.writeHead(200, { 'content-type': 'text/javascript' }); return rsp.end(STUB); }
+  if (u === '/modules/core/config.js') { rsp.writeHead(200, { 'content-type': 'text/javascript' }); return rsp.end(STUB); }
   if (u === '/t.html') { rsp.writeHead(200, { 'content-type': 'text/html' }); return rsp.end('<html><body>t</body></html>'); }
   try { const b = await readFile(join(ROOT, normalize(u))); rsp.writeHead(200, { 'content-type': MIME[extname(u)] || 'text/plain' }); rsp.end(b); }
   catch (_) { rsp.writeHead(404); rsp.end('nf'); }
@@ -53,7 +53,7 @@ const A = await mkPage('a1'), B = await mkPage('b2'), C = await mkPage('c3');
 /* ── guruh mesh (3 a'zo) ── */
 for (const pg of [A, B, C]) {
   await pg.evaluate(async () => {
-    const m = await import('/modules/rt-chat.js');
+    const m = await import('/modules/chat/rt-chat.js');
     window.rt = m.openRtGroup('g1', ['a1', 'b2', 'c3'], {
       onMsg: (x) => window.got.push({ ...x, t: Date.now() }),
       onTyping: (v, f) => window.typ.push([v, f]),
@@ -80,8 +80,8 @@ ok('yozmoqda (typing) P2P', JSON.stringify(await A.evaluate(() => window.typ[0])
 
 /* ── DM: DC tayyor bo'lmasdan yuborilsa — WS zaxira ── */
 const D1 = await mkPage('x1'), D2 = await mkPage('y2');
-await D1.evaluate(async () => { const m = await import('/modules/rt-chat.js'); window.rt = m.openRt('c9', 'y2', { onMsg: x => window.got.push({ ...x, t: Date.now() }) }); });
-await D2.evaluate(async () => { const m = await import('/modules/rt-chat.js'); window.rt = m.openRt('c9', 'x1', { onMsg: x => window.got.push({ ...x, t: Date.now() }) }); });
+await D1.evaluate(async () => { const m = await import('/modules/chat/rt-chat.js'); window.rt = m.openRt('c9', 'y2', { onMsg: x => window.got.push({ ...x, t: Date.now() }) }); });
+await D2.evaluate(async () => { const m = await import('/modules/chat/rt-chat.js'); window.rt = m.openRt('c9', 'x1', { onMsg: x => window.got.push({ ...x, t: Date.now() }) }); });
 await new Promise(r => setTimeout(r, 60));
 await D1.evaluate(() => window.rt.send('d-1', 'tez'));
 await D2.waitForFunction(() => window.got.length >= 1, null, { timeout: 3000 }).catch(() => {});

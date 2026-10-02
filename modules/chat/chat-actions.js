@@ -1,0 +1,227 @@
+
+import { sb, state } from '../core/config.js';
+import { $, esc, fmtSz, fmtTime } from '../core/utils.js';
+import { toast } from '../ui/toast.js';
+import { chatState } from './chat-state.js';
+import { uploadViaControllerProgress } from './chat-shared.js';
+import {
+  paintMessages, clearPendingPostShare, updateVoiceSendBtn,
+  setPendingPostShare, clearChatFile, _showOptimisticVoiceBubble,
+  _uuid, _setTyping,  _showPendingBubble, _updatePendingProgress, _removePendingBubble
+} from './chat.js';
+import { inboxSend } from '../core/rt-bus.js';
+import { sendGroupMessage, sendGroupVoice, sendGroupFile } from './groups.js';
+import { commitEdit, isEditing } from './msg-menu.js';
+
+// ... plus uuid, _setTyping, etc. We will add those manually after.
+
+export async function sendChatMessage() {
+  // Route to group/channel send if in that mode
+  if (state.currentChatKind && state.currentChatKind !== 'dm') {
+    return sendGroupMessage();
+  }
+  if (isEditing()) { await commitEdit($('chatThreadInput')?.value); return; }
+  const inp  = $('chatThreadInput');
+  const userText = (inp?.value || '').trim();
+  const postShare = chatState._pendingPostShare;
+
+  if ((!userText && !postShare) || !state.currentChatId || !state.me) return;
+  if (!rateOk('msg', 8, 10000)) return;
+
+  const chatId   = state.currentChatId;
+  const otherUid = state.currentChatUid;
+
+  inp.value = '';
+  if (postShare) {
+    clearPendingPostShare();
+  } else {
+    updateVoiceSendBtn();
+  }
+  clearTimeout(chatState._typingTimeout);
+  _setTyping(false);
+
+  const finalMsgText = postShare
+    ? JSON.stringify({ __postShare: true, post: postShare, comment: userText })
+    : userText;
+
+  const previewText = postShare
+    ? (userText ? `📌 ${userText}` : `📌 Post: ${postShare.authorName || 'Post'}`)
+    : userText.slice(0, 120);
+
+  // 1) Optimistik: o'z xabarimiz shu zahoti ekranda (DB javobini kutmaymiz)
+  const id = _uuid();
+  const nowMs = Date.now();
+  const localMsg = {
+    id, chatId, senderId: state.me.uid, type: 'text', text: finalMsgText,
+    mediaPath: null, mediaUrl: '', mediaType: null, fileName: null, fileSize: null, duration: null,
+    status: 'sending', readAt: null, editedAt: null, createdAt: nowMs, _at: nowMs,
+  };
+  chatState._rtLocal.set(id, localMsg);
+  paintMessages([...chatState._curMsgs, localMsg]);
+  // 2) Peer'ga to'g'ridan-to'g'ri (WebRTC DataChannel; ulanmagan bo'lsa broadcast)
+  if (chatState._rt && chatState._rtChatId === chatId) chatState._rt.send(id, finalMsgText);
+  // 2b) Peer'ning suhbatlar ro'yxati/unread — suhbat ochiq bo'lmasa ham shu zahoti
+  inboxSend(otherUid, { chatId, from: state.me.uid, id, text: previewText.slice(0, 120), ts: nowMs });
+
+  // Chat ro'yxatida suhbat darhol saqlansin
+  if (!chatState._latestChatMap[otherUid]) {
+    chatState._latestChatMap[otherUid] = {
+      id: chatId, participants: [state.me.uid, otherUid], createdAt: nowMs,
+      lastMessage: previewText.slice(0, 120), lastSenderId: state.me.uid, lastMessageAt: nowMs, unreadCount: {}
+    };
+  } else {
+    chatState._latestChatMap[otherUid].lastMessage = previewText.slice(0, 120);
+    chatState._latestChatMap[otherUid].lastMessageAt = nowMs;
+    chatState._latestChatMap[otherUid].lastSenderId = state.me.uid;
+  }
+
+  try {
+    // 3) Baza (haqiqat manbai) — xuddi shu ID bilan, dedup uchun
+    const { error } = await sb.from('messages')
+      .insert({ id, chat_id: chatId, sender_id: state.me.uid, type: 'text', text: finalMsgText });
+    if (error) throw error;
+    // DB tasdiqladi — clock → 1 chek
+    const conf = chatState._rtLocal.get(id);
+    if (conf) { conf.status = 'sent'; chatState._rtLocal.set(id, conf); }
+    if (state.currentChatId === chatId) {
+      paintMessages(chatState._curMsgs.map(m => m.id === id ? { ...m, status: 'sent' } : m));
+    }
+    chatState._reloadThread && chatState._reloadThread();
+    // Push bildirishnoma push.js bosqichida ulanadi (Edge Function / DB webhook)
+  } catch (err) {
+    console.error('sendChatMessage failed:', err.message);
+    toast('Xabar yuborilmadi', 'error');
+    chatState._rtLocal.delete(id);
+    if (chatState._rt && chatState._rtChatId === chatId) chatState._rt.retract(id);
+    if (state.currentChatId === chatId) paintMessages(chatState._curMsgs.filter(x => x.id !== id));
+    inp.value = userText; // qaytarib qo'yamiz, user qayta yuborishi uchun
+    if (postShare) setPendingPostShare(postShare);
+    updateVoiceSendBtn();
+  }
+}
+
+export async function sendVoiceMessage(blob, duration) {
+  if (state.currentChatKind && state.currentChatKind !== 'dm') return sendGroupVoice(blob, duration);
+  if (!state.currentChatId || !state.me) return;
+  if (!rateOk('msg', 8, 10000)) return;
+  const chatId   = state.currentChatId;
+  const otherUid = state.currentChatUid;
+
+  // 0ms: oddiy xabar kabi (id bilan) paintMessages oqimiga qo'shiladi — repaint'da yo'qolmaydi,
+  // yuklash fonda ketadi, server xabari kelganda xuddi shu id bilan jimgina almashadi.
+  const id = _uuid();
+  const nowMs = Date.now();
+  const localUrl = URL.createObjectURL(blob);
+  registerLocalVoiceUrl(id, localUrl);
+  const localMsg = {
+    id, chatId, senderId: state.me.uid, type: 'voice', text: null,
+    mediaPath: null, mediaUrl: localUrl, mediaType: blob.type || null, fileName: null, fileSize: null,
+    duration: Math.round(duration || 0),
+    status: 'sending', readAt: null, editedAt: null, createdAt: nowMs, _at: nowMs + 120000,
+  };
+  chatState._rtLocal.set(id, localMsg);
+  paintMessages([...chatState._curMsgs, localMsg]);
+
+  try {
+    const ext = blob.type.includes('ogg') ? 'ogg' : 'webm';
+    const file = new File([blob], `voice_${Date.now()}.${ext}`, { type: blob.type });
+    const result = await uploadViaControllerProgress(file, 'chat-voice');
+
+    const { error } = await sb.from('messages').insert({
+      id, chat_id: chatId, sender_id: state.me.uid, type: 'voice',
+      media_path: result.path, media_type: blob.type || null,
+      duration: Math.round(duration || 0),
+    });
+    if (error) throw error;
+    const conf = chatState._rtLocal.get(id);
+    if (conf) { conf.status = 'sent'; conf._at = Date.now(); chatState._rtLocal.set(id, conf); }
+    if (chatState._latestChatMap[otherUid]) {
+      chatState._latestChatMap[otherUid].lastMessage = '🎤 Ovozli xabar';
+      chatState._latestChatMap[otherUid].lastMessageAt = Date.now();
+      chatState._latestChatMap[otherUid].lastSenderId = state.me.uid;
+    }
+    if (state.currentChatId === chatId) {
+      paintMessages(chatState._curMsgs.map(m => m.id === id ? { ...m, status: 'sent' } : m));
+    }
+    chatState._reloadThread && chatState._reloadThread();
+  } catch (err) {
+    console.error('Voice send failed:', err);
+    chatState._rtLocal.delete(id);
+    if (state.currentChatId === chatId) paintMessages(chatState._curMsgs.filter(x => x.id !== id));
+    try { URL.revokeObjectURL(localUrl); } catch (_) {}
+    toast('Ovozli xabar yuborilmadi', 'error');
+  }
+}
+
+export async function sendChatFile(fileOverride = null, captionOverride = null) {
+  const file = fileOverride || chatState._chatSelFile;
+  if (!file || !state.me) return;
+  if (!rateOk('file', 5, 30000)) return;
+
+  const caption = (captionOverride !== null && captionOverride !== undefined
+    ? captionOverride
+    : ($('chatThreadInput')?.value || '')
+  ).trim();
+
+  // Route to group file send if in group mode
+  if (state.currentChatKind && state.currentChatKind !== 'dm') {
+    clearChatFile();
+    return sendGroupFile(file, caption);
+  }
+  if (!state.currentChatId) return;
+  const chatId   = state.currentChatId;
+  const otherUid = state.currentChatUid;
+
+  clearChatFile();
+
+  const pendingId = 'pending_file_' + Date.now();
+  _showPendingBubble(pendingId, 'file', file.size, file.name, file.type);
+
+  try {
+    const result = await uploadViaControllerProgress(file, 'chat-files', pct => {
+      _updatePendingProgress(pendingId, pct);
+    });
+
+    _removePendingBubble(pendingId);
+
+    const { error } = await sb.from('messages').insert({
+      chat_id: chatId, sender_id: state.me.uid, type: 'file',
+      media_path: result.path, media_type: file.type || null,
+      file_name: file.name, file_size: file.size,
+      text: caption || null,
+    });
+    if (error) throw error;
+    const previewText = caption ? ('📎 ' + caption) : ('📎 ' + (file.name || 'Fayl'));
+    if (chatState._latestChatMap[otherUid]) {
+      chatState._latestChatMap[otherUid].lastMessage = previewText.slice(0, 120);
+      chatState._latestChatMap[otherUid].lastMessageAt = Date.now();
+      chatState._latestChatMap[otherUid].lastSenderId = state.me.uid;
+    }
+    inboxSend(otherUid, { chatId, from: state.me.uid, id: pendingId, text: previewText.slice(0, 120), ts: Date.now() });
+    chatState._reloadThread && chatState._reloadThread();
+
+  } catch (err) {
+    console.error('File send failed:', err);
+    _removePendingBubble(pendingId);
+    const inp = $('chatThreadInput');
+    if (inp && caption) { inp.value = caption; updateVoiceSendBtn(); }
+    toast('Fayl yuborilmadi', 'error');
+  }
+}
+
+export async function handleSendAction() {
+  if (chatState._chatSelFile) {
+    const inp = $('chatThreadInput');
+    const text = inp ? inp.value.trim() : '';
+    if (inp) {
+      inp.value = '';
+      inp.style.height = '';
+    }
+    updateVoiceSendBtn();
+    await sendChatFile(null, text);
+  } else {
+    await sendChatMessage();
+  }
+}
+
+

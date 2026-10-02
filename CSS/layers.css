@@ -826,8 +826,8 @@ svg { color: inherit; }
 #chatThreadModal .chat-msg.mine .cvm-dur { color: rgba(255,255,255,0.8); }
 #chatThreadModal .chat-msg.theirs .cvm-play { color: var(--c-bg-chat); }
 /* Composer / input row — skrinshotga 1:1 mos, tekis (flat) ko'rinish: * hech qanday pill/doira foni yo'q, iko... */
-#chatThreadModal .chat-thread-input-row { background: var(--c-bg-input); border-top: 1px solid var(--c-divider); padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px)); position: relative; }
-#chatThreadModal .chat-thread-input { background: transparent; border: none; border-radius: 0; color: var(--c-text-1); padding: 9px 4px;  }
+#chatThreadModal .chat-thread-input-row { border-top: 1px solid var(--c-divider); position: relative; }
+#chatThreadModal .chat-thread-input { border: none; color: var(--c-text-1); }
 #chatThreadModal .chat-thread-input::placeholder { color: var(--c-text-2); }
 #chatThreadModal .chat-emoji-btn { background: transparent; color: var(--c-text-2); }
 #chatThreadModal .chat-emoji-btn:hover { background: transparent; color: var(--c-text-1); }

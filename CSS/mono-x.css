@@ -4,9 +4,7 @@
 meta[name="theme-color"] { color: var(--pal-black); }
 /* Oq (accent) fonli elementlarda matn/ikonka qora */
 .btn-primary, .btn-primary * { color: var(--pal-black); }
-.btn-primary:hover, .btn-primary:hover * { color: var(--pal-black); }
-::selection { color: var(--pal-black); }
-/* Toggle/switch: oq trek ustida tugma qora */
+.btn-primary:hover, .btn-primary:hover * { color: var(--pal-black); }/* Toggle/switch: oq trek ustida tugma qora */
 .toggle input:checked + .toggle-track::after, .switch-toggle.on .switch-knob { box-shadow: none; }
 /* Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan */
 [data-theme="dark"] .post, .post { background: var(--pal-black); border-bottom: 1px solid var(--pal-gray-900); }
@@ -280,7 +278,6 @@ a { color: var(--link); }
   justify-content: space-between;
   margin: 6px 0 0;
   padding: 4px 0;
-  max-width: 100%;
   width: 100%;
   box-sizing: border-box;
 }
@@ -300,8 +297,11 @@ a { color: var(--link); }
   cursor: pointer; transition: color .15s ease;
 }
 .act-btn svg {
-  width: 18.75px; height: 18.75px; padding: 7px; box-sizing: content-box;
-  border-radius: 999px; transition: background .15s ease, box-shadow .15s ease, color .15s ease;
+  width: 18.75px;
+  height: 18.75px;
+  padding: 7px;
+  box-sizing: content-box;
+  transition: background .15s ease, box-shadow .15s ease, color .15s ease;
 }
 .act-btn span:empty { display: none; }
 .act-btn:hover { background: none; color: var(--x-blue, #1d9bf0); }
@@ -313,10 +313,13 @@ a { color: var(--link); }
 
 /* Sticky home tabs — X "For you / Following" */
 .home-tabs {
-  position: sticky; top: 0; z-index: 6;
-  display: flex; align-items: stretch;
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  align-items: stretch;
   background: color-mix(in srgb, var(--bg) 85%, transparent);
-  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
 .home-tab {
@@ -520,14 +523,11 @@ nav.bot-nav #createBtn.nav-center-btn *,
 [data-theme] .search-overlay .exp-pill { position: relative; flex: 1; min-width: 0; }
 [data-theme] .search-overlay .exp-pill input {
   width: 100%;
-  height: 44px;
-  padding: 0 16px 0 46px;
   background: transparent;
   color: var(--text);
   outline: none;
   box-shadow: none;
   border: 1px solid var(--pal-gray-700);
-  border-radius: 999px;
   font-size: 15px;
 }
 [data-theme] .search-overlay .exp-pill input:focus { border-color: var(--x-blue, var(--pal-blue)); background: transparent; }
@@ -543,7 +543,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
   height: 36px;
   border-radius: 50%;
   padding: 0;
-  display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
@@ -607,10 +606,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
   display: block;
   width: 100%;
   box-sizing: border-box;
-  background: var(--pal-gray-800);
-  border: 1px solid var(--pal-gray-700);
   border-radius: 12px;
-  color: var(--pal-gray-100);
   padding: 13px 16px;
   margin-bottom: 10px;
   font-size: 15px;
@@ -619,9 +615,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
   -webkit-appearance: none;
   appearance: none;
 }
-#authWrap .field::placeholder, #authWrap input::placeholder { color: var(--pal-gray-500); }
-#authWrap .field:focus, #authWrap input.field:focus { border-color: var(--pal-blue); background: var(--pal-gray-800); }
-#authWrap .btn-primary, #authWrap #authBtn {
+#authWrap .field::placeholder, #authWrap input::placeholder { color: var(--pal-gray-500); }#authWrap .btn-primary, #authWrap #authBtn {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -642,9 +636,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 #authWrap .btn-primary:hover, #authWrap #authBtn:hover { background: #d7dbdc; }
 /* DIET force dark canvas — oq fonni yo'qotish */
 html, body, #app, .app { background: var(--pal-black); background-color: var(--pal-black); color: var(--pal-gray-100); }
-.view.on, .feed, #homeView, #followingView, #reelsView, #profileView, #chatsView { background: transparent; }
-#authWrap { background: var(--pal-black); }
-/* Right-rail — chegarali karta, feed bilan 16px oraliq */
+.view.on, .feed, #homeView, #followingView, #reelsView, #profileView, #chatsView { background: transparent; }/* Right-rail — chegarali karta, feed bilan 16px oraliq */
 .right-rail { display: none; }
 @media (min-width: 1200px) {
   :root { --center-w: 600px; }
@@ -659,24 +651,26 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
   .right-rail {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     position: fixed;
-    top: 0;
+    top: 12px;
+    bottom: 12px;
     left: calc(var(--content-left, var(--sidebar, 260px)) + var(--center-w) + 16px);
     right: auto;
     width: min(350px, calc(100vw - var(--content-left, 260px) - var(--center-w) - 32px));
     min-width: 280px;
     max-width: 350px;
-    height: 100dvh;
-    padding: 12px 0 16px;
+    height: auto;
+    max-height: calc(100dvh - 24px);
+    padding: 12px 0 12px;
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 40;
     background: #000000;
-    border: 0;
-    border-left: 1px solid var(--line, #2f3336);
-    border-radius: 0;
+    border: 1px solid var(--line, #2f3336);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
     scrollbar-width: thin;
   }
   .right-rail[hidden] { display: none; }
@@ -1935,8 +1929,6 @@ body #toast {
   width: 86px;
   height: 86px;
   border-radius: 50%;
-  padding: 3px;
-  background: linear-gradient(135deg, #1d9bf0 0%, rgba(29, 155, 240, 0.35) 60%, rgba(255, 255, 255, 0.12) 100%);
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
 }
@@ -2801,3 +2793,49 @@ button:focus-visible,
 .cpc-author-handle.is-deleted {
   color: rgba(255, 255, 255, 0.3) !important;
 }
+
+/* Profile Editor Accordions */
+.pe-acc-toggle {
+  background: transparent;
+  border: none;
+  padding: 4px 0;
+  width: 100%;
+  cursor: pointer;
+  justify-content: space-between;
+  outline: none;
+  font-family: inherit;
+}
+.pe-acc-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pe-acc-chevron {
+  color: #8b98a5;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.pe-accordion.open .pe-acc-chevron {
+  transform: rotate(-180deg);
+}
+.pe-acc-body {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+.pe-accordion.open .pe-acc-body {
+  display: flex;
+}
+
+/* ═══ OVOZLI XABAR: spinner, silliq waveform, emoji select yo'q ═══ */
+.cvm-spin { display: block; animation: cvmSpin 1s linear infinite; transform-origin: center; transform-box: fill-box; }
+@keyframes cvmSpin { to { transform: rotate(360deg); } }
+.cvm-play.cvm-play--loading { cursor: progress; }
+.cvm-bar { transition: height .35s cubic-bezier(.2, .8, .2, 1), background-color .12s linear, opacity .12s linear; }
+.cvm-waveform { contain: layout paint; }
+.cvm-play { -webkit-tap-highlight-color: transparent; }
+
+/* Chat va guruhlarda emoji belgilanmasin */
+.emj,
+.chat-msg.emoji-only .chat-bubble-text { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }

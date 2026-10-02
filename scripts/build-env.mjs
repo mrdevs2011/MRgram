@@ -1,4 +1,4 @@
-// Vercel build: Supabase sozlamalarini Environment Variables'dan modules/env.js ga yozadi.
+// Vercel build: Supabase sozlamalarini Environment Variables'dan modules/core/env.js ga yozadi.
 // Kalitlar repo'da saqlanmaydi. Faqat ochiq (anon/publishable) kalit ishlatiladi —
 // service_role brauzerga hech qachon tushmasin.
 import { writeFileSync } from 'node:fs';
@@ -12,7 +12,7 @@ if (!url || !key) {
       'Project → Settings → Environment Variables da ular shu muhit (Production/Preview) uchun yoqilganini tekshiring.');
     process.exit(1);
   }
-  console.log('ℹ️ env o\'zgaruvchilar yo\'q — modules/env.js o\'zgartirilmadi (lokal ishlash).');
+  console.log('ℹ️ env o\'zgaruvchilar yo\'q — modules/core/env.js o\'zgartirilmadi (lokal ishlash).');
   process.exit(0);
 }
 
@@ -20,7 +20,7 @@ const turnUrls = process.env.TURN_URLS || '';        // vergul bilan: turn:host:
 const turnUser = process.env.TURN_USERNAME || '';
 const turnCred = process.env.TURN_CREDENTIAL || '';
 
-writeFileSync('modules/env.js',
+writeFileSync('modules/core/env.js',
 `// AVTOMATIK YARATILADI (scripts/build-env.mjs) — qo'lda tahrirlamang.
 export const SUPABASE_URL      = ${JSON.stringify(url)};
 export const SUPABASE_ANON_KEY = ${JSON.stringify(key)};
@@ -28,4 +28,4 @@ export const TURN_URLS         = ${JSON.stringify(turnUrls)};
 export const TURN_USERNAME     = ${JSON.stringify(turnUser)};
 export const TURN_CREDENTIAL   = ${JSON.stringify(turnCred)};
 `);
-console.log('✅ modules/env.js yozildi (' + new URL(url).host + ')');
+console.log('✅ modules/core/env.js yozildi (' + new URL(url).host + ')');

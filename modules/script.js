@@ -3,14 +3,14 @@
  * Single Page Application - all views rendered from modules/
  */
 
-import { state } from './config.js';
-import { $ } from './utils.js';
-import { updateMuteBtnUI, toggleGlobalMute } from './ui.js';
-import { setRenderCallbacks } from './auth.js';
-import { renderFeed, patchCounts } from './feed.js';
-import { renderProfile, renderUserProfileModal } from './profile.js';
+import { state } from './core/config.js';
+import { $ } from './core/utils.js';
+import { updateMuteBtnUI, toggleGlobalMute } from './ui/ui.js';
+import { setRenderCallbacks } from './auth/auth.js';
+import { renderFeed, patchCounts } from './feed/feed.js';
+import { renderProfile, renderUserProfileModal } from './profile/profile.js';
 import { initRouter, navigateTo } from './router.js';
-import { initNavigation } from './bar.js';
+import { initNavigation } from './ui/bar.js';
 import './explore.js';
 
 /* ── Splash: min 0.8s, max 12s; ma'lumot tayyor bo'lguncha kutadi ── */
@@ -58,11 +58,11 @@ initRouter();
 initNavigation();
 
 /* ── Lazy-import modules ─────────────────────────────────────────────── */
-import('./upload.js');
-import('./shortcuts.js');
-import('./sidebar.js');
-import('./right-rail.js');
-import('./chats-x.js');
+import('./feed/upload.js');
+import('./ui/shortcuts.js');
+import('./ui/sidebar.js');
+import('./ui/right-rail.js');
+import('./chat/chats-x.js');
 
 /* ── Global mute buttons ─────────────────────────────────────────────── */
 ['globalMuteBtn', 'sbMuteBtn'].forEach(id =>
@@ -74,7 +74,7 @@ updateMuteBtnUI();
 /* ── Initial header state ────────────────────────────────────────────── */
 $('globalMuteBtn')?.classList.add('hdr-hidden');
 /* ── iOS 27 Haptic — global touch feedback ── */
-import { haptic, addHapticTouch } from './utils.js';
+import { haptic, addHapticTouch } from './core/utils.js';
 
 (function initGlobalHaptics() {
   // Nav buttons — select haptic

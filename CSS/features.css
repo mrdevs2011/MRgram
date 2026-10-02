@@ -255,7 +255,7 @@
 .file-dl:hover { background: var(--pal-gray-700); }
 /* Stats & Actions */
 .post-stats { padding: 8px 14px; display: flex; gap: 16px; font-size: 11px; color: var(--text3); border-top: 0.5px solid var(--glass-border); border-bottom: 0.5px solid var(--glass-border); font-family: var(--mono); }
-.act-btn { justify-content: center; cursor: pointer;  border-right: 0.5px solid var(--glass-border); }
+.act-btn { justify-content: center; border-right: 0.5px solid var(--glass-border); }
 .act-btn:last-child { border-right: none; }
 
 /* ── Post Target Blue Glow (3 seconds) ── */
@@ -637,11 +637,7 @@
   justify-content: center;
   cursor: pointer;
   border: 2px solid var(--bg);
-}
-/* ═══════════════════════════════════════════════════════════════════ SETTINGS — alohida fullscreen sahifa (T... */
-#settingsOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 150; display: none; flex-direction: column; }
-#settingsOverlay.show { display: flex; }
-.settings-hdr { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+}.settings-hdr { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
 .settings-back { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg4); border: none; cursor: pointer; color: var(--text); flex-shrink: 0;  }
 .settings-back:hover { background: var(--bg5); }
 .settings-hdr-title { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; flex: 1; }
@@ -993,9 +989,7 @@
 .divider { height: 0.5px; background: var(--glass-border); margin: 4px 0; }
 /* ═══════════════════════════════════════════════ DESKTOP SIDEBAR — Solid ═══════════════════════════════════... */
 .sb-top, .sb-search-row, .sb-bottom, .sb-create-label { display: none; }
-.sb-search-toggle { display: none; }
-#sbSearchPanel { display: none; }
-.sb-panel-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); }
+.sb-search-toggle { display: none; }.sb-panel-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); }
 .sb-panel-input-wrap { display: flex; align-items: center; gap: 8px; background: var(--glass); border: 0.5px solid var(--glass-border); border-radius: 14px; padding: 9px 12px;  box-shadow: var(--specular-top); }
 .sb-panel-input-wrap:focus-within { border-color: var(--pal-legacy-464646); background: var(--glass-mid); box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-900); }
 .sb-panel-input-wrap svg { flex-shrink: 0; color: var(--text3); }
@@ -1158,7 +1152,7 @@
 .chat-row:hover { background: var(--glass); transform: translateX(2px); }
 .chat-row:active { background: var(--glass-mid); }
 .chat-avi { width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; background: var(--glass-mid); border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top); }
-.chat-avi img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+.chat-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .chat-row-body { flex: 1; min-width: 0; }
 .chat-row-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chat-row-preview { font-size: 12.5px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
@@ -1236,7 +1230,7 @@
 }
 /* read = 2 chek, ko'k-moviy */
 .msg-ticks.read { color: var(--pal-white); }
-.chat-thread-input-row { display: flex; align-items: center; padding-bottom: max(10px, env(safe-area-inset-bottom)); flex-shrink: 0; }
+.chat-thread-input-row { display: flex; align-items: center; flex-shrink: 0; }
 .chat-thread-input { flex: 1; font-family: var(--font); outline: none; }
 .chat-thread-input::placeholder { color: var(--text3); }
 /* Emoji tugmasi — alohida, input pastidan TASHQARIDA, eng chapda * (Telegram tartibi: emoji — pill — attach —... */
@@ -1313,7 +1307,7 @@
   #chatThreadModal { left: var(--sidebar); }
 }
 /* New input row with blur & voice */
-.chat-thread-input-row { position: relative; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+.chat-thread-input-row { position: relative; }
 /* Attach button */
 .chat-attach-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;  }
 /* Voice / Send button */
@@ -1505,7 +1499,7 @@
 .call-voice-wrap.cs-active, .call-video-wrap.cs-active { opacity: 1; transform: scale(1); pointer-events: auto; }
 /* Voice mode */
 .call-voice-wrap { flex-direction: column; gap: 16px; }
-.call-voice-avi { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; }
+.call-voice-avi { width: 100px; height: 100px; overflow: hidden; }
 .call-voice-avi img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 /* Doira qirqimi child (yashil harf) da yo'qolib, KVADRAT bo'lib qolmasin */
 .call-voice-avi { flex-shrink: 0; isolation: isolate; border-radius: 50%; }
@@ -1585,7 +1579,7 @@
 /* Voice button — hover/press feedback */
 /* .chat-voice-btn base look + .recording pulse now live only in the * "VOICE BTN — amplitude-based smooth pul... */
 /* Audio message bubble */
-.chats-hdr { background: transparent; position: relative; }
+.chats-hdr { position: relative; }
 /* Openable file name (zip/pdf) — clickable link */
 a.cfm-name--link {
   font-size: 12.5px;
@@ -1766,8 +1760,6 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
    ═══════════════════════════════════════════════════════════════════════ */
 .chat-record-bar {
   position: absolute;
-  left: 8px;
-  right: 56px;
   top: 50%;
   transform: translateY(-50%);
   display: none;
@@ -2167,12 +2159,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* Chat list group/channel divider label */
 .chats-section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; padding: 14px 16px 4px; }
 /* mt-12px helper */
-.mt-12px { margin-top: 12px; }
-/* Badge overflow fix */
-/* chat-avi va chat-thread-avi border-radius:50% bilan overflow:hidden */
-/* qilishi mumkin — badge tashqariga chiqishi uchun visible qilamiz */
-.chat-avi { position: relative; overflow: visible; }
-.chat-thread-avi { position: relative; overflow: visible; }
+.mt-12px { margin-top: 12px; }.chat-thread-avi { position: relative; overflow: visible; }
 /* Badge o'lchami va joylashuvi aniqroq */
 .chat-row-grp-badge {
   position: absolute;
@@ -2401,33 +2388,9 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 
 /* Guruhga qo'shilish pastki panel (input o'rnida aniq shu balandlikda) */
 .group-join-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
-  background: #000000;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  min-height: 56px;
   box-sizing: border-box;
   flex-shrink: 0;
-}
-.group-join-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  height: 42px;
-  background: var(--blue, #1d9bf0);
-  color: #ffffff;
-  border: none;
-  border-radius: 21px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .15s ease;
-}
-.group-join-btn:hover:not(:disabled) {
+}.group-join-btn:hover:not(:disabled) {
   background: #1a8cd8;
 }
 .group-join-btn:disabled {

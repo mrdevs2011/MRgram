@@ -6,8 +6,8 @@
  *   (yoki typeahead'dan tanlansa — ui.js 'explore:commit') filtrlanadi.
  * Ma'lumot: state.allPosts (ochiq yoki o'zimniki) + profiles jadvali.
  */
-import { sb, state, mapProfile } from './config.js';
-import { $, esc, defAvi } from './utils.js';
+import { sb, state, mapProfile } from './core/config.js';
+import { $, esc, defAvi } from './core/utils.js';
 
 const overlay = $('searchOverlay');
 const input   = $('searchInput');
@@ -163,7 +163,7 @@ if (overlay && input && body) {
     if (post) {
       const id = post.dataset.post;
       closeOverlay();
-      const m = await import('./profile.js');
+      const m = await import('./profile/profile.js');
       m.openDetail?.(id);
       return;
     }
@@ -172,7 +172,7 @@ if (overlay && input && body) {
     if (u) {
       const uid = u.dataset.uid;
       closeOverlay();
-      const m = await import('./profile.js');
+      const m = await import('./profile/profile.js');
       m.openUserProfileModal?.(uid);
     }
   });

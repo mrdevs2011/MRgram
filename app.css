@@ -116,7 +116,7 @@
 /* [data-theme="dark"] .splash-wordmark → CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi) — b... */
 /* ─── loading ─── */
 /* ═══════════════════════ AUTH SCREEN ═══════════════════════ */
-#authWrap { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; background-color: var(--pal-gray-900); }
+#authWrap { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
 #authWrap.show { display: flex; }
 .auth-card { width: 100%; max-width: 380px; background: var(--bg2); border: 1px solid var(--glass-border); border-radius: 24px; padding: 36px 30px; position: relative; overflow: hidden; box-shadow: 0 20px 50px var(--pal-black); }
 /* Flat X-style — no top highlight line, no gradient blob */
@@ -411,7 +411,7 @@
 .file-dl:hover { background: var(--pal-gray-700); }
 /* Stats & Actions */
 .post-stats { padding: 8px 14px; display: flex; gap: 16px; font-size: 11px; color: var(--text3); border-top: 0.5px solid var(--glass-border); border-bottom: 0.5px solid var(--glass-border); font-family: var(--mono); }
-.act-btn { justify-content: center; cursor: pointer;  border-right: 0.5px solid var(--glass-border); }
+.act-btn { justify-content: center; border-right: 0.5px solid var(--glass-border); }
 .act-btn:last-child { border-right: none; }
 
 /* ── Post Target Blue Glow (3 seconds) ── */
@@ -793,11 +793,7 @@
   justify-content: center;
   cursor: pointer;
   border: 2px solid var(--bg);
-}
-/* ═══════════════════════════════════════════════════════════════════ SETTINGS — alohida fullscreen sahifa (T... */
-#settingsOverlay { position: fixed; inset: 0; background: var(--bg); z-index: 150; display: none; flex-direction: column; }
-#settingsOverlay.show { display: flex; }
-.settings-hdr { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+}.settings-hdr { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
 .settings-back { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg4); border: none; cursor: pointer; color: var(--text); flex-shrink: 0;  }
 .settings-back:hover { background: var(--bg5); }
 .settings-hdr-title { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; flex: 1; }
@@ -1149,9 +1145,7 @@
 .divider { height: 0.5px; background: var(--glass-border); margin: 4px 0; }
 /* ═══════════════════════════════════════════════ DESKTOP SIDEBAR — Solid ═══════════════════════════════════... */
 .sb-top, .sb-search-row, .sb-bottom, .sb-create-label { display: none; }
-.sb-search-toggle { display: none; }
-#sbSearchPanel { display: none; }
-.sb-panel-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); }
+.sb-search-toggle { display: none; }.sb-panel-title { font-size: 20px; font-weight: 700; letter-spacing: -0.4px; color: var(--text); }
 .sb-panel-input-wrap { display: flex; align-items: center; gap: 8px; background: var(--glass); border: 0.5px solid var(--glass-border); border-radius: 14px; padding: 9px 12px;  box-shadow: var(--specular-top); }
 .sb-panel-input-wrap:focus-within { border-color: var(--pal-legacy-464646); background: var(--glass-mid); box-shadow: var(--specular-top), 0 0 0 3px var(--pal-gray-900); }
 .sb-panel-input-wrap svg { flex-shrink: 0; color: var(--text3); }
@@ -1314,7 +1308,7 @@
 .chat-row:hover { background: var(--glass); transform: translateX(2px); }
 .chat-row:active { background: var(--glass-mid); }
 .chat-avi { width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0; background: var(--glass-mid); border: 0.5px solid var(--glass-border); box-shadow: var(--specular-top); }
-.chat-avi img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
+.chat-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .chat-row-body { flex: 1; min-width: 0; }
 .chat-row-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chat-row-preview { font-size: 12.5px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
@@ -1392,7 +1386,7 @@
 }
 /* read = 2 chek, ko'k-moviy */
 .msg-ticks.read { color: var(--pal-white); }
-.chat-thread-input-row { display: flex; align-items: center; padding-bottom: max(10px, env(safe-area-inset-bottom)); flex-shrink: 0; }
+.chat-thread-input-row { display: flex; align-items: center; flex-shrink: 0; }
 .chat-thread-input { flex: 1; font-family: var(--font); outline: none; }
 .chat-thread-input::placeholder { color: var(--text3); }
 /* Emoji tugmasi — alohida, input pastidan TASHQARIDA, eng chapda * (Telegram tartibi: emoji — pill — attach —... */
@@ -1469,7 +1463,7 @@
   #chatThreadModal { left: var(--sidebar); }
 }
 /* New input row with blur & voice */
-.chat-thread-input-row { position: relative; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+.chat-thread-input-row { position: relative; }
 /* Attach button */
 .chat-attach-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;  }
 /* Voice / Send button */
@@ -1661,7 +1655,7 @@
 .call-voice-wrap.cs-active, .call-video-wrap.cs-active { opacity: 1; transform: scale(1); pointer-events: auto; }
 /* Voice mode */
 .call-voice-wrap { flex-direction: column; gap: 16px; }
-.call-voice-avi { width: 100px; height: 100px; border-radius: 50%; overflow: hidden; }
+.call-voice-avi { width: 100px; height: 100px; overflow: hidden; }
 .call-voice-avi img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 /* Doira qirqimi child (yashil harf) da yo'qolib, KVADRAT bo'lib qolmasin */
 .call-voice-avi { flex-shrink: 0; isolation: isolate; border-radius: 50%; }
@@ -1741,7 +1735,7 @@
 /* Voice button — hover/press feedback */
 /* .chat-voice-btn base look + .recording pulse now live only in the * "VOICE BTN — amplitude-based smooth pul... */
 /* Audio message bubble */
-.chats-hdr { background: transparent; position: relative; }
+.chats-hdr { position: relative; }
 /* Openable file name (zip/pdf) — clickable link */
 a.cfm-name--link {
   font-size: 12.5px;
@@ -1922,8 +1916,6 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
    ═══════════════════════════════════════════════════════════════════════ */
 .chat-record-bar {
   position: absolute;
-  left: 8px;
-  right: 56px;
   top: 50%;
   transform: translateY(-50%);
   display: none;
@@ -2323,12 +2315,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* Chat list group/channel divider label */
 .chats-section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; padding: 14px 16px 4px; }
 /* mt-12px helper */
-.mt-12px { margin-top: 12px; }
-/* Badge overflow fix */
-/* chat-avi va chat-thread-avi border-radius:50% bilan overflow:hidden */
-/* qilishi mumkin — badge tashqariga chiqishi uchun visible qilamiz */
-.chat-avi { position: relative; overflow: visible; }
-.chat-thread-avi { position: relative; overflow: visible; }
+.mt-12px { margin-top: 12px; }.chat-thread-avi { position: relative; overflow: visible; }
 /* Badge o'lchami va joylashuvi aniqroq */
 .chat-row-grp-badge {
   position: absolute;
@@ -2557,33 +2544,9 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 
 /* Guruhga qo'shilish pastki panel (input o'rnida aniq shu balandlikda) */
 .group-join-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
-  background: #000000;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  min-height: 56px;
   box-sizing: border-box;
   flex-shrink: 0;
-}
-.group-join-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  width: 100%;
-  height: 42px;
-  background: var(--blue, #1d9bf0);
-  color: #ffffff;
-  border: none;
-  border-radius: 21px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all .15s ease;
-}
-.group-join-btn:hover:not(:disabled) {
+}.group-join-btn:hover:not(:disabled) {
   background: #1a8cd8;
 }
 .group-join-btn:disabled {
@@ -3449,8 +3412,8 @@ svg { color: inherit; }
 #chatThreadModal .chat-msg.mine .cvm-dur { color: rgba(255,255,255,0.8); }
 #chatThreadModal .chat-msg.theirs .cvm-play { color: var(--c-bg-chat); }
 /* Composer / input row — skrinshotga 1:1 mos, tekis (flat) ko'rinish: * hech qanday pill/doira foni yo'q, iko... */
-#chatThreadModal .chat-thread-input-row { background: var(--c-bg-input); border-top: 1px solid var(--c-divider); padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px)); position: relative; }
-#chatThreadModal .chat-thread-input { background: transparent; border: none; border-radius: 0; color: var(--c-text-1); padding: 9px 4px;  }
+#chatThreadModal .chat-thread-input-row { border-top: 1px solid var(--c-divider); position: relative; }
+#chatThreadModal .chat-thread-input { border: none; color: var(--c-text-1); }
 #chatThreadModal .chat-thread-input::placeholder { color: var(--c-text-2); }
 #chatThreadModal .chat-emoji-btn { background: transparent; color: var(--c-text-2); }
 #chatThreadModal .chat-emoji-btn:hover { background: transparent; color: var(--c-text-1); }
@@ -4426,22 +4389,9 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
   max-width: 100%;
 }
 .admin-reset-warn {
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  border-radius: 14px;
-  padding: 12px 14px;
-  margin-bottom: 18px;
-  display: flex;
-  gap: 10px;
   align-items: flex-start;
   text-align: left;
-}
-.admin-reset-warn-text {
-  font-size: 12.5px;
-  color: #fca5a5;
-  line-height: 1.5;
-}
-.admin-reset-pwd-box {
+}.admin-reset-pwd-box {
   margin-bottom: 22px;
   text-align: left;
 }
@@ -4662,9 +4612,7 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 meta[name="theme-color"] { color: var(--pal-black); }
 /* Oq (accent) fonli elementlarda matn/ikonka qora */
 .btn-primary, .btn-primary * { color: var(--pal-black); }
-.btn-primary:hover, .btn-primary:hover * { color: var(--pal-black); }
-::selection { color: var(--pal-black); }
-/* Toggle/switch: oq trek ustida tugma qora */
+.btn-primary:hover, .btn-primary:hover * { color: var(--pal-black); }/* Toggle/switch: oq trek ustida tugma qora */
 .toggle input:checked + .toggle-track::after, .switch-toggle.on .switch-knob { box-shadow: none; }
 /* Postlar ham qora fonda, ajratuvchi ingichka chiziq bilan */
 [data-theme="dark"] .post, .post { background: var(--pal-black); border-bottom: 1px solid var(--pal-gray-900); }
@@ -4938,7 +4886,6 @@ a { color: var(--link); }
   justify-content: space-between;
   margin: 6px 0 0;
   padding: 4px 0;
-  max-width: 100%;
   width: 100%;
   box-sizing: border-box;
 }
@@ -4958,8 +4905,11 @@ a { color: var(--link); }
   cursor: pointer; transition: color .15s ease;
 }
 .act-btn svg {
-  width: 18.75px; height: 18.75px; padding: 7px; box-sizing: content-box;
-  border-radius: 999px; transition: background .15s ease, box-shadow .15s ease, color .15s ease;
+  width: 18.75px;
+  height: 18.75px;
+  padding: 7px;
+  box-sizing: content-box;
+  transition: background .15s ease, box-shadow .15s ease, color .15s ease;
 }
 .act-btn span:empty { display: none; }
 .act-btn:hover { background: none; color: var(--x-blue, #1d9bf0); }
@@ -4971,10 +4921,13 @@ a { color: var(--link); }
 
 /* Sticky home tabs — X "For you / Following" */
 .home-tabs {
-  position: sticky; top: 0; z-index: 6;
-  display: flex; align-items: stretch;
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  align-items: stretch;
   background: color-mix(in srgb, var(--bg) 85%, transparent);
-  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line);
 }
 .home-tab {
@@ -5178,14 +5131,11 @@ nav.bot-nav #createBtn.nav-center-btn *,
 [data-theme] .search-overlay .exp-pill { position: relative; flex: 1; min-width: 0; }
 [data-theme] .search-overlay .exp-pill input {
   width: 100%;
-  height: 44px;
-  padding: 0 16px 0 46px;
   background: transparent;
   color: var(--text);
   outline: none;
   box-shadow: none;
   border: 1px solid var(--pal-gray-700);
-  border-radius: 999px;
   font-size: 15px;
 }
 [data-theme] .search-overlay .exp-pill input:focus { border-color: var(--x-blue, var(--pal-blue)); background: transparent; }
@@ -5201,7 +5151,6 @@ nav.bot-nav #createBtn.nav-center-btn *,
   height: 36px;
   border-radius: 50%;
   padding: 0;
-  display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
@@ -5265,10 +5214,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
   display: block;
   width: 100%;
   box-sizing: border-box;
-  background: var(--pal-gray-800);
-  border: 1px solid var(--pal-gray-700);
   border-radius: 12px;
-  color: var(--pal-gray-100);
   padding: 13px 16px;
   margin-bottom: 10px;
   font-size: 15px;
@@ -5277,9 +5223,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
   -webkit-appearance: none;
   appearance: none;
 }
-#authWrap .field::placeholder, #authWrap input::placeholder { color: var(--pal-gray-500); }
-#authWrap .field:focus, #authWrap input.field:focus { border-color: var(--pal-blue); background: var(--pal-gray-800); }
-#authWrap .btn-primary, #authWrap #authBtn {
+#authWrap .field::placeholder, #authWrap input::placeholder { color: var(--pal-gray-500); }#authWrap .btn-primary, #authWrap #authBtn {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -5300,9 +5244,7 @@ nav.bot-nav #createBtn.nav-center-btn *,
 #authWrap .btn-primary:hover, #authWrap #authBtn:hover { background: #d7dbdc; }
 /* DIET force dark canvas — oq fonni yo'qotish */
 html, body, #app, .app { background: var(--pal-black); background-color: var(--pal-black); color: var(--pal-gray-100); }
-.view.on, .feed, #homeView, #followingView, #reelsView, #profileView, #chatsView { background: transparent; }
-#authWrap { background: var(--pal-black); }
-/* Right-rail — chegarali karta, feed bilan 16px oraliq */
+.view.on, .feed, #homeView, #followingView, #reelsView, #profileView, #chatsView { background: transparent; }/* Right-rail — chegarali karta, feed bilan 16px oraliq */
 .right-rail { display: none; }
 @media (min-width: 1200px) {
   :root { --center-w: 600px; }
@@ -5317,24 +5259,26 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
   .right-rail {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     position: fixed;
-    top: 0;
+    top: 12px;
+    bottom: 12px;
     left: calc(var(--content-left, var(--sidebar, 260px)) + var(--center-w) + 16px);
     right: auto;
     width: min(350px, calc(100vw - var(--content-left, 260px) - var(--center-w) - 32px));
     min-width: 280px;
     max-width: 350px;
-    height: 100dvh;
-    padding: 12px 0 16px;
+    height: auto;
+    max-height: calc(100dvh - 24px);
+    padding: 12px 0 12px;
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 40;
     background: #000000;
-    border: 0;
-    border-left: 1px solid var(--line, #2f3336);
-    border-radius: 0;
+    border: 1px solid var(--line, #2f3336);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
     scrollbar-width: thin;
   }
   .right-rail[hidden] { display: none; }
@@ -6593,8 +6537,6 @@ body #toast {
   width: 86px;
   height: 86px;
   border-radius: 50%;
-  padding: 3px;
-  background: linear-gradient(135deg, #1d9bf0 0%, rgba(29, 155, 240, 0.35) 60%, rgba(255, 255, 255, 0.12) 100%);
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
 }
@@ -7459,3 +7401,49 @@ button:focus-visible,
 .cpc-author-handle.is-deleted {
   color: rgba(255, 255, 255, 0.3) !important;
 }
+
+/* Profile Editor Accordions */
+.pe-acc-toggle {
+  background: transparent;
+  border: none;
+  padding: 4px 0;
+  width: 100%;
+  cursor: pointer;
+  justify-content: space-between;
+  outline: none;
+  font-family: inherit;
+}
+.pe-acc-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pe-acc-chevron {
+  color: #8b98a5;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+.pe-accordion.open .pe-acc-chevron {
+  transform: rotate(-180deg);
+}
+.pe-acc-body {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+.pe-accordion.open .pe-acc-body {
+  display: flex;
+}
+
+/* ═══ OVOZLI XABAR: spinner, silliq waveform, emoji select yo'q ═══ */
+.cvm-spin { display: block; animation: cvmSpin 1s linear infinite; transform-origin: center; transform-box: fill-box; }
+@keyframes cvmSpin { to { transform: rotate(360deg); } }
+.cvm-play.cvm-play--loading { cursor: progress; }
+.cvm-bar { transition: height .35s cubic-bezier(.2, .8, .2, 1), background-color .12s linear, opacity .12s linear; }
+.cvm-waveform { contain: layout paint; }
+.cvm-play { -webkit-tap-highlight-color: transparent; }
+
+/* Chat va guruhlarda emoji belgilanmasin */
+.emj,
+.chat-msg.emoji-only .chat-bubble-text { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }

@@ -12,7 +12,7 @@
  * Edge Function secret'ida turadi (README: supabase/functions/send-push/README.md).
  */
 
-import { sb, state } from './config.js';
+import { sb, state } from './core/config.js';
 
 export const VAPID_PUBLIC_KEY = 'BC7D7mT0RhLjM8kes8iFCvavCiTY5crwYaXzGeuEIRclNoRmIDAg0QTpgfbGvefGmprso8bqiArQ3a1kz33FOt0';
 

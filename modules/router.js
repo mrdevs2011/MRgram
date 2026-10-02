@@ -5,8 +5,8 @@
  * Barchasi views rendered from modules/, no separate folders needed
  */
 
-import { state } from './config.js';
-import { $ } from './utils.js';
+import { state } from './core/config.js';
+import { $ } from './core/utils.js';
 
 /* ═══════════════════════════════════════════════════════════════════════
    ROUTE CONFIGURATION
@@ -102,7 +102,7 @@ export function navigateTo(routeName, pushState = true) {
   // chatThread state ni tozalaymiz
   if (state.currentChatKind && state.currentChatKind !== 'dm') {
     // group thread unsub ni async import orqali tozalaymiz
-    import('./groups.js').then(m => { try { m.closeGroupThread(); } catch(_){} }).catch(()=>{});
+    import('./chat/groups.js').then(m => { try { m.closeGroupThread(); } catch(_){} }).catch(()=>{});
   }
   state.currentChatUid  = null;
   state.currentChatId   = null;
@@ -147,7 +147,7 @@ async function switchView(prevRoute, routeName) {
   // Destroy previous view (cleanup listeners, intervals, etc.)
   if (prevRoute && prevRoute !== routeName) {
     try {
-      const prevController = await import(`./view-${prevRoute}.js`);
+      const prevController = await import(`./profile/view-${prevRoute}.js`);
       if (prevController.destroyView) {
         prevController.destroyView();
       }
@@ -175,7 +175,7 @@ async function switchView(prevRoute, routeName) {
 
   // Import and initialize view controller dynamically
   try {
-    const controller = await import(`./view-${routeName}.js`);
+    const controller = await import(`./profile/view-${routeName}.js`);
     if (controller.initView) {
       controller.initView();
     }
@@ -245,7 +245,7 @@ function updateLayoutForRoute(routeName) {
     _activeRoute = routeName;
 
   // Right rail: faqat home/profile da
-  import('./right-rail.js').then(m => m.onRouteChange?.()).catch(() => {});
+  import('./ui/right-rail.js').then(m => m.onRouteChange?.()).catch(() => {});
 }
 
 /** Joriy aktiv tab — search handlerlar shu orqali qaror qiladi */
@@ -274,7 +274,7 @@ function _initSearchHandlers() {
       hdrSearchBtn?.classList.add('search-active');
       setTimeout(() => document.getElementById('searchInput')?.focus(), 60);
     }
-    import('./right-rail.js').then(m => m.onRouteChange?.()).catch(() => {});
+    import('./ui/right-rail.js').then(m => m.onRouteChange?.()).catch(() => {});
   }
 
   if (hdrSearchBtn)   hdrSearchBtn.addEventListener('click', handleSearchClick);
@@ -425,7 +425,7 @@ export function applyAdminNav() {
   if (actionsBtn) actionsBtn.classList.toggle('d-none', !isAdmin);
 
   // Real-vaqt bildirishnoma badge (faqat admin uchun)
-  import('./admin-badge.js').then(m => {
+  import('./admin/admin-badge.js').then(m => {
     if (isAdmin) m.initAdminBadge(); else m.destroyAdminBadge();
   }).catch(() => {});
 }
