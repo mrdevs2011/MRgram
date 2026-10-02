@@ -1101,7 +1101,7 @@ async function _preloadForSplash(uid) {
       const { data } = await sb.from('posts')
         .select('*')
         .order('created_at', { ascending: false })
-        .limit(80);
+        .limit(10);
       if (data?.length) {
         const posts = data.map(r => {
           try { return mapPost(r); } catch { return null; }
@@ -1292,7 +1292,36 @@ export function listenPosts() {
     if (structural) document.dispatchEvent(new CustomEvent('postsUpdated'));
   };
 
-  const POST_LIMIT = 200; // scroll orqali 10 tadan ko'rsatiladi
+  const POST_LIMIT = 10; // scroll orqali 10 tadan ko'rsatiladi
+
+  
+  window.__fetchMorePosts = async () => {
+    if (state.loadingMoreDB || !state.allPosts?.length) return false;
+    state.loadingMoreDB = true;
+    try {
+      const oldest = state.allPosts[state.allPosts.length - 1];
+      if (!oldest?.createdAt) return false;
+      const { data, error } = await sb.from('posts').select('*')
+        .lt('created_at', new Date(oldest.createdAt).toISOString())
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (error || !data || data.length === 0) return false;
+      
+      let added = 0;
+      for (const r of data) {
+        if (!byId.has(r.id)) {
+          byId.set(r.id, mapPost(r));
+          added++;
+        }
+      }
+      if (added > 0) _scheduleRender();
+      return added > 0;
+    } catch (e) {
+      return false;
+    } finally {
+      state.loadingMoreDB = false;
+    }
+  };
 
   const load = async () => {
     const { data, error } = await sb.from('posts')

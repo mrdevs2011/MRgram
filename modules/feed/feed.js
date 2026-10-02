@@ -622,37 +622,47 @@ export async function renderFeed() {
   // URL hash yoki query da post id bo'lsa — o'sha postga smooth scroll va ko'k yonish
   if (targetId) scrollToPostFromHash();
 
-  if (state.visibleN < filtered().length) {
+  if (state.visibleN < filtered().length || (!state.search && state.view === 'home')) {
     feedEl.insertAdjacentHTML('beforeend', '<div class="spin-wrap"><div class="spinner"></div></div>');
   }
   setupScroll();
 }
 
 function setupScroll() {
-  window.onscroll = () => {
+  window.onscroll = async () => {
+    if (state.loadingMore) return;
     const maxN = filtered().length;
-    if (state.loadingMore || state.visibleN >= maxN) return;
     if (window.scrollY + window.innerHeight >= document.body.scrollHeight - 400) {
+      if (state.visibleN >= maxN) {
+        if (window.__fetchMorePosts && state.view === 'home' && !state.search) {
+          state.loadingMore = true;
+          const hasMore = await window.__fetchMorePosts();
+          state.loadingMore = false;
+          if (!hasMore) {
+            $('feed')?.querySelector('.spin-wrap')?.remove();
+          }
+        }
+        return;
+      }
+
       state.loadingMore = true;
       setTimeout(async () => {
         const prevN = state.visibleN;
-        state.visibleN = Math.min(prevN + 10, maxN);
+        state.visibleN = Math.min(prevN + 10, filtered().length);
         state.loadingMore = false;
         if (state.view !== 'home') return;
 
         const feedEl = $('feed');
         if (!feedEl) return;
 
-        // Spinner'ni olib tashlaymiz
         feedEl.querySelector('.spin-wrap')?.remove();
 
-        // Faqat yangi postlarni qo'shamiz (butun feed'ni qayta yozmaymiz)
         const newPosts = filtered().slice(prevN, state.visibleN);
         if (newPosts.length > 0) {
           await appendPostsToFeed(feedEl, newPosts);
         }
 
-        if (state.visibleN < filtered().length) {
+        if (state.visibleN < filtered().length || (window.__fetchMorePosts && !state.search)) {
           feedEl.insertAdjacentHTML('beforeend', '<div class="spin-wrap"><div class="spinner"></div></div>');
         }
       }, 300);
