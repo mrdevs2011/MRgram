@@ -1229,6 +1229,11 @@
 .chat-msg.theirs .chat-msg-time { color: var(--text3); }
 /* Read-receipt ticks */
 .msg-ticks { flex-shrink: 0; display: inline-block; vertical-align: middle; color: var(--pal-legacy-909093); }
+.msg-ticks.sending { opacity: 0.75; animation: msgTickPulse 1.2s ease-in-out infinite; }
+@keyframes msgTickPulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
 /* read = 2 chek, ko'k-moviy */
 .msg-ticks.read { color: var(--pal-white); }
 .chat-thread-input-row { display: flex; align-items: center; padding-bottom: max(10px, env(safe-area-inset-bottom)); flex-shrink: 0; }
@@ -1741,17 +1746,19 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
    ═══════════════════════════════════════════════════════════════════════ */
 #chatThreadModal .chat-voice-btn.recording,
 .chat-voice-btn.recording {
-  background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%) !important;
+  /* --voice-rec-bg / --voice-rec-shadow JS orqali silliq morph qilinadi */
+  background: var(--voice-rec-bg, linear-gradient(135deg, #2AABEE 0%, #229ED9 100%)) !important;
   color: #ffffff !important;
   transform: scale(1.18);
-  box-shadow: 0 4px 20px rgba(42, 171, 238, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.2);
-  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.15s ease;
+  box-shadow: var(--voice-rec-shadow, 0 4px 20px rgba(42, 171, 238, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.2));
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 #chatThreadModal .chat-voice-btn.recording.cancelling,
 .chat-voice-btn.recording.cancelling {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.2) !important;
+  /* fallback — asosiy rang JS progress orqali beriladi */
+  background: var(--voice-rec-bg, linear-gradient(135deg, #ef4444 0%, #dc2626 100%)) !important;
+  box-shadow: var(--voice-rec-shadow, 0 4px 20px rgba(239, 68, 68, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.2));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

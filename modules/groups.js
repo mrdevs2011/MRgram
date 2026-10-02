@@ -29,7 +29,7 @@ import { openRtGroup }                              from './rt-chat.js';
 import { busOn, groupJoin, groupInboxSend, isUidOnline } from './rt-bus.js';
 import { updateVoiceSendBtn, _toDateSafe, _isSameDay, _dateSepLabel,
          paintGroupThread, resetSeenMsgs, _showPendingBubble, _updatePendingProgress, _removePendingBubble,
-         uploadViaControllerProgress, initChatHeaderMenu } from './chat.js';
+         _showOptimisticVoiceBubble, uploadViaControllerProgress, initChatHeaderMenu } from './chat.js';
 import { isEditing, commitEdit }                    from './msg-menu.js';
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -587,6 +587,7 @@ export async function sendGroupMessage() {
   const nowMs = Date.now();
   const localMsg = mapMessage({ id: mid, group_id: groupId, sender_id: state.me.uid, type: 'text', text, created_at: new Date(nowMs).toISOString() });
   localMsg._at = nowMs;
+  localMsg.status = 'sending';
   _gPending.set(mid, localMsg);
   _gMsgs = [..._gMsgs, localMsg];
   paintGroupMessages(_gMsgs, groupData);
@@ -597,6 +598,11 @@ export async function sendGroupMessage() {
     const { error } = await sb.from('group_messages')
       .insert({ id: mid, group_id: groupId, sender_id: state.me.uid, type: 'text', text });
     if (error) throw error;
+    // DB tasdiqladi — clock → 1 chek
+    const conf = _gPending.get(mid);
+    if (conf) { conf.status = 'sent'; _gPending.set(mid, conf); }
+    _gMsgs = _gMsgs.map(m => m.id === mid ? { ...m, status: 'sent' } : m);
+    if (_currentGroupId === groupId) paintGroupMessages(_gMsgs, groupData);
   } catch (err) {
     console.error('[Groups] send failed:', err);
     toast('Xabar yuborilmadi', 'error');
@@ -645,22 +651,25 @@ export async function sendGroupVoice(blob, duration) {
   if (!rateOk('msg', 8, 10000)) return;
   const groupId = _currentGroupId;
   const pendingId = 'pending_voice_' + Date.now();
-  _showPendingBubble(pendingId, 'voice', blob.size);
+  const localUrl = URL.createObjectURL(blob);
+  _showOptimisticVoiceBubble(pendingId, localUrl, duration);
   try {
     const ext = blob.type.includes('ogg') ? 'ogg' : 'webm';
     const file = new File([blob], `voice_${Date.now()}.${ext}`, { type: blob.type });
-    const result = await uploadViaControllerProgress(file, 'chat-voice', pct => _updatePendingProgress(pendingId, pct));
-    _removePendingBubble(pendingId);
+    const result = await uploadViaControllerProgress(file, 'chat-voice');
     const { error } = await sb.from('group_messages').insert({
       group_id: groupId, sender_id: state.me.uid, type: 'voice',
       media_path: result.path, media_type: blob.type || null,
       duration: Math.round(duration || 0),
     });
     if (error) throw error;
+    _removePendingBubble(pendingId);
+    try { URL.revokeObjectURL(localUrl); } catch(_) {}
     _reloadGroupThread && _reloadGroupThread();
   } catch (err) {
     console.error('[Groups] voice send failed:', err);
     _removePendingBubble(pendingId);
+    try { URL.revokeObjectURL(localUrl); } catch(_) {}
     toast('Ovozli xabar yuborilmadi', 'error');
   }
 }

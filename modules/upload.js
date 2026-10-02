@@ -602,7 +602,7 @@ function loadComposerAvi() {
 }
 
 /* ── Overlay open/close ──────────────────────────────────────────────── */
-function openComposer() {
+export function openComposer() {
   $('uploadOverlay').classList.add('show');
   lockScroll();
   resetUpload();
@@ -620,6 +620,31 @@ export function openStoryComposer() {
 }
 $('createBtn').onclick     = openComposer;
 $('hdrNewPostBtn').onclick = openComposer;
+
+/* Inline home composer — brend/logika o'zgarmaydi: mavjud openComposer() */
+function _fillHomeComposerAvi() {
+  const box = $('homeComposerAvi');
+  if (!box || !state.me) return;
+  Promise.resolve(sb.from('profiles').select('full_name,avatar').eq('id', state.me.uid).maybeSingle())
+    .then(({ data }) => {
+      const av = data?.avatar || defAvi(data?.full_name || 'U');
+      box.innerHTML = `<img src="${av}" alt="" onerror="this.style.display='none'">`;
+    }).catch(() => {});
+}
+function _bindHomeComposer() {
+  const row = $('homeComposer');
+  if (!row || row._bound) return;
+  row._bound = true;
+  const open = () => openComposer();
+  row.addEventListener('click', open);
+  row.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+  });
+  $('homeComposerBtn')?.addEventListener('click', e => { e.stopPropagation(); open(); });
+  _fillHomeComposerAvi();
+}
+_bindHomeComposer();
+
 $('cancelUpload').onclick = () => { $('uploadOverlay').classList.remove('show'); unlockScroll(); resetUpload(); };
 $('uploadOverlay').onclick = e => {
   if (e.target === $('uploadOverlay')) { $('uploadOverlay').classList.remove('show'); unlockScroll(); resetUpload(); }

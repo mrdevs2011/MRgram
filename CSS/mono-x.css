@@ -255,7 +255,7 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 .toggle input:checked + .toggle-track::after, .switch-toggle.on .switch-knob { background: var(--pal-white); }
 /* Progress / ovoz: oq o'rniga X ko'ki */
 .cpb-progress-fill, .vmp-progress-fill, .vmp-play, .vc-fill, .vc-fill::after, .chat-voice-btn, #chatThreadModal .chat-msg.theirs .cvm-bar.played { background: var(--x-blue) !important; }
-.chat-voice-btn.recording { background: var(--red); }
+/* .chat-voice-btn.recording background — features.css + JS progress morph */
 #chatThreadModal .chat-msg.theirs .cvm-play, #chatThreadModal .chat-msg.theirs .cvm-play:hover { background: var(--x-blue); }
 /* Suhbat (DM): yuborilgan = X ko'ki, kelgan = #2f3336 / #eff3f4, 22px yumaloq */
 #chatThreadModal, [data-theme] #chatThreadModal {
@@ -517,29 +517,35 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
   .right-rail {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 16px;
     position: fixed;
-    top: 12px;
+    top: 0;
     left: calc(var(--content-left, var(--sidebar, 260px)) + var(--center-w) + 16px);
-    right: max(12px, var(--gutter, 0px));
-    width: auto;
-    min-width: 260px;
-    height: calc(100dvh - 24px);
-    padding: 4px 20px 20px;
+    right: auto;
+    width: min(350px, calc(100vw - var(--content-left, 260px) - var(--center-w) - 32px));
+    min-width: 280px;
+    max-width: 350px;
+    height: 100dvh;
+    padding: 12px 0 16px;
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 40;
-    background: var(--pal-black);
+    background: transparent;
     border: 0;
     border-radius: 0;
     scrollbar-width: thin;
   }
   .right-rail[hidden] { display: none; }
-  .rr-settings-wrap { position: sticky; bottom: 0; margin-top: auto; padding: 12px 0 4px; background: var(--pal-black); z-index: 1; }
+  .rr-settings-wrap { position: sticky; bottom: 0; margin-top: auto; padding: 12px 0 4px; background: transparent; z-index: 1; }
   .rr-settings-wrap[hidden] { display: none; }
-  .rr-settings-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 10px 12px; border: none; border-radius: 14px; background: var(--pal-gray-900); color: var(--pal-gray-100); font: 500 13px var(--font); cursor: pointer; }
-  .rr-settings-btn:hover { background: var(--pal-gray-800); }
+  .rr-settings-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+    padding: 12px 16px; border: 1px solid var(--line); border-radius: 999px;
+    background: transparent; color: var(--text); font: 700 15px var(--font); cursor: pointer;
+    transition: background .15s ease;
+  }
+  .rr-settings-btn:hover { background: rgba(255,255,255,0.03); }
   #chatsView, #reelsView, #actionsView { margin-right: 0; }
 
   /* ── CHAT (≥1200px): suhbat MARKAZDA (feed kabi), ro'yxat + qidiruv O'NG ustunda (rail kabi) ── */
@@ -581,19 +587,64 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
     border: 0;
   }
 }
-.rr-card { background: transparent; border: none; border-radius: 0; padding: 16px 0 8px; border-bottom: 1px solid var(--pal-gray-700); }
+/* Right-rail cards — X "Who to follow" uslubi (logika o'zgarmaydi) */
+.rr-card {
+  background: #16181c;
+  border: none;
+  border-radius: 16px;
+  padding: 12px 0 4px;
+  border-bottom: none;
+  overflow: hidden;
+}
 .rr-card:last-child { border-bottom: none; }
-.rr-title { margin: 0 0 6px 4px; font-size: 13px; font-weight: 600; color: var(--pal-gray-500); letter-spacing: 0.04em; text-transform: uppercase; }
+.rr-title {
+  margin: 0 0 4px;
+  padding: 0 16px 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+  text-transform: none;
+  line-height: 24px;
+}
 .rr-list { display: flex; flex-direction: column; gap: 0; }
-.rr-empty { color: #536471; font-size: 13px; line-height: 1.4; padding: 8px 4px 12px; }
-.rr-row { display: flex; align-items: center; gap: 12px; padding: 10px 6px; border-radius: 8px; border: none; background: transparent; color: var(--pal-gray-100); cursor: pointer; text-align: left; width: 100%; font: inherit; }
-.rr-row:hover { background: rgba(231, 233, 234, 0.04); }
-.rr-avi { width: 40px; height: 40px; border-radius: 50%; background: var(--pal-gray-800); flex-shrink: 0; overflow: visible; display: flex; align-items: center; justify-content: center; position: relative; }
+.rr-empty {
+  color: var(--text3);
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 8px 16px 16px;
+}
+.rr-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-radius: 0;
+  border: none; background: transparent;
+  color: var(--text); cursor: pointer; text-align: left; width: 100%; font: inherit;
+  transition: background .15s ease;
+}
+.rr-row:hover { background: rgba(255, 255, 255, 0.03); }
+.rr-avi {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--bg4, #2f3336); flex-shrink: 0;
+  overflow: visible; display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
 .rr-avi img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 50%; }
-.rr-avi .rr-dot { position: absolute; right: -1px; bottom: -1px; width: 12px; height: 12px; border-radius: 50%; background: #00ba7c; border: 2px solid var(--pal-black); box-sizing: border-box; z-index: 2; pointer-events: none; }
+.rr-avi .rr-dot {
+  position: absolute; right: -1px; bottom: -1px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #00ba7c; border: 2px solid #16181c;
+  box-sizing: border-box; z-index: 2; pointer-events: none;
+}
 .rr-meta { min-width: 0; flex: 1; }
-.rr-name { font-size: 14px; font-weight: 600; color: var(--pal-gray-100); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.25; }
-.rr-sub { font-size: 13px; color: var(--pal-gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; margin-top: 1px; }
+.rr-name {
+  font-size: 15px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 20px;
+}
+.rr-sub {
+  font-size: 13px; color: var(--text3);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 16px; margin-top: 2px;
+}
 /* ═══════════════════════════════════════════════════════════════════════ Izohlar (inline + o'ng ustun) — X "... */
 /* Panel: media kabi chetdan chetga (avatar ustuni + padding qadar chiqadi) */
 .post-cmt-panel { margin: 8px calc(-1 * var(--post-px, 16px)) -12px calc(-1 * (var(--post-px, 16px) + var(--post-avi, 40px) + var(--post-gap, 12px))); border-top: 1px solid var(--line); }
@@ -993,3 +1044,296 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
   background: rgba(0, 0, 0, 0.82) !important;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   X UI bosqich-2: inline composer + profil (brend/logika saqlanadi)
+   ═══════════════════════════════════════════════════════════════════════ */
+.home-composer {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  background: var(--bg);
+}
+.home-composer:hover { background: rgba(255,255,255,0.03); }
+.home-composer-avi {
+  width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+  background: var(--bg4, #16181c); overflow: hidden;
+}
+.home-composer-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.home-composer-placeholder {
+  flex: 1; min-width: 0;
+  font-size: 20px; font-weight: 400; color: var(--text3);
+  line-height: 24px;
+}
+.home-composer-post {
+  flex-shrink: 0; height: 36px; padding: 0 16px;
+  border: 0; border-radius: 999px;
+  background: var(--x-inv-bg, #fff); color: var(--x-inv-fg, #0f1419);
+  font: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer; opacity: .5; pointer-events: none;
+}
+
+/* Profil — X uslubi (logo/brend o'zgarmaydi) */
+#profileView .profile-hdr {
+  padding: 0 16px 12px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+#profileView .profile-hdr::after { display: none; }
+#profileView .profile-avi-row {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 12px; margin-top: 12px; padding: 0;
+}
+#profileView .profile-avi {
+  width: 68px; height: 68px; border-radius: 50%;
+  border: 2px solid var(--bg); background: var(--bg4, #16181c);
+}
+#profileView .profile-stats { display: flex; gap: 16px; flex: 0 0 auto; align-items: center; }
+#profileView .stat { text-align: left; }
+#profileView .stat-val { font-size: 15px; font-weight: 700; color: var(--text); line-height: 20px; }
+#profileView .stat-lbl { font-size: 13px; color: var(--text3); line-height: 16px; }
+#profileView .profile-info { padding: 12px 0 0; text-align: left; }
+#profileView .profile-name { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; margin: 0; color: var(--text); }
+#profileView .profile-username { font-size: 15px; color: var(--text3); margin-top: 2px; font-weight: 400; }
+#profileView .profile-bio { font-size: 15px; color: var(--text); line-height: 1.4; margin-top: 12px; }
+#profileView .profile-actions-row { margin-top: 12px; }
+#profileView .profile-actions-row .edit-btn {
+  width: auto; min-width: 0; flex: 0 0 auto;
+  margin-top: 0; padding: 8px 16px;
+  border-radius: 999px; border: 1px solid var(--line);
+  background: transparent; color: var(--text);
+  font-size: 14px; font-weight: 700;
+}
+#profileView .profile-actions-row .edit-btn:hover { background: rgba(255,255,255,0.03); }
+#profileView .profile-grid-hdr {
+  position: sticky; top: 0; z-index: 4;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  display: flex; gap: 0;
+}
+#profileView .profile-grid-tab {
+  flex: 1; height: 53px; border: 0; background: none;
+  color: var(--text3); font: inherit; font-size: 15px; font-weight: 500;
+  cursor: pointer; position: relative;
+}
+#profileView .profile-grid-tab:hover { background: rgba(255,255,255,0.03); color: var(--text); }
+#profileView .profile-grid-tab.active {
+  color: var(--text); font-weight: 700;
+}
+#profileView .profile-grid-tab.active::after {
+  content: ""; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: 56px; height: 4px; border-radius: 999px; background: var(--x-blue, #1d9bf0);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Sidebar X polish — brend (SpaceMR logo/nom) va navigatsiya logikasi saqlanadi
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (min-width: 1100px) {
+  /* Desktop sidebar: tinch, X pill hover */
+  nav.bot-nav {
+    width: var(--sidebar);
+    padding: 4px 12px 12px;
+    border-right: 1px solid var(--line);
+    background: var(--bg);
+    gap: 2px;
+  }
+
+  /* Logo — dumaloq hover, brend matni saqlanadi */
+  nav.bot-nav .sb-top {
+    padding: 4px 0 8px;
+    margin: 0;
+  }
+  nav.bot-nav .sb-logo-row {
+    width: auto;
+    min-height: 52px;
+    height: auto;
+    padding: 4px 12px 4px 4px;
+    gap: 10px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: none;
+    cursor: pointer;
+    transition: background .15s ease;
+  }
+  nav.bot-nav .sb-logo-row:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  nav.bot-nav .sb-logo-glass {
+    width: 50px; height: 50px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+  }
+  nav.bot-nav .sb-logo-img {
+    width: 28px; height: 28px;
+  }
+  nav.bot-nav .sb-brand-text {
+    display: block;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.4px;
+    color: var(--text);
+  }
+
+  /* Nav items — X pill, aktiv qalin */
+  nav.bot-nav .nav-btn,
+  nav.bot-nav .sb-search-toggle {
+    height: 50px;
+    min-height: 50px;
+    padding: 0 16px 0 12px;
+    gap: 20px;
+    border-radius: 999px;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: var(--text);
+    transition: background .15s ease;
+  }
+  nav.bot-nav .nav-btn:hover,
+  nav.bot-nav .sb-search-toggle:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+  }
+  nav.bot-nav .nav-btn.on,
+  nav.bot-nav #sbSearchToggle.search-active {
+    background: none !important;
+  }
+  /* mobil pastki chiziq desktopda yo'q */
+  nav.bot-nav .nav-btn.on::before,
+  nav.bot-nav .nav-btn::after {
+    display: none !important;
+  }
+  nav.bot-nav .nav-btn svg,
+  nav.bot-nav .sb-search-toggle svg {
+    width: 26.25px;
+    height: 26.25px;
+    stroke: var(--text);
+    color: var(--text);
+    flex-shrink: 0;
+  }
+  nav.bot-nav .nav-btn.on svg,
+  nav.bot-nav #sbSearchToggle.search-active svg {
+    stroke-width: 2.5;
+  }
+  nav.bot-nav .nav-btn .nav-label {
+    display: block;
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 400;
+    color: var(--text);
+  }
+  nav.bot-nav .nav-btn.on .nav-label,
+  nav.bot-nav #sbSearchToggle.search-active .nav-label {
+    font-weight: 700;
+  }
+
+  /* Post CTA — to'liq enli pill */
+  nav.bot-nav #createBtn.nav-center-btn {
+    align-self: stretch;
+    width: 100%;
+    height: 52px;
+    margin: 12px 0 4px;
+    border-radius: 999px;
+    background: var(--x-inv-bg, #fff) !important;
+    color: var(--x-inv-fg, #0f1419) !important;
+    box-shadow: none !important;
+    transition: background .15s ease, opacity .15s ease;
+  }
+  nav.bot-nav #createBtn.nav-center-btn:hover {
+    background: var(--x-inv-bg-hover, #e7e9ea) !important;
+    opacity: 1;
+  }
+  nav.bot-nav #createBtn.nav-center-btn .sb-create-label {
+    display: block;
+    font-size: 17px;
+    font-weight: 700;
+    color: inherit !important;
+  }
+  nav.bot-nav #createBtn.nav-center-btn svg {
+    display: none;
+  }
+
+  /* Pastki akkaunt — X kabi */
+  nav.bot-nav .sb-bottom {
+    margin-top: auto;
+    padding-top: 12px;
+  }
+  nav.bot-nav .sb-account {
+    width: 100%;
+    padding: 12px;
+    border-radius: 999px;
+    gap: 12px;
+    transition: background .15s ease;
+  }
+  nav.bot-nav .sb-account:hover {
+    background: rgba(255, 255, 255, 0.03) !important;
+  }
+  nav.bot-nav .sb-acc-avi {
+    width: 40px; height: 40px;
+  }
+  nav.bot-nav .sb-acc-name {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 20px;
+  }
+  nav.bot-nav .sb-acc-user {
+    font-size: 13px;
+    line-height: 16px;
+    color: var(--text3);
+  }
+}
+
+/* O'rta desktop: tor icon-rail (X kabi ~88px) — label yashirin, brend faqat logo */
+@media (min-width: 1100px) and (max-width: 1259px) {
+  :root {
+    --sidebar: 88px;
+    --content-left: 88px;
+  }
+  nav.bot-nav {
+    width: 88px;
+    padding: 4px 8px 12px;
+    align-items: center;
+  }
+  nav.bot-nav .sb-brand-text,
+  nav.bot-nav .nav-btn .nav-label,
+  nav.bot-nav .sb-acc-meta,
+  nav.bot-nav .sb-acc-dots,
+  nav.bot-nav #createBtn.nav-center-btn .sb-create-label {
+    display: none !important;
+  }
+  nav.bot-nav .sb-logo-row {
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    justify-content: center;
+  }
+  nav.bot-nav .nav-btn,
+  nav.bot-nav .sb-search-toggle {
+    width: 50px;
+    padding: 0;
+    justify-content: center;
+    align-self: center;
+  }
+  nav.bot-nav #createBtn.nav-center-btn {
+    width: 50px;
+    height: 50px;
+    margin: 12px auto 4px;
+    padding: 0;
+  }
+  nav.bot-nav #createBtn.nav-center-btn svg {
+    display: block;
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+  }
+  nav.bot-nav .sb-account {
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    justify-content: center;
+  }
+  nav.bot-nav .nav-badge {
+    left: 28px;
+  }
+}

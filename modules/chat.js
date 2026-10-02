@@ -1652,14 +1652,20 @@ async function markThreadRead(chatId, otherUid, msgs) {
 }
 
 function renderTicks(status) {
-  // 'read' = 2 ko'k chek, boshqa holat (sent/undefined/null) = 1 oq chek
+  // 'sending' = clock (hali yuborilmoqda), 'read' = 2 ko'k chek, boshqa = 1 oq chek
+  if (status === 'sending') {
+    return `<svg class="msg-ticks sending" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" title="Yuborilmoqda">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" opacity="0.85"/>
+      <path d="M12 7v5.2l3.2 1.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>`;
+  }
   if (status === 'read') {
     return `<svg class="msg-ticks read" width="18" height="11" viewBox="0 0 18 11" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M1 5.5L4.5 9L10 2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M6 5.5L9.5 9L16 1.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>`;
   }
-  // sent (yoki pending)
+  // sent
   return `<svg class="msg-ticks" width="12" height="10" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M1 5.2L4.5 8.5L11 1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>`;
@@ -2309,7 +2315,7 @@ export async function sendChatMessage() {
   const localMsg = {
     id, chatId, senderId: state.me.uid, type: 'text', text,
     mediaPath: null, mediaUrl: '', mediaType: null, fileName: null, fileSize: null, duration: null,
-    status: 'sent', readAt: null, editedAt: null, createdAt: nowMs, _at: nowMs,
+    status: 'sending', readAt: null, editedAt: null, createdAt: nowMs, _at: nowMs,
   };
   _rtLocal.set(id, localMsg);
   paintMessages([..._curMsgs, localMsg]);
@@ -2335,6 +2341,12 @@ export async function sendChatMessage() {
     const { error } = await sb.from('messages')
       .insert({ id, chat_id: chatId, sender_id: state.me.uid, type: 'text', text });
     if (error) throw error;
+    // DB tasdiqladi — clock → 1 chek
+    const conf = _rtLocal.get(id);
+    if (conf) { conf.status = 'sent'; _rtLocal.set(id, conf); }
+    if (state.currentChatId === chatId) {
+      paintMessages(_curMsgs.map(m => m.id === id ? { ...m, status: 'sent' } : m));
+    }
     _reloadThread && _reloadThread();
     // Push bildirishnoma push.js bosqichida ulanadi (Edge Function / DB webhook)
   } catch (err) {
@@ -2648,8 +2660,8 @@ function _applyVoiceCancelProgress(p) {
     : `rgba(239, 68, 68, ${0.45 + p * 0.15})`;
 
   if (vBtn) {
-    vBtn.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`;
-    vBtn.style.boxShadow = `0 4px 20px ${shadowRgb}, 0 0 0 2px rgba(255, 255, 255, 0.2)`;
+    vBtn.style.setProperty('--voice-rec-bg', `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`);
+    vBtn.style.setProperty('--voice-rec-shadow', `0 4px 20px ${shadowRgb}, 0 0 0 2px rgba(255, 255, 255, 0.2)`);
   }
 
   // Pulse rings — ko'kdan qizilga silliq
@@ -2687,6 +2699,8 @@ function _applyVoiceCancelProgress(p) {
 function _clearVoiceCancelVisuals() {
   const vBtn = $('chatVoiceBtn');
   if (vBtn) {
+    vBtn.style.removeProperty('--voice-rec-bg');
+    vBtn.style.removeProperty('--voice-rec-shadow');
     vBtn.style.background = '';
     vBtn.style.boxShadow = '';
   }
@@ -2882,19 +2896,17 @@ async function sendVoiceMessage(blob, duration) {
   const chatId   = state.currentChatId;
   const otherUid = state.currentChatUid;
 
-  // Pending message — loading bubble ko'rsatish
+  // 0ms: brauzerda darhol haqiqiy voice bubble (blob URL) — pending card yo'q
   const pendingId = 'pending_voice_' + Date.now();
-  _showPendingBubble(pendingId, 'voice', blob.size);
+  const localUrl = URL.createObjectURL(blob);
+  _showOptimisticVoiceBubble(pendingId, localUrl, duration);
 
   try {
     const ext = blob.type.includes('ogg') ? 'ogg' : 'webm';
     const file = new File([blob], `voice_${Date.now()}.${ext}`, { type: blob.type });
 
-    const result = await uploadViaControllerProgress(file, 'chat-voice', pct => {
-      _updatePendingProgress(pendingId, pct);
-    });
-
-    _removePendingBubble(pendingId);
+    // Fon rejimida Supabase'ga yuklash (progress UI yo'q — bubble allaqachon ko'rinadi)
+    const result = await uploadViaControllerProgress(file, 'chat-voice');
 
     const { error } = await sb.from('messages').insert({
       chat_id: chatId, sender_id: state.me.uid, type: 'voice',
@@ -2907,11 +2919,15 @@ async function sendVoiceMessage(blob, duration) {
       _latestChatMap[otherUid].lastMessageAt = Date.now();
       _latestChatMap[otherUid].lastSenderId = state.me.uid;
     }
+    // Server xabari kelganda optimistik bubble o'chiriladi (reload)
+    _removePendingBubble(pendingId);
+    try { URL.revokeObjectURL(localUrl); } catch(_) {}
     _reloadThread && _reloadThread();
 
   } catch (err) {
     console.error('Voice send failed:', err);
     _removePendingBubble(pendingId);
+    try { URL.revokeObjectURL(localUrl); } catch(_) {}
     toast('Ovozli xabar yuborilmadi', 'error');
   }
 }
@@ -3014,6 +3030,41 @@ async function sendChatFile(fileOverride = null, captionOverride = null) {
   }
 }
 
+
+/* ── Optimistic voice bubble (0ms local blob → keyin Supabase) ───────── */
+export function _showOptimisticVoiceBubble(id, localUrl, duration) {
+  const box = $('chatThreadMessages');
+  if (!box) return;
+  const dur = duration ? fmtVoiceDur(duration) : '0:00';
+  const barCount = _voiceBarCount(duration);
+  const safeUrl = String(localUrl || '').replace(/"/g, '"');
+  const time = fmtTime(Date.now());
+  const _mpName = 'Siz';
+
+  const el = document.createElement('div');
+  el.className = 'chat-msg mine anim-in';
+  el.id = id;
+  el.dataset.optimistic = '1';
+  el.innerHTML = `<div class="chat-bubble">
+    <div class="chat-bubble-wrap">
+      <div class="chat-voice-msg" data-url="${safeUrl}" data-dur="${Math.round(duration||0)}" data-bar-count="${barCount}" data-chat-id="${state.currentChatId||''}" data-chat-uid="${state.currentChatUid||''}" data-name="${_mpName}">
+        <button class="cvm-play" onclick="window._chatPlayVoice(this)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </button>
+        <div class="cvm-waveform">${renderVoiceWave(0, barCount)}</div>
+        <span class="cvm-dur">${dur}</span>
+      </div>
+      <span class="chat-msg-meta">
+        <span class="chat-msg-time">${time}</span>
+        ${renderTicks('sending')}
+      </span>
+    </div>
+  </div>`;
+  box.appendChild(el);
+  box.scrollTop = box.scrollHeight;
+  // Waveformni darhol local blob dan hydrate qilish
+  _hydrateVoiceWaveforms(box);
+}
 
 /* ── Pending bubble (upload progress) ───────────────────────────────── */
 export function _showPendingBubble(id, type, size, name = '', mime = '') {
