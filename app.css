@@ -7842,3 +7842,99 @@ input:focus, textarea:focus, .field:focus {
 
 /* ── Toast progress bar: blue ───────────────────────────────────── */
 .toast-progress { background: var(--x-blue) !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   GRAY ACCENT (#71767b) — Secondary text, muted UI elements
+   ═══════════════════════════════════════════════════════════════════════ */
+:root {
+  --gray: #71767b;
+  --gray-light: rgba(113, 118, 123, 0.15);
+  --text2: #71767b;
+  --text3: #71767b;
+}
+
+/* ── Timestamps (vaqt): gray ─────────────────────────────────────── */
+.chat-msg-time,
+.chat-msg-edited,
+.post-time,
+.chat-row-time,
+.rr-time,
+.msg-time { color: var(--gray) !important; }
+
+/* ── Last message preview (chat ro'yxati): gray ─────────────────── */
+.chat-row-preview,
+.rr-preview { color: var(--gray) !important; }
+
+/* ── Placeholder: gray ───────────────────────────────────────────── */
+input::placeholder,
+textarea::placeholder,
+.field::placeholder { color: var(--gray) !important; opacity: 1; }
+
+/* ── Secondary icon buttons (header, dots): gray ────────────────── */
+.hdr-icon-btn,
+.hdr-mute-btn,
+.settings-more-btn { color: var(--gray) !important; }
+
+/* ── Empty state subtitle: gray ─────────────────────────────────── */
+.empty-sub,
+.empty-search-hint,
+.rr-empty { color: var(--gray) !important; }
+
+/* ── Username @handle in profile/chat: gray ─────────────────────── */
+.profile-username,
+.settings-profile-username,
+.pe-prefix,
+.pe-field-note,
+.pe-field-label { color: var(--gray) !important; }
+
+/* ── Settings section labels: gray ──────────────────────────────── */
+.settings-section-label,
+.settings-row-hint,
+.pe-tag-optional { color: var(--gray) !important; }
+
+/* ── Stat labels (postlar, yoqtirishlar): gray ───────────────────── */
+.stat-lbl,
+.up-stat-lbl,
+.post-stats { color: var(--gray) !important; }
+
+/* ── Nav bottom inactive icons: gray ────────────────────────────── */
+.nav-btn:not(.on) svg { stroke: var(--gray) !important; }
+
+/* ── Unread ticks (sent, not read): gray ─────────────────────────── */
+.msg-ticks:not(.read) svg { stroke: var(--gray) !important; }
+
+/* ── Normal input border: gray (not blue until focused) ─────────── */
+.field:not(:focus),
+input:not(:focus):not(.input-error),
+textarea:not(:focus) {
+  border-color: rgba(113, 118, 123, 0.35) !important;
+}
+
+/* ── Cancel buttons: gray ────────────────────────────────────────── */
+.btn-ghost,
+#grpFormCancelBtn,
+#confirmCancelBtn { color: var(--gray) !important; }
+
+/* ── Theirs chat bubble: subtle gray bg ─────────────────────────── */
+#chatThreadModal .chat-msg.theirs .chat-bubble {
+  background: #1e2124 !important;
+  color: var(--pal-white) !important;
+}
+
+/* ── Post action icons (like, reply, share) idle: gray ───────────── */
+.act-btn:not(.liked) { color: var(--gray) !important; }
+.act-btn:not(.liked) svg { stroke: var(--gray) !important; }
+
+/* ── Chevron arrows in settings: gray ───────────────────────────── */
+.settings-profile-chevron,
+.pe-acc-chevron { color: var(--gray) !important; }
+
+/* ── grp-form hint text: gray ────────────────────────────────────── */
+.grp-form-desc-hint,
+.grp-form-avi-hint { color: var(--gray) !important; }
+
+/* ── Character count (normal): gray ─────────────────────────────── */
+.cmt-char-count:not(.warn):not(.over) { color: var(--gray) !important; }
+
+/* ── Search suggestion icons: gray ──────────────────────────────── */
+.search-suggestion-icon { color: var(--gray) !important; }
