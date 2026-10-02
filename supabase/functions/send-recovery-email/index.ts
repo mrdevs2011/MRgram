@@ -1,7 +1,6 @@
 // SpaceMR — send-recovery-email Edge Function (Multi-provider resilient email pipeline)
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import nodemailer from 'npm:nodemailer@6.9.9';
-import { LOGO_PNG_BASE64 } from './logo.ts';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -49,12 +48,13 @@ Deno.serve(async (req) => {
   }
 
   const emailSubject = `SpaceMR xavfsizlik kodi: ${temp_password}`;
+  const logoUrl = 'https://raw.githubusercontent.com/mrdevs2011/MRspace/main/svg/SpaceMR.png';
   const emailHtml = `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:500px;margin:auto;padding:32px 26px;border:1px solid #1f1f1f;border-radius:16px;background:#000000;color:#f0f0f0;">
       <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
         <tr>
           <td style="vertical-align:middle;padding-right:12px;">
-            <img src="cid:spacemr-logo" alt="SpaceMR" width="38" height="38" style="display:block;border-radius:10px;border:1px solid #222;" />
+            <img src="${logoUrl}" alt="SpaceMR" width="38" height="38" style="display:block;border-radius:10px;border:1px solid #222;" />
           </td>
           <td style="vertical-align:middle;">
             <span style="font-size:22px;font-weight:700;letter-spacing:-0.5px;color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">SpaceMR</span>
@@ -134,14 +134,6 @@ Deno.serve(async (req) => {
           subject: emailSubject,
           text: emailText,
           html: emailHtml,
-          attachments: [
-            {
-              filename: 'spacemr-logo.png',
-              content: LOGO_PNG_BASE64,
-              encoding: 'base64',
-              cid: 'spacemr-logo',
-            },
-          ],
         });
         emailSent = true;
         providerUsed = `SMTP (${smtpHost}:${port})`;
@@ -172,12 +164,6 @@ Deno.serve(async (req) => {
           subject: emailSubject,
           textContent: emailText,
           htmlContent: emailHtml,
-          attachment: [
-            {
-              name: 'spacemr-logo.png',
-              content: LOGO_PNG_BASE64,
-            },
-          ],
         }),
       });
       if (brevoRes.ok) {
@@ -212,12 +198,6 @@ Deno.serve(async (req) => {
           subject: emailSubject,
           text: emailText,
           html: emailHtml,
-          attachments: [
-            {
-              filename: 'spacemr-logo.png',
-              content: LOGO_PNG_BASE64,
-            },
-          ],
         }),
       });
       if (emailRes.ok) {
