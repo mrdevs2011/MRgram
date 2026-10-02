@@ -3384,3 +3384,13 @@ textarea:not(:focus) {
   background: var(--x-blue-hover) !important;
   transform: none !important;
 }
+
+/* ── Maximum Performance for Feed ── */
+.post {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
+}
+.chat-msg {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 60px;
+}

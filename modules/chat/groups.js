@@ -417,7 +417,7 @@ export async function openGroupThread(groupId) {
   }).catch(() => {});
   const loadMsgs = async () => {
     const { data, error } = await sb.from('group_messages').select('*')
-      .eq('group_id', groupId).order('created_at', { ascending: false }).limit(1000);
+      .eq('group_id', groupId).order('created_at', { ascending: false }).limit(60);
     if (_gDead || _currentGroupId !== groupId) return;
     if (error) {
       console.warn('[Groups] thread error:', error.message);

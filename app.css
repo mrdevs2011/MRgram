@@ -6425,6 +6425,11 @@ body #toast {
   overflow: hidden !important;
 }
 
+#settingsOverlay.show {
+  display: flex !important;
+}
+
+@media (min-width: 1200px) {
   #settingsOverlay.show {
     position: fixed !important;
     top: 12px !important;
@@ -7986,4 +7991,14 @@ textarea:not(:focus) {
 .empty-cta:hover {
   background: var(--x-blue-hover) !important;
   transform: none !important;
+}
+
+/* ── Maximum Performance for Feed ── */
+.post {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
+}
+.chat-msg {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 60px;
 }
