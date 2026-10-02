@@ -276,9 +276,9 @@ function ensureDom() {
   bar.className = 'stories-bar';
   bar.innerHTML = `<div class="stories-track" id="storiesTrack"></div>`;
 
-  // feed dan oldin joylashtirish
-  const feed = $('feed');
-  if (feed) home.insertBefore(bar, feed);
+  // Yuqorida doim ko'rinsin: composer/feed dan OLDIN
+  const anchor = $('homeComposer') || $('feed');
+  if (anchor) home.insertBefore(bar, anchor);
   else home.prepend(bar);
 
   // Viewer overlay (body ga)

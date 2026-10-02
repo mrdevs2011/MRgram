@@ -1406,3 +1406,6 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
     bottom: 28px;
   }
 }
+
+/* Tabs olib tashlandi — story yuqorida */
+.home-tabs { display: none !important; }

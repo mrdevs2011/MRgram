@@ -622,14 +622,18 @@ $('createBtn').onclick     = openComposer;
 $('hdrNewPostBtn').onclick = openComposer;
 
 /* Inline home composer — brend/logika o'zgarmaydi: mavjud openComposer() */
+let _homeAviSig = '';
 function _fillHomeComposerAvi() {
   const box = $('homeComposerAvi');
-  if (!box || !state.me) return;
-  Promise.resolve(sb.from('profiles').select('full_name,avatar').eq('id', state.me.uid).maybeSingle())
-    .then(({ data }) => {
-      const av = data?.avatar || defAvi(data?.full_name || 'U');
-      box.innerHTML = `<img src="${av}" alt="" onerror="this.style.display='none'">`;
-    }).catch(() => {});
+  if (!box) return;
+  const me = state.me;
+  if (!me?.uid) return;
+  const name = me.displayName || me.username || 'U';
+  const av = me.photoURL || defAvi(name);
+  const sig = me.uid + '|' + av;
+  if (sig === _homeAviSig) return;
+  _homeAviSig = sig;
+  box.innerHTML = `<img src="${esc(av)}" alt="" onerror="this.src='${esc(defAvi(name))}';this.onerror=null">`;
 }
 function _bindHomeComposer() {
   const row = $('homeComposer');
@@ -642,6 +646,8 @@ function _bindHomeComposer() {
   });
   $('homeComposerBtn')?.addEventListener('click', e => { e.stopPropagation(); open(); });
   _fillHomeComposerAvi();
+  // state.me login dan keyin keladi — avatar keyinroq to'ldiriladi
+  setInterval(_fillHomeComposerAvi, 1500);
 }
 _bindHomeComposer();
 
