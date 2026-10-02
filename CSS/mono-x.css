@@ -2489,4 +2489,24 @@ body #toast {
   color: rgba(255, 255, 255, 0.5);
 }
 
+/* PROFILE PIC — hech qachon border yo'q */
+.profile-avi,
+.profile-avi:hover,
+#profileView .profile-avi,
+#profileView .profile-avi:hover,
+[data-theme="dark"] .profile-avi,
+[data-theme="dark"] .profile-avi:hover,
+.pe-avi-img,
+.pe-avatar-ring,
+.pe-avatar-ring .pe-avi-img,
+.settings-profile-avi {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+.pe-avatar-ring {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
 
