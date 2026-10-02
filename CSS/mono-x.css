@@ -1258,8 +1258,8 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
     max-width: 40px !important;
     padding: 0 !important;
     border-radius: 50% !important;
-    border: 2px solid #000000 !important;
-    background: #2f3336 !important;
+    border: 5px solid #000000 !important;
+    background: #16181C !important;
     color: var(--text) !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -1273,7 +1273,7 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
   #profileView .profile-actions-row .edit-btn:active,
   #profileView #settingsBtn.edit-btn:hover,
   #profileView #settingsBtn.edit-btn:active {
-    background: #2f3336 !important;
+    background: #16181C !important;
     opacity: 1 !important;
     filter: none !important;
   }
