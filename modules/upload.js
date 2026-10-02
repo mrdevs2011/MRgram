@@ -766,10 +766,11 @@ function _bindHomeComposer() {
   });
   inp.addEventListener('input', () => _syncHomeUi());
   inp.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       if (_homeHasContent()) _submitHomePost();
     }
+    // Shift+Enter — yangi qator (default)
   });
 
   $('homeComposerAttach')?.addEventListener('mousedown', e => {
