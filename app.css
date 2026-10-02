@@ -5712,6 +5712,8 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 .home-composer-input {
   width: 100%; min-height: 28px; max-height: 160px;
   resize: none;
+  overflow: hidden !important;
+  scrollbar-width: none !important;
   border: none !important;
   border-radius: 0 !important;
   outline: none !important;
@@ -5724,6 +5726,7 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
   line-height: 24px; padding: 6px 0 0;
   box-sizing: border-box;
 }
+.home-composer-input::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 .home-composer-input:focus {
   border: none !important;
   border-radius: 0 !important;
