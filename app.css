@@ -2097,8 +2097,10 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   will-change: max-height, opacity;
 }
 .chat-msg.msg-dissolving.is-deleting {
-  max-height: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important;
-  padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; min-height: 0;
+  max-height: 0 !important; height: 0 !important; min-height: 0 !important;
+  margin-top: 0 !important; margin-bottom: 0 !important;
+  padding-top: 0 !important; padding-bottom: 0 !important;
+  opacity: 0; overflow: hidden; border: none !important;
 }
 .particle-canvas {
   image-rendering: auto;

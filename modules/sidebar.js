@@ -86,21 +86,43 @@ function openMenu() {
   });
 }
 
-// Username card (avatar + ism) bosilsa — o'z profiliga o'tish
+// Username card (avatar + ism) bosilsa — profil + sozlamalar panelini ochish
 // 3 nuqta bosilsa — Sozlamalar/Chiqish menyusi
 // Mobil (dots yashirin) da butun blok menyuni ochadi
+function openProfileSettings() {
+  closeMenu();
+  navigateTo('profile');
+  // Settings panelini ochish (default yopiq — majburiy ochamiz)
+  const open = () => {
+    const ov = document.getElementById('settingsOverlay');
+    if (!ov) return;
+    if (!ov.classList.contains('show')) {
+      import('./auth.js').then(m => { try { m.populateProfileForm?.(); } catch(_){} }).catch(()=>{});
+      ov.classList.add('show');
+    }
+    if (window.matchMedia('(min-width: 1200px)').matches) {
+      document.body.classList.add('desktop-settings-pinned');
+    } else {
+      // mobil: scroll lock
+      document.body.style.overflow = 'hidden';
+    }
+  };
+  // navigateTo async view switch qiladi — biroz kutamiz
+  requestAnimationFrame(() => requestAnimationFrame(open));
+  setTimeout(open, 80);
+}
+
 $('sbAccount')?.addEventListener('click', e => {
   e.stopPropagation();
   const dots = e.target.closest('.sb-acc-dots');
   const wide = window.matchMedia('(min-width: 1100px)').matches;
 
-  // Desktop: 3 nuqta → menyu, qolgan joy → profil
+  // Desktop: 3 nuqta → menyu, qolgan joy → profil + settings
   if (wide) {
     if (dots) {
       if (_menu) closeMenu(); else openMenu();
     } else {
-      closeMenu();
-      navigateTo('profile');
+      openProfileSettings();
     }
     return;
   }

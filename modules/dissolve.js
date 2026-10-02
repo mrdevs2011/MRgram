@@ -302,10 +302,23 @@ export async function playDeleteDissolve(card, clickX, clickY, group) {
   if (!card || !card.isConnected) return;
 
   const tabMode = card.classList.contains("folder-tab-wrap");
+
+  // Animatsiyani to'xtatib, o'lchamni qotirib qo'yamiz — 2-3px sakrash/kichrayish bo'lmasin
+  card.style.animation = "none";
+  card.style.transform = "none";
+  card.classList.remove("anim-in");
+  void card.offsetWidth; // reflow — yakuniy layout
+
   const startRect = card.getBoundingClientRect();
-  card.style.maxHeight = startRect.height + "px";
-  card.style.boxSizing = "border-box";
+  const lockH = Math.max(1, Math.round(startRect.height));
+  const lockW = Math.max(1, Math.round(startRect.width));
+  // maxHeight + boxSizing o'zgartirilmaydi (layout sakraydi); height bilan qotiramiz
+  card.style.height = lockH + "px";
+  card.style.minHeight = lockH + "px";
+  card.style.maxHeight = lockH + "px";
+  card.style.width = lockW + "px";
   card.style.overflow = "hidden";
+  card.style.flexShrink = "0";
 
   const padX = 150, padTop = 60;
   const padBottom = Math.min(340, Math.max(200, window.innerHeight - startRect.top + 40));
@@ -492,11 +505,16 @@ export async function playDeleteDissolve(card, clickX, clickY, group) {
       return;
     }
     card.style.visibility = "hidden";
-    // Explicit start height so max-height transition interpolates classically
-    const h = card.getBoundingClientRect().height || startRect.height;
+    // Qotirilgan balandlikdan silliq 0 ga (visibility:hidden dan keyin getBoundingClientRect 0 bo'ladi)
+    const h = lockH || startRect.height;
     card.style.maxHeight = h + "px";
+    card.style.height = h + "px";
+    card.style.minHeight = h + "px";
     void card.offsetHeight; // reflow
     card.classList.add("is-deleting");
+    // is-deleting max-height:0 — height ham 0 ga tushsin
+    card.style.height = "0";
+    card.style.minHeight = "0";
     let settled = false;
     const done = () => {
       if (settled) return;

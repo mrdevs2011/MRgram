@@ -1880,6 +1880,9 @@ function _dissolvePrepare(box, newIds, canStart) {
     if (!id || !dissolveMarks.has(id) || newIds.has(id) || _dissolving.has(id)) return;
     let nx = el.nextElementSibling;
     while (nx && !(nx.classList.contains('chat-msg') && newIds.has(nx.dataset.msgId))) nx = nx.nextElementSibling;
+    // Animatsiyani to'xtatib o'lchamni saqlaymiz (sakrash bo'lmasin)
+    el.style.animation = 'none';
+    el.style.transform = 'none';
     el.classList.remove('anim-in');
     el.style.animationDelay = '';
     el.classList.add('msg-dissolving');
@@ -2742,16 +2745,143 @@ function _clearVoiceCancelVisuals() {
   }
 }
 
+/* ── Mikrofon ruxsati: har safar so'raymiz, custom card + browser popup ── */
+function _ensureMicPermUi() {
+  let ov = document.getElementById('micPermOverlay');
+  if (ov) return ov;
+  ov = document.createElement('div');
+  ov.id = 'micPermOverlay';
+  ov.className = 'overlay';
+  ov.innerHTML = `
+    <div class="sheet mic-perm-sheet" role="dialog" aria-labelledby="micPermTitle">
+      <div class="sheet-title" id="micPermTitle">Mikrofon ruxsati</div>
+      <div class="mic-perm-body">
+        <div class="mic-perm-icon" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </div>
+        <p id="micPermMsg" class="mic-perm-msg">Ovozli xabar yuborish uchun mikrofonga ruxsat bering.</p>
+        <p id="micPermHint" class="mic-perm-hint" hidden></p>
+      </div>
+      <button type="button" class="btn-primary" id="micPermAllowBtn">Ruxsat berish</button>
+      <button type="button" class="btn-ghost" id="micPermCancelBtn">Bekor qilish</button>
+    </div>`;
+  document.body.appendChild(ov);
+  return ov;
+}
+
+function _showMicPermCard({ msg, hint, onAllow } = {}) {
+  const ov = _ensureMicPermUi();
+  const msgEl = ov.querySelector('#micPermMsg');
+  const hintEl = ov.querySelector('#micPermHint');
+  const allowBtn = ov.querySelector('#micPermAllowBtn');
+  const cancelBtn = ov.querySelector('#micPermCancelBtn');
+  if (msgEl) msgEl.textContent = msg || 'Ovozli xabar yuborish uchun mikrofonga ruxsat bering.';
+  if (hintEl) {
+    if (hint) { hintEl.hidden = false; hintEl.textContent = hint; }
+    else { hintEl.hidden = true; hintEl.textContent = ''; }
+  }
+  const close = () => ov.classList.remove('show');
+  // clone to drop old listeners
+  const newAllow = allowBtn.cloneNode(true);
+  allowBtn.parentNode.replaceChild(newAllow, allowBtn);
+  const newCancel = cancelBtn.cloneNode(true);
+  cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+  newAllow.onclick = async () => {
+    newAllow.disabled = true;
+    newAllow.textContent = 'So'ralmoqda...';
+    try {
+      await onAllow?.();
+      close();
+    } catch (err) {
+      console.error('[mic-perm]', err);
+    } finally {
+      newAllow.disabled = false;
+      newAllow.textContent = 'Ruxsat berish';
+    }
+  };
+  newCancel.onclick = close;
+  ov.onclick = (e) => { if (e.target === ov) close(); };
+  ov.classList.add('show');
+}
+
+async function _queryMicPermission() {
+  try {
+    if (!navigator.permissions?.query) return 'prompt';
+    const st = await navigator.permissions.query({ name: 'microphone' });
+    return st?.state || 'prompt'; // 'granted' | 'denied' | 'prompt'
+  } catch (_) {
+    return 'prompt';
+  }
+}
+
+async function _requestMicStream() {
+  // Har safar yangidan so'raymiz — denied cache qilmaymiz
+  return navigator.mediaDevices.getUserMedia({ audio: true });
+}
+
+function _micErrorKind(err) {
+  const name = err?.name || '';
+  const msg = (err?.message || '').toLowerCase();
+  if (name === 'NotFoundError' || name === 'DevicesNotFoundError' || msg.includes('not found') || msg.includes('no device'))
+    return 'notfound';
+  if (name === 'NotAllowedError' || name === 'PermissionDeniedError' || name === 'SecurityError')
+    return 'denied';
+  if (name === 'NotReadableError' || name === 'TrackStartError' || msg.includes('in use') || msg.includes('busy'))
+    return 'busy';
+  return 'other';
+}
+
+function _abortVoiceUi() {
+  $('chatVoiceBtn')?.classList.remove('recording', 'cancelling');
+  _hideRecordBar();
+  _stopPulse();
+  _isHoldingVoice = false;
+  _voiceCancelled = true;
+}
+
 async function startRecording() {
   _voiceStopRequested = false;
   _recChunks = [];
   _recStartTs = performance.now();
 
+  // Ruxsat holatini tekshirish — denied bo'lsa darhol o'z cardimizni ko'rsatamiz
+  const perm = await _queryMicPermission();
+  if (perm === 'denied') {
+    _abortVoiceUi();
+    _showMicPermCard({
+      msg: 'Brauzer mikrofonga ruxsatni bloklagan.',
+      hint: 'Brauzer sozlamalaridan (qulf ikonka → Mikrofon) ruxsatni yoqing, keyin «Ruxsat berish»ni bosing. Keyingi safar ham qayta so'raladi.',
+      onAllow: async () => {
+        try {
+          const s = await _requestMicStream();
+          s.getTracks().forEach(t => t.stop());
+          toast('Mikrofon ruxsati berildi — endi bosib turing', 'success');
+        } catch (err) {
+          const kind = _micErrorKind(err);
+          if (kind === 'notfound') {
+            toast('Mikrofon topilmadi — qurilma ulanganligini tekshiring', 'error');
+          } else if (kind === 'denied') {
+            toast('Hali ham ruxsat yo'q. Brauzer manzil qatori yonidagi qulfdan Mikrofonni yoqing', 'error');
+          } else {
+            toast('Mikrofon ochilmadi: ' + (err.message || 'xato'), 'error');
+          }
+          throw err;
+        }
+      }
+    });
+    return;
+  }
+
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await _requestMicStream();
     _mediaStream = stream;
 
-    if (_voiceStopRequested) {
+    if (_voiceStopRequested || !_isHoldingVoice) {
       stream.getTracks().forEach(t => t.stop());
       _mediaStream = null;
       _stopPulse();
@@ -2786,11 +2916,44 @@ async function startRecording() {
 
   } catch (err) {
     console.error('Mikrofon xatosi:', err);
-    toast('Mikrofonga ruxsat berilmadi', 'error');
-    $('chatVoiceBtn')?.classList.remove('recording', 'cancelling');
-    _hideRecordBar();
-    _stopPulse();
-    _isHoldingVoice = false;
+    _abortVoiceUi();
+    const kind = _micErrorKind(err);
+
+    if (kind === 'notfound') {
+      // Faqat jismoniy qurilma yo'qligida — ruxsat emas
+      toast('Mikrofon topilmadi. Tashqi adapter yoki mikrofon ulanganligini tekshiring', 'error');
+      return;
+    }
+
+    if (kind === 'busy') {
+      toast('Mikrofon boshqa dasturda band', 'error');
+      return;
+    }
+
+    // Ruxsat yo'q / boshqa — o'z cardimiz + browser popup
+    _showMicPermCard({
+      msg: kind === 'denied'
+        ? 'Mikrofonga ruxsat berilmadi.'
+        : 'Ovozli xabar uchun mikrofon kerak.',
+      hint: '«Ruxsat berish»ni bosing — brauzer so'rovi chiqadi. Agar chiqmasa, manzil qatori yonidagi qulf ikonkasidan Mikrofonni yoqing.',
+      onAllow: async () => {
+        try {
+          const s = await _requestMicStream();
+          s.getTracks().forEach(t => t.stop());
+          toast('Mikrofon ruxsati berildi — endi bosib turing', 'success');
+        } catch (e2) {
+          const k2 = _micErrorKind(e2);
+          if (k2 === 'notfound') {
+            toast('Mikrofon topilmadi — qurilma ulanganligini tekshiring', 'error');
+          } else if (k2 === 'denied') {
+            toast('Ruxsat berilmadi. Brauzer sozlamalaridan Mikrofonni yoqing', 'error');
+          } else {
+            toast('Mikrofon ochilmadi', 'error');
+          }
+          throw e2;
+        }
+      }
+    });
   }
 }
 
