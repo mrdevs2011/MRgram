@@ -4,6 +4,7 @@
 import { sb } from '../core/config.js';
 import { $, defAvi, uToEmail, lockScroll, unlockScroll } from '../core/utils.js';
 import { toast } from '../ui/toast.js';
+import { validateStrictEmail } from './auth.js';
 
 let _sbErrUz = (err) => err?.message || 'Xato';
 

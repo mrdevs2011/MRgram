@@ -393,7 +393,7 @@ if (authBtn) {
 }
 
 /* ── Qat'iy email validatsiyasi ────────────────────────────────────── */
-function validateStrictEmail(email) {
+export function validateStrictEmail(email) {
   const s = String(email || '').trim().toLowerCase();
   if (!s) {
     return { ok: false, error: 'Email manzili kiritilmadi' };
