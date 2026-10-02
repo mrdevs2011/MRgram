@@ -1,5 +1,6 @@
 -- 028: Admin parol tiklashda foydalanuvchini butunlay tizimdan chiqarib yuborish (logout)
 
+DROP FUNCTION IF EXISTS public.admin_reset_user_password(uuid, text);
 CREATE OR REPLACE FUNCTION public.admin_reset_user_password(p_uid uuid, p_temp_password text)
 RETURNS json
 LANGUAGE plpgsql SECURITY DEFINER

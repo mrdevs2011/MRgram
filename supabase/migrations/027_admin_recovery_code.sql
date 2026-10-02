@@ -6,6 +6,7 @@
 -- login qilib o'zi yangi shaxsiy parol belgilaydi.
 -- ═══════════════════════════════════════════════════════════════════════
 
+DROP FUNCTION IF EXISTS public.admin_reset_user_password(uuid, text);
 CREATE OR REPLACE FUNCTION public.admin_reset_user_password(p_uid uuid, p_temp_password text)
 RETURNS json
 LANGUAGE plpgsql SECURITY DEFINER
@@ -66,6 +67,7 @@ REVOKE ALL ON FUNCTION public.admin_reset_user_password(uuid, text) FROM public,
 GRANT EXECUTE ON FUNCTION public.admin_reset_user_password(uuid, text) TO authenticated;
 
 -- Alias
+DROP FUNCTION IF EXISTS public.admin_issue_recovery_code(uuid, text);
 CREATE OR REPLACE FUNCTION public.admin_issue_recovery_code(p_uid uuid, p_code text)
 RETURNS json
 LANGUAGE plpgsql SECURITY DEFINER
