@@ -2525,3 +2525,12 @@ button:focus-visible,
 .sb-acc-item:focus-visible {
   box-shadow: none !important;
 }
+
+/* Mikrofon ruxsati card */
+.mic-perm-sheet { text-align: center; max-width: 340px; margin: 0 auto 24px; width: calc(100% - 32px); }
+.mic-perm-body { margin-bottom: 16px; }
+.mic-perm-icon { width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--pal-mid-16, rgba(255,255,255,0.08)); color: var(--tg-primary-blue, #2AABEE); }
+.mic-perm-msg { font-size: 15px; line-height: 1.4; color: var(--text); margin: 0 0 8px; }
+.mic-perm-hint { font-size: 13px; line-height: 1.4; color: var(--text3); margin: 0; }
+#micPermOverlay .btn-primary { margin-top: 8px; }
+#micPermOverlay .btn-ghost { margin-top: 6px; }
