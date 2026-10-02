@@ -277,7 +277,7 @@ a { color: var(--link); }
 .post-actions {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
   margin: 6px 0 0;
   padding: 4px 0;
   max-width: 100%;

@@ -1166,7 +1166,27 @@ function _stopUserWatch() {
   if (_approvalListener) { _approvalListener(); _approvalListener = null; }
 }
 
+let _pendingForceLogout = false; // tab yashirin bo'lsa — fokusda chiqamiz
+
+/** Hisob o'chirilgan / majburiy chiqish. Orqa tab darhol refresh qilmasin. */
+function _requestForceSignOut(reason = '') {
+  if (document.visibilityState === 'visible') {
+    _forceSignOut();
+    return;
+  }
+  _pendingForceLogout = true;
+  console.warn('[Auth] Chiqish kechiktirildi (tab yashirin):', reason || 'force');
+}
+
+function _flushDeferredForceLogout() {
+  if (!_pendingForceLogout) return;
+  if (document.visibilityState !== 'visible') return;
+  _pendingForceLogout = false;
+  _forceSignOut();
+}
+
 async function _forceSignOut() {
+  _pendingForceLogout = false;
   _stopUserWatch();
   _hideMandatoryPasswordResetModal();
   try { await Promise.race([removePushToken(), new Promise(r => setTimeout(r, 800))]); } catch (_) {}
@@ -1411,7 +1431,7 @@ function _startRealtimeUserWatch(me) {
         { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${uid}` },
         async payload => {
           if (payload.eventType === 'DELETE') {
-            await _forceSignOut();
+            _requestForceSignOut('profile_deleted');
             return;
           }
           await _onLiveProfile(mapProfile(payload.new), me);
@@ -1467,6 +1487,8 @@ function _startRealtimeUserWatch(me) {
 
   let focusDebounce = null;
   const triggerDebouncedCheck = () => {
+    // Avval kechiktirilgan chiqish (admin o'chirgan) — tab ochilganda darhol
+    if (document.visibilityState === 'visible') _flushDeferredForceLogout();
     if (focusDebounce) clearTimeout(focusDebounce);
     focusDebounce = setTimeout(() => {
       if (document.visibilityState === 'visible' && navigator.onLine) {
