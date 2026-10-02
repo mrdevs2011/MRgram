@@ -109,9 +109,38 @@
   </div>
 </div>
 
-<!-- PAROLNI TIKLASH MODAL (ESKI PAROLNI O'CHIRMAYDI, KOD ORQALI YANGI PAROL O'RNATADI) -->
+<!-- PAROLNI TIKLASH MODAL (2 BOSQICHLI: 1. TASDIQLASH VA EMAILNI KO'RSATISH, 2. KOD VA YANGI PAROL) -->
 <div id="recoveryModal" class="overlay" style="display:none;align-items:center;justify-content:center;z-index:99990;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(0,0,0,0.88);">
-  <div class="auth-card" style="max-width:400px;width:92%;margin:auto;background:#000000;box-shadow:0 24px 64px rgba(0,0,0,0.95);border:1px solid rgba(255,255,255,0.14);">
+  <!-- 1-BOSQICH: TUSHUNTIRISH VA JO'NATISHNI TASDIQLASH -->
+  <div id="recoveryStepConfirm" class="auth-card" style="max-width:400px;width:92%;margin:auto;background:#000000;box-shadow:0 24px 64px rgba(0,0,0,0.95);border:1px solid rgba(255,255,255,0.14);text-align:center;">
+    <div style="width:48px;height:48px;border-radius:50%;background:rgba(29,155,240,0.15);color:var(--tg-primary-blue,#1d9bf0);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+    </div>
+    <div style="font-size:1.2rem;font-weight:700;color:var(--text,#fff);margin-bottom:8px;">Hisobni tiklash</div>
+    <p style="font-size:13.5px;color:var(--text2,#bbb);line-height:1.5;margin:0 0 12px 0;">
+      Tasdiqlash kodi hisobingizga ulangan quyidagi emailingizga yuboriladi:
+    </p>
+    <div id="recoveryTargetEmail" style="margin:0 0 14px 0;padding:12px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(29,155,240,0.3);border-radius:10px;font-size:15px;font-weight:600;color:var(--tg-primary-blue,#1d9bf0);word-break:break-all;">
+      ...
+    </div>
+    <p style="font-size:12px;color:var(--text3,#888);line-height:1.45;margin:0 0 18px 0;">
+      Ushbu 8 xonali kod orqali yangi parol o'rnatasiz. Eski parolingiz o'chib ketmaydi.
+    </p>
+    <div class="err-msg" id="recoveryConfirmErr" style="display:none;color:#ff4b4b;font-size:13px;margin:0 0 12px 0;"></div>
+    <div style="display:flex;gap:10px;">
+      <button type="button" class="btn" id="recoveryConfirmBackBtn" style="flex:1;height:42px;background:rgba(255,255,255,0.06);color:var(--text2,#ccc);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;">Orqaga</button>
+      <button type="button" class="btn btn-primary" id="recoverySendBtn" style="flex:1.2;height:42px;font-weight:600;cursor:pointer;">Jo'natish</button>
+    </div>
+    <div style="margin-top:14px;">
+      <button type="button" id="recoveryHaveCodeBtn" style="background:none;border:none;color:var(--text3,#888);font-size:12px;text-decoration:underline;cursor:pointer;padding:4px 0;">Menda kod bor (Kodni kiritish)</button>
+    </div>
+  </div>
+
+  <!-- 2-BOSQICH: KOD VA YANGI PAROLNI KIRITISH -->
+  <div id="recoveryStepInput" class="auth-card" style="display:none;max-width:400px;width:92%;margin:auto;background:#000000;box-shadow:0 24px 64px rgba(0,0,0,0.95);border:1px solid rgba(255,255,255,0.14);">
     <div style="text-align:center;margin-bottom:16px;">
       <div style="width:48px;height:48px;border-radius:50%;background:rgba(29,155,240,0.15);color:var(--tg-primary-blue,#1d9bf0);display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px;">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -119,7 +148,7 @@
           <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
       </div>
-      <div style="font-size:1.2rem;font-weight:700;color:var(--text,#fff);">Parolni tiklash</div>
+      <div style="font-size:1.2rem;font-weight:700;color:var(--text,#fff);">Parolni yangilash</div>
       <p id="recoveryModalSubtitle" style="font-size:13px;color:var(--text2,#aaa);line-height:1.45;margin:6px 0 0 0;">
         Emailingizga kelgan 8 xonali tasdiqlash kodi va yangi parolni kiriting.
       </p>
