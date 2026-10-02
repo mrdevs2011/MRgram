@@ -1,7 +1,7 @@
 # send-push (Web Push yuboruvchi)
 
 Yangi xabar (`messages`), guruh xabari (`group_messages`) va qo'ng'iroq (`calls`) INSERT bo'lganda
-obunachilarga push yuboradi. Client tomoni: `modules/push.js` + `firebase-messaging-sw.js`.
+obunachilarga push yuboradi. Client tomoni: `modules/push.js` + `sw.js`.
 
 ## Sozlash (bir marta)
 1. SQL Editor'da `supabase/patch-push.sql` ni ishga tushiring.

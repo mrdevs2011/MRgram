@@ -1,7 +1,6 @@
 /**
- * firebase-messaging-sw.js  (fayl nomi eski — index.html shu nom bilan ro'yxatdan o'tkazadi)
- * NOMNI O'ZGARTIRMANG (roadmap Q6): mavjud push obunalari shu SW yo'liga bog'langan, nom o'zgarsa hamma obuna uziladi.
- * Firebase endi ishlatilmaydi: standart Web Push ('push' hodisasi).
+ * sw.js — SpaceMR Service Worker (cache + Web Push)
+ * Standart Web Push ('push' hodisasi). Firebase yo'q.
  * Payload Edge Function'dan keladi: { title, body, type, fromUid, chatId, groupId }
  * Android: sayt yopiq bo'lsa ham ishlaydi. Desktop: brauzer ochiq bo'lsa.
  */
@@ -74,7 +73,7 @@ self.addEventListener('notificationclick', (event) => {
 /* ── Cache versiyasi ── */
 // Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
 // bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 't-1790627305005'; /* BUILD_VERSION_LINE */
+const CACHE_VERSION  = 't-1790942674307'; /* BUILD_VERSION_LINE */
 const STATIC_CACHE   = `spacemr-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `spacemr-runtime-${CACHE_VERSION}`;
 

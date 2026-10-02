@@ -1530,6 +1530,7 @@ async function _handleSession(session) {
 
   const me = _buildMe(user, p);
   state.me = me;
+  try { document.dispatchEvent(new CustomEvent('meUpdated')); } catch (_) {}
 
   // Profil xato bilan olinmadi yoki offline
   if (fetchErr || (!p && !navigator.onLine)) {
@@ -2129,6 +2130,7 @@ if (saveProfileBtn) {
       if (newUsername) state.me.username = newUsername;
       else if (updates.username) state.me.username = updates.username;
       if (updates.avatar)   state.me.photoURL = updates.avatar;
+      try { document.dispatchEvent(new CustomEvent('meUpdated')); } catch (_) {}
       if (updates.recovery_email !== undefined) {
         state.me.recoveryEmail = updates.recovery_email;
         _paintSettingsRecoveryRow();

@@ -303,22 +303,41 @@ export async function playDeleteDissolve(card, clickX, clickY, group) {
 
   const tabMode = card.classList.contains("folder-tab-wrap");
 
-  // Animatsiyani to'xtatib, o'lchamni qotirib qo'yamiz — 2-3px sakrash/kichrayish bo'lmasin
+  // Animatsiyani to'xtatib, o'lchamni qotirib qo'yamiz — width "tik" kichraymasin
   card.style.animation = "none";
   card.style.transform = "none";
   card.classList.remove("anim-in");
   void card.offsetWidth; // reflow — yakuniy layout
 
   const startRect = card.getBoundingClientRect();
-  const lockH = Math.max(1, Math.round(startRect.height));
-  const lockW = Math.max(1, Math.round(startRect.width));
-  // maxHeight + boxSizing o'zgartirilmaydi (layout sakraydi); height bilan qotiramiz
+  const lockH = Math.max(1, Math.round(startRect.height * 100) / 100);
+  const lockW = Math.max(1, Math.round(startRect.width * 100) / 100);
+
+  // Bubble ni alohida qotiramiz (flex/max-width tufayli width sakrashi shu yerda bo'lardi)
+  const bubble = card.querySelector(".chat-bubble");
+  if (bubble) {
+    const br = bubble.getBoundingClientRect();
+    const bw = Math.max(1, Math.round(br.width * 100) / 100);
+    const bh = Math.max(1, Math.round(br.height * 100) / 100);
+    bubble.style.boxSizing = "border-box";
+    bubble.style.width = bw + "px";
+    bubble.style.minWidth = bw + "px";
+    bubble.style.maxWidth = bw + "px";
+    bubble.style.height = bh + "px";
+    bubble.style.minHeight = bh + "px";
+    bubble.style.flexShrink = "0";
+  }
+
+  card.style.boxSizing = "border-box";
   card.style.height = lockH + "px";
   card.style.minHeight = lockH + "px";
   card.style.maxHeight = lockH + "px";
   card.style.width = lockW + "px";
+  card.style.minWidth = lockW + "px";
+  card.style.maxWidth = lockW + "px";
   card.style.overflow = "hidden";
   card.style.flexShrink = "0";
+  card.style.contain = "layout size";
 
   const padX = 150, padTop = 60;
   const padBottom = Math.min(340, Math.max(200, window.innerHeight - startRect.top + 40));

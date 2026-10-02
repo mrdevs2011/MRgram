@@ -8,7 +8,7 @@ if (!sha && !process.env.VERCEL && !process.argv.includes('--force')) {
   console.log('ℹ️ bump-sw: lokal — o\'tkazib yuborildi'); process.exit(0);
 }
 const version = sha ? `b-${sha.slice(0, 9)}` : `t-${Date.now()}`;
-const p = new URL('../firebase-messaging-sw.js', import.meta.url);
+const p = new URL('../sw.js', import.meta.url);
 const src = readFileSync(p, 'utf8');
 const RE = /const CACHE_VERSION\s*=\s*'[^']*';\s*\/\* BUILD_VERSION_LINE \*\//;
 if (!RE.test(src)) { console.error('❌ bump-sw: BUILD_VERSION_LINE topilmadi'); process.exit(1); }

@@ -138,4 +138,9 @@ onEsc(700, () => { if (!_menu) return false; closeMenu(); return true; });
 window.addEventListener('resize', closeMenu);
 
 render();
-setInterval(render, 1500);
+// state.me o'zgaganda yangilash (polling o'rniga event)
+document.addEventListener('profilesPreloaded', () => { _sig = ''; render(); });
+document.addEventListener('meUpdated', () => { _sig = ''; render(); });
+// Zaxira: juda sekin (batareya/CPU tejash)
+setInterval(() => { _sig = ''; render(); }, 30000);
+export function refreshSidebarAccount() { _sig = ''; render(); }

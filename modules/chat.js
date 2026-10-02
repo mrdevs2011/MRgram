@@ -1956,11 +1956,36 @@ function _dissolvePrepare(box, newIds, canStart) {
     if (!id || !dissolveMarks.has(id) || newIds.has(id) || _dissolving.has(id)) return;
     let nx = el.nextElementSibling;
     while (nx && !(nx.classList.contains('chat-msg') && newIds.has(nx.dataset.msgId))) nx = nx.nextElementSibling;
-    // Animatsiyani to'xtatib o'lchamni saqlaymiz (sakrash bo'lmasin)
+    // Animatsiyani to'xtatib o'lchamni saqlaymiz (sakrash/kichrayish bo'lmasin)
     el.style.animation = 'none';
     el.style.transform = 'none';
     el.classList.remove('anim-in');
     el.style.animationDelay = '';
+    const r = el.getBoundingClientRect();
+    const w = Math.max(1, Math.round(r.width * 100) / 100);
+    const h = Math.max(1, Math.round(r.height * 100) / 100);
+    el.style.boxSizing = 'border-box';
+    el.style.width = w + 'px';
+    el.style.minWidth = w + 'px';
+    el.style.maxWidth = w + 'px';
+    el.style.height = h + 'px';
+    el.style.minHeight = h + 'px';
+    el.style.maxHeight = h + 'px';
+    el.style.overflow = 'hidden';
+    el.style.flexShrink = '0';
+    const bub = el.querySelector('.chat-bubble');
+    if (bub) {
+      const br = bub.getBoundingClientRect();
+      const bw = Math.max(1, Math.round(br.width * 100) / 100);
+      const bh = Math.max(1, Math.round(br.height * 100) / 100);
+      bub.style.boxSizing = 'border-box';
+      bub.style.width = bw + 'px';
+      bub.style.minWidth = bw + 'px';
+      bub.style.maxWidth = bw + 'px';
+      bub.style.height = bh + 'px';
+      bub.style.minHeight = bh + 'px';
+      bub.style.flexShrink = '0';
+    }
     el.classList.add('msg-dissolving');
     const rec = { id, el, nextId: nx ? nx.dataset.msgId : null };
     _dissolving.set(id, rec);

@@ -204,7 +204,7 @@ export function startRightRail() {
   fit();
   refresh();
   // Zaxira: realtime uzilsa ham 15s da yangilanadi (oldin 45s edi)
-  _tick = setInterval(() => scheduleRefresh(0), 15000);
+  _tick = setInterval(() => scheduleRefresh(0), 45000);
 }
 
 export function stopRightRail() {
@@ -216,8 +216,5 @@ export function stopRightRail() {
 
 // Auto-start when logged in
 startRightRail();
-setInterval(() => {
-  if (state.me?.uid) {
-    fit();
-  }
-}, 2000);
+// fit() allaqachon onRouteChange/resize da chaqiriladi — 2s polling kerak emas
+document.addEventListener('profilesPreloaded', () => { if (state.me?.uid) fit(); });

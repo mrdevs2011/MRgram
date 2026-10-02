@@ -67,7 +67,7 @@ async function _registerSW() {
   try {
     const existing = await navigator.serviceWorker.getRegistration();
     if (existing) return existing;
-    return await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+    return await navigator.serviceWorker.register('/sw.js', { scope: '/' });
   } catch {
     return null;
   }

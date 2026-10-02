@@ -18,7 +18,7 @@ Parol unutilsa: foydalanuvchi MR ga murojaat qiladi → admin panelda "Parolni a
 - Frontend: vanilla JS modullari (`modules/`), CSS `CSS/*.css` → `npm run build` → bitta `app.css` (qo'lda tahrirlanmaydi).
 - Backend: Supabase — Auth, Postgres + RLS, Realtime, Storage (`media` bucket), Edge Functions (`send-push`, `admin-reset-password`).
 - Xato jurnali: `modules/error-log.js` — oxirgi 20 xato localStorage'da; konsolda `__mrErrors()` (tozalash: `__mrErrorsClear()`).
-- Service worker: `firebase-messaging-sw.js` (nomi eski, Firebase yo'q; nomni O'ZGARTIRMANG — push obunalari shunga bog'liq).
+- Service worker: `sw.js` (Web Push + cache; Firebase yo'q).
   `CACHE_VERSION` build vaqtida avtomatik yoziladi.
 - Deploy: Vercel (`npm run build`).
 
