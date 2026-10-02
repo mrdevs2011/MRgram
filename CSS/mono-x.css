@@ -2789,64 +2789,177 @@ button:focus-visible,
 .chat-msg.emoji-only .chat-bubble-text { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   STRICT MONOCHROME THEME (CLASSIC X B&W)
+   SEMANTIC COLOR THEME: Black/White + Blue (actions) + Red (danger/like)
    ═══════════════════════════════════════════════════════════════════════ */
 :root {
-  --pal-blue: #ffffff;
-  --pal-red: #ffffff;
+  /* Blue — navigation, mine bubble, badges, links, send, online */
+  --pal-blue: #1d9bf0;
+  --blue: #1d9bf0;
+  --blue2: #1a8cd8;
+  --blue3: #1d9bf0;
+  --link: #1d9bf0;
+  --x-blue: #1d9bf0;
+  --x-blue-hover: #1a8cd8;
+  --tg-blue: #1d9bf0;
+  --tg-primary-blue: #1d9bf0;
+  --blue-glow: rgba(29, 155, 240, 0.2);
+  --blue-glow2: rgba(29, 155, 240, 0.25);
+
+  /* Red — like, delete, error, danger, reject call, recording */
+  --pal-red: #ef4444;
+  --red: #ef4444;
+  --red-glow: rgba(239, 68, 68, 0.12);
+  --x-like: #ef4444;
+
+  /* Green — keep neutral (online dot stays white/grey for now) */
   --pal-green: #ffffff;
-  --blue: #ffffff;
-  --blue2: #e7e9ea;
-  --blue3: #ffffff;
-  --link: #ffffff;
-  --x-blue: #ffffff;
-  --x-blue-hover: #e7e9ea;
-  --x-like: #ffffff;
-  --red: #ffffff;
   --green: #ffffff;
-  --tg-blue: #ffffff;
-  --tg-primary-blue: #ffffff;
-  --blue-glow: rgba(255, 255, 255, 0.1);
-  --blue-glow2: rgba(255, 255, 255, 0.15);
 }
 
 /* 1. Fix contrast for elements that use var(--x-blue) as background */
-#chatThreadModal .chat-msg.mine .chat-bubble,
+/* 1. Blue-background elements → white text/icons */
 .cpb-progress-fill,
 .vmp-progress-fill,
-.vmp-play,
-.vc-fill,
-.vc-fill::after,
-.chat-voice-btn,
-  .grp-avi-badge--group,
-  .grp-avi-badge--channel,
-  .call-avi-initial,
-  .nav-badge,
-  .chat-row-badge,
-  .ua-approve-btn,
-  .ua-modal-confirm,
-  .ua-modal-confirm--danger,
-  .ua-modal-confirm--warn,
-  .ua-modal-confirm--safe,
-  #pendingSignOutBtn,
-.ufb-icon,
 .ufb-fill,
 #cmContent .cm-row.playing .cm-ico {
+  background: var(--x-blue) !important;
+  color: var(--pal-white) !important;
+}
+
+/* vmp-play: blue circle, white icon */
+.vmp-play {
+  background: var(--x-blue) !important;
+  color: var(--pal-white) !important;
+}
+.vmp-play svg {
+  fill: var(--pal-white) !important;
+  stroke: var(--pal-white) !important;
+}
+
+/* upload float bar icon */
+.ufb-icon {
+  background: var(--x-blue) !important;
+  color: var(--pal-white) !important;
+}
+.ufb-icon svg {
+  fill: var(--pal-white) !important;
+  stroke: var(--pal-white) !important;
+}
+
+#cmContent .cm-row.playing .cm-ico svg {
+  fill: var(--pal-white) !important;
+  stroke: var(--pal-white) !important;
+}
+
+/* nav-badge, chat-row-badge → blue bg, white text */
+.nav-badge,
+.chat-row-badge,
+.grp-avi-badge--group,
+.chat-row-grp-badge--group {
+  background: var(--x-blue) !important;
+  color: var(--pal-white) !important;
+  border-color: var(--x-blue) !important;
+}
+
+/* grp-avi-badge--channel: white bg, black text — neutral */
+.grp-avi-badge--channel {
   background: var(--pal-white) !important;
   color: var(--pal-black) !important;
 }
 
-/* SVG icons inside white buttons */
-.vmp-play svg,
-.chat-voice-btn svg,
-#cmContent .cm-row.playing .cm-ico svg,
-.ufb-icon svg {
-  fill: var(--pal-black);
-  stroke: var(--pal-black);
+/* grp-picker-check selected: blue */
+.grp-picker-check.on {
+  background: var(--x-blue) !important;
+  border-color: var(--x-blue) !important;
+  color: var(--pal-white) !important;
 }
 
-/* 2. Chat voice UI fixes for monochrome */
-/* Theirs (other user) voice play btn: White bg, Black icon */
+/* vc-fill (video control fill) */
+.vc-fill,
+.vc-fill::after {
+  background: var(--x-blue) !important;
+}
+
+/* chat-voice-btn: blue bg, white mic icon */
+.chat-voice-btn {
+  background: var(--x-blue) !important;
+  color: var(--pal-white) !important;
+}
+.chat-voice-btn svg {
+  fill: var(--pal-white) !important;
+  stroke: var(--pal-white) !important;
+}
+
+/* ua-approve: blue */
+.ua-approve-btn {
+  background: var(--x-blue) !important;
+  color: var(--pal-white) !important;
+}
+
+/* danger modals: red */
+.ua-modal-confirm--danger,
+.ua-modal-confirm--warn {
+  background: var(--red) !important;
+  color: var(--pal-white) !important;
+}
+
+/* safe / neutral modals: white */
+.ua-modal-confirm--safe,
+.ua-modal-confirm {
+  background: var(--pal-white) !important;
+  color: var(--pal-black) !important;
+}
+
+/* sign-out: red */
+#pendingSignOutBtn {
+  background: var(--red) !important;
+  color: var(--pal-white) !important;
+}
+
+/* call-avi-initial: blue circle */
+.call-avi-initial {
+  background: var(--x-blue) !important;
+  color: var(--pal-white) !important;
+}
+
+/* 2. Chat — MINE bubble: blue bg, white text */
+#chatThreadModal .chat-msg.mine .chat-bubble {
+  background: var(--x-blue) !important;
+  color: var(--pal-white) !important;
+}
+#chatThreadModal .chat-msg.mine .chat-bubble a {
+  color: var(--pal-white) !important;
+}
+
+/* Mine voice play btn: white circle on blue bubble, blue icon */
+#chatThreadModal .chat-msg.mine .cvm-play {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+#chatThreadModal .chat-msg.mine .cvm-play svg {
+  fill: var(--pal-white) !important;
+  stroke: var(--pal-white) !important;
+}
+#chatThreadModal .chat-msg.mine .cvm-bar {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+#chatThreadModal .chat-msg.mine .cvm-bar.played {
+  background: rgba(255, 255, 255, 0.95) !important;
+}
+#chatThreadModal .chat-msg.mine .cvm-dur {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+#chatThreadModal .chat-msg.mine .chat-msg-time,
+#chatThreadModal .chat-msg.mine .chat-msg-edited {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+#chatThreadModal .chat-msg.mine .msg-ticks svg {
+  stroke: rgba(255, 255, 255, 0.7) !important;
+}
+#chatThreadModal .chat-msg.mine .msg-ticks.read svg {
+  stroke: var(--pal-white) !important;
+}
+
+/* 3. Theirs voice: white play btn, black icon */
 #chatThreadModal .chat-msg.theirs .cvm-play {
   background: var(--pal-white) !important;
 }
@@ -2857,51 +2970,20 @@ button:focus-visible,
   background: var(--pal-white) !important;
 }
 
-/* Mine (current user) voice play btn: Black bg (since bubble is white), White icon */
-#chatThreadModal .chat-msg.mine .cvm-play {
-  background: var(--pal-black) !important;
-}
-#chatThreadModal .chat-msg.mine .cvm-play svg {
-  fill: var(--pal-white) !important;
-}
-#chatThreadModal .chat-msg.mine .cvm-bar {
-  background: rgba(0, 0, 0, 0.25) !important;
-}
-#chatThreadModal .chat-msg.mine .cvm-bar.played {
-  background: var(--pal-black) !important;
-}
-#chatThreadModal .chat-msg.mine .cvm-dur {
-  color: var(--pal-black) !important;
-}
-#chatThreadModal .chat-msg.mine .chat-msg-time,
-#chatThreadModal .chat-msg.mine .chat-msg-edited {
-  color: rgba(0, 0, 0, 0.6) !important;
-}
-#chatThreadModal .chat-msg.mine .msg-ticks svg {
-  stroke: var(--pal-black) !important;
-}
-
-/* 3. Checkboxes & Badges */
-.grp-picker-check.on,
-.chat-row-grp-badge--group {
-  background: var(--pal-white) !important;
-  border-color: var(--pal-white) !important;
-  color: var(--pal-black) !important;
-}
-
-/* 4. Toggle switch */
+/* 4. Toggle switch: blue track */
 .switch-toggle.on {
-  background: var(--pal-white) !important;
+  background: var(--x-blue) !important;
 }
 .switch-toggle.on .switch-knob {
-  background: var(--pal-black) !important;
+  background: var(--pal-white) !important;
 }
 
-/* 5. Navigation & Tabs active state */
+/* 5. Nav active state */
 .nav-btn.on svg {
   stroke: var(--pal-white) !important;
   filter: none !important;
 }
+
 .profile-grid-tab.active {
   color: var(--pal-white) !important;
   border-bottom-color: var(--pal-white) !important;
@@ -3001,4 +3083,70 @@ button:focus-visible,
 }
 :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet {
   scrollbar-width: none;
+}
+
+/* ── Online dot: green ─────────────────────────────────────────────── */
+.rr-avi .rr-dot {
+  background: #00ba7c !important;
+}
+.presence-dot,
+.online-dot,
+[class*="online"][class*="dot"] {
+  background: #00ba7c !important;
+}
+
+/* ── Recording voice btn: RED when recording ──────────────────────── */
+.chat-voice-btn.recording {
+  background: var(--red) !important;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.55), 0 0 0 2px rgba(255,255,255,0.2) !important;
+}
+.chat-voice-btn.recording.cancelling {
+  background: rgba(239, 68, 68, 0.5) !important;
+}
+
+/* ── confirmOkBtn (danger confirm): red ───────────────────────────── */
+#confirmOverlay #confirmOkBtn {
+  background: var(--red) !important;
+  color: var(--pal-white) !important;
+}
+#confirmOverlay #confirmOkBtn:hover {
+  background: #dc2626 !important;
+}
+
+/* ── Like button active: red ─────────────────────────────────────── */
+.act-btn.liked,
+.act-btn.liked svg,
+.like-btn.liked,
+.dm-act.liked {
+  color: var(--red) !important;
+}
+
+/* ── Error/delete context items ──────────────────────────────────── */
+.c-red,
+.gi-action-danger .gi-action-icon,
+.gi-action-delete .gi-action-icon,
+.gi-action-danger,
+.gi-action-delete,
+.grp-member-kick,
+.settings-more-menu-item.danger {
+  color: var(--red) !important;
+}
+.grp-member-kick { background: rgba(239, 68, 68, 0.1) !important; }
+.grp-member-kick:hover { background: rgba(239, 68, 68, 0.2) !important; }
+
+/* ── Error toast border/icon: red ────────────────────────────────── */
+.toast-icon.error { color: var(--red) !important; }
+#toast.toast-error { border-color: var(--red) !important; }
+
+/* ── Input error state: red border ───────────────────────────────── */
+.err-msg,
+#authErr { color: var(--red) !important; }
+.field.input-error { border-color: var(--red) !important; }
+
+/* ── Send button: blue bg ─────────────────────────────────────────── */
+.chat-send-btn,
+#chatVoiceBtn:not(.recording),
+.cmt-send {
+  background: var(--x-blue) !important;
+  color: var(--pal-white) !important;
 }
