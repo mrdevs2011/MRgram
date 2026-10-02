@@ -129,12 +129,15 @@ Deno.serve(async (req) => {
         const senderFrom = Deno.env.get('SMTP_FROM') || `"SpaceMR" <${smtpUser.trim()}>`;
         await transporter.sendMail({
           from: senderFrom,
-          sender: `"SpaceMR" <${smtpUser.trim()}>`,
-          replyTo: `"SpaceMR" <${smtpUser.trim()}>`,
+          replyTo: senderFrom,
           to: recoveryEmail,
           subject: emailSubject,
           text: emailText,
           html: emailHtml,
+          headers: {
+            'Auto-Submitted': 'auto-generated',
+            'X-Auto-Response-Suppress': 'All',
+          },
           attachments: [
             {
               filename: 'spacemr-logo.png',
