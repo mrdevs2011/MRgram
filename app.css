@@ -4729,18 +4729,71 @@ a { color: var(--link); }
 .post-user { overflow: hidden; text-overflow: ellipsis; min-width: 0; flex-shrink: 2; }
 .post-dot, .post-time { flex-shrink: 0; }
 .post-caption { padding: 2px 0 0; margin: 0; font-size: 15px; line-height: 1.4; color: var(--text); overflow-wrap: anywhere; min-width: 0; }
-/* Media: X uslubi — matn ustuni bilan hizalanadi, 16px radius, nozik hoshiya */
-.post-media, [data-theme] .post-media {
-  width: 100%; max-width: 100%; box-sizing: border-box;
-  margin: 12px 0 0; border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
-  background: var(--bg);
+/* Post layout — barqaror (media chiqib ketmasin, min-height conflict yo'q) */
+.post, [data-theme] .post {
+  overflow: hidden;
+  isolation: isolate;
+  max-width: 100%;
+  box-sizing: border-box;
 }
-.post-media[style*="aspect-ratio"], [data-theme] .post-media[style*="aspect-ratio"] { min-height: 0; min-width: 0; max-width: 100%; }
-.post-media img, .post-media video, .post-media .vid-wrap { max-width: 100%; display: block; }
+.post-main { flex: 1; min-width: 0; max-width: 100%; overflow: hidden; }
+.post-media, [data-theme] .post-media {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 12px 0 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+  position: relative;
+  min-height: 0 !important; /* features.css 180px ni bekor */
+  min-width: 0;
+}
+.post-media[style*="aspect-ratio"], [data-theme] .post-media[style*="aspect-ratio"] {
+  min-height: 0 !important;
+  min-width: 0;
+  max-width: 100%;
+  height: auto;
+}
+.post-media img,
+.post-media video,
+.post-media .vid-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: min(70vh, 560px);
+  display: block;
+  object-fit: contain;
+  background: #000;
+  vertical-align: top;
+}
+.post-media .vid-wrap {
+  position: relative;
+  max-height: min(70vh, 560px);
+}
+.post-media .vid-wrap video {
+  max-height: min(70vh, 560px);
+}
 /* Post hover — X lights-out */
 .post:hover, [data-theme] .post:hover { background: rgba(255, 255, 255, 0.03); }
 [data-theme="light"] .post:hover, :root:not([data-theme="dark"]) .post:hover { background: rgba(0, 0, 0, 0.03); }
-.post-actions { display: flex; justify-content: space-between; align-items: center; margin: 12px 0 0; max-width: 425px; }
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0 0;
+  max-width: 425px;
+  width: 100%;
+}
+/* features.css dagi negative margin media ni sindirmasin */
+@media (min-width: 0) {
+  .post-media, [data-theme] .post-media {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
 .act-btn {
   flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px;
   padding: 0; border: none; border-radius: 999px; background: none;
