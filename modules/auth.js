@@ -72,7 +72,7 @@ function serverNow() {
    ham ilovaga kiritilmaydi. Bundan tashqari, tasdiqlangan holat juda eski
    bo'lsa (OFFLINE_TRUST_MS dan ko'p), "internetga ulaning" ekrani chiqadi —
    ya'ni abadiy offline yurib, tekshiruvdan MUTLAQO qochib bo'lmaydi. ─── */
-const OFFLINE_TRUST_MS = 15 * 60 * 1000; // 15 daqiqa
+const OFFLINE_TRUST_MS = 24 * 60 * 60 * 1000; // 24 soat (avval 15 daqiqa edi)
 
 function _verifiedKey(uid) { return `mrg_verified_${uid}`; }
 
@@ -244,6 +244,9 @@ if (authBtn) {
         const { data, error } = await sb.auth.signInWithPassword({ email, password: p });
         if (error) throw error;
         _hideForgotPasswordBtn();
+        if (data?.user?.id) {
+          _setLocalPwdTs(data.user.id, Date.now());
+        }
         try {
           await sb.from('profiles').update({
             last_login: new Date().toISOString(),
@@ -908,10 +911,15 @@ let _shownKey = null;     // bir xil pending/blocked ekran qayta-qayta chizilmas
 const PROFILE_POLL_MS = 60 * 1000;
 
 function _getDeviceId() {
-  let id = sessionStorage.getItem('spacemr_device_session_id');
-  if (!id) {
-    id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36));
-    sessionStorage.setItem('spacemr_device_session_id', id);
+  let id = null;
+  try {
+    id = localStorage.getItem('spacemr_device_id');
+    if (!id) {
+      id = (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Date.now().toString(36));
+      localStorage.setItem('spacemr_device_id', id);
+    }
+  } catch (_) {
+    id = 'dev-' + Date.now();
   }
   return id;
 }
@@ -1132,9 +1140,9 @@ async function _onLiveProfile(p, me) {
   const appEl = $('app');
   const isInApp = !!(appEl && appEl.classList.contains('show'));
 
-  // 0. Boshqa qurilmada parol yangilangan bo'lsa darhol logout qilish
+  // 0. Boshqa qurilmada parol yangilangan bo'lsa darhol logout qilish (kamida 60s farq bilan)
   const knownPwdTs = _getLocalPwdTs(me.uid);
-  if (p.passwordChangedAt && knownPwdTs && p.passwordChangedAt > knownPwdTs + 1500) {
+  if (p.passwordChangedAt && knownPwdTs && (p.passwordChangedAt - knownPwdTs > 60000)) {
     console.warn('[Auth] Parol boshqa qurilmada yangilandi (ts tekshiruvi). Chiqilmoqda...');
     toast('Parolingiz boshqa qurilmada o\'zgartirildi. Iltimos, qayta kiring', 'warning');
     await _forceSignOut();
@@ -1180,9 +1188,28 @@ async function _onLiveProfile(p, me) {
     return;
   }
 
-  // 4. Pending yoki rejected
-  if (isInApp) { await _forceSignOut(); return; }
-  _showOnce(p.approved === 'rejected' ? 'rejected' : 'pending');
+  // 4. Pending yoki rejected (sessiyani o'chirib yubormasdan ekranni ko'rsatish)
+  if (p.approved === 'rejected') {
+    if (isInApp) {
+      stopChatsWatcher();
+      stopBus();
+      stopCallWatcher();
+      stopPresenceHeartbeat();
+      appEl.classList.remove('show');
+    }
+    _showOnce('rejected');
+    return;
+  }
+  if (p.approved === false) {
+    if (isInApp) {
+      stopChatsWatcher();
+      stopBus();
+      stopCallWatcher();
+      stopPresenceHeartbeat();
+      appEl.classList.remove('show');
+    }
+    _showOnce('pending');
+  }
 }
 
 function _startRealtimeUserWatch(me) {
@@ -1219,35 +1246,71 @@ function _startRealtimeUserWatch(me) {
         })
     .subscribe();
 
-  // 3. Polling zaxira — har 15s va oyna qayta ochilganda / fokuslanganda
+  // 3. Polling zaxira — 60s va tab fokuslanganda (debounce va token yangilanishi bilan)
+  let consecutiveFailures = 0;
+  let isChecking = false;
+
   const checkProfile = async () => {
-    if (!navigator.onLine) return;
+    if (!navigator.onLine || isChecking) return;
+    isChecking = true;
     try {
-      const p = await _fetchProfile(uid);
-      if (!p) {
-        await _forceSignOut();
-      } else {
+      let p = null;
+      try {
+        p = await _fetchProfile(uid);
+      } catch (fErr) {
+        // Agar JWT muddati o'tgan bo'lsa, avval tokenni yangilab qayta ko'ramiz
+        if (/unauthorized|jwt expired|invalid claim|token is expired/i.test(fErr?.message || '')) {
+          try {
+            const { data: refData } = await sb.auth.refreshSession();
+            if (refData?.session) {
+              p = await _fetchProfile(uid);
+            }
+          } catch (_) {}
+        }
+      }
+
+      if (p) {
+        consecutiveFailures = 0;
         await _onLiveProfile(p, me);
+      } else {
+        consecutiveFailures++;
+        console.warn(`[Auth] Profil tekshiruvi vaqtinchalik javob bermadi (${consecutiveFailures}/5)`);
+        // Faqat ketma-ket 5 marta muvaffaqiyatsiz bo'lsa va auth.users da foydalanuvchi yo'q bo'lsa
+        if (consecutiveFailures >= 5) {
+          const { error: uErr } = await sb.auth.getUser();
+          if (uErr && /not found|invalid claim|user does not exist/i.test(uErr.message || '')) {
+            console.warn('[Auth] Foydalanuvchi bazadan o\'chirilgani tasdiqlandi');
+            await _forceSignOut();
+          }
+        }
       }
     } catch (err) {
-      if (err?.code === 'PGRST116' || /unauthorized|not found|does not exist|invalid claim/i.test(err?.message || '')) {
-        await _forceSignOut();
-      }
+      console.warn('[Auth] checkProfile xatoligi:', err?.message || err);
+    } finally {
+      isChecking = false;
     }
   };
 
-  const poll = setInterval(checkProfile, 15 * 1000);
-  const onFocus = () => { checkProfile(); };
-  window.addEventListener('focus', onFocus);
-  const onVisChange = () => {
-    if (document.visibilityState === 'visible') checkProfile();
+  const poll = setInterval(checkProfile, PROFILE_POLL_MS);
+
+  let focusDebounce = null;
+  const triggerDebouncedCheck = () => {
+    if (focusDebounce) clearTimeout(focusDebounce);
+    focusDebounce = setTimeout(() => {
+      if (document.visibilityState === 'visible' && navigator.onLine) {
+        checkProfile();
+      }
+    }, 2500);
   };
-  document.addEventListener('visibilitychange', onVisChange);
+
+  window.addEventListener('focus', triggerDebouncedCheck);
+  document.addEventListener('visibilitychange', triggerDebouncedCheck);
 
   _activeUserUnsub = () => {
     clearInterval(poll);
-    window.removeEventListener('focus', onFocus);
-    document.removeEventListener('visibilitychange', onVisChange);
+    if (focusDebounce) clearTimeout(focusDebounce);
+    window.removeEventListener('focus', triggerDebouncedCheck);
+    document.removeEventListener('visibilitychange', triggerDebouncedCheck);
     sb.removeChannel(sessionCh);
     sb.removeChannel(profileCh);
   };
@@ -1310,19 +1373,40 @@ async function _handleSession(session) {
       _startRealtimeUserWatch(me);
       return;
     }
-    // Agar hisob o'chirilgan bo'lsa yoki auth user mavjud bo'lmasa — darhol tozalab chiqaramiz
-    if (fetchErr?.code === 'PGRST116' || /unauthorized|not found|does not exist|invalid claim/i.test(fetchErr?.message || '')) {
-      await _forceSignOut();
+    // Agar token eskirgan bo'lsa, uni avtomatik yangilashga urinib ko'ramiz
+    if (/unauthorized|jwt expired|invalid claim|token is expired/i.test(fetchErr?.message || '')) {
+      try {
+        const { data: refData } = await sb.auth.refreshSession();
+        if (refData?.session) {
+          try {
+            p = await _fetchProfile(user.id);
+            fetchErr = null;
+          } catch (rErr) { fetchErr = rErr; }
+        }
+      } catch (_) {}
+    }
+
+    if (!p) {
+      // Faqatgina auth.users da foydalanuvchi yo'q bo'lsa (haqiqatan o'chirilgan bo'lsa) hisobdan chiqaramiz
+      const { error: uErr } = await sb.auth.getUser();
+      if (uErr && /not found|user does not exist/i.test(uErr.message || '')) {
+        await _forceSignOut();
+        return;
+      }
+      // Onlayn, lekin server xato berdi yoki kechikmoqda — sessiyani o'chirmasdan pending ko'rsatamiz
+      _showOnce('pending');
+      _startRealtimeUserWatch(me);
       return;
     }
-    // Onlayn, lekin server xato berdi — ruxsatsiz kiritmaymiz
+  }
+
+  // Profil qatori olinmagan bo'lsa — sessiyani buzmasdan kutish
+  if (!p) {
+    console.warn('[Auth] Profil qatori olinmadi, sessiya saqlanadi');
     _showOnce('pending');
     _startRealtimeUserWatch(me);
     return;
   }
-
-  // Profil qatori yo'q (o'chirilgan yoki trigger ishlamagan) — hisobdan chiqaramiz
-  if (!p) { await _forceSignOut(); return; }
 
   try {
     const { applyAdminNav } = await import('./router.js');
@@ -1330,8 +1414,10 @@ async function _handleSession(session) {
   } catch (_) {}
 
   // Sessiyadagi joriy parol vaqtini muhrlaymiz
-  if (!_getLocalPwdTs(me.uid)) {
-    _setLocalPwdTs(me.uid, p.passwordChangedAt || Date.now());
+  const currentTs = p.passwordChangedAt || Date.now();
+  const existingTs = _getLocalPwdTs(me.uid);
+  if (!existingTs || currentTs > existingTs) {
+    _setLocalPwdTs(me.uid, currentTs);
   }
 
   // Faqat serverdan haqiqatan olingan holat — tasdiqlangan holat sifatida saqlanadi
@@ -1341,6 +1427,10 @@ async function _handleSession(session) {
 
 sb.auth.onAuthStateChange((event, session) => {
   if (event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') return;
+  // Yangi kirishda (SIGNED_IN) darhol joriy parol vaqtini yangilash (eski ts tufayli soxta logout bo'lmasligi uchun)
+  if (event === 'SIGNED_IN' && session?.user?.id) {
+    _setLocalPwdTs(session.user.id, Date.now());
+  }
   // Callback ichida supabase chaqiruvlarini kutmaymiz (deadlock xavfi)
   setTimeout(() => { _handleSession(session); }, 0);
 });
