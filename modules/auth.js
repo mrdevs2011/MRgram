@@ -1971,6 +1971,35 @@ if (editProfileBtn) {
       };
     }
 
+    const peAviRing = $('peAviRing');
+    if (peAviRing && peAviInput) {
+      peAviRing.onclick = (e) => {
+        if (e.target !== peAviEditBadge && !peAviEditBadge.contains(e.target)) peAviInput.click();
+      };
+    }
+
+    const peAviChangeText = $('peAviChangeText');
+    if (peAviChangeText && peAviInput) {
+      peAviChangeText.onclick = () => peAviInput.click();
+    }
+
+    // Parol maydonlarini tozalash va ko'rish holatini yopish
+    ['editOldPassword', 'editNewPassword', 'editNewPassword2'].forEach(id => {
+      const el = $(id);
+      if (el) {
+        el.value = '';
+        el.type = 'password';
+      }
+    });
+    document.querySelectorAll('#profileEditOverlay .pe-pwd-toggle').forEach(btn => {
+      const openEye = btn.querySelector('.pe-eye-open');
+      const closedEye = btn.querySelector('.pe-eye-closed');
+      if (openEye) openEye.style.display = 'block';
+      if (closedEye) closedEye.style.display = 'none';
+      btn.setAttribute('aria-label', "Parolni ko'rsatish");
+      btn.setAttribute('title', "Parolni ko'rsatish");
+    });
+
     const profileEditOverlay = $('profileEditOverlay');
     if (profileEditOverlay) { profileEditOverlay.classList.add('show'); lockScroll(); }
   };
@@ -2098,6 +2127,40 @@ if (cancelEditBtn) {
     if (profileEditOverlay) { profileEditOverlay.classList.remove('show'); unlockScroll(); }
   };
 }
+
+const peCloseBtn = $('peCloseBtn');
+if (peCloseBtn) {
+  peCloseBtn.onclick = () => {
+    const profileEditOverlay = $('profileEditOverlay');
+    if (profileEditOverlay) { profileEditOverlay.classList.remove('show'); unlockScroll(); }
+  };
+}
+
+// Profil tahrirlashda parolni ko'rsatish/yashirish (eye toggle)
+document.querySelectorAll('#profileEditOverlay .pe-pwd-toggle').forEach(btn => {
+  btn.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const targetId = btn.getAttribute('data-target');
+    const inp = $(targetId);
+    if (!inp) return;
+    const openEye = btn.querySelector('.pe-eye-open');
+    const closedEye = btn.querySelector('.pe-eye-closed');
+    if (inp.type === 'password') {
+      inp.type = 'text';
+      if (openEye) openEye.style.display = 'none';
+      if (closedEye) closedEye.style.display = 'block';
+      btn.setAttribute('aria-label', "Parolni yashirish");
+      btn.setAttribute('title', "Parolni yashirish");
+    } else {
+      inp.type = 'password';
+      if (openEye) openEye.style.display = 'block';
+      if (closedEye) closedEye.style.display = 'none';
+      btn.setAttribute('aria-label', "Parolni ko'rsatish");
+      btn.setAttribute('title', "Parolni ko'rsatish");
+    }
+  };
+});
 
 export async function logOut() {
   try { await Promise.race([removePushToken(), new Promise(r => setTimeout(r, 1500))]); } catch (_) {}
