@@ -74,9 +74,7 @@ export function navigateTo(routeName, pushState = true) {
     'cmtModal',
     // Upload
     'uploadOverlay',
-    // Profile edit
-    'profileEditOverlay',
-    // Settings (fullscreen page)
+    // Settings (fullscreen page / right-rail)
     'settingsOverlay',
     // Zoom
     'zoomModal',

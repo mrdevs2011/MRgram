@@ -461,135 +461,7 @@
   </div>
 </div>
 
-<!-- PROFILE EDIT -->
-<div class="overlay pe-overlay" id="profileEditOverlay">
-  <div class="sheet pe-sheet" role="dialog" aria-modal="true" aria-labelledby="peSheetTitle">
-    <div class="sheet-handle pe-sheet-handle"></div>
 
-    <!-- Header -->
-    <div class="pe-header">
-      <div class="pe-header-left">
-        <h2 class="pe-title" id="peSheetTitle">Profilni sozlash</h2>
-        <span class="pe-subtitle">Ma'lumotlar va xavfsizlik sozlamalari</span>
-      </div>
-      <button class="pe-close-btn" id="peCloseBtn" type="button" aria-label="Yopish" title="Yopish">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-
-    <!-- Scrollable content -->
-    <div class="pe-scroll-body">
-      <!-- Avatar Hero -->
-      <div class="pe-avatar-hero">
-        <div class="pe-avatar-ring" id="peAviRing" title="Suratni o'zgartirish">
-          <div class="pe-avi-img" id="peAviImg"></div>
-          <div class="pe-avi-edit-badge" id="peAviEditBadge" title="Avatar yuklash">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          </div>
-          <input type="file" id="peAviInput" accept="image/*" style="display:none">
-        </div>
-        <button class="pe-avatar-btn" id="peAviChangeText" type="button">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Suratni o'zgartirish
-        </button>
-      </div>
-
-      <!-- Asosiy ma'lumotlar -->
-      <div class="pe-card-group">
-        <div class="pe-group-title">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Asosiy ma'lumotlar
-        </div>
-
-        <div class="pe-field-box">
-          <label class="pe-input-label" for="editName">To'liq ism <span class="pe-req">*</span></label>
-          <input class="field pe-input" type="text" id="editName" placeholder="To'liq ismingiz" autocomplete="name">
-        </div>
-
-        <div class="pe-field-box">
-          <label class="pe-input-label" for="editUsername">Foydalanuvchi nomi</label>
-          <div class="pe-field-prefix-wrap">
-            <span class="pe-prefix">@</span>
-            <input class="field pe-prefix-field pe-input" type="text" id="editUsername" maxlength="20" placeholder="username" autocomplete="username" autocapitalize="none">
-          </div>
-          <div class="pe-field-note">Kamida 2 ta belgi (harf, raqam va pastki chiziq)</div>
-        </div>
-
-        <div class="pe-field-box">
-          <label class="pe-input-label" for="editBioInput">Bio</label>
-          <textarea class="ta pe-input pe-textarea" id="editBioInput" rows="3" placeholder="O'zingiz haqingizda qisqacha ma'lumot..."></textarea>
-        </div>
-      </div>
-
-      <!-- Zaxira email -->
-      <div class="pe-card-group">
-        <div class="pe-group-title">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          Zaxira email
-          <span class="pe-tag-optional">ixtiyoriy</span>
-        </div>
-
-        <div class="pe-field-box">
-          <label class="pe-input-label" for="editRecoveryEmail">Zaxira email manzili</label>
-          <input class="field pe-input" type="email" id="editRecoveryEmail" placeholder="example@gmail.com" autocomplete="email">
-          <div class="pe-field-note">Parolingizni unutganingizda 8 xonali tiklash kodi shu emailga yuboriladi.</div>
-        </div>
-      </div>
-
-      <!-- Parolni o'zgartirish -->
-      <div class="pe-card-group pe-security-group">
-        <div class="pe-group-title">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Parolni o'zgartirish
-          <span class="pe-tag-optional">ixtiyoriy</span>
-        </div>
-        <div class="pe-security-desc">Faqat parolni yangilamoqchi bo'lsangiz quyidagi maydonlarni to'ldiring:</div>
-
-        <div class="pe-field-box">
-          <label class="pe-input-label" for="editOldPassword">Joriy parol</label>
-          <div class="pe-pwd-wrap">
-            <input class="field pe-input pe-pwd-input" type="password" id="editOldPassword" placeholder="Joriy parolingiz" autocomplete="current-password">
-            <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editOldPassword" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
-              <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="pe-field-box">
-          <label class="pe-input-label" for="editNewPassword">Yangi parol</label>
-          <div class="pe-pwd-wrap">
-            <input class="field pe-input pe-pwd-input" type="password" id="editNewPassword" placeholder="Yangi parol (kamida 6 belgi)" autocomplete="new-password">
-            <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editNewPassword" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
-              <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="pe-field-box">
-          <label class="pe-input-label" for="editNewPassword2">Yangi parolni tasdiqlang</label>
-          <div class="pe-pwd-wrap">
-            <input class="field pe-input pe-pwd-input" type="password" id="editNewPassword2" placeholder="Yangi parolni tasdiqlang" autocomplete="new-password">
-            <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editNewPassword2" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
-              <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Actions -->
-    <div class="pe-footer">
-      <button class="btn-ghost pe-btn-cancel" id="cancelEditBtn" type="button">Bekor qilish</button>
-      <button class="btn-primary pe-btn-save" id="saveProfileBtn" type="button">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        Saqlash
-      </button>
-    </div>
-  </div>
-</div>
 
 <!-- SETTINGS (fullscreen page, Telegram-style) -->
 <div id="settingsOverlay">
@@ -602,25 +474,116 @@
   </div>
 
   <div class="settings-body">
-    <!-- Profilni tahrirlash — endi shu yerda, Sozlamalar ichida -->
-    <button class="settings-profile-card" id="editProfileBtn" type="button">
-      <div class="settings-profile-avi" id="settingsAvi"></div>
-      <div class="settings-profile-info">
-        <div class="settings-profile-name" id="settingsName"></div>
-        <div class="settings-profile-username" id="settingsUsername"></div>
-      </div>
-      <svg class="settings-profile-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-    </button>
+    <!-- Dummy button for backwards compatibility -->
+    <button id="editProfileBtn" type="button" style="display:none;"></button>
 
-    <div class="divider m-12px"></div>
-
-    <div class="settings-section-label">Xavfsizlik</div>
-    <div class="settings-row" id="settingsRecoveryRow" style="cursor:pointer;">
-      <div class="settings-row-text">
-        <div class="settings-row-title">Zaxira email</div>
-        <div class="settings-row-hint" id="settingsRecoveryHint">O'rnatilmagan (parolni tiklash uchun qo'shing)</div>
+    <!-- Avatar Hero -->
+    <div class="pe-avatar-hero">
+      <div class="pe-avatar-ring" id="peAviRing" title="Suratni o'zgartirish">
+        <div class="pe-avi-img" id="peAviImg"></div>
+        <div class="pe-avi-edit-badge" id="peAviEditBadge" title="Avatar yuklash">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <input type="file" id="peAviInput" accept="image/*" style="display:none">
       </div>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3,#888);flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+      <button class="pe-avatar-btn" id="peAviChangeText" type="button">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Suratni o'zgartirish
+      </button>
+    </div>
+
+    <!-- Asosiy ma'lumotlar -->
+    <div class="pe-card-group">
+      <div class="pe-group-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Asosiy ma'lumotlar
+      </div>
+
+      <div class="pe-field-box">
+        <label class="pe-input-label" for="editName">To'liq ism <span class="pe-req">*</span></label>
+        <input class="field pe-input" type="text" id="editName" placeholder="To'liq ismingiz" autocomplete="name">
+      </div>
+
+      <div class="pe-field-box">
+        <label class="pe-input-label" for="editUsername">Foydalanuvchi nomi</label>
+        <div class="pe-field-prefix-wrap">
+          <span class="pe-prefix">@</span>
+          <input class="field pe-prefix-field pe-input" type="text" id="editUsername" maxlength="20" placeholder="username" autocomplete="username" autocapitalize="none">
+        </div>
+        <div class="pe-field-note">Kamida 2 ta belgi (harf, raqam va pastki chiziq)</div>
+      </div>
+
+      <div class="pe-field-box">
+        <label class="pe-input-label" for="editBioInput">Bio</label>
+        <textarea class="ta pe-input pe-textarea" id="editBioInput" rows="3" placeholder="O'zingiz haqingizda qisqacha ma'lumot..."></textarea>
+      </div>
+    </div>
+
+    <!-- Zaxira email -->
+    <div class="pe-card-group">
+      <div class="pe-group-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Zaxira email
+        <span class="pe-tag-optional">ixtiyoriy</span>
+      </div>
+
+      <div class="pe-field-box">
+        <label class="pe-input-label" for="editRecoveryEmail">Zaxira email manzili</label>
+        <input class="field pe-input" type="email" id="editRecoveryEmail" placeholder="example@gmail.com" autocomplete="email">
+        <div class="pe-field-note">Parolingizni unutganingizda 8 xonali tiklash kodi shu emailga yuboriladi.</div>
+      </div>
+    </div>
+
+    <!-- Parolni o'zgartirish -->
+    <div class="pe-card-group pe-security-group">
+      <div class="pe-group-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Parolni o'zgartirish
+        <span class="pe-tag-optional">ixtiyoriy</span>
+      </div>
+      <div class="pe-security-desc">Faqat parolni yangilamoqchi bo'lsangiz quyidagi maydonlarni to'ldiring:</div>
+
+      <div class="pe-field-box">
+        <label class="pe-input-label" for="editOldPassword">Joriy parol</label>
+        <div class="pe-pwd-wrap">
+          <input class="field pe-input pe-pwd-input" type="password" id="editOldPassword" placeholder="Joriy parolingiz" autocomplete="current-password">
+          <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editOldPassword" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
+            <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="pe-field-box">
+        <label class="pe-input-label" for="editNewPassword">Yangi parol</label>
+        <div class="pe-pwd-wrap">
+          <input class="field pe-input pe-pwd-input" type="password" id="editNewPassword" placeholder="Yangi parol (kamida 6 belgi)" autocomplete="new-password">
+          <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editNewPassword" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
+            <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="pe-field-box">
+        <label class="pe-input-label" for="editNewPassword2">Yangi parolni tasdiqlang</label>
+        <div class="pe-pwd-wrap">
+          <input class="field pe-input pe-pwd-input" type="password" id="editNewPassword2" placeholder="Yangi parolni tasdiqlang" autocomplete="new-password">
+          <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editNewPassword2" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
+            <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Saqlash tugmasi -->
+    <div style="display:flex;gap:10px;margin-top:2px;">
+      <button class="btn-ghost pe-btn-cancel" id="cancelEditBtn" type="button" style="flex:1;">Bekor qilish</button>
+      <button class="btn-primary pe-btn-save" id="saveProfileBtn" type="button" style="flex:1.4;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Saqlash
+      </button>
     </div>
 
     <div class="divider m-12px"></div>
@@ -660,21 +623,7 @@
   </div>
 </div>
 
-<!-- SETTINGS RECOVERY EMAIL MODAL -->
-<div id="settingsRecoveryModal" class="overlay" style="display:none;align-items:center;justify-content:center;z-index:99992;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(0,0,0,0.85);">
-  <div class="auth-card" style="max-width:390px;width:90%;margin:auto;background:#000000;box-shadow:0 24px 64px rgba(0,0,0,0.95);border:1px solid rgba(255,255,255,0.14);text-align:left;">
-    <div style="font-size:1.15rem;font-weight:700;color:var(--text,#fff);margin-bottom:6px;text-align:center;">Zaxira emailni sozlash</div>
-    <p style="font-size:13px;color:var(--text3,#888);margin:0 0 16px 0;text-align:center;line-height:1.45;">
-      Parolingizni unutib qo'ysangiz, hisobingizga kirishni tiklash uchun vaqtinchalik parol ushbu email manzilingizga yuboriladi.
-    </p>
-    <input class="field" type="email" id="settingsRecoveryEmailInput" placeholder="Haqiqiy email (ixtiyoriy, masalan: user@gmail.com)" autocomplete="email" style="margin-bottom:6px;">
-    <div class="err-msg" id="settingsRecoveryEmailErr" style="min-height:18px;margin-bottom:12px;font-size:12.5px;"></div>
-    <div style="display:flex;gap:10px;">
-      <button type="button" class="btn" id="settingsRecoveryCancelBtn" style="flex:1;height:42px;background:rgba(255,255,255,0.08);color:var(--text2,#ccc);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-weight:600;cursor:pointer;">Bekor qilish</button>
-      <button type="button" class="btn btn-primary" id="settingsRecoverySaveBtn" style="flex:1.2;height:42px;font-weight:600;cursor:pointer;">Saqlash</button>
-    </div>
-  </div>
-</div>
+<!-- (settingsRecoveryModal removed - recovery email is inline in settings) -->
 
 <!-- ZOOM MODAL -->
 <div id="zoomModal">

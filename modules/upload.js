@@ -835,7 +835,7 @@ $('uploadDrop').addEventListener('drop', e => {
    Chat ustida boshqa oyna (profil, izoh, sozlamalar...) ochiq bo'lsa — oddiy holat (composer). */
 const _isOpenEl = id => { const el = $(id); return !!el && (el.classList.contains('show') || el.classList.contains('open')); };
 const _chatCtx = () => _isOpenEl('chatThreadModal') && ![
-  'uploadOverlay', 'userProfileModal', 'detailModal', 'settingsOverlay', 'profileEditOverlay',
+  'uploadOverlay', 'userProfileModal', 'detailModal', 'settingsOverlay',
   'cmtModal', 'zoomModal', 'grpInfoOverlay', 'grpEditOverlay', 'confirmOverlay',
 ].some(_isOpenEl);
 const _toChat = f => document.dispatchEvent(new CustomEvent('chat:attach-file', { detail: { file: f } }));

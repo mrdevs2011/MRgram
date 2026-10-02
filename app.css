@@ -6249,6 +6249,96 @@ body #toast {
 /* Tabs olib tashlandi — story yuqorida */
 .home-tabs { display: none !important; }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   SETTINGS & ACCOUNT VIEW — Unified (Desktop Rightbar + Mobile Page)
+   No modals or popups: Profile editing, recovery email, password change,
+   and settings are all inline directly in the rightbar (desktop)
+   and in the single settings page (mobile).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Base Overlay (Mobile & Tablet <1200px: Fullscreen Page) */
+#settingsOverlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: #000000 !important;
+  z-index: 150 !important;
+  display: none !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+#settingsOverlay.show {
+  display: flex !important;
+}
+
+#settingsOverlay .settings-hdr {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 12px 16px !important;
+  background: #000000 !important;
+  border-bottom: 1px solid var(--line, #2f3336) !important;
+  flex-shrink: 0 !important;
+  z-index: 2 !important;
+}
+
+#settingsOverlay .settings-hdr-title {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.015em !important;
+  flex: 1 !important;
+  margin-left: 8px !important;
+}
+
+#settingsOverlay .settings-back {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #e7e9ea !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease !important;
+}
+
+#settingsOverlay .settings-back:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+}
+
+#settingsOverlay .settings-back:active {
+  transform: scale(0.92) !important;
+}
+
+#settingsOverlay .settings-body {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  padding: 16px 16px max(32px, env(safe-area-inset-bottom)) !important;
+  background: #000000 !important;
+  max-width: 560px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+}
+
+#settingsOverlay .settings-body::-webkit-scrollbar {
+  width: 6px;
+}
+#settingsOverlay .settings-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
 /* Desktop: Sozlamalar right-rail o'rnida ochiladi (fullscreen emas) */
 @media (min-width: 1200px) {
   #settingsOverlay.show {
@@ -6257,9 +6347,9 @@ body #toast {
     bottom: 0 !important;
     left: calc(var(--content-left, var(--sidebar, 260px)) + var(--center-w, 600px) + 16px) !important;
     right: auto !important;
-    width: min(350px, calc(100vw - var(--content-left, 260px) - var(--center-w, 600px) - 32px)) !important;
-    min-width: 280px !important;
-    max-width: 350px !important;
+    width: min(380px, calc(100vw - var(--content-left, 260px) - var(--center-w, 600px) - 24px)) !important;
+    min-width: 300px !important;
+    max-width: 380px !important;
 
     height: 100dvh !important;
     background: #000000 !important;
@@ -6272,180 +6362,29 @@ body #toast {
     overflow: hidden !important;
   }
   #settingsOverlay.show .settings-hdr {
-    background: #000000;
-    border-bottom: 1px solid var(--line, #2f3336);
-    flex-shrink: 0;
+    background: #000000 !important;
+    border-bottom: 1px solid var(--line, #2f3336) !important;
+    flex-shrink: 0 !important;
+    padding: 14px 16px !important;
   }
   #settingsOverlay.show .settings-body {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding: 12px 16px 24px;
-    background: #000000;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    padding: 16px 16px 40px !important;
+    background: #000000 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
   }
   /* Sozlamalar ochiq: right-rail yashirin (ustiga chiqadi) */
   body:has(#settingsOverlay.show) #rightRail {
     visibility: hidden;
     pointer-events: none;
   }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════
-   PROFILE EDIT MODAL / SHEET — Modern Redesign (Mobile + Desktop)
-   Pure #000000 black, high contrast, clean card groups, eye toggles
-   ═══════════════════════════════════════════════════════════════════════ */
-
-/* Overlay Container */
-#profileEditOverlay {
-  position: fixed !important;
-  inset: 0 !important;
-  background: rgba(0, 0, 0, 0.82) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-  z-index: 99990 !important;
-  display: none !important;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-#profileEditOverlay.show {
-  display: flex !important;
-}
-
-/* Mobile Sheet Base */
-#profileEditOverlay .pe-sheet {
-  width: 100% !important;
-  max-width: 100% !important;
-  max-height: 92dvh !important;
-  height: auto !important;
-  background: #000000 !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-left: none !important;
-  border-right: none !important;
-  border-bottom: none !important;
-  border-radius: 24px 24px 0 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  box-shadow: 0 -16px 48px rgba(0, 0, 0, 0.9) !important;
-  animation: peSheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  overflow: hidden !important;
-  position: relative !important;
-}
-
-/* Desktop Modal Floating */
-@media (min-width: 600px) {
-  #profileEditOverlay {
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 24px 16px !important;
-  }
-
-  #profileEditOverlay .pe-sheet {
-    max-width: 520px !important;
-    max-height: min(88vh, 780px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    border-radius: 22px !important;
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-    animation: peModalZoomIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) !important;
-  }
-
-  #profileEditOverlay .pe-sheet-handle {
-    display: none !important;
-  }
-}
-
-/* Mobile Handle */
-.pe-sheet-handle {
-  width: 36px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.25);
-  border-radius: 999px;
-  margin: 10px auto 4px auto;
-  flex-shrink: 0;
-  cursor: grab;
-}
-
-/* Header */
-.pe-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: #000000;
-  flex-shrink: 0;
-  z-index: 2;
-}
-
-.pe-header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.pe-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.015em;
-  margin: 0;
-  line-height: 1.25;
-}
-
-.pe-subtitle {
-  font-size: 12px;
-  color: #71767b;
-  font-weight: 400;
-}
-
-.pe-close-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #e7e9ea;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-  flex-shrink: 0;
-}
-
-.pe-close-btn:hover {
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
-}
-
-.pe-close-btn:active {
-  transform: scale(0.92);
-}
-
-/* Scrollable Body */
-.pe-scroll-body {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  padding: 18px 20px 24px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  background: #000000;
-}
-
-.pe-scroll-body::-webkit-scrollbar {
-  width: 6px;
-}
-.pe-scroll-body::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
 }
 
 /* Avatar Hero Section */
@@ -6542,10 +6481,10 @@ body #toast {
   background: rgba(255, 255, 255, 0.025);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 16px;
-  padding: 16px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
   transition: border-color 0.15s ease;
 }
 
@@ -6586,7 +6525,7 @@ body #toast {
   font-size: 12px;
   color: #71767b;
   line-height: 1.45;
-  margin-top: -6px;
+  margin-top: -4px;
   margin-bottom: 2px;
 }
 
@@ -6612,51 +6551,58 @@ body #toast {
   font-weight: 700;
 }
 
-/* Form Inputs */
-#profileEditOverlay .pe-input {
+/* Form Inputs inside Settings */
+.settings-body .pe-input,
+.pe-input {
   width: 100% !important;
   background: #000000 !important;
   border: 1px solid #2f3336 !important;
   border-radius: 12px !important;
   color: #ffffff !important;
   font-size: 14px !important;
-  padding: 11px 14px !important;
+  padding: 10px 14px !important;
   outline: none !important;
   box-sizing: border-box !important;
   font-family: inherit !important;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease !important;
 }
 
-#profileEditOverlay .pe-input:hover {
+.settings-body .pe-input:hover,
+.pe-input:hover {
   border-color: rgba(255, 255, 255, 0.22) !important;
 }
 
-#profileEditOverlay .pe-input:focus {
+.settings-body .pe-input:focus,
+.pe-input:focus {
   border-color: #1d9bf0 !important;
   box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.18) !important;
   background: #000000 !important;
 }
 
-#profileEditOverlay .pe-input::placeholder {
+.settings-body .pe-input::placeholder,
+.pe-input::placeholder {
   color: #71767b !important;
   opacity: 1 !important;
 }
 
-#profileEditOverlay .pe-textarea {
-  min-height: 80px !important;
+.settings-body .pe-textarea,
+.pe-textarea {
+  min-height: 72px !important;
   resize: vertical !important;
   line-height: 1.45 !important;
 }
 
 /* Prefix wrapper (@username) */
-#profileEditOverlay .pe-field-prefix-wrap {
+.settings-body .pe-field-prefix-wrap,
+.pe-field-prefix-wrap {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
 }
 
-#profileEditOverlay .pe-field-prefix-wrap .pe-prefix {
+.settings-body .pe-field-prefix-wrap .pe-prefix,
+.pe-field-prefix-wrap .pe-prefix {
   position: absolute;
   left: 14px;
   top: 50%;
@@ -6668,7 +6614,8 @@ body #toast {
   z-index: 1;
 }
 
-#profileEditOverlay .pe-prefix-field {
+.settings-body .pe-prefix-field,
+.pe-prefix-field {
   padding-left: 32px !important;
 }
 
@@ -6720,35 +6667,10 @@ body #toast {
   transform: translateY(-50%) scale(0.92);
 }
 
-/* Sticky Footer */
-.pe-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 14px 20px max(14px, env(safe-area-inset-bottom)) 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: #000000;
-  flex-shrink: 0;
-  z-index: 2;
-}
-
-@media (max-width: 599px) {
-  .pe-footer {
-    display: flex;
-    gap: 10px;
-  }
-  .pe-btn-cancel {
-    flex: 1;
-  }
-  .pe-btn-save {
-    flex: 1.5;
-  }
-}
-
+/* Buttons */
 .pe-btn-cancel {
   height: 42px;
-  padding: 0 20px;
+  padding: 0 16px;
   border-radius: 999px;
   background: transparent;
   border: 1px solid #2f3336;
@@ -6775,7 +6697,7 @@ body #toast {
 
 .pe-btn-save {
   height: 42px;
-  padding: 0 24px;
+  padding: 0 22px;
   border-radius: 999px;
   background: #1d9bf0;
   border: none;
@@ -6806,27 +6728,4 @@ body #toast {
   cursor: not-allowed;
   transform: none !important;
   box-shadow: none !important;
-}
-
-/* Animations */
-@keyframes peSheetSlideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0.6;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes peModalZoomIn {
-  from {
-    transform: scale(0.94);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
 }

@@ -1929,79 +1929,88 @@ export function listenPosts() {
 let _peAviPending = null;
 let _peOriginalUsername = '';
 
+export async function populateProfileForm() {
+  if (!state.me) return;
+  let d = getCachedProfile(state.me.uid) || {};
+  try {
+    const { data: _row } = await sb.from('profiles').select('*').eq('id', state.me.uid).maybeSingle();
+    if (_row) {
+      d = mapProfile(_row) || d;
+      cacheProfile(state.me.uid, d);
+    }
+  } catch (_) {}
+  _peOriginalUsername = d.username || '';
+
+  const editName = $('editName');
+  const editBioInput = $('editBioInput');
+  const editUsername = $('editUsername');
+  const editRecoveryEmail = $('editRecoveryEmail');
+  if (editName) editName.value = d.fullName || '';
+  if (editBioInput) editBioInput.value = d.bio || '';
+  if (editUsername) editUsername.value = d.username || '';
+  if (editRecoveryEmail) editRecoveryEmail.value = d.recoveryEmail || '';
+
+  _peAviPending = null;
+  const peAviImg = $('peAviImg');
+  if (peAviImg) {
+    const av = d.avatar || defAvi(d.fullName || 'U');
+    peAviImg.innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
+  }
+
+  // Parol maydonlarini tozalash va ko'rish holatini yopish
+  ['editOldPassword', 'editNewPassword', 'editNewPassword2'].forEach(id => {
+    const el = $(id);
+    if (el) {
+      el.value = '';
+      el.type = 'password';
+    }
+  });
+  document.querySelectorAll('.pe-pwd-toggle').forEach(btn => {
+    const openEye = btn.querySelector('.pe-eye-open');
+    const closedEye = btn.querySelector('.pe-eye-closed');
+    if (openEye) openEye.style.display = 'block';
+    if (closedEye) closedEye.style.display = 'none';
+    btn.setAttribute('aria-label', "Parolni ko'rsatish");
+    btn.setAttribute('title', "Parolni ko'rsatish");
+  });
+}
+
+// Avatar tanlash hodisalari (bir martalik)
+const peAviInput = $('peAviInput');
+const peAviEditBadge = $('peAviEditBadge');
+if (peAviEditBadge && peAviInput) {
+  peAviEditBadge.onclick = (e) => { e.stopPropagation(); peAviInput.click(); };
+}
+const peAviRing = $('peAviRing');
+if (peAviRing && peAviInput) {
+  peAviRing.onclick = (e) => {
+    if (e.target !== peAviEditBadge && !peAviEditBadge.contains(e.target)) peAviInput.click();
+  };
+}
+const peAviChangeText = $('peAviChangeText');
+if (peAviChangeText && peAviInput) {
+  peAviChangeText.onclick = (e) => { e.stopPropagation(); peAviInput.click(); };
+}
+if (peAviInput) {
+  peAviInput.onchange = async ev => {
+    const f = ev.target.files[0];
+    if (!f || !f.type.startsWith('image/')) return;
+    if (f.size > 5*1024*1024) { toast("Avatar 5 MB dan kam bo'lishi kerak", 'error'); return; }
+    toast('Yuklanmoqda...', 'info');
+    try {
+      const result = await uploadViaController(f, 'avatars');
+      _peAviPending = result.url;
+      const peAviImg = $('peAviImg');
+      if (peAviImg) peAviImg.innerHTML = `<img src="${result.url}">`;
+      toast('Avatar tanlandi (saqlash uchun "Saqlash" tugmasini bosing)', 'success');
+    } catch(e) { toast('Xato: ' + e.message, 'error'); }
+  };
+}
+
 const editProfileBtn = $('editProfileBtn');
 if (editProfileBtn) {
-  editProfileBtn.onclick = async () => {
-    if (!state.me) return;
-    const { data: _row } = await sb.from('profiles').select('*').eq('id', state.me.uid).maybeSingle();
-    const d = mapProfile(_row) || {};
-    _peOriginalUsername = d.username || '';
-
-    const editName = $('editName');
-    const editBioInput = $('editBioInput');
-    const editUsername = $('editUsername');
-    const editRecoveryEmail = $('editRecoveryEmail');
-    if (editName) editName.value = d.fullName || '';
-    if (editBioInput) editBioInput.value = d.bio || '';
-    if (editUsername) editUsername.value = d.username || '';
-    if (editRecoveryEmail) editRecoveryEmail.value = d.recoveryEmail || '';
-
-    _peAviPending = null;
-    const peAviImg = $('peAviImg');
-    if (peAviImg) {
-      const av = d.avatar || defAvi(d.fullName || 'U');
-      peAviImg.innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
-    }
-
-    const peAviInput = $('peAviInput');
-    const peAviEditBadge = $('peAviEditBadge');
-    if (peAviEditBadge && peAviInput) {
-      peAviEditBadge.onclick = () => peAviInput.click();
-      peAviInput.onchange = async ev => {
-        const f = ev.target.files[0];
-        if (!f || !f.type.startsWith('image/')) return;
-        if (f.size > 5*1024*1024) { toast("Avatar 5 MB dan kam bo'lishi kerak", 'error'); return; }
-        toast('Yuklanmoqda...', 'info');
-        try {
-          const result = await uploadViaController(f, 'avatars');
-          _peAviPending = result.url;
-          if (peAviImg) peAviImg.innerHTML = `<img src="${result.url}">`;
-          toast('Avatar tanlandi', 'success');
-        } catch(e) { toast('Xato: ' + e.message, 'error'); }
-      };
-    }
-
-    const peAviRing = $('peAviRing');
-    if (peAviRing && peAviInput) {
-      peAviRing.onclick = (e) => {
-        if (e.target !== peAviEditBadge && !peAviEditBadge.contains(e.target)) peAviInput.click();
-      };
-    }
-
-    const peAviChangeText = $('peAviChangeText');
-    if (peAviChangeText && peAviInput) {
-      peAviChangeText.onclick = () => peAviInput.click();
-    }
-
-    // Parol maydonlarini tozalash va ko'rish holatini yopish
-    ['editOldPassword', 'editNewPassword', 'editNewPassword2'].forEach(id => {
-      const el = $(id);
-      if (el) {
-        el.value = '';
-        el.type = 'password';
-      }
-    });
-    document.querySelectorAll('#profileEditOverlay .pe-pwd-toggle').forEach(btn => {
-      const openEye = btn.querySelector('.pe-eye-open');
-      const closedEye = btn.querySelector('.pe-eye-closed');
-      if (openEye) openEye.style.display = 'block';
-      if (closedEye) closedEye.style.display = 'none';
-      btn.setAttribute('aria-label', "Parolni ko'rsatish");
-      btn.setAttribute('title', "Parolni ko'rsatish");
-    });
-
-    const profileEditOverlay = $('profileEditOverlay');
-    if (profileEditOverlay) { profileEditOverlay.classList.add('show'); lockScroll(); }
+  editProfileBtn.onclick = () => {
+    $('settingsBtn')?.click();
   };
 }
 
@@ -2106,8 +2115,6 @@ if (saveProfileBtn) {
         const el = $(id); if (el) el.value = '';
       });
 
-      const profileEditOverlay = $('profileEditOverlay');
-      if (profileEditOverlay) { profileEditOverlay.classList.remove('show'); unlockScroll(); }
       toast(wantsPwd ? 'Profil va yangi parol saqlandi' : 'Profil saqlandi', 'success');
       _cb.renderProfile?.();
     } catch(e) {
@@ -2123,21 +2130,13 @@ if (saveProfileBtn) {
 const cancelEditBtn = $('cancelEditBtn');
 if (cancelEditBtn) {
   cancelEditBtn.onclick = () => {
-    const profileEditOverlay = $('profileEditOverlay');
-    if (profileEditOverlay) { profileEditOverlay.classList.remove('show'); unlockScroll(); }
-  };
-}
-
-const peCloseBtn = $('peCloseBtn');
-if (peCloseBtn) {
-  peCloseBtn.onclick = () => {
-    const profileEditOverlay = $('profileEditOverlay');
-    if (profileEditOverlay) { profileEditOverlay.classList.remove('show'); unlockScroll(); }
+    populateProfileForm();
+    $('closeSettingsBtn')?.click();
   };
 }
 
 // Profil tahrirlashda parolni ko'rsatish/yashirish (eye toggle)
-document.querySelectorAll('#profileEditOverlay .pe-pwd-toggle').forEach(btn => {
+document.querySelectorAll('.pe-pwd-toggle').forEach(btn => {
   btn.onclick = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -2235,134 +2234,10 @@ function _paintSettingsRecoveryRow() {
   }
 }
 
-function hideSettingsRecoveryModal() {
-  const modal = $('settingsRecoveryModal');
-  if (modal) {
-    modal.classList.remove('show');
-    modal.style.display = 'none';
-    unlockScroll();
-  }
-}
-
-const settingsRecoveryRow = $('settingsRecoveryRow');
-if (settingsRecoveryRow) {
-  settingsRecoveryRow.onclick = () => {
-    const modal = $('settingsRecoveryModal');
-    const inp = $('settingsRecoveryEmailInput');
-    const errEl = $('settingsRecoveryEmailErr');
-    if (inp) {
-      inp.value = state.me?.recoveryEmail || '';
-      inp.classList.remove('input-error');
-    }
-    if (errEl) errEl.textContent = '';
-    if (modal) {
-      modal.classList.add('show');
-      modal.style.display = 'flex';
-      lockScroll();
-      if (inp) inp.focus();
-    }
-  };
-}
-
-const settingsRecoveryCancelBtn = $('settingsRecoveryCancelBtn');
-if (settingsRecoveryCancelBtn) {
-  settingsRecoveryCancelBtn.onclick = hideSettingsRecoveryModal;
-}
-
-const settingsRecoveryModal = $('settingsRecoveryModal');
-if (settingsRecoveryModal) {
-  settingsRecoveryModal.addEventListener('click', (e) => {
-    if (e.target === settingsRecoveryModal) hideSettingsRecoveryModal();
-  });
-}
-
-const settingsRecoverySaveBtn = $('settingsRecoverySaveBtn');
-if (settingsRecoverySaveBtn) {
-  settingsRecoverySaveBtn.onclick = async () => {
-    if (!state.me) return;
-    const inp = $('settingsRecoveryEmailInput');
-    const errEl = $('settingsRecoveryEmailErr');
-    const val = inp?.value?.trim() || '';
-
-    if (val) {
-      const res = validateStrictEmail(val);
-      if (!res.ok) {
-        if (errEl) errEl.textContent = res.error;
-        if (inp) {
-          inp.classList.add('input-error');
-          inp.focus();
-        }
-        if ('vibrate' in navigator) navigator.vibrate([14, 6, 14]);
-        return;
-      }
-
-      settingsRecoverySaveBtn.disabled = true;
-      const oldText = settingsRecoverySaveBtn.textContent;
-      settingsRecoverySaveBtn.textContent = 'Saqlanmoqda...';
-
-      try {
-        const { error } = await sb.from('profiles').update({ recovery_email: res.email }).eq('id', state.me.uid);
-        if (error) throw error;
-        state.me.recoveryEmail = res.email;
-        const editRecoveryEmail = $('editRecoveryEmail');
-        if (editRecoveryEmail) editRecoveryEmail.value = res.email;
-        _paintSettingsRecoveryRow();
-        hideSettingsRecoveryModal();
-        toast('Zaxira email muvaffaqiyatli saqlandi!', 'success');
-      } catch (err) {
-        console.error('Settings recovery save error:', err);
-        if (errEl) errEl.textContent = err.message || 'Saqlashda xatolik';
-        toast(err.message || 'Saqlashda xatolik', 'error');
-      } finally {
-        settingsRecoverySaveBtn.disabled = false;
-        settingsRecoverySaveBtn.textContent = oldText;
-      }
-    } else {
-      settingsRecoverySaveBtn.disabled = true;
-      const oldText = settingsRecoverySaveBtn.textContent;
-      settingsRecoverySaveBtn.textContent = 'Saqlanmoqda...';
-
-      try {
-        const { error } = await sb.from('profiles').update({ recovery_email: null }).eq('id', state.me.uid);
-        if (error) throw error;
-        state.me.recoveryEmail = null;
-        const editRecoveryEmail = $('editRecoveryEmail');
-        if (editRecoveryEmail) editRecoveryEmail.value = '';
-        _paintSettingsRecoveryRow();
-        hideSettingsRecoveryModal();
-        toast('Zaxira email olib tashlandi', 'info');
-      } catch (err) {
-        console.error('Settings recovery clear error:', err);
-        if (errEl) errEl.textContent = err.message || 'Xatolik yuz berdi';
-        toast(err.message || 'Xatolik yuz berdi', 'error');
-      } finally {
-        settingsRecoverySaveBtn.disabled = false;
-        settingsRecoverySaveBtn.textContent = oldText;
-      }
-    }
-  };
-}
-
-const settingsRecoveryEmailInput = $('settingsRecoveryEmailInput');
-if (settingsRecoveryEmailInput) {
-  settingsRecoveryEmailInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      $('settingsRecoverySaveBtn')?.click();
-    }
-  });
-  settingsRecoveryEmailInput.addEventListener('input', () => {
-    settingsRecoveryEmailInput.classList.remove('input-error');
-    const errEl = $('settingsRecoveryEmailErr');
-    if (errEl) errEl.textContent = '';
-  });
-}
-
 const settingsBtn = $('settingsBtn');
 if (settingsBtn) {
   settingsBtn.onclick = () => {
-    _paintSettingsProfileCard();
-    _paintSettingsRecoveryRow();
+    populateProfileForm();
     _applyNotifToggleUI();
     $('settingsMoreMenu')?.classList.remove('show');
     const settingsOverlay = $('settingsOverlay');
@@ -2477,11 +2352,6 @@ if (deleteAccountBtn) {
   };
 }
 
-const profileEditOverlay = $('profileEditOverlay');
-if (profileEditOverlay) {
-  profileEditOverlay.onclick = e => {
-    if (e.target === profileEditOverlay) { profileEditOverlay.classList.remove('show'); unlockScroll(); }
-  };
-}
+
 
 // Initialize call handlers (buttons for accept/reject/end)

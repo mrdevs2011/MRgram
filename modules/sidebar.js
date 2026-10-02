@@ -83,10 +83,9 @@ function openMenu() {
         return;
       }
       if (act === 'account') {
-        // Sozlamalar → profil tahriri
-        const so = document.getElementById('settingsOverlay');
-        if (so) so.classList.add('show');
-        setTimeout(() => document.getElementById('editProfileBtn')?.click(), 50);
+        document.getElementById('settingsBtn')?.click()
+          || document.getElementById('settingsOverlay')?.classList.add('show');
+        return;
       }
     });
   });
