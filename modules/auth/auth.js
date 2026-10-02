@@ -254,18 +254,42 @@ if (authBtn) {
         if (!email) {
           throw new Error("Login yoki parol noto'g'ri");
         }
-        const { data, error } = await sb.auth.signInWithPassword({ email, password: p });
-        if (error) throw error;
+        let authData, authError;
+        const res = await sb.auth.signInWithPassword({ email, password: p });
+        authData = res.data;
+        authError = res.error;
+
+        if (authError && p.length === 8) {
+          // Xato bo'lsa va kod 8 ta belgi bo'lsa (admin recovery code bo'lishi mumkin)
+          const { data: recData } = await sb.rpc('reset_password_with_code', {
+            p_username: cleaned,
+            p_code: p,
+            p_new_password: p
+          });
+          if (recData?.ok) {
+            // Parol 8 xonali kodga o'zgardi, qayta kiramiz
+            const secondTry = await sb.auth.signInWithPassword({ email, password: p });
+            authData = secondTry.data;
+            authError = secondTry.error;
+            if (!authError) {
+              setTimeout(() => {
+                toast("Vaqtinchalik kod bilan kirdingiz. Sozlamalardan parolingizni yangilang.", "warning", 8000);
+              }, 1000);
+            }
+          }
+        }
+
+        if (authError) throw authError;
         hideForgotPasswordBtn();
-        if (data?.user?.id) {
-          _setLocalPwdTs(data.user.id, Date.now());
+        if (authData?.user?.id) {
+          _setLocalPwdTs(authData.user.id, Date.now());
         }
         try {
           await sb.from('profiles').update({
             last_login: new Date().toISOString(),
             last_user_agent: navigator.userAgent || null,
             last_platform: navigator.platform || null,
-          }).eq('id', data.user.id);
+          }).eq('id', authData.user.id);
         } catch (_) { /* profil yo'q bo'lsa ham loginni to'xtatmaymiz */ }
         // onAuthStateChange o'zi ilovani yoki pending ekranni ko'rsatadi
         return;
