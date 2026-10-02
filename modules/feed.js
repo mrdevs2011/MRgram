@@ -243,17 +243,20 @@ export async function renderFeedTo(feedEl, posts) {
     const isMine   = state.me.uid === p.userId;
 
     html += `<div class="post" data-id="${p.id}">
-      <div class="avi user-avi-btn" data-uid="${p.userId}"><img src="${u.avatar}" onerror="this.style.display='none'"></div>
-      <div class="post-main">
-        <div class="post-head">
-          <div class="post-meta user-avi-btn" data-uid="${p.userId}">
-            <span class="post-name">${esc(u.fullName||'Noma\'lum')}</span>
-            ${u.username ? `<span class="post-user">@${esc(u.username)}</span>` : ''}
-            <span class="post-dot">·</span>
-            <span class="post-time">${fmt(p.createdAt)}</span>
-          </div>
-
+      <div class="post-head">
+        <div class="avi user-avi-btn" data-uid="${p.userId}"><img src="${u.avatar}" onerror="this.style.display='none'"></div>
+        <div class="post-meta user-avi-btn" data-uid="${p.userId}">
+          <span class="post-name">${esc(u.fullName||'Noma\'lum')}</span>
+          ${u.username ? `<span class="post-user">@${esc(u.username)}</span>` : ''}
+          <span class="post-dot">·</span>
+          <span class="post-time">${fmt(p.createdAt)}</span>
         </div>
+        ${canDel ? `<button class="del-btn post-del-btn" data-id="${p.id}" title="O'chirish" aria-label="O'chirish">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/>
+          </svg></button>` : ''}
+      </div>
+      <div class="post-main">
         ${buildCaption(p.text, p.id)}
         ${buildMedia(p)}
         <div class="post-actions">
@@ -437,6 +440,12 @@ function bindFeedEvents(feedEl) {
       const cap = btn.closest('.post-caption');
       cap.classList.toggle('cap-collapsed');
       cap.classList.toggle('cap-expanded');
+    });
+  });
+  feedEl.querySelectorAll('.post-del-btn').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.stopPropagation();
+      await doDelete(btn.dataset.id);
     });
   });
   setupFeedVideoObs(feedEl);
