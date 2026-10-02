@@ -188,10 +188,19 @@
 
   <!-- VIEWS -->
   <div class="view on" id="homeView">
-    <div class="home-composer" id="homeComposer" role="button" tabindex="0" aria-label="Yangi post">
+    <div class="home-composer" id="homeComposer" aria-label="Yangi post">
       <div class="home-composer-avi" id="homeComposerAvi"></div>
-      <div class="home-composer-placeholder">Nima gaplar?</div>
-      <button type="button" class="home-composer-post" id="homeComposerBtn" tabindex="-1">Post</button>
+      <div class="home-composer-main">
+        <textarea class="home-composer-input" id="homeComposerInput" rows="1" placeholder="Nima gaplar?"></textarea>
+        <div class="home-composer-preview d-none" id="homeComposerPreview"></div>
+        <div class="home-composer-actions">
+          <button type="button" class="home-composer-attach" id="homeComposerAttach" aria-label="Fayl biriktirish" title="Fayl biriktirish" hidden>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </button>
+          <button type="button" class="home-composer-post" id="homeComposerBtn" disabled>Post</button>
+        </div>
+      </div>
+      <input type="file" id="homeComposerFile" class="d-none" accept="image/*,video/*,.pdf,.doc,.docx,.txt,.zip,.rar">
     </div>
     <div class="feed" id="feed"><div class="spin-wrap"><div class="spinner"></div></div></div>
   </div>
@@ -212,15 +221,14 @@
       </div>
 
       <div class="profile-info">
-        <div class="profile-name" id="profileName"></div>
-        <div class="profile-username" id="profileUsername"></div>
-        <div class="profile-bio"  id="profileBio"></div>
-        <div class="profile-actions-row">
-          <button class="edit-btn" id="settingsBtn" aria-label="Sozlamalar" title="Sozlamalar">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Sozlamalar
+        <div class="profile-name-row">
+          <div class="profile-name" id="profileName"></div>
+          <button class="edit-btn profile-gear-btn" id="settingsBtn" aria-label="Sozlamalar" title="Sozlamalar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           </button>
         </div>
+        <div class="profile-username" id="profileUsername"></div>
+        <div class="profile-bio"  id="profileBio"></div>
       </div>
     </div>
     <div class="profile-grid-hdr" id="profileGridTabs" role="tablist">

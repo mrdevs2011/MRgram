@@ -489,7 +489,7 @@ async function submitStory() {
   }
 }
 
-$('uploadBtn').onclick = async () => {
+export async function submitPost() {
   if (_composerMode === 'story') return submitStory();
   const caption      = $('captionInput').value.trim();
   const isPublic     = true; // yopiq tarmoq: yangi postlar hamma tasdiqlangan a'zoga ko'rinadi
@@ -576,6 +576,7 @@ $('uploadBtn').onclick = async () => {
       unlockScroll();
     }
     resetUpload();
+    _clearHomeComposerUi();
 
   } catch (err) {
     if (hasFile) {
@@ -587,8 +588,10 @@ $('uploadBtn').onclick = async () => {
       unlockScroll();
     }
     resetUpload();
+    _clearHomeComposerUi();
   }
-};
+}
+$('uploadBtn').onclick = () => { submitPost(); };
 
 /* ── Composer avatar (joriy foydalanuvchi) ─────────────────────────────── */
 function loadComposerAvi() {
@@ -621,8 +624,10 @@ export function openStoryComposer() {
 $('createBtn').onclick     = openComposer;
 $('hdrNewPostBtn').onclick = openComposer;
 
-/* Inline home composer — brend/logika o'zgarmaydi: mavjud openComposer() */
+/* Inline home composer — joyida yoziladi, modal ochilmaydi */
 let _homeAviSig = '';
+let _homeFocused = false;
+
 function _fillHomeComposerAvi() {
   const box = $('homeComposerAvi');
   if (!box) return;
@@ -635,18 +640,171 @@ function _fillHomeComposerAvi() {
   _homeAviSig = sig;
   box.innerHTML = `<img src="${esc(av)}" alt="" onerror="this.src='${esc(defAvi(name))}';this.onerror=null">`;
 }
+
+function _homeHasContent() {
+  const inp = $('homeComposerInput');
+  const text = !!(inp && inp.value.trim());
+  const file = !!state.selFile;
+  return text || file;
+}
+
+function _syncHomeUi() {
+  const row = $('homeComposer');
+  const inp = $('homeComposerInput');
+  const attach = $('homeComposerAttach');
+  const btn = $('homeComposerBtn');
+  if (!row || !inp) return;
+
+  const has = _homeHasContent();
+  const showAttach = _homeFocused || has;
+
+  row.classList.toggle('is-active', _homeFocused);
+  row.classList.toggle('has-content', has);
+
+  if (attach) {
+    if (showAttach) attach.removeAttribute('hidden');
+    else attach.setAttribute('hidden', '');
+  }
+  if (btn) btn.disabled = !has;
+
+  // textarea auto-height
+  inp.style.height = 'auto';
+  inp.style.height = Math.min(inp.scrollHeight, 160) + 'px';
+}
+
+function _clearHomeFile() {
+  revokeObjUrl();
+  state.selFile = null;
+  const fi = $('homeComposerFile');
+  if (fi) fi.value = '';
+  const prev = $('homeComposerPreview');
+  if (prev) {
+    prev.classList.add('d-none');
+    prev.innerHTML = '';
+  }
+  // modal preview ham tozalansin
+  const pa = $('previewArea');
+  if (pa) { pa.style.display = 'none'; pa.innerHTML = ''; }
+  _syncHomeUi();
+}
+
+function _renderHomePreview(f) {
+  const prev = $('homeComposerPreview');
+  if (!prev || !f) return;
+  const url = state._objUrl;
+  let inner = '';
+  if (f.type.startsWith('image/')) {
+    inner = `<img src="${url}" alt="">`;
+  } else if (f.type.startsWith('video/')) {
+    inner = `<video src="${url}" controls muted playsinline></video>`;
+  } else {
+    inner = `<div class="hc-file"><span>📎</span><span>${esc(f.name)} · ${fmtSz(f.size)}</span></div>`;
+  }
+  prev.innerHTML = inner + `<button type="button" class="hc-clear" data-action="hc-clear" aria-label="O'chirish">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>`;
+  prev.classList.remove('d-none');
+}
+
+function _pickHomeFile(f) {
+  if (!f) return;
+  // mavjud pickFile logikasidan foydalanamiz (limit, preview state)
+  pickFile(f);
+  if (state.selFile) _renderHomePreview(state.selFile);
+  _syncHomeUi();
+}
+
+function _clearHomeComposerUi() {
+  const inp = $('homeComposerInput');
+  if (inp) {
+    inp.value = '';
+    inp.style.height = 'auto';
+  }
+  const prev = $('homeComposerPreview');
+  if (prev) { prev.classList.add('d-none'); prev.innerHTML = ''; }
+  const hcf = $('homeComposerFile');
+  if (hcf) hcf.value = '';
+  _homeFocused = false;
+  _syncHomeUi();
+  inp?.blur();
+}
+
+async function _submitHomePost() {
+  const inp = $('homeComposerInput');
+  if (!inp || !state.me) return;
+  const caption = inp.value.trim();
+  if (!caption && !state.selFile) return;
+
+  const cap = $('captionInput');
+  if (cap) cap.value = caption;
+
+  // home Post tugmasini vaqtincha o'chiramiz
+  const hbtn = $('homeComposerBtn');
+  if (hbtn) { hbtn.disabled = true; hbtn.textContent = 'Yuklanmoqda…'; }
+
+  try {
+    await submitPost();
+  } finally {
+    if (hbtn) hbtn.textContent = 'Post';
+    _syncHomeUi();
+  }
+}
+
 function _bindHomeComposer() {
   const row = $('homeComposer');
-  if (!row || row._bound) return;
+  const inp = $('homeComposerInput');
+  if (!row || !inp || row._bound) return;
   row._bound = true;
-  const open = () => openComposer();
-  row.addEventListener('click', open);
-  row.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+
+  inp.addEventListener('focus', () => {
+    _homeFocused = true;
+    _syncHomeUi();
   });
-  $('homeComposerBtn')?.addEventListener('click', e => { e.stopPropagation(); open(); });
+  inp.addEventListener('blur', () => {
+    // blur kechikishi — attach bosilganda file dialog ochilishi uchun
+    setTimeout(() => {
+      _homeFocused = document.activeElement === inp;
+      _syncHomeUi();
+    }, 150);
+  });
+  inp.addEventListener('input', () => _syncHomeUi());
+  inp.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      if (_homeHasContent()) _submitHomePost();
+    }
+  });
+
+  $('homeComposerAttach')?.addEventListener('mousedown', e => {
+    // blur oldin ishlashi uchun
+    e.preventDefault();
+  });
+  $('homeComposerAttach')?.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    $('homeComposerFile')?.click();
+  });
+
+  $('homeComposerFile')?.addEventListener('change', e => {
+    const f = e.target.files?.[0];
+    if (f) _pickHomeFile(f);
+  });
+
+  $('homeComposerPreview')?.addEventListener('click', e => {
+    if (e.target.closest('[data-action="hc-clear"]')) {
+      e.preventDefault();
+      _clearHomeFile();
+    }
+  });
+
+  $('homeComposerBtn')?.addEventListener('click', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (_homeHasContent()) _submitHomePost();
+  });
+
   _fillHomeComposerAvi();
-  // state.me login dan keyin keladi — avatar keyinroq to'ldiriladi
+  _syncHomeUi();
   setInterval(_fillHomeComposerAvi, 1500);
 }
 _bindHomeComposer();

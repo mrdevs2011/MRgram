@@ -5176,8 +5176,9 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 40;
-    background: transparent;
+    background: #000000;
     border: 0;
+    border-left: 1px solid var(--line, #2f3336);
     border-radius: 0;
     scrollbar-width: thin;
   }
@@ -5234,9 +5235,9 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
 }
 /* Right-rail cards — X "Who to follow" uslubi (logika o'zgarmaydi) */
 .rr-card {
-  background: #16181c;
+  background: transparent;
   border: none;
-  border-radius: 16px;
+  border-radius: 0;
   padding: 12px 0 4px;
   border-bottom: none;
   overflow: hidden;
@@ -5278,7 +5279,7 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
 .rr-avi .rr-dot {
   position: absolute; right: -1px; bottom: -1px;
   width: 12px; height: 12px; border-radius: 50%;
-  background: #00ba7c; border: 2px solid #16181c;
+  background: #00ba7c; border: 2px solid #000000;
   box-sizing: border-box; z-index: 2; pointer-events: none;
 }
 .rr-meta { min-width: 0; flex: 1; }
@@ -5693,29 +5694,76 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
    X UI bosqich-2: inline composer + profil (brend/logika saqlanadi)
    ═══════════════════════════════════════════════════════════════════════ */
 .home-composer {
-  display: flex; align-items: center; gap: 12px;
+  display: flex; align-items: flex-start; gap: 12px;
   padding: 12px 16px;
   border-bottom: 1px solid var(--line);
-  cursor: pointer;
   background: var(--bg);
 }
-.home-composer:hover { background: rgba(255,255,255,0.03); }
 .home-composer-avi {
   width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
   background: var(--bg4, #16181c); overflow: hidden;
+  margin-top: 4px;
 }
 .home-composer-avi img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.home-composer-placeholder {
+.home-composer-main {
   flex: 1; min-width: 0;
-  font-size: 20px; font-weight: 400; color: var(--text3);
-  line-height: 24px;
+  display: flex; flex-direction: column; gap: 8px;
 }
+.home-composer-input {
+  width: 100%; min-height: 28px; max-height: 160px;
+  resize: none; border: 0; outline: none;
+  background: transparent; color: var(--text);
+  font: inherit; font-size: 20px; font-weight: 400;
+  line-height: 24px; padding: 6px 0 0;
+  box-sizing: border-box;
+}
+.home-composer-input::placeholder { color: var(--text3); }
+.home-composer-preview {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  max-width: 100%;
+}
+.home-composer-preview img,
+.home-composer-preview video {
+  display: block; max-width: 100%; max-height: 220px; object-fit: contain; background: #000;
+}
+.home-composer-preview .hc-file {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; font-size: 13px; color: var(--text2);
+}
+.home-composer-preview .hc-clear {
+  position: absolute; top: 8px; right: 8px;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 0; background: rgba(0,0,0,.7); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.home-composer-actions {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+}
+.home-composer-attach {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 0; background: transparent; color: var(--text2);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+}
+.home-composer-attach:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+.home-composer-attach[hidden] { display: none !important; }
 .home-composer-post {
   flex-shrink: 0; height: 36px; padding: 0 16px;
   border: 0; border-radius: 999px;
   background: var(--x-inv-bg, #fff); color: var(--x-inv-fg, #0f1419);
   font: inherit; font-size: 15px; font-weight: 700;
-  cursor: pointer; opacity: .5; pointer-events: none;
+  cursor: pointer;
+}
+.home-composer-post:disabled {
+  opacity: .5; cursor: default; pointer-events: none;
+}
+.home-composer.is-active .home-composer-post:not(:disabled),
+.home-composer.has-content .home-composer-post:not(:disabled) {
+  opacity: 1;
 }
 
 /* Profil — ishlaydigan layout (oldingi buzilish tuzatildi) */
@@ -5779,17 +5827,56 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
   padding: 4px 0 0;
   text-align: left;
 }
+#profileView .profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
 #profileView .profile-name {
   font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.3px;
-  margin: 0 0 2px;
+  margin: 0;
   color: var(--text);
+  min-width: 0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#profileView .profile-gear-btn,
+#profileView #settingsBtn.profile-gear-btn {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+#profileView .profile-gear-btn:hover,
+#profileView #settingsBtn.profile-gear-btn:hover {
+  background: rgba(255,255,255,0.06);
+}
+#profileView .profile-gear-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  stroke: currentColor;
 }
 #profileView .profile-username {
   font-size: 15px;
   color: var(--text3);
-  margin: 0;
+  margin: 2px 0 0;
   font-weight: 400;
 }
 #profileView .profile-bio {
@@ -5798,102 +5885,12 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
   line-height: 1.4;
   margin-top: 10px;
 }
-#profileView .profile-actions-row {
-  display: flex;
-  margin-top: 12px;
-  gap: 8px;
-}
-#profileView .profile-actions-row .edit-btn {
-  width: auto;
-  flex: 0 0 auto;
-  margin-top: 0;
-  padding: 8px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 700;
-}
-#profileView .profile-actions-row .edit-btn:hover {
-  background: rgba(255,255,255,0.03);
-}
 
-/* Desktop ≥1200px: Sozlamalar faqat right-rail pastida */
+/* Desktop ≥1200px: profil gear yashirin — sozlamalar right-rail pastida */
 @media (min-width: 1200px) {
-  #profileView .profile-actions-row {
+  #profileView .profile-gear-btn,
+  #profileView #settingsBtn.profile-gear-btn {
     display: none !important;
-  }
-}
-
-/* Mobil + planshet: gear — stats bilan bir qatorda, normal o'lcham */
-@media (max-width: 1199px) {
-  #profileView .profile-hdr {
-    position: relative !important;
-  }
-  /* gear uchun joy — stats siqilmasin */
-  #profileView .profile-avi-row {
-    padding-right: 60px !important;
-    align-items: center !important;
-  }
-  #profileView .profile-actions-row {
-    position: absolute !important;
-    /* avi-row markazi bilan tekis */
-    top: 16px !important;
-    right: 12px !important;
-    left: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    z-index: 6;
-    display: flex !important;
-    width: auto !important;
-    height: 52px !important;
-    align-items: center !important;
-  }
-  #profileView .profile-actions-row .edit-btn,
-  #profileView #settingsBtn.edit-btn {
-    box-sizing: border-box !important;
-    /* 5px border + ko'rinadigan #16181C ichki doira */
-    width: 52px !important;
-    height: 52px !important;
-    min-width: 52px !important;
-    max-width: 52px !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border-radius: 50% !important;
-    border: 5px solid #000000 !important;
-    background: #16181C !important;
-    background-clip: padding-box !important;
-    color: #e7e9ea !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-    gap: 0 !important;
-    flex: 0 0 52px !important;
-    overflow: hidden !important;
-    box-shadow: none !important;
-    outline: none !important;
-    -webkit-tap-highlight-color: transparent;
-  }
-  #profileView .profile-actions-row .edit-btn:hover,
-  #profileView .profile-actions-row .edit-btn:active,
-  #profileView #settingsBtn.edit-btn:hover,
-  #profileView #settingsBtn.edit-btn:active {
-    background: #16181C !important;
-    opacity: 1 !important;
-    filter: none !important;
-    transform: none !important;
-  }
-  #profileView .profile-actions-row .edit-btn svg,
-  #profileView #settingsBtn.edit-btn svg {
-    width: 20px !important;
-    height: 20px !important;
-    flex-shrink: 0 !important;
-    display: block !important;
-    stroke: #e7e9ea !important;
-    color: #e7e9ea !important;
   }
 }
 
@@ -6246,7 +6243,7 @@ body #toast {
     width: min(350px, calc(100vw - var(--content-left, 260px) - var(--center-w, 600px) - 32px)) !important;
     min-width: 280px !important;
     max-width: 350px !important;
-    inset: auto !important;
+
     height: 100dvh !important;
     background: #000000 !important;
     border-left: 1px solid var(--line, #2f3336) !important;
