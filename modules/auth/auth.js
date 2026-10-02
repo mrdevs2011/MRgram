@@ -1292,7 +1292,7 @@ export function listenPosts() {
     if (structural) document.dispatchEvent(new CustomEvent('postsUpdated'));
   };
 
-  const POST_LIMIT = 1000; // scroll orqali 10 tadan ko'rsatiladi
+  const POST_LIMIT = 200; // scroll orqali 10 tadan ko'rsatiladi
 
   const load = async () => {
     const { data, error } = await sb.from('posts')
