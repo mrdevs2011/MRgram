@@ -45,6 +45,7 @@ const CLOSERS = [
   ['settingsMoreMenu',       () => $('settingsMoreMenu')?.classList.remove('show')],
   ['chatThreadModal',        () => closeChatThread()],
   ['regRecoveryModal',       () => $('regRecoverySkipBtn')?.click()],
+  ['settingsRecoveryModal',  () => $('settingsRecoveryCancelBtn')?.click()],
   ['mandatoryPwdOverlay',    () => $('mandatoryPwdSignOutBtn')?.click()],
   ['adminResetPwdOverlay',   () => $('adminResetCancelBtn')?.click()],
 ];
@@ -127,6 +128,11 @@ document.addEventListener('keydown', e => {
       } else {
         $('regRecoveryAddBtn')?.click();
       }
+      return;
+    }
+    if (isOpen($('settingsRecoveryModal'))) {
+      e.preventDefault();
+      $('settingsRecoverySaveBtn')?.click();
       return;
     }
   }

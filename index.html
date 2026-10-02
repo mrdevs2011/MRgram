@@ -472,6 +472,17 @@
 
     <div class="divider m-12px"></div>
 
+    <div class="settings-section-label">Xavfsizlik</div>
+    <div class="settings-row" id="settingsRecoveryRow" style="cursor:pointer;">
+      <div class="settings-row-text">
+        <div class="settings-row-title">Zaxira email</div>
+        <div class="settings-row-hint" id="settingsRecoveryHint">O'rnatilmagan (parolni tiklash uchun qo'shing)</div>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text3,#888);flex-shrink:0;"><path d="m9 18 6-6-6-6"/></svg>
+    </div>
+
+    <div class="divider m-12px"></div>
+
     <div class="settings-section-label">Bildirishnomalar</div>
     <div class="settings-row">
       <div class="settings-row-text">
@@ -503,6 +514,22 @@
       <div class="settings-more-menu" id="settingsMoreMenu">
         <button class="settings-more-menu-item" id="deleteAccountBtn">Hisobni butunlay o'chirish</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS RECOVERY EMAIL MODAL -->
+<div id="settingsRecoveryModal" class="overlay" style="display:none;align-items:center;justify-content:center;z-index:99992;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(0,0,0,0.85);">
+  <div class="auth-card" style="max-width:390px;width:90%;margin:auto;background:#000000;box-shadow:0 24px 64px rgba(0,0,0,0.95);border:1px solid rgba(255,255,255,0.14);text-align:left;">
+    <div style="font-size:1.15rem;font-weight:700;color:var(--text,#fff);margin-bottom:6px;text-align:center;">Zaxira emailni sozlash</div>
+    <p style="font-size:13px;color:var(--text3,#888);margin:0 0 16px 0;text-align:center;line-height:1.45;">
+      Parolingizni unutib qo'ysangiz, hisobingizga kirishni tiklash uchun vaqtinchalik parol ushbu email manzilingizga yuboriladi.
+    </p>
+    <input class="field" type="email" id="settingsRecoveryEmailInput" placeholder="Haqiqiy email (masalan: user@gmail.com)" autocomplete="email" style="margin-bottom:6px;">
+    <div class="err-msg" id="settingsRecoveryEmailErr" style="min-height:18px;margin-bottom:12px;font-size:12.5px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button type="button" class="btn" id="settingsRecoveryCancelBtn" style="flex:1;height:42px;background:rgba(255,255,255,0.08);color:var(--text2,#ccc);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-weight:600;cursor:pointer;">Bekor qilish</button>
+      <button type="button" class="btn btn-primary" id="settingsRecoverySaveBtn" style="flex:1.2;height:42px;font-weight:600;cursor:pointer;">Saqlash</button>
     </div>
   </div>
 </div>

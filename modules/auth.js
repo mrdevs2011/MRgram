@@ -1772,7 +1772,10 @@ if (saveProfileBtn) {
       state.me.displayName = fn;
       if (updates.username) state.me.username = updates.username;
       if (updates.avatar)   state.me.photoURL = updates.avatar;
-      if (updates.recovery_email !== undefined) state.me.recoveryEmail = updates.recovery_email;
+      if (updates.recovery_email !== undefined) {
+        state.me.recoveryEmail = updates.recovery_email;
+        _paintSettingsRecoveryRow();
+      }
       invalidateUserCache(state.me.uid);
 
       // parol maydonlarini tozalash
@@ -1854,10 +1857,149 @@ function _paintSettingsProfileCard() {
   if (userEl) userEl.textContent = cached.username ? '@' + cached.username : "Foydalanuvchi nomi yo'q";
 }
 
+/** Sozlamalardagi Zaxira email qatorini yangilaydi */
+function _paintSettingsRecoveryRow() {
+  if (!state.me) return;
+  const hintEl = $('settingsRecoveryHint');
+  if (!hintEl) return;
+  const rec = state.me.recoveryEmail;
+  if (rec) {
+    hintEl.textContent = `Faol: ${rec}`;
+    hintEl.style.color = '#22c55e';
+  } else {
+    hintEl.textContent = "O'rnatilmagan (parolni tiklash uchun qo'shing)";
+    hintEl.style.color = 'var(--tg-primary-blue, #1d9bf0)';
+  }
+}
+
+function hideSettingsRecoveryModal() {
+  const modal = $('settingsRecoveryModal');
+  if (modal) {
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    unlockScroll();
+  }
+}
+
+const settingsRecoveryRow = $('settingsRecoveryRow');
+if (settingsRecoveryRow) {
+  settingsRecoveryRow.onclick = () => {
+    const modal = $('settingsRecoveryModal');
+    const inp = $('settingsRecoveryEmailInput');
+    const errEl = $('settingsRecoveryEmailErr');
+    if (inp) {
+      inp.value = state.me?.recoveryEmail || '';
+      inp.classList.remove('input-error');
+    }
+    if (errEl) errEl.textContent = '';
+    if (modal) {
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+      lockScroll();
+      if (inp) inp.focus();
+    }
+  };
+}
+
+const settingsRecoveryCancelBtn = $('settingsRecoveryCancelBtn');
+if (settingsRecoveryCancelBtn) {
+  settingsRecoveryCancelBtn.onclick = hideSettingsRecoveryModal;
+}
+
+const settingsRecoveryModal = $('settingsRecoveryModal');
+if (settingsRecoveryModal) {
+  settingsRecoveryModal.addEventListener('click', (e) => {
+    if (e.target === settingsRecoveryModal) hideSettingsRecoveryModal();
+  });
+}
+
+const settingsRecoverySaveBtn = $('settingsRecoverySaveBtn');
+if (settingsRecoverySaveBtn) {
+  settingsRecoverySaveBtn.onclick = async () => {
+    if (!state.me) return;
+    const inp = $('settingsRecoveryEmailInput');
+    const errEl = $('settingsRecoveryEmailErr');
+    const val = inp?.value?.trim() || '';
+
+    if (val) {
+      const res = validateStrictEmail(val);
+      if (!res.ok) {
+        if (errEl) errEl.textContent = res.error;
+        if (inp) {
+          inp.classList.add('input-error');
+          inp.focus();
+        }
+        if ('vibrate' in navigator) navigator.vibrate([14, 6, 14]);
+        return;
+      }
+
+      settingsRecoverySaveBtn.disabled = true;
+      const oldText = settingsRecoverySaveBtn.textContent;
+      settingsRecoverySaveBtn.textContent = 'Saqlanmoqda...';
+
+      try {
+        const { error } = await sb.from('profiles').update({ recovery_email: res.email }).eq('id', state.me.uid);
+        if (error) throw error;
+        state.me.recoveryEmail = res.email;
+        const editRecoveryEmail = $('editRecoveryEmail');
+        if (editRecoveryEmail) editRecoveryEmail.value = res.email;
+        _paintSettingsRecoveryRow();
+        hideSettingsRecoveryModal();
+        toast('Zaxira email muvaffaqiyatli saqlandi!', 'success');
+      } catch (err) {
+        console.error('Settings recovery save error:', err);
+        if (errEl) errEl.textContent = err.message || 'Saqlashda xatolik';
+        toast(err.message || 'Saqlashda xatolik', 'error');
+      } finally {
+        settingsRecoverySaveBtn.disabled = false;
+        settingsRecoverySaveBtn.textContent = oldText;
+      }
+    } else {
+      settingsRecoverySaveBtn.disabled = true;
+      const oldText = settingsRecoverySaveBtn.textContent;
+      settingsRecoverySaveBtn.textContent = 'Saqlanmoqda...';
+
+      try {
+        const { error } = await sb.from('profiles').update({ recovery_email: null }).eq('id', state.me.uid);
+        if (error) throw error;
+        state.me.recoveryEmail = null;
+        const editRecoveryEmail = $('editRecoveryEmail');
+        if (editRecoveryEmail) editRecoveryEmail.value = '';
+        _paintSettingsRecoveryRow();
+        hideSettingsRecoveryModal();
+        toast('Zaxira email olib tashlandi', 'info');
+      } catch (err) {
+        console.error('Settings recovery clear error:', err);
+        if (errEl) errEl.textContent = err.message || 'Xatolik yuz berdi';
+        toast(err.message || 'Xatolik yuz berdi', 'error');
+      } finally {
+        settingsRecoverySaveBtn.disabled = false;
+        settingsRecoverySaveBtn.textContent = oldText;
+      }
+    }
+  };
+}
+
+const settingsRecoveryEmailInput = $('settingsRecoveryEmailInput');
+if (settingsRecoveryEmailInput) {
+  settingsRecoveryEmailInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      $('settingsRecoverySaveBtn')?.click();
+    }
+  });
+  settingsRecoveryEmailInput.addEventListener('input', () => {
+    settingsRecoveryEmailInput.classList.remove('input-error');
+    const errEl = $('settingsRecoveryEmailErr');
+    if (errEl) errEl.textContent = '';
+  });
+}
+
 const settingsBtn = $('settingsBtn');
 if (settingsBtn) {
   settingsBtn.onclick = () => {
     _paintSettingsProfileCard();
+    _paintSettingsRecoveryRow();
     _applyNotifToggleUI();
     $('settingsMoreMenu')?.classList.remove('show');
     const settingsOverlay = $('settingsOverlay');
