@@ -9,6 +9,8 @@ import { clearAllCache, cachePosts, getCachedPosts, clearRuntimeCache, getCached
 import { openAviCrop } from './avi-crop.js';
 import { initAuthSettings, paintSettingsRecoveryRow } from './auth-settings.js';
 import { showForgotPasswordBtn, hideForgotPasswordBtn, openRecoveryModal } from './auth-recovery.js';
+import { initRegRecovery, openRegRecoveryModal } from './auth-reg-recovery.js';
+import { initAuthPending, showPendingScreen, hidePendingScreen } from './auth-pending.js';
 
 /* ── Server vaqti sinxronizatsiyasi ────────────────────────────────────
    Foydalanuvchi lokal soatini o'zgartirsa ham ban muddati to'g'ri ishlaydi.
@@ -305,7 +307,7 @@ if (authBtn) {
       authBtn.disabled = false;
       authBtn.textContent = "Ro'yxatdan o'tish";
 
-      _openRegRecoveryModal({
+      openRegRecoveryModal({
         cleaned,
         fn,
         p,
@@ -430,335 +432,6 @@ function validateStrictEmail(email) {
   }
 
   return { ok: true, email: s };
-}
-
-/* ── Ro'yxatdan o'tishda zaxira email maslahati va kiritish ────────── */
-let _pendingRegData = null;
-
-function _openRegRecoveryModal(regData) {
-  _pendingRegData = regData;
-  const tipStep = $('regRecoveryStepTip');
-  const inputStep = $('regRecoveryStepInput');
-  const emailInp = $('regRecoveryEmailInput');
-  const errEl = $('regRecoveryEmailErr');
-
-  if (tipStep) tipStep.style.display = 'block';
-  if (inputStep) inputStep.style.display = 'none';
-  if (emailInp) {
-    emailInp.value = '';
-    emailInp.classList.remove('input-error');
-  }
-  if (errEl) errEl.textContent = '';
-
-  const modal = $('regRecoveryModal');
-  if (modal) {
-    modal.classList.add('show');
-    modal.style.display = 'flex';
-    lockScroll();
-  }
-}
-
-function _hideRegRecoveryModal() {
-  const modal = $('regRecoveryModal');
-  if (modal) {
-    modal.classList.remove('show');
-    modal.style.display = 'none';
-    unlockScroll();
-  }
-}
-
-async function _completeSignUp(recoveryEmail = '') {
-  if (!_pendingRegData) return;
-  const { cleaned, fn, p } = _pendingRegData;
-  _pendingRegData = null;
-  _hideRegRecoveryModal();
-
-  const authBtn = $('authBtn');
-  if (authBtn) {
-    authBtn.disabled = true;
-    authBtn.textContent = 'Hisob yaratilmoqda...';
-  }
-
-  try {
-    sessionStorage.setItem('spacemr_new_signup', '1');
-    const { data, error } = await sb.auth.signUp({
-      email: uToEmail(cleaned),
-      password: p,
-      options: {
-        data: {
-          username: cleaned,
-          full_name: fn,
-          avatar: defAvi(fn),
-          recovery_email: recoveryEmail || '',
-        }
-      },
-    });
-    if (error) throw error;
-    if (!data.session) {
-      throw new Error('Supabase: Authentication → Email → "Confirm email" ni o\'chiring');
-    }
-  } catch (err) {
-    console.error('Sign up error:', err);
-    sessionStorage.removeItem('spacemr_new_signup');
-    sessionStorage.removeItem('mrspace_new_signup');
-    if (authBtn) {
-      authBtn.disabled = false;
-      authBtn.textContent = "Ro'yxatdan o'tish";
-    }
-    const known = sbErrUz(err);
-    const errEl = $('authErr');
-    if (errEl) errEl.textContent = known;
-    toast(known, 'error');
-  }
-}
-
-const regRecoverySkipBtn = $('regRecoverySkipBtn');
-if (regRecoverySkipBtn) {
-  regRecoverySkipBtn.onclick = () => {
-    _completeSignUp('');
-  };
-}
-
-const regRecoveryAddBtn = $('regRecoveryAddBtn');
-if (regRecoveryAddBtn) {
-  regRecoveryAddBtn.onclick = () => {
-    const tipStep = $('regRecoveryStepTip');
-    const inputStep = $('regRecoveryStepInput');
-    const emailInp = $('regRecoveryEmailInput');
-    if (tipStep) tipStep.style.display = 'none';
-    if (inputStep) inputStep.style.display = 'block';
-    if (emailInp) emailInp.focus();
-  };
-}
-
-const regRecoveryBackBtn = $('regRecoveryBackBtn');
-if (regRecoveryBackBtn) {
-  regRecoveryBackBtn.onclick = () => {
-    const tipStep = $('regRecoveryStepTip');
-    const inputStep = $('regRecoveryStepInput');
-    const errEl = $('regRecoveryEmailErr');
-    const emailInp = $('regRecoveryEmailInput');
-    if (errEl) errEl.textContent = '';
-    if (emailInp) emailInp.classList.remove('input-error');
-    if (inputStep) inputStep.style.display = 'none';
-    if (tipStep) tipStep.style.display = 'block';
-  };
-}
-
-const regRecoverySubmitBtn = $('regRecoverySubmitBtn');
-if (regRecoverySubmitBtn) {
-  regRecoverySubmitBtn.onclick = () => {
-    const emailInp = $('regRecoveryEmailInput');
-    const errEl = $('regRecoveryEmailErr');
-    const val = emailInp?.value || '';
-
-    const res = validateStrictEmail(val);
-    if (!res.ok) {
-      if (errEl) errEl.textContent = res.error;
-      if (emailInp) {
-        emailInp.classList.add('input-error');
-        emailInp.focus();
-      }
-      if ('vibrate' in navigator) navigator.vibrate([14, 6, 14]);
-      return;
-    }
-
-    if (errEl) errEl.textContent = '';
-    if (emailInp) emailInp.classList.remove('input-error');
-    _completeSignUp(res.email);
-  };
-}
-
-const regRecoveryEmailInput = $('regRecoveryEmailInput');
-if (regRecoveryEmailInput) {
-  regRecoveryEmailInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      $('regRecoverySubmitBtn')?.click();
-    }
-  });
-  regRecoveryEmailInput.addEventListener('input', () => {
-    regRecoveryEmailInput.classList.remove('input-error');
-    const errEl = $('regRecoveryEmailErr');
-    if (errEl) errEl.textContent = '';
-  });
-}
-
-/* ── Ruxsat kutish ekrani ────────────────────────────────────────────── */
-let _approvalListener = null;
-let _noticeUnsubPending = null;
-
-function _updatePendingNotice(noticeData) {
-  const container = document.getElementById('pendingNoticeWrap');
-  if (!container) return;
-  if (!noticeData || !noticeData.text) {
-    container.style.display = 'none';
-    container.textContent = '';
-    return;
-  }
-  const t = noticeData.target || 'all';
-  if (t === 'approved') {
-    // Faqat tasdiqlanganlarga — kutayotganlar ko'rmasin
-    container.style.display = 'none';
-    container.textContent = '';
-    return;
-  }
-  container.style.display = 'flex';
-  container.innerHTML = `
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tg-primary-blue,#ffffff)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <span>${noticeData.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
-  `;
-}
-
-function _startPendingNoticeWatcher() {
-  if (_noticeUnsubPending) return;
-  let dead = false, ch = null;
-  const load = async () => {
-    try {
-      const { data } = await sb.from('admin_notice').select('text,target').eq('id', 'global').maybeSingle();
-      if (!dead) _updatePendingNotice(data || null);
-    } catch (e) { console.warn('[auth]', e?.message || e); }
-  };
-  load();
-  try {
-    ch = sb.channel('pending-notice')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_notice' }, () => load())
-      .subscribe();
-  } catch (_) {}
-  _noticeUnsubPending = () => { dead = true; if (ch) sb.removeChannel(ch); };
-}
-
-function _stopPendingNoticeWatcher() {
-  if (_noticeUnsubPending) { _noticeUnsubPending(); _noticeUnsubPending = null; }
-  _updatePendingNotice(null);
-}
-
-/* ── Blocked countdown timer ─────────────────────────────────────────── */
-let _blockedCountdownInterval = null;
-
-function _stopBlockedCountdown() {
-  if (_blockedCountdownInterval) {
-    clearInterval(_blockedCountdownInterval);
-    _blockedCountdownInterval = null;
-  }
-}
-
-function _startBlockedCountdown(blockedUntilMs, onExpire = null) {
-  _stopBlockedCountdown();
-  const el = document.getElementById('blockedCountdownWrap');
-  if (!el) return;
-
-  const update = () => {
-    const now = serverNow();
-    const diff = blockedUntilMs - now;
-    if (diff <= 0) {
-      el.style.display = 'none';
-      _stopBlockedCountdown();
-      if (typeof onExpire === 'function') onExpire();
-      return;
-    }
-    const totalSec = Math.ceil(diff / 1000);
-    const d = Math.floor(totalSec / 86400);
-    const h = Math.floor((totalSec % 86400) / 3600);
-    const m = Math.floor((totalSec % 3600) / 60);
-    const s = totalSec % 60;
-
-    let parts = [];
-    if (d > 0) parts.push(`${d} kun`);
-    if (h > 0) parts.push(`${h} soat`);
-    if (m > 0) parts.push(`${m} daqiqa`);
-    parts.push(`${s} soniya`);
-
-    const untilStr = new Date(blockedUntilMs).toLocaleString('uz-UZ');
-    el.style.display = 'block';
-    el.innerHTML = `
-      <div style="font-size:13px;color:var(--text2,#999);margin-bottom:6px;">Blok muddati tugashiga:</div>
-      <div id="blockedCountdownTimer" style="font-size:2rem;font-weight:800;color:var(--red,#ef4444);letter-spacing:1px;font-variant-numeric:tabular-nums;">${parts.join(' ')}</div>
-      <div style="font-size:12px;color:var(--text2,#999);margin-top:6px;">${untilStr} gacha bloklangansiz</div>
-    `;
-  };
-
-  update();
-  _blockedCountdownInterval = setInterval(update, 1000);
-}
-
-
-function showPendingScreen(reason = 'pending', blockedUntilMs = null) {
-  const screen = $('pendingApprovalScreen');
-  const app    = $('app');
-  const authWrap = $('authWrap');
-
-  // Matnni holatga qarab o'zgartirish
-  const h2 = screen?.querySelector('h2');
-  const p  = screen?.querySelector('p');
-  const countdownWrap = document.getElementById('blockedCountdownWrap');
-
-  _stopBlockedCountdown();
-  if (countdownWrap) countdownWrap.style.display = 'none';
-
-  if (reason === 'blocked') {
-    if (h2) h2.textContent = 'Hisobingiz bloklangan';
-    if (p) {
-      if (blockedUntilMs && blockedUntilMs > serverNow()) {
-        p.innerHTML = `Siz admin tomonidan vaqtinchalik <strong style="color:var(--red,#ef4444)">bloklangansiz.</strong><br>Muddat tugagach avtomatik ochilasiz.`;
-        _startBlockedCountdown(blockedUntilMs, async () => {
-          // Vaqt tugadi — pending ekranni yashirib app ga kiritamiz
-          // banJustExpired=true: snapshot da blocked:true kelsa ignore qilsinlar
-          hidePendingScreen();
-          if (state.me) {
-            await _enterApp(state.me);
-            _startRealtimeUserWatch(state.me);
-          }
-        });
-      } else {
-        p.innerHTML = `Siz admin tomonidan <strong style="color:var(--text,#fff)">bloklangansiz.</strong><br>Qo'shimcha ma'lumot uchun administratorga murojaat qiling.`;
-        if (countdownWrap) countdownWrap.style.display = 'none';
-      }
-    }
-  } else if (reason === 'rejected') {
-    if (h2) h2.textContent = 'Arizangiz rad etildi';
-    if (p)  p.innerHTML = `Afsuski, admin sizning arizangizni <strong style="color:var(--red,#ef4444)">rad etdi.</strong><br>Qo'shimcha ma'lumot uchun administratorga murojaat qiling.`;
-  } else if (reason === 'offline-verify') {
-    if (h2) h2.textContent = 'Internetga ulaning';
-    if (p)  p.innerHTML = `Hisobingiz holatini xavfsiz tekshirish uchun internet aloqasi kerak.<br>Uzoq vaqt oflayn holda ilovadan foydalanib bo'lmaydi — bu xavfsizlik cheklovi.<br>Internet qaytishi bilan avtomatik davom etadi.`;
-  } else {
-    if (h2) h2.textContent = 'Ruxsat kutilmoqda';
-    if (p)  p.innerHTML = `Hisobingiz muvaffaqiyatli yaratildi.<br><strong style="color:var(--text,#fff)">Administrator ruxsatini kuting.</strong><br>Ruxsat berilgandan so'ng avtomatik kirasiz.`;
-  }
-
-  if (screen)   { screen.style.display = 'flex'; screen.dataset.reason = reason; }
-  if (app)      { app.classList.remove('show'); }
-  if (authWrap) { authWrap.classList.remove('show'); }
-  if (reason === 'pending') _startPendingNoticeWatcher();
-}
-
-// Offline-verify ekrani ko'rsatilgan bo'lsa — internet qaytishi bilan avtomatik
-// qayta tekshiramiz (to'liq reload — onAuthStateChanged qayta ishga tushib,
-// haqiqiy serverdan yangi holatni oladi).
-window.addEventListener('online', () => {
-  const screen = $('pendingApprovalScreen');
-  if (screen && screen.dataset.reason === 'offline-verify' && screen.style.display !== 'none') {
-    location.reload();
-  }
-});
-
-function hidePendingScreen() {
-  const screen = $('pendingApprovalScreen');
-  if (screen) { screen.style.display = 'none'; }
-  _stopPendingNoticeWatcher();
-  _stopBlockedCountdown();
-}
-
-// "Chiqish" tugmasi — pending ekrandagi
-const pendingSignOutBtn = $('pendingSignOutBtn');
-if (pendingSignOutBtn) {
-  pendingSignOutBtn.addEventListener('click', async () => {
-    if (_approvalListener) { _approvalListener(); _approvalListener = null; }
-    if (_activeUserUnsub) { _activeUserUnsub(); _activeUserUnsub = null; }
-    hidePendingScreen();
-    try { await sb.auth.signOut(); } catch (_) {}
-    location.replace('/');
-  });
 }
 
 /* ── Profil holati kuzatuvi (blok / ruxsat / o'chirilish) ──────────────
@@ -1923,6 +1596,20 @@ if (logoutBtn) {
 
 // Initialize call handlers (buttons for accept/reject/end)
 
+initRegRecovery({ sbErrUz });
+initAuthPending({
+  serverNow: () => serverNow(),
+  onBlockExpired: async () => {
+    if (state.me) {
+      await _enterApp(state.me);
+      _startRealtimeUserWatch(state.me);
+    }
+  },
+  onPendingSignOut: async () => {
+    if (_approvalListener) { _approvalListener(); _approvalListener = null; }
+    if (_activeUserUnsub) { _activeUserUnsub(); _activeUserUnsub = null; }
+  },
+});
 initAuthSettings({
   populateProfileForm: () => { populateProfileForm(); },
 });

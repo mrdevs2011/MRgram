@@ -19,5 +19,8 @@ Bazada ISHGA TUSHIRILGAN SQL fayllar, tartib raqami bilan. Yangi bazada `000_sch
 - 023 (2026-10-02): `recovery_code` va `reset_password_with_code()` RPC. Parolni tiklash so'ralganda foydalanuvchining eski paroli o'chib ketmaydi va eski parol bilan kirish ochiq qoladi; 8 xonali kod faqat kod orqali yangi parol o'rnatish oynasida ishlaydi.
 - 024 (2026-10-02): `verify_recovery_code()` RPC. Foydalanuvchi emailga kelgan 8 xonali kodni login parol maydoniga kiritganda avtomatik aniqlash va yangi parol o'rnatish oynasini ochish.
 - 025 (2026-10-02): `change_my_password()` RPC. Sozlamalarda profil tahririda joriy parolni to'g'ridan-to'g'ri bazada tekshirib yangi parolni atomik o'rnatish (notif chalkashligini va poyga holatini to'liq bartaraf etish).
+- 026 (2026-10-02): `change_my_username()` RPC va `guard_profile_update()`. Foydalanuvchi nomini o'zgartirish va login sinxronlash.
+- 027 (2026-10-02): `admin_reset_user_password()` va `admin_issue_recovery_code()`. Admin tomonidan parolni to'g'ridan-to'g'ri o'zgartirmasdan, xuddi "Parolni unutdingizmi" kabi 8 xonali OTP tiklash kodini yaratish va zaxira emailga yuborish.
+
 
 

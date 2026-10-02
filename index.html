@@ -949,29 +949,29 @@
             <circle cx="15.5" cy="8.5" r="4.5"/>
           </svg>
         </div>
-        <div class="admin-reset-title">Parolni tiklash</div>
+        <div class="admin-reset-title">Parolni tiklash kodi (OTP)</div>
         <div class="admin-reset-user-badge">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           <span id="adminResetPwdUserSubtitle" style="font-weight:600;color:var(--text,#fff);">Foydalanuvchi hisobi</span>
         </div>
       </div>
 
-      <div class="admin-reset-warn">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px;">
+      <div class="admin-reset-warn" id="adminResetWarnBox" style="background:rgba(29,155,240,0.08);border:1px solid rgba(29,155,240,0.25);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d9bf0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px;">
           <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
         </svg>
-        <div class="admin-reset-warn-text">
-          Foydalanuvchining joriy paroli bekor qilinadi va <strong>barcha boshqa qurilmalardagi faol sessiyalar darhol yopiladi.</strong>
+        <div class="admin-reset-warn-text" id="adminResetWarnText" style="color:var(--text2,#ccc);">
+          Foydalanuvchining joriy paroli o'chirilmaydi. Xavfsiz bir martalik tiklash kodi (OTP) yaratiladi. Agar zaxira email bo'lsa, xat yuboriladi. Foydalanuvchi ushbu kod orqali tizimga kirib o'ziga yangi parol o'rnatishi mumkin.
         </div>
       </div>
 
       <div class="admin-reset-pwd-box">
-        <div class="admin-reset-pwd-label">Yangi vaqtinchalik parol</div>
+        <div class="admin-reset-pwd-label" id="adminResetPwdLabel">Bir martalik tasdiqlash kodi (OTP)</div>
         <div class="admin-reset-pwd-field">
           <input class="admin-reset-pwd-input" id="adminResetTempPwdInput" type="text" readonly spellcheck="false">
-          <button type="button" class="admin-reset-icon-btn" id="adminResetRegenBtn" title="Boshqa parol yaratish">
+          <button type="button" class="admin-reset-icon-btn" id="adminResetRegenBtn" title="Boshqa kod yaratish">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
           </button>
         </div>
@@ -979,7 +979,7 @@
 
       <div class="admin-reset-actions">
         <button type="button" class="admin-reset-btn-cancel" id="adminResetCancelBtn">Bekor qilish</button>
-        <button type="button" class="admin-reset-btn-submit" id="adminResetSubmitBtn">Parolni tiklash</button>
+        <button type="button" class="admin-reset-btn-submit" id="adminResetSubmitBtn">Tiklash kodini yaratish</button>
       </div>
     </div>
 
@@ -990,9 +990,9 @@
           <polyline points="20 6 9 17 4 12"/>
         </svg>
       </div>
-      <div style="font-size:1.25rem;font-weight:700;color:var(--text,#fff);margin-bottom:6px;">Parol muvaffaqiyatli tiklandi!</div>
-      <p style="font-size:13px;color:var(--text2,#aaa);line-height:1.5;margin-bottom:18px;">
-        Foydalanuvchiga ushbu vaqtinchalik parolni taqdim eting. U birinchi kirishida yangi shaxsiy parol o'rnatishi shart:
+      <div style="font-size:1.25rem;font-weight:700;color:var(--text,#fff);margin-bottom:6px;">Tiklash kodi tayyor!</div>
+      <p id="adminResetResultSubtitle" style="font-size:13px;color:var(--text2,#aaa);line-height:1.5;margin-bottom:18px;">
+        Foydalanuvchiga ushbu bir martalik kodni taqdim eting. U login oynasida kodni kiritib o'zi yangi shaxsiy parol belgilaydi:
       </p>
       <div class="admin-reset-result-box">
         <span id="adminResetResultPwdText" style="font-family:var(--mono,monospace);font-size:1.25rem;font-weight:700;letter-spacing:2.5px;color:var(--tg-primary-blue,#1d9bf0);user-select:all;overflow:hidden;text-overflow:ellipsis;"></span>

@@ -1,22 +1,21 @@
 /**
- * SpaceMR — Admin parol reset (UI modal, alert/confirm yo'q).
+ * SpaceMR — Admin parol tiklash (OTP access code).
  *
- * Ish tartibi:
- *  1. Admin foydalanuvchining "Parolni tiklash" tugmasini bosganda chiroyli UI modal ochiladi.
- *  2. Modal tasdiqni so'raydi va tizim tomonidan yaratilgan vaqtinchalik parolni ko'rsatadi.
- *  3. Admin "Parolni tiklash" tugmasini bosgach:
- *     - DB RPC admin_reset_user_password (yoki Edge Function) orqali auth.users va profiles yangilanadi.
- *     - profiles da must_change_password=true va password_changed_at=now() o'rnatiladi.
- *     - user-session-{uid} kanaliga 'password_changed' broadcast yuboriladi (barcha boshqa sessiyalar darhol yopiladi).
- *  4. Muvaffaqiyatli tiklangach, modalda 1-bosishda nusxalash tugmasi bilan vaqtinchalik parol taqdim etiladi.
+ * Logika:
+ *  1. Admin foydalanuvchining "Parolni tiklash" tugmasini bosganda UI modal ochiladi.
+ *  2. Foydalanuvchining joriy paroli O'ZGARTIRILMAYDI.
+ *  3. Xuddi "Parolni unutdingizmi" kabi bir martalik 8 xonali tiklash kodi (OTP access code) yaratiladi.
+ *  4. Agar foydalanuvchining zaxira emaili bo'lsa, avtomatik ravishda emailga xat yuboriladi.
+ *  5. Shuningdek, kod admin modalida ham ko'rsatiladi (1-bosishda nusxalash imkoniyati bilan).
+ *  6. Foydalanuvchi ushbu kod orqali SpaceMR login oynasida (yoki "Parolni unutdingizmi" orqali)
+ *     o'ziga yangi shaxsiy parol belgilaydi.
  */
 import { sb, state } from './config.js';
 import { toast } from './toast.js';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env.js';
 import { $, lockScroll, unlockScroll } from './utils.js';
 
-/* 8 xonali chalkash vaqtinchalik parol (masalan: Q123eqwe) */
-function genTempPassword() {
+/* 8 xonali chalkash vaqtinchalik tiklash kodi (masalan: Q123eqwe) */
+function genTempCode() {
   const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
   const lower = 'abcdefghjkmnpqrstuvwxyz';
   const digits = '23456789';
@@ -40,6 +39,13 @@ function genTempPassword() {
   return chars.join('');
 }
 
+function maskEmail(email) {
+  if (!email || !email.includes('@')) return '';
+  const [user, domain] = email.split('@');
+  if (user.length <= 2) return `${user[0] || '*'}***@${domain}`;
+  return `${user[0]}***${user[user.length - 1]}@${domain}`;
+}
+
 async function copyText(text) {
   try {
     if (navigator.clipboard?.writeText) {
@@ -54,22 +60,22 @@ async function copyText(text) {
       document.execCommand('copy');
       ta.remove();
     }
-    toast('Parol nusxalandi', 'success');
+    toast('Kod nusxalandi', 'success');
   } catch (_) {
-    toast('Parol nusxalandi', 'info');
+    toast('Kod nusxalandi', 'info');
   }
 }
 
 let _currentResetUid = null;
-let _currentTempPwd = '';
+let _currentTempCode = '';
 let _regenRot = 0;
 
-export function adminResetPassword(uid, displayName) {
+export async function adminResetPassword(uid, displayName, userMeta = null) {
   if (!state.me?.isAdmin) { toast('Ruxsat yo\'q', 'error'); return; }
   if (!uid) return;
 
   _currentResetUid = uid;
-  _currentTempPwd = genTempPassword();
+  _currentTempCode = genTempCode();
 
   const overlay = $('adminResetPwdOverlay');
   const stepConfirm = $('adminResetPwdStepConfirm');
@@ -77,20 +83,50 @@ export function adminResetPassword(uid, displayName) {
   const userSubtitle = $('adminResetPwdUserSubtitle');
   const tempInput = $('adminResetTempPwdInput');
   const submitBtn = $('adminResetSubmitBtn');
+  const warnText = $('adminResetWarnText');
+  const resultSubtitle = $('adminResetResultSubtitle');
 
   if (!overlay || !stepConfirm || !stepResult) {
     console.error('[adminResetPassword] Overlay elementlari topilmadi');
     return;
   }
 
-  if (userSubtitle) userSubtitle.textContent = displayName ? `${displayName}` : 'Tanlangan foydalanuvchi hisobi';
-  if (tempInput) tempInput.value = _currentTempPwd;
+  // Foydalanuvchi ma'lumotlarini aniqlash (username va zaxira email)
+  let username = userMeta?.username || '';
+  let recEmail = userMeta?.recoveryEmail || '';
+
+  if (!username) {
+    try {
+      const { data } = await sb.from('profiles').select('id, username, full_name, recovery_email').eq('id', uid).maybeSingle();
+      if (data) {
+        username = data.username || '';
+        recEmail = data.recovery_email || '';
+      }
+    } catch (_) {}
+  }
+
+  const masked = maskEmail(recEmail);
+  const displayLabel = displayName || (username ? `@${username}` : 'Foydalanuvchi');
+
+  if (userSubtitle) {
+    userSubtitle.innerHTML = username
+      ? `@${username}${masked ? ` · <span style="color:#22c55e;font-weight:500;">✉️ ${masked}</span>` : ' · <span style="color:var(--text3,#888);font-weight:400;">(zaxira email yo\'q)</span>'}`
+      : displayLabel;
+  }
+
+  if (warnText) {
+    warnText.innerHTML = masked
+      ? `Foydalanuvchining joriy paroli o'chirilmaydi. Bir martalik tiklash kodi (OTP) yaratiladi va <strong style="color:var(--tg-primary-blue,#1d9bf0);">${masked}</strong> emailiga yuboriladi.`
+      : `Foydalanuvchining joriy paroli o'chirilmaydi. Hisobga zaxira email biriktirilmagan, shuning uchun bir martalik tiklash kodini (OTP) foydalanuvchiga to'g'ridan-to'g'ri taqdim etishingiz kerak bo'ladi.`;
+  }
+
+  if (tempInput) tempInput.value = _currentTempCode;
 
   stepConfirm.style.display = 'block';
   stepResult.style.display = 'none';
   if (submitBtn) {
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Parolni tiklash';
+    submitBtn.textContent = masked ? 'Tiklash kodini yuborish' : 'Tiklash kodini yaratish';
   }
 
   overlay.style.display = 'flex';
@@ -107,8 +143,8 @@ export function adminResetPassword(uid, displayName) {
   const regenBtn = $('adminResetRegenBtn');
   if (regenBtn) {
     regenBtn.onclick = () => {
-      _currentTempPwd = genTempPassword();
-      if (tempInput) tempInput.value = _currentTempPwd;
+      _currentTempCode = genTempCode();
+      if (tempInput) tempInput.value = _currentTempCode;
       const svg = regenBtn.querySelector('svg');
       if (svg) {
         _regenRot += 360;
@@ -127,7 +163,7 @@ export function adminResetPassword(uid, displayName) {
     };
   }
 
-  // Yopish (Tushunarli) tugmasi
+  // Yopish (Tayyor) tugmasi
   const doneBtn = $('adminResetDoneBtn');
   if (doneBtn) {
     doneBtn.onclick = () => {
@@ -139,27 +175,27 @@ export function adminResetPassword(uid, displayName) {
   // Nusxalash tugmasi
   const copyBtn = $('adminResetCopyBtn');
   if (copyBtn) {
-    copyBtn.onclick = () => copyText(_currentTempPwd);
+    copyBtn.onclick = () => copyText(_currentTempCode);
   }
 
-  // Parolni tiklash tasdig'i
+  // Tiklash kodini tasdiqlash
   if (submitBtn) {
     submitBtn.onclick = async () => {
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Tiklanmoqda...';
+      submitBtn.textContent = 'Kod yaratilmoqda...';
 
       try {
-        let resetSuccess = false;
+        let codeSuccess = false;
         let lastError = null;
 
-        // 1. Avval to'g'ridan-to'g'ri RPC admin_reset_user_password orqali urinib ko'ramiz
+        // 1. Avval RPC admin_reset_user_password orqali profiles.recovery_code ni o'rnatamiz
         try {
           const { error: rpcErr } = await sb.rpc('admin_reset_user_password', {
             p_uid: _currentResetUid,
-            p_temp_password: _currentTempPwd,
+            p_temp_password: _currentTempCode,
           });
           if (!rpcErr) {
-            resetSuccess = true;
+            codeSuccess = true;
           } else {
             lastError = rpcErr;
           }
@@ -167,54 +203,61 @@ export function adminResetPassword(uid, displayName) {
           lastError = e;
         }
 
-        // 2. Agar RPC muvaffaqiyatsiz bo'lsa, Edge Function orqali urinib ko'ramiz
-        if (!resetSuccess) {
-          const { data: sessData } = await sb.auth.getSession();
-          let token = sessData?.session?.access_token;
-          if (!token) {
-            const { data: ref } = await sb.auth.refreshSession();
-            token = ref?.session?.access_token;
-          }
-          if (!token) throw new Error('Sessiya topilmadi — qayta kiring');
+        // 2. Agar RPC muvaffaqiyatsiz bo'lsa (masalan yangi migratsiya hali bajarilmagan bo'lsa), to'g'ridan-to'g'ri profiles ni yangilaymiz
+        if (!codeSuccess) {
+          const expiresAt = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
+          const { error: updErr } = await sb.from('profiles').update({
+            recovery_code: _currentTempCode,
+            recovery_code_expires_at: expiresAt,
+            recovery_attempts: 0
+          }).eq('id', _currentResetUid);
 
-          const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-reset-password`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-              'apikey': SUPABASE_ANON_KEY,
-            },
-            body: JSON.stringify({ uid: _currentResetUid, password: _currentTempPwd }),
-          });
-          const out = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error(out.error || out.message || lastError?.message || `HTTP ${res.status}`);
-          resetSuccess = true;
+          if (!updErr) {
+            codeSuccess = true;
+          } else {
+            throw new Error(updErr.message || lastError?.message || 'Tiklash kodini o\'rnatishda xatolik');
+          }
         }
 
-        // 3. Barcha qurilmalardagi mavjud sessiyalarni darhol to'xtatish uchun broadcast
-        try {
-          const ch = sb.channel('user-session-' + _currentResetUid);
-          await ch.subscribe();
-          await ch.send({
-            type: 'broadcast',
-            event: 'password_changed',
-            payload: { sessionId: 'admin_reset', at: Date.now(), forced: true }
-          });
-        } catch (_) {}
+        // 3. Agar foydalanuvchida zaxira email bo'lsa, xuddi "Parolni unutdingizmi" kabi emailga yuboramiz
+        let emailSent = false;
+        if (recEmail && username) {
+          try {
+            submitBtn.textContent = 'Emailga yuborilmoqda...';
+            const resp = await sb.functions.invoke('send-recovery-email', {
+              body: { username: username, temp_password: _currentTempCode }
+            });
+            if (resp.data?.ok && resp.data?.email_sent) {
+              emailSent = true;
+            }
+          } catch (mailErr) {
+            console.warn('[admin-reset-password] send-recovery-email error:', mailErr);
+          }
+        }
 
         // 4. Muvaffaqiyat oynasini ko'rsatish
         const resultPwd = $('adminResetResultPwdText');
-        if (resultPwd) resultPwd.textContent = _currentTempPwd;
+        if (resultPwd) resultPwd.textContent = _currentTempCode;
+
+        if (resultSubtitle) {
+          if (emailSent) {
+            resultSubtitle.innerHTML = `<span style="color:#22c55e;font-weight:600;">✓ Kod foydalanuvchining ${masked || 'zaxira'} emailiga yuborildi.</span><br>Shuningdek, kodni quyidan nusxalab to'g'ridan-to'g'ri berishingiz mumkin:`;
+          } else if (recEmail) {
+            resultSubtitle.innerHTML = `Tiklash kodi yaratildi. (Email orqali yetkazishda xatolik bo'lishi mumkin). Quyidagi kodni foydalanuvchiga bering:`;
+          } else {
+            resultSubtitle.innerHTML = `Foydalanuvchida zaxira email yo'q. Quyidagi bir martalik tiklash kodini (OTP) foydalanuvchiga taqdim eting:`;
+          }
+        }
 
         stepConfirm.style.display = 'none';
         stepResult.style.display = 'block';
 
-        toast('Parol muvaffaqiyatli tiklandi', 'success');
+        toast(emailSent ? 'Tiklash kodi yaratildi va emailga yuborildi!' : 'Tiklash kodi muvaffaqiyatli yaratildi', 'success');
       } catch (err) {
         console.error('[admin-reset-password]', err);
         toast('Xatolik: ' + err.message, 'error');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Parolni tiklash';
+        submitBtn.textContent = masked ? 'Tiklash kodini yuborish' : 'Tiklash kodini yaratish';
       }
     };
   }

@@ -472,7 +472,7 @@ function _render(wrap, users) {
         ${_approveBtn(u)}
         ${_rejectBtn(u)}
         <button class="${blockBtnClass}" data-uid="${uid}" data-name="${_esc(name)}" data-blocked="${isBlocked}">${blockBtnLabel}</button>
-        <button class="ua-reset-pwd-btn" data-uid="${uid}" data-name="${_esc(name)}">Parolni tiklash</button>
+        <button class="ua-reset-pwd-btn" data-uid="${uid}" data-name="${_esc(name)}" data-username="${_esc(u.username||'')}" data-recemail="${_esc(u.recovery_email||'')}">Parolni tiklash</button>
         <button class="ua-delete-btn" data-uid="${uid}" data-name="${_esc(name)}">O'chirish</button>
       </div>
     </div>`;
@@ -517,7 +517,10 @@ function _render(wrap, users) {
   wrap.querySelectorAll('.ua-reset-pwd-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
-      adminResetPassword(btn.dataset.uid, btn.dataset.name);
+      adminResetPassword(btn.dataset.uid, btn.dataset.name, {
+        username: btn.dataset.username,
+        recoveryEmail: btn.dataset.recemail
+      });
     });
   });
 }

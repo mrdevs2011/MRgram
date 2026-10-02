@@ -97,10 +97,8 @@ function _watchCall(id, onRow) {
 // TURN: Vercel Environment Variables'da TURN_URLS (vergul bilan), TURN_USERNAME,
 // TURN_CREDENTIAL bering (Metered / Cloudflare / o'z coturn'ingiz). Bo'lmasa —
 // bepul umumiy OpenRelay ishlatiladi (beqaror: mobil tarmoqda qo'ng'iroq ulanmasligi mumkin).
-const _turnList = TURN_URLS.split(',').map(x => x.trim()).filter(Boolean);
-if (!_turnList.length) {
-  console.warn('[call] TURN_URLS sozlanmagan — umumiy OpenRelay ishlatilmoqda (beqaror)');
-}
+const _turnList = (TURN_URLS || '').split(',').map(x => x.trim()).filter(Boolean);
+
 const _STATIC_ICE = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
