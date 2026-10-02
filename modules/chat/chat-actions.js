@@ -2,18 +2,13 @@
 import { sb, state } from '../core/config.js';
 import { $, esc, fmtSz, fmtTime } from '../core/utils.js';
 import { toast } from '../ui/toast.js';
-import { chatState } from './chat-state.js';
-import { uploadViaControllerProgress } from './chat-shared.js';
-import {
-  paintMessages, clearPendingPostShare, updateVoiceSendBtn,
-  setPendingPostShare, clearChatFile, _showOptimisticVoiceBubble,
-  _uuid, _setTyping,  _showPendingBubble, _updatePendingProgress, _removePendingBubble
-} from './chat.js';
+import { chatState, chatUI } from './chat-state.js';
+import { uploadViaControllerProgress, _showPendingBubble, _updatePendingProgress, _removePendingBubble, _uuid } from './chat-shared.js';
 import { inboxSend } from '../core/rt-bus.js';
 import { sendGroupMessage, sendGroupVoice, sendGroupFile } from './groups.js';
 import { commitEdit, isEditing } from './msg-menu.js';
-
-// ... plus uuid, _setTyping, etc. We will add those manually after.
+import { rateOk } from '../core/rate-limit.js';
+import { registerLocalVoiceUrl } from './chat-voice-player.js';
 
 export async function sendChatMessage() {
   // Route to group/channel send if in that mode
@@ -33,12 +28,12 @@ export async function sendChatMessage() {
 
   inp.value = '';
   if (postShare) {
-    clearPendingPostShare();
+    chatUI.clearPendingPostShare();
   } else {
-    updateVoiceSendBtn();
+    chatUI.updateVoiceSendBtn();
   }
   clearTimeout(chatState._typingTimeout);
-  _setTyping(false);
+  chatUI._setTyping(false);
 
   const finalMsgText = postShare
     ? JSON.stringify({ __postShare: true, post: postShare, comment: userText })
@@ -57,7 +52,7 @@ export async function sendChatMessage() {
     status: 'sending', readAt: null, editedAt: null, createdAt: nowMs, _at: nowMs,
   };
   chatState._rtLocal.set(id, localMsg);
-  paintMessages([...chatState._curMsgs, localMsg]);
+  chatUI.paintMessages([...chatState._curMsgs, localMsg]);
   // 2) Peer'ga to'g'ridan-to'g'ri (WebRTC DataChannel; ulanmagan bo'lsa broadcast)
   if (chatState._rt && chatState._rtChatId === chatId) chatState._rt.send(id, finalMsgText);
   // 2b) Peer'ning suhbatlar ro'yxati/unread — suhbat ochiq bo'lmasa ham shu zahoti
@@ -84,7 +79,7 @@ export async function sendChatMessage() {
     const conf = chatState._rtLocal.get(id);
     if (conf) { conf.status = 'sent'; chatState._rtLocal.set(id, conf); }
     if (state.currentChatId === chatId) {
-      paintMessages(chatState._curMsgs.map(m => m.id === id ? { ...m, status: 'sent' } : m));
+      chatUI.paintMessages(chatState._curMsgs.map(m => m.id === id ? { ...m, status: 'sent' } : m));
     }
     chatState._reloadThread && chatState._reloadThread();
     // Push bildirishnoma push.js bosqichida ulanadi (Edge Function / DB webhook)
@@ -93,10 +88,10 @@ export async function sendChatMessage() {
     toast('Xabar yuborilmadi', 'error');
     chatState._rtLocal.delete(id);
     if (chatState._rt && chatState._rtChatId === chatId) chatState._rt.retract(id);
-    if (state.currentChatId === chatId) paintMessages(chatState._curMsgs.filter(x => x.id !== id));
+    if (state.currentChatId === chatId) chatUI.paintMessages(chatState._curMsgs.filter(x => x.id !== id));
     inp.value = userText; // qaytarib qo'yamiz, user qayta yuborishi uchun
-    if (postShare) setPendingPostShare(postShare);
-    updateVoiceSendBtn();
+    if (postShare) chatUI.setPendingPostShare(postShare);
+    chatUI.updateVoiceSendBtn();
   }
 }
 
@@ -120,7 +115,7 @@ export async function sendVoiceMessage(blob, duration) {
     status: 'sending', readAt: null, editedAt: null, createdAt: nowMs, _at: nowMs + 120000,
   };
   chatState._rtLocal.set(id, localMsg);
-  paintMessages([...chatState._curMsgs, localMsg]);
+  chatUI.paintMessages([...chatState._curMsgs, localMsg]);
 
   try {
     const ext = blob.type.includes('ogg') ? 'ogg' : 'webm';
@@ -141,13 +136,13 @@ export async function sendVoiceMessage(blob, duration) {
       chatState._latestChatMap[otherUid].lastSenderId = state.me.uid;
     }
     if (state.currentChatId === chatId) {
-      paintMessages(chatState._curMsgs.map(m => m.id === id ? { ...m, status: 'sent' } : m));
+      chatUI.paintMessages(chatState._curMsgs.map(m => m.id === id ? { ...m, status: 'sent' } : m));
     }
     chatState._reloadThread && chatState._reloadThread();
   } catch (err) {
     console.error('Voice send failed:', err);
     chatState._rtLocal.delete(id);
-    if (state.currentChatId === chatId) paintMessages(chatState._curMsgs.filter(x => x.id !== id));
+    if (state.currentChatId === chatId) chatUI.paintMessages(chatState._curMsgs.filter(x => x.id !== id));
     try { URL.revokeObjectURL(localUrl); } catch (_) {}
     toast('Ovozli xabar yuborilmadi', 'error');
   }
@@ -165,14 +160,14 @@ export async function sendChatFile(fileOverride = null, captionOverride = null) 
 
   // Route to group file send if in group mode
   if (state.currentChatKind && state.currentChatKind !== 'dm') {
-    clearChatFile();
+    chatUI.clearChatFile();
     return sendGroupFile(file, caption);
   }
   if (!state.currentChatId) return;
   const chatId   = state.currentChatId;
   const otherUid = state.currentChatUid;
 
-  clearChatFile();
+  chatUI.clearChatFile();
 
   const pendingId = 'pending_file_' + Date.now();
   _showPendingBubble(pendingId, 'file', file.size, file.name, file.type);
@@ -204,7 +199,7 @@ export async function sendChatFile(fileOverride = null, captionOverride = null) 
     console.error('File send failed:', err);
     _removePendingBubble(pendingId);
     const inp = $('chatThreadInput');
-    if (inp && caption) { inp.value = caption; updateVoiceSendBtn(); }
+    if (inp && caption) { inp.value = caption; chatUI.updateVoiceSendBtn(); }
     toast('Fayl yuborilmadi', 'error');
   }
 }
@@ -217,7 +212,7 @@ export async function handleSendAction() {
       inp.value = '';
       inp.style.height = '';
     }
-    updateVoiceSendBtn();
+    chatUI.updateVoiceSendBtn();
     await sendChatFile(null, text);
   } else {
     await sendChatMessage();

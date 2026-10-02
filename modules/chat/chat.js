@@ -1,6 +1,6 @@
 import { sendChatMessage, sendVoiceMessage, sendChatFile, handleSendAction } from './chat-actions.js';
 export { sendChatMessage, handleSendAction };
-import { chatState } from './chat-state.js';
+import { chatState, chatUI } from './chat-state.js';
 /* ── Onlayn holat (presence) uchun CSS ────────────────────────────────── */
 function _injectPresenceCSS() { /* CSS: mono-x.css .presence-dot */ }
 
@@ -667,6 +667,7 @@ import {
   _updatePendingProgress,
   _removePendingBubble,
   uploadViaControllerProgress,
+  _uuid,
 } from './chat-shared.js';
 // Re-export shared helpers so existing importers of chat.js keep working
 export {
@@ -679,6 +680,7 @@ export {
   _updatePendingProgress,
   _removePendingBubble,
   uploadViaControllerProgress,
+  _uuid,
 } from './chat-shared.js';
 
 const MSG_LIMIT = 60; // Bir thread'da max xabar soni (RAM tejash)
@@ -720,8 +722,7 @@ async function _refreshUsersPresence() {
 
 
 
-export const _uuid = () => (crypto.randomUUID ? crypto.randomUUID()
-  : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); }));
+
 
 function _rtMerge(msgs) {
   if (chatState._rtLocal.size) {
@@ -2402,3 +2403,5 @@ export function destroyChatsView() {
   if (aviEl)  aviEl.addEventListener('click',  openCurrentProfile);
   if (nameEl) nameEl.addEventListener('click', openCurrentProfile);
 })();
+
+Object.assign(chatUI, { paintMessages, updateVoiceSendBtn, clearPendingPostShare, setPendingPostShare, clearChatFile, _showOptimisticVoiceBubble, _setTyping, paintGroupThread, resetSeenMsgs, initChatHeaderMenu, getPendingPostShare, updatePostAttachBar });

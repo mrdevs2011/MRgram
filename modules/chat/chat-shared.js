@@ -165,3 +165,5 @@ export async function uploadViaControllerProgress(file, folder, onProgress) {
     xhr.send(file);
   });
 }
+
+export const _uuid = () => (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2));

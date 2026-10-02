@@ -33,11 +33,7 @@ import {
   _showPendingBubble, _updatePendingProgress, _removePendingBubble,
   uploadViaControllerProgress,
 } from './chat-shared.js';
-import {
-  updateVoiceSendBtn, paintGroupThread, resetSeenMsgs,
-  initChatHeaderMenu,
-  getPendingPostShare, setPendingPostShare, clearPendingPostShare, updatePostAttachBar,
-} from './chat.js';
+import { chatUI } from './chat-state.js';
 import { isEditing, commitEdit }                    from './msg-menu.js';
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -349,7 +345,7 @@ export async function openGroupThread(groupId) {
   modal.dataset.gid  = groupId;
 
   document.getElementById('chatHeaderDropdown')?.remove();
-  initChatHeaderMenu();
+  chatUI.initChatHeaderMenu();
 
   // Header
   const av = groupData.avatar || defAvi(groupData.name || 'G');
@@ -378,7 +374,7 @@ export async function openGroupThread(groupId) {
 
   // Input qatori: yozish huquqiga qarab ko'rsatiladi/yashiriladi (keyin ham jonli yangilanadi)
   _applyGroupComposer(groupData);
-  updatePostAttachBar();
+  chatUI.updatePostAttachBar();
 
   // Info button (tap header → group info)
   $('chatThreadAvi').style.cursor  = 'pointer';
@@ -413,7 +409,7 @@ export async function openGroupThread(groupId) {
     },
   });
   _gTyp.forEach(t => clearTimeout(t)); _gTyp.clear(); _gIamTyping = false;
-  resetSeenMsgs('g:' + groupId);
+  chatUI.resetSeenMsgs('g:' + groupId);
   // Yuboruvchi ismlarini oldindan isitamiz (birinchi chizishda "Foydalanuvchi" bo'lib qolmasin)
   _profilesByIds((_currentGroupData || groupData)?.members || []).then(r => {
     Object.assign(_senderCache, r);
@@ -531,14 +527,14 @@ async function paintGroupMessages(msgs, groupData) {
   if (!$('chatThreadMessages')) return;
   // DM bilan BIR XIL painter (chat.js paintMessages); yagona farq — pufak sarlavhasida yuboruvchi ismi.
   // Avval keshdagi ismlar bilan darhol chizamiz, yetishmaganlari kelgach qayta chizamiz.
-  paintGroupThread(msgs, _senderCache);
+  chatUI.paintGroupThread(msgs, _senderCache);
   const missing = [...new Set(msgs.map(m => m.senderId).filter(u => u && !_senderCache[u]))];
   if (!missing.length) return;
   const seq = ++_paintSeq;
   const got = await _profilesByIds(missing);
   Object.assign(_senderCache, got);
   missing.forEach(u => { if (!_senderCache[u]) _senderCache[u] = { fullName: 'Foydalanuvchi', avatar: '' }; });
-  if (seq === _paintSeq && _currentGroupId && _gLoaded) paintGroupThread(_gMsgs, _senderCache);
+  if (seq === _paintSeq && _currentGroupId && _gLoaded) chatUI.paintGroupThread(_gMsgs, _senderCache);
 }
 
 /* ── "Yozmoqda..." (DM bilan bir xil, sarlavhada; guruhda kim yozayotgani) ── */
@@ -582,16 +578,16 @@ export async function sendGroupMessage() {
   if (isEditing()) { await commitEdit($('chatThreadInput')?.value); return; }
   const inp  = $('chatThreadInput');
   const userText = (inp?.value || '').trim();
-  const postShare = getPendingPostShare ? getPendingPostShare() : null;
+  const postShare = chatUI.getPendingPostShare ? chatUI.getPendingPostShare() : null;
 
   if (!userText && !postShare) return;
   if (!rateOk('msg', 8, 10000)) return;
 
   inp.value = '';
-  if (postShare && clearPendingPostShare) {
-    clearPendingPostShare();
+  if (postShare && chatUI.clearPendingPostShare) {
+    chatUI.clearPendingPostShare();
   } else {
-    updateVoiceSendBtn();
+    chatUI.updateVoiceSendBtn();
   }
   clearTimeout(_gTypTimer); _gSetTyping(false);
 
@@ -636,8 +632,8 @@ export async function sendGroupMessage() {
     _gMsgs = _gMsgs.filter(x => x.id !== mid);
     if (_currentGroupId === groupId) paintGroupMessages(_gMsgs, groupData);
     inp.value = userText;
-    if (postShare && setPendingPostShare) setPendingPostShare(postShare);
-    updateVoiceSendBtn();
+    if (postShare && setPendingPostShare) chatUI.setPendingPostShare(postShare);
+    chatUI.updateVoiceSendBtn();
     return;
   }
 }
@@ -666,7 +662,7 @@ export async function sendGroupFile(file, caption = '') {
     console.error('[Groups] file send failed:', err);
     _removePendingBubble(pendingId);
     const inp = $('chatThreadInput');
-    if (inp && captionText) { inp.value = captionText; updateVoiceSendBtn(); }
+    if (inp && captionText) { inp.value = captionText; chatUI.updateVoiceSendBtn(); }
     toast('Fayl yuborilmadi', 'error');
   }
 }

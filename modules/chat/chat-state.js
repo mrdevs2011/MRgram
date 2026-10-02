@@ -44,3 +44,5 @@ export const chatState = {
   _postExistenceMap: new Map(),
   _userExistenceMap: new Map(),
 };
+
+export const chatUI = {};
