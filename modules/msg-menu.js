@@ -7,6 +7,7 @@ import { sb, state } from './config.js';
 import { toast } from './toast.js';
 import { $, esc, defAvi, showConfirm } from './utils.js';
 import { onEsc } from './esc-stack.js';
+import { markDissolve, unmarkDissolve } from './dissolve.js';
 
 const LONG_MS = 420;
 const MONTHS = ['yan', 'fev', 'mar', 'apr', 'may', 'iyn', 'iyl', 'avg', 'sen', 'okt', 'noy', 'dek'];
@@ -158,8 +159,9 @@ function remove(ids) {
   const own = ids.filter(id => isMine(msgOf(id)));
   if (!own.length) return;
   showConfirm(own.length > 1 ? `${own.length} ta xabar o‘chirilsinmi?` : 'Xabar o‘chirilsinmi?', async () => {
+    markDissolve(own);   // realtime DELETE/reload kelganda xabar sochilib ketadi
     const { error } = await sb.from(tbl()).delete().in('id', own);
-    if (error) { console.warn('[MsgMenu] delete:', error.message); toast('O‘chirilmadi', 'error'); return; }
+    if (error) { unmarkDissolve(own); console.warn('[MsgMenu] delete:', error.message); toast('O‘chirilmadi', 'error'); return; }
     if (editing && own.includes(editing.id)) cancelEdit(true);
     exitSelect();
     api.reload();

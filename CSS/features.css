@@ -1911,6 +1911,33 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* Mine xabarlari o'ngdan, theirs chapdan */
 .chat-msg.mine.anim-in { transform-origin: bottom right; }
 .chat-msg.theirs.anim-in { transform-origin: bottom left; }
+/* Kelgan xabar — Telegram uslubida: pastdan yengil ko'tarilib, kattalashib, paydo bo'ladi */
+@keyframes msgInTelegram {
+  0%   { opacity: 0; transform: translateY(14px) scale(.9); }
+  55%  { opacity: 1; }
+  100% { opacity: 1; transform: none; }
+}
+.chat-msg.anim-in { animation: msgInTelegram .28s cubic-bezier(.2, .9, .25, 1) backwards; }
+/* O'zim yuborgan xabar — input tomondan (pastdan) slide bo'lib chiqadi */
+@keyframes msgInMine {
+  0%   { opacity: 0; transform: translateY(46px) scale(.94); }
+  45%  { opacity: 1; }
+  100% { opacity: 1; transform: none; }
+}
+.chat-msg.mine.anim-in { animation: msgInMine .34s cubic-bezier(.18, .9, .25, 1) backwards; }
+@media (prefers-reduced-motion: reduce) { .chat-msg.anim-in { animation: none; } }
+/* O'chirilgan xabar: qum bo'lib sochilgach qator yopiladi (MRdrive .file-card.is-deleting ritmi) */
+.chat-msg.msg-dissolving {
+  pointer-events: none;
+  transition: max-height .85s cubic-bezier(.4, 0, .2, 1), margin .85s cubic-bezier(.4, 0, .2, 1),
+              padding .85s cubic-bezier(.4, 0, .2, 1), opacity .55s ease;
+}
+.chat-msg.msg-dissolving.is-deleting {
+  max-height: 0 !important; margin-top: -2px !important; margin-bottom: 0 !important;
+  padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; min-height: 0;
+}
+/* demo .particle-canvas (MRdrive) */
+.particle-canvas { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 9999; }
 /* 4. Call modal — scale+blur in */
 /* 5. Incoming call modal — slide up */
 /* 6. Incoming call — avatar pulsing rings (kattaroq, ko'proq) */

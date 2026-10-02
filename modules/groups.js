@@ -41,6 +41,7 @@ let _latestGroupMap  = {};   // groupId → group data (for list rendering)
 export let groupListItems = []; // exported so chat.js can merge
 let _currentGroupId  = null;
 let _currentGroupData = null;
+import { markDissolve } from './dissolve.js';
 let _gMsgs = [];            // joriy guruh threadidagi xabarlar (realtime payload shu ro'yxatga qo'llanadi)
 let _gLoaded = false;
 let _gRt = null;            // guruh uchun WebRTC mesh (zaxira: broadcast)
@@ -396,6 +397,7 @@ export async function openGroupThread(groupId) {
     onRetract: (id) => {
       if (!_gPending.has(id) || _currentGroupId !== groupId) return;   // faqat hali bazada tasdiqlanmagan nusxa
       _gPending.delete(id);
+      markDissolve([id]);
       _gMsgs = _gMsgs.filter(x => x.id !== id);
       paintGroupMessages(_gMsgs, _currentGroupData);
     },
@@ -438,6 +440,7 @@ export async function openGroupThread(groupId) {
       const did = p.old?.id;
       if (!did) { sched(); return; }
       _gPending.delete(did);
+      markDissolve([did]);
       _gMsgs = _gMsgs.filter(x => x.id !== did);
     } else {
       const m = mapMessage(p.new);

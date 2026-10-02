@@ -838,6 +838,7 @@ import {
 import { $, esc, renderMarkdown, defAvi, fmt, fmtTime, fmtSz, isOnline, formatLastSeen } from './utils.js';
 import { toast }            from './toast.js';
 import { initMsgMenu, msgMenuAfterPaint, msgMenuReset, isEditing, commitEdit } from './msg-menu.js';
+import { dissolveMarks, markDissolve, playDeleteDissolve, dissolveGroupInfo } from './dissolve.js';
 import { rateOk }           from './rate-limit.js';
 import { initEmojiPicker } from './emoji-picker.js';
 import { emojiOnlyClass } from './emoji-only.js';
@@ -946,6 +947,7 @@ function _rtReadAck(ids) {
 function _rtRetract(id) {
   if (!_rtLocal.has(id)) return; // DB'da tasdiqlangan bo'lsa tegmaymiz
   _rtLocal.delete(id);
+  markDissolve([id]);
   paintMessages(_curMsgs.filter(x => x.id !== id));
 }
 let _curMsgs = [];   // msg-menu.js uchun: paintMessages() ning oxirgi xabarlar ro'yxati
@@ -1460,6 +1462,9 @@ export async function openChatThread(uid) {
   if (_seenMsgIdsChatId !== chatId) {
     _seenMsgIds = new Set();
     _seenMsgIdsChatId = chatId;
+    _seenBaselineDone = false;
+    _msgAnimStart.clear();
+    _dissolving.clear(); dissolveMarks.clear();
   }
   // Agar hozir ijro etilayotgan ovozli xabar aynan shu chatga tegishli
   // bo'lsa — mini-pleer bar endi kerak emas (xabar o'zi thread ichida
@@ -1603,6 +1608,7 @@ export async function openChatThread(uid) {
       const delId = p.old?.id;
       if (!delId) { schedThread(); return; }
       _rtLocal.delete(delId);
+      markDissolve([delId]);
       paintMessages(_curMsgs.filter(x => x.id !== delId));
       return;
     }
@@ -1848,6 +1854,59 @@ function _hydrateVoiceWaveforms(container) {
  * maydonlar yangilanib qayta chizilganda eski xabarlar tegilmaydi. */
 let _seenMsgIds = new Set();
 let _seenMsgIdsChatId = null;
+// Telegram uslubidagi "yangi xabar keldi" animatsiyasi:
+// chat ilk ochilganda (baseline) animatsiya YO'Q — faqat chatda o'tirganda kelgan xabarga.
+let _seenBaselineDone = false;
+const _msgAnimStart = new Map();      // msgId -> animatsiya boshlangan vaqt (repaint bo'lsa ham davom etishi uchun)
+const MSG_ANIM_MS = 360;
+// O'chirilgan xabar "qum bo'lib sochilib ketishi" (MRdrive animatsiyasi) — jarayondagilar repaint'dan omon qoladi
+const _dissolving = new Map();   // msgId -> { id, el, nextId }
+function _dissolvePrepare(box, newIds, canStart) {
+  const started = [];
+  if (!canStart || !dissolveMarks.size) return started;
+  box.querySelectorAll('.chat-msg[data-msg-id]').forEach(el => {
+    const id = el.dataset.msgId;
+    if (!id || !dissolveMarks.has(id) || newIds.has(id) || _dissolving.has(id)) return;
+    let nx = el.nextElementSibling;
+    while (nx && !(nx.classList.contains('chat-msg') && newIds.has(nx.dataset.msgId))) nx = nx.nextElementSibling;
+    el.classList.remove('anim-in');
+    el.style.animationDelay = '';
+    el.classList.add('msg-dissolving');
+    const rec = { id, el, nextId: nx ? nx.dataset.msgId : null };
+    _dissolving.set(id, rec);
+    started.push(rec);
+    dissolveMarks.delete(id);
+  });
+  return started;
+}
+function _dissolveRestore(box, started) {
+  if (!_dissolving.size) return;
+  for (const rec of _dissolving.values()) {
+    if (rec.el.parentNode === box) continue;
+    let ref = null;
+    if (rec.nextId) {
+      const q = (window.CSS && CSS.escape) ? CSS.escape(rec.nextId) : rec.nextId;
+      ref = box.querySelector(`.chat-msg[data-msg-id="${q}"]`);
+      if (ref && ref.previousElementSibling?.classList.contains('chat-date-sep')) ref = ref.previousElementSibling;
+    }
+    box.insertBefore(rec.el, ref);
+  }
+  if (!started.length) return;
+  const group = dissolveGroupInfo(started.map(r => r.el));
+  started.forEach(rec => {
+    playDeleteDissolve(rec.el, undefined, undefined, group)
+      .catch(() => {})
+      .finally(() => {
+        _dissolving.delete(rec.id);
+        try { rec.el.remove(); } catch (_) {}
+        if (!_dissolving.size && !_curMsgs.length) paintMessages([]);
+      });
+  });
+}
+function _isFreshMsg(m) {
+  const d = _toDateSafe(m.createdAt);
+  return !d || (Date.now() - d.getTime()) < 30000;   // eski (keshdan/oflayndan kelgan) xabar animatsiya qilinmaydi
+}
 
 /* ── Sana ajratuvchi (Telegram uslubida "Bugun" / "Kecha" / "12-iyul") ── */
 export function _toDateSafe(ts) {
@@ -1880,10 +1939,13 @@ function paintMessages(msgs, grp = null) {
   _curMsgs = msgs;
 
   if (!msgs.length) {
-    box.innerHTML = `<div class="empty pt-30vh tac">
+    const _dsE = _dissolvePrepare(box, new Set(), _seenBaselineDone);
+    _seenBaselineDone = true;
+    box.innerHTML = _dissolving.size ? '' : `<div class="empty pt-30vh tac">
       <div class="fs-14px fw-600 c-text mb-6px">Hozircha xabarlar yo'q</div>
       <div class="fs-13px c-text2">Salom bering</div>
     </div>`;
+    _dissolveRestore(box, _dsE);
     msgMenuAfterPaint();
     return;
   }
@@ -1893,7 +1955,10 @@ function paintMessages(msgs, grp = null) {
   // threshold: pastdan 120px uzoqda bo'lsa "pastda" hisoblanadi
   const isAtBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 120;
   const isInitialLoad = prevCount === 0;
+  const _baseline = !_seenBaselineDone;   // shu chatning birinchi chizilishi — animatsiyasiz
+  _seenBaselineDone = true;
 
+  const _dsStarted = _dissolvePrepare(box, new Set(msgs.map(m => String(m.id))), !_baseline);
   box.innerHTML = msgs.map((m, idx) => {
     const mine = m.senderId === state.me?.uid;
     const time = fmtTime(m.createdAt);
@@ -2001,8 +2066,19 @@ function paintMessages(msgs, grp = null) {
     // ID asosida "yangi"lik: shu xabar ID'si ilgari chizilmagan bo'lsagina
     // bounce animatsiyasi beriladi (status/audioUrl kabi maydon
     // yangilanishlari eski xabarlarni qayta "bounce" qilib yubormaydi).
-    const isNew = !!m.id && !_seenMsgIds.has(m.id);
-    if (m.id) _seenMsgIds.add(m.id);
+    let isNew = false, animStyle = '';
+    if (m.id) {
+      const _nowT = Date.now();
+      if (!_seenMsgIds.has(m.id)) {
+        _seenMsgIds.add(m.id);
+        // yangi xabar (kelgan ham, o'zimniki ham; id bir xil bo'lgani uchun optimistik->server almashinuvda qayta o'ynamaydi)
+        if (!_baseline && _isFreshMsg(m)) { _msgAnimStart.set(m.id, _nowT); isNew = true; }
+      } else {
+        // animatsiya payti repaint bo'lsa (status/tick) — to'xtab qolmasin, qolgan joyidan davom etsin
+        const _t0 = _msgAnimStart.get(m.id);
+        if (_t0 && _nowT - _t0 < MSG_ANIM_MS) { isNew = true; animStyle = ` style="animation-delay:-${_nowT - _t0}ms"`; }
+      }
+    }
 
     // Guruh: faqat boshqa foydalanuvchi xabarlarida yuboruvchi ismi
     let gHead = '';
@@ -2025,7 +2101,7 @@ function paintMessages(msgs, grp = null) {
       ${mine ? renderTicks(m.status) : ''}
     </span>` : '';
 
-    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}${emoCls}" data-msg-id="${m.id || ''}">
+    return `${dateSep}<div class="chat-msg ${mine ? 'mine' : 'theirs'}${isNew ? ' anim-in' : ''}${emoCls}" data-msg-id="${m.id || ''}"${animStyle}>
 
       <div class="chat-bubble${bubbleClassExtra}">
         <div class="chat-bubble-wrap">
@@ -2035,6 +2111,8 @@ function paintMessages(msgs, grp = null) {
       </div>
     </div>`;
   }).join('');
+
+  _dissolveRestore(box, _dsStarted);
 
   // Faqat pastda turgan bo'lsak yoki chat yangi ochilgan bo'lsa scroll qilamiz
   if (isAtBottom || isInitialLoad) {
@@ -2078,7 +2156,7 @@ function paintMessages(msgs, grp = null) {
 export function paintGroupThread(msgs, names) { paintMessages(msgs, { names: names || {} }); }
 /** Guruh almashganda "yangi xabar" animatsiyasi hisobini boshidan boshlash */
 export function resetSeenMsgs(key) {
-  if (_seenMsgIdsChatId !== key) { _seenMsgIds = new Set(); _seenMsgIdsChatId = key; }
+  if (_seenMsgIdsChatId !== key) { _seenMsgIds = new Set(); _seenMsgIdsChatId = key; _seenBaselineDone = false; _msgAnimStart.clear(); _dissolving.clear(); dissolveMarks.clear(); }
 }
 
 /**
