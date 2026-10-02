@@ -1,114 +1,15 @@
 /* ── Onlayn holat (presence) uchun CSS ────────────────────────────────── */
-function _injectPresenceCSS() {
-  if (document.getElementById('chat-presence-css')) return;
-  const s = document.createElement('style');
-  s.id = 'chat-presence-css';
-  s.textContent = `
-.chat-avi { position: relative; overflow: visible !important; }
-.chat-avi img { border-radius: 50%; }
-.presence-dot {
-  position: absolute;
-  right: -1px; bottom: -1px;
-  width: 12px; height: 12px;
-  background: #3ecf8e;
-  border: 2px solid var(--bg1, #1a1a1a);
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0,0.15);
-  z-index: 2;
-  pointer-events: none;
-}
-#chatTypingStatus {
-  font-size: 12.5px;
-  color: var(--text3, #767676);
-  margin-top: 1px;
-}
-#chatTypingStatus.online { color: #3ecf8e; font-weight: 500; }
-`;
-  document.head.appendChild(s);
-}
+function _injectPresenceCSS() { /* CSS: mono-x.css .presence-dot */ }
 
 /* ── Search, Pins & Context Menu for Chats ──────────────────────────── */
 let _searchQuery = '';
 
-/* ── Chat Pins (LocalStorage) ────────────────────────────────────────── */
-function _getPins() {
-  if (!state.me?.uid) return { dms: [], groups: [] };
-  try {
-    const raw = localStorage.getItem(`chat_pins_${state.me.uid}`);
-    if (!raw) return { dms: [], groups: [] };
-    const p = JSON.parse(raw);
-    return {
-      dms: Array.isArray(p.dms) ? p.dms : [],
-      groups: Array.isArray(p.groups) ? p.groups : [],
-    };
-  } catch { return { dms: [], groups: [] }; }
-}
+/* ── Pins / recent / deleted — modules/chat-storage.js ────────────────── */
+// _getPins, _isPinned, _togglePin, _getRecents, ... import orqali (pastga qarang)
 
-function _isPinned(type, id) {
-  const pins = _getPins();
-  return type === 'dm' ? pins.dms.includes(id) : pins.groups.includes(id);
-}
-
-function _togglePin(type, id) {
-  const pins = _getPins();
-  const list = type === 'dm' ? pins.dms : pins.groups;
-  const idx = list.indexOf(id);
-  let isNowPinned = false;
-  if (idx >= 0) {
-    list.splice(idx, 1);
-    isNowPinned = false;
-  } else {
-    list.unshift(id);
-    isNowPinned = true;
-  }
-  if (type === 'dm') pins.dms = list; else pins.groups = list;
-  try {
-    localStorage.setItem(`chat_pins_${state.me.uid}`, JSON.stringify(pins));
-  } catch (_) {}
-  return isNowPinned;
-}
-
-/* ── Recent Searches (LocalStorage) ───────────────────────────────────── */
-function _getRecents() {
-  if (!state.me?.uid) return [];
-  try {
-    const raw = localStorage.getItem(`chat_recent_searches_${state.me.uid}`);
-    if (!raw) return [];
-    const list = JSON.parse(raw);
-    return Array.isArray(list) ? list : [];
-  } catch { return []; }
-}
-
-function _saveRecent(item) {
-  if (!state.me?.uid || !item || !item.id) return;
-  const list = _getRecents().filter(x => x.id !== item.id);
-  list.unshift(item);
-  try {
-    localStorage.setItem(`chat_recent_searches_${state.me.uid}`, JSON.stringify(list.slice(0, 10)));
-  } catch (_) {}
-}
-
-function _removeRecent(id) {
-  if (!state.me?.uid) return;
-  const list = _getRecents().filter(x => x.id !== id);
-  try {
-    localStorage.setItem(`chat_recent_searches_${state.me.uid}`, JSON.stringify(list));
-  } catch (_) {}
-}
-
-function _clearAllRecents() {
-  if (!state.me?.uid) return;
-  try {
-    localStorage.removeItem(`chat_recent_searches_${state.me.uid}`);
-  } catch (_) {}
-}
-
-/* ── Deleted Chats (LocalStorage per user) ────────────────────────────── */
 function _deleteChatForMe(uid) {
   if (!state.me?.uid || !uid) return;
-  try {
-    localStorage.setItem(`deleted_chat_${state.me.uid}_${uid}`, String(Date.now()));
-  } catch (_) {}
+  markChatDeletedLocal(uid);
   delete _latestChatMap[uid];
   const pins = _getPins();
   if (pins.dms.includes(uid)) _togglePin('dm', uid);
@@ -116,17 +17,14 @@ function _deleteChatForMe(uid) {
 }
 
 function _isChatDeleted(uid) {
-  try {
-    const raw = localStorage.getItem(`deleted_chat_${state.me?.uid}_${uid}`);
-    if (!raw) return false;
-    const t = Number(raw);
-    const c = _latestChatMap[uid];
-    if (c?.lastMessageAt && c.lastMessageAt > t) {
-      localStorage.removeItem(`deleted_chat_${state.me?.uid}_${uid}`);
-      return false;
-    }
-    return true;
-  } catch { return false; }
+  const t = getChatDeletedAt(uid);
+  if (!t) return false;
+  const c = _latestChatMap[uid];
+  if (c?.lastMessageAt && c.lastMessageAt > t) {
+    clearChatDeletedLocal(uid);
+    return false;
+  }
+  return true;
 }
 
 function _shouldShowInChatsList(u, chatMap) {
@@ -139,145 +37,7 @@ function _shouldShowInChatsList(u, chatMap) {
   return false;
 }
 
-function _injectSearchCSS() {
-  if (document.getElementById('chat-search-css')) return;
-  const s = document.createElement('style');
-  s.id = 'chat-search-css';
-  s.textContent = `
-.ulist-search-wrap {
-  position: relative; display: flex; align-items: center; gap: 10px;
-  margin: 12px 14px 8px; height: 44px; padding: 0 16px;
-  background: transparent;
-  border: 1px solid #2f3336;
-  border-radius: 999px;
-}
-.ulist-search-wrap:focus-within { border-color: var(--x-blue, #1d9bf0); box-shadow: none; }
-.ulist-search-icon {
-  color: var(--text3, #767676); flex-shrink: 0; cursor: pointer;
-  display: flex; align-items: center;
-}
-.ulist-search-icon svg { width: 18px; height: 18px; }
-.ulist-search-wrap:focus-within .ulist-search-icon { color: var(--x-blue, #1d9bf0); }
-.ulist-search-input {
-  flex: 1; min-width: 0; height: 100%; background: transparent; border: none; outline: none;
-  box-shadow: none; color: var(--text, #fff); font-size: 15px; line-height: 1.4;
-}
-.ulist-search-input::placeholder { color: var(--text3, #767676); }
-.ulist-search-clear {
-  background: none; border: none; padding: 4px; color: var(--text3, #767676);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  border-radius: 50%; flex-shrink: 0;
-}
-.ulist-search-clear:hover { color: var(--text, #fff); }
-.ulist-search-result { margin: 0 18px 10px; font-size: 12.5px; font-weight: 500; color: var(--text3, #767676); }
-.ulist-search-result.not-found { color: var(--red, #ef4444); }
-
-/* Pinned icon */
-.chat-row-pin-ico {
-  display: inline-flex; align-items: center; justify-content: center;
-  color: var(--x-blue, #1d9bf0); margin-right: 4px; flex-shrink: 0;
-}
-
-/* Recent searches */
-.chat-recents-wrap {
-  margin: 6px 14px 10px; padding: 8px 12px 6px;
-  background: var(--bg2, #18181b);
-  border: 1px solid var(--line, #2f3336);
-  border-radius: 14px;
-}
-.chat-recents-hdr {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 4px 6px 8px; font-size: 12px; font-weight: 600;
-  color: var(--text3, #8b98a5); text-transform: uppercase; letter-spacing: .5px;
-}
-.chat-recents-clear-all {
-  background: none; border: none; font-size: 12px; color: var(--x-blue, #1d9bf0);
-  cursor: pointer; padding: 2px 4px;
-}
-.chat-recents-clear-all:hover { text-decoration: underline; }
-.chat-recent-item {
-  display: flex; align-items: center; gap: 10px; padding: 8px 6px;
-  border-radius: 10px; cursor: pointer; transition: background .12s;
-}
-.chat-recent-item:hover { background: rgba(255,255,255,0.06); }
-.chat-recent-avi { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0; background: var(--bg3, #222); }
-.chat-recent-avi img { width: 100%; height: 100%; object-fit: cover; }
-.chat-recent-info { flex: 1; min-width: 0; }
-.chat-recent-name { font-size: 14px; font-weight: 600; color: var(--text, #fff); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chat-recent-sub { font-size: 12px; color: var(--text3, #8b98a5); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chat-recent-del {
-  width: 28px; height: 28px; border-radius: 50%; background: none; border: none;
-  color: var(--text3, #8b98a5); display: flex; align-items: center; justify-content: center;
-  cursor: pointer; flex-shrink: 0; transition: background .12s, color .12s;
-}
-.chat-recent-del:hover { background: rgba(255,255,255,0.1); color: var(--red, #ef4444); }
-
-/* Context menu */
-.chat-ctx-overlay {
-  position: fixed; inset: 0; z-index: 10000;
-  background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
-  display: flex; align-items: center; justify-content: center;
-  animation: fadeIn .15s ease;
-}
-.chat-ctx-menu {
-  background: var(--bg2, #1e1e24); border: 1px solid var(--line, #2f3336);
-  border-radius: 16px; padding: 6px; min-width: 230px; max-width: 90vw;
-  box-shadow: 0 12px 32px rgba(0,0,0,0.6);
-}
-.chat-ctx-title {
-  padding: 10px 14px 8px; font-size: 13px; font-weight: 600;
-  color: var(--text3, #8b98a5); border-bottom: 1px solid var(--line, #2f3336);
-  margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.chat-ctx-item {
-  display: flex; align-items: center; gap: 10px; width: 100%;
-  padding: 11px 14px; background: none; border: none; border-radius: 10px;
-  font-size: 14px; font-weight: 500; color: var(--text, #fff);
-  cursor: pointer; text-align: left; transition: background .12s;
-}
-.chat-ctx-item:hover, .chat-ctx-item:active { background: rgba(255,255,255,0.08); }
-.chat-ctx-item.danger { color: var(--red, #ef4444); }
-.chat-ctx-item.danger:hover, .chat-ctx-item.danger:active { background: rgba(239,68,68,0.12); }
-
-/* Header dropdown */
-.chat-header-dropdown {
-  position: absolute; right: 12px; top: 54px; z-index: 1050;
-  background: var(--bg2, #1e1e24); border: 1px solid var(--line, #2f3336);
-  border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-  padding: 6px; min-width: 190px;
-}
-.chat-header-dropdown-item {
-  display: flex; align-items: center; gap: 10px; width: 100%;
-  padding: 10px 14px; background: none; border: none;
-  border-radius: 8px; font-size: 13.5px; font-weight: 500;
-  color: var(--text, #fff); cursor: pointer; text-align: left;
-}
-.chat-header-dropdown-item:hover { background: rgba(255,255,255,0.06); }
-.chat-header-dropdown-item.danger { color: var(--red, #ef4444); }
-.chat-header-dropdown-item.danger:hover { background: rgba(239,68,68,0.12); }
-
-/* Group Join Bar */
-.group-join-bar {
-  display: flex; align-items: center; justify-content: center;
-  height: 54px; min-height: 54px; padding: 6px 16px;
-  background: var(--bg1, #121214);
-  border-top: 1px solid var(--line, rgba(255,255,255,0.08));
-}
-.group-join-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%; height: 42px; border-radius: 999px;
-  background: var(--x-blue, #1d9bf0); color: #fff;
-  font-size: 14.5px; font-weight: 600; border: none; cursor: pointer;
-  transition: opacity .15s;
-}
-.group-join-btn:hover { opacity: .9; }
-.group-join-btn--disabled {
-  background: #2a2a2e !important; color: #888 !important;
-  cursor: not-allowed !important; pointer-events: none;
-}
-`;
-  document.head.appendChild(s);
-}
+function _injectSearchCSS() { /* CSS: mono-x.css .ulist-search-* / .chat-ctx-* */ }
 
 function _renderRecentSearches() {
   const existing = document.getElementById('chatRecentSearchesWrap');
@@ -857,6 +617,18 @@ import {
   cacheChatsList, getCachedChatsList, getCachedChatsListAgeMs,
   cacheThreadMessages, getCachedThreadMessages, invalidateChatsListCache
 } from './local-cache.js';
+import {
+  getPins as _getPins,
+  isPinned as _isPinned,
+  togglePin as _togglePin,
+  getRecents as _getRecents,
+  saveRecent as _saveRecent,
+  removeRecent as _removeRecent,
+  clearAllRecents as _clearAllRecents,
+  markChatDeletedLocal,
+  clearChatDeletedLocal,
+  getChatDeletedAt,
+} from './chat-storage.js';
 
 const MSG_LIMIT = 60; // Bir thread'da max xabar soni (RAM tejash)
 
@@ -1199,27 +971,7 @@ export async function renderChatsList() {
 }
 
 /* ── Admin notice banner (chats tepasida) ────────────────────────────── */
-function _injectNoticeCSS() {
-  if (document.getElementById('admin-notice-css')) return;
-  const s = document.createElement('style');
-  s.id = 'admin-notice-css';
-  s.textContent = `
-.admin-notice-banner {
-  display: flex; align-items: flex-start; gap: 10px;
-  margin: 12px 16px 4px;
-  background: #000000;
-  border: 1px solid #2f3336;
-  border-radius: 12px;
-  padding: 11px 14px;
-  font-size: 13px;
-  color: #e7e9ea;
-  line-height: 1.45;
-}
-.admin-notice-icon { color: #1d9bf0; flex-shrink:0; margin-top:1px; }
-.admin-notice-text { flex: 1; word-break: break-word; }
-`;
-  document.head.appendChild(s);
-}
+function _injectNoticeCSS() { /* CSS: mono-x.css .admin-notice-banner */ }
 
 function _repaintNoticeBanner() {
   const wrap = $('chatsListWrap');

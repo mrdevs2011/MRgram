@@ -41,7 +41,7 @@
 .glass-heavy { background: var(--glass-heavy); border: 0.5px solid var(--glass-border-top); box-shadow: var(--specular-top), var(--liquid-shadow-lg); }
 /* Input fields */
 input, textarea { background: var(--glass); border: 0.5px solid var(--glass-border); color: var(--text);  }
-input:focus, textarea:focus { border-color: var(--blue); background: var(--glass-mid); box-shadow: 0 0 0 3px var(--blue-glow2), var(--specular-top); }
+input:focus, textarea:focus { border-color: var(--x-blue, var(--blue)); background: var(--glass-mid); box-shadow: none; }
 input::placeholder, textarea::placeholder { color: var(--text3); }
 /* ═══════════════════════════════════════════ Unified Icon System — 2026 minimalist line icons All inline SVG... */
 svg { color: inherit; }
