@@ -683,35 +683,31 @@ if (forgotPasswordBtn) {
         throw new Error(detail);
       }
 
-      // Tugma kulrang (disabled) bo'lib "Yuborildi" deb qoladi
-      forgotPasswordBtn.disabled = true;
-      forgotPasswordBtn.style.color = 'var(--text3, #888)';
-      forgotPasswordBtn.style.cursor = 'default';
-      forgotPasswordBtn.textContent = 'Yuborildi';
+      // Tugma holatini tiklash
+      forgotPasswordBtn.disabled = false;
+      forgotPasswordBtn.style.color = 'var(--tg-primary-blue,#1d9bf0)';
+      forgotPasswordBtn.style.cursor = 'pointer';
+      forgotPasswordBtn.textContent = 'Parolni unutdingizmi?';
 
       const masked = data.masked_email || '';
       if (hintEl) {
         hintEl.style.display = 'block';
         hintEl.innerHTML = masked
-          ? `Parol <strong style="color:var(--text,#fff);">${masked}</strong> ga yuborildi.<br>Kelmasa, <u>Spam (Keraksiz)</u> papkasini tekshiring.`
-          : `Parol emailingizga yuborildi.<br>Kelmasa, <u>Spam (Keraksiz)</u> papkasini tekshiring.`;
-      }
-
-      // Parol inputini tozalash va fokus berish
-      const pInp = $('aPassword');
-      if (pInp) {
-        pInp.value = '';
-        pInp.placeholder = 'Emailga kelgan 8 xonali parol';
-        pInp.focus();
+          ? `Tasdiqlash kodi <strong style="color:var(--text,#fff);">${masked}</strong> ga yuborildi.`
+          : `Tasdiqlash kodi emailingizga yuborildi.`;
       }
 
       toast(
         masked
-          ? `Vaqtinchalik parol ${masked} ga yuborildi. Spam papkasini ham tekshiring!`
-          : `Vaqtinchalik parol emailingizga yuborildi. Spam papkasini ham tekshiring!`,
+          ? `Tasdiqlash kodi ${masked} ga yuborildi.`
+          : `Tasdiqlash kodi emailingizga yuborildi.`,
         'info',
-        8000
+        6000
       );
+
+      // Parolni tiklash modalini ochish (Eski parol o'chmagan!)
+      _openRecoveryModal(u, masked);
+
     } catch (err) {
       console.error('[forgotPasswordBtn] error:', err);
       forgotPasswordBtn.disabled = false;
@@ -719,6 +715,111 @@ if (forgotPasswordBtn) {
       forgotPasswordBtn.style.cursor = 'pointer';
       forgotPasswordBtn.textContent = 'Parolni unutdingizmi?';
       toast(err.message || 'Parolni tiklashda xatolik yuz berdi', 'error');
+    }
+  };
+}
+
+/* ── Parolni tiklash oynasi (Kodni kiritish va yangi parol o'rnatish) ───────────── */
+const recoveryModal = $('recoveryModal');
+const recoveryBackBtn = $('recoveryBackBtn');
+const recoverySubmitBtn = $('recoverySubmitBtn');
+const recoveryCodeInp = $('recoveryCodeInp');
+const recoveryNewPwdInp = $('recoveryNewPwdInp');
+const recoveryConfirmPwdInp = $('recoveryConfirmPwdInp');
+const recoveryErr = $('recoveryErr');
+
+let _activeRecoveryUsername = '';
+
+function _openRecoveryModal(username, maskedEmail) {
+  _activeRecoveryUsername = username;
+  if (!recoveryModal) return;
+  const subtitle = $('recoveryModalSubtitle');
+  if (subtitle) {
+    subtitle.innerHTML = maskedEmail
+      ? `Tasdiqlash kodi <strong style="color:#fff;">${maskedEmail}</strong> ga yuborildi.<br>Kod va yangi parolingizni kiriting.`
+      : `Tasdiqlash kodi emailingizga yuborildi.<br>Kod va yangi parolingizni kiriting.`;
+  }
+  if (recoveryCodeInp) recoveryCodeInp.value = '';
+  if (recoveryNewPwdInp) recoveryNewPwdInp.value = '';
+  if (recoveryConfirmPwdInp) recoveryConfirmPwdInp.value = '';
+  if (recoveryErr) {
+    recoveryErr.style.display = 'none';
+    recoveryErr.textContent = '';
+  }
+  recoveryModal.style.display = 'flex';
+  setTimeout(() => recoveryCodeInp?.focus(), 100);
+}
+
+function _closeRecoveryModal() {
+  if (recoveryModal) recoveryModal.style.display = 'none';
+  if (recoveryErr) {
+    recoveryErr.style.display = 'none';
+    recoveryErr.textContent = '';
+  }
+}
+
+if (recoveryBackBtn) {
+  recoveryBackBtn.onclick = () => {
+    _closeRecoveryModal();
+    // Foydalanuvchi eski parolini eslagan bo'lsa, oddiy login parol maydoniga fokus beramiz
+    $('aPassword')?.focus();
+  };
+}
+
+if (recoverySubmitBtn) {
+  recoverySubmitBtn.onclick = async () => {
+    const u = _activeRecoveryUsername || $('aUsername')?.value.trim().toLowerCase();
+    const code = recoveryCodeInp?.value.trim() || '';
+    const newPwd = recoveryNewPwdInp?.value || '';
+    const confirmPwd = recoveryConfirmPwdInp?.value || '';
+
+    const showErr = (msg) => {
+      if (recoveryErr) {
+        recoveryErr.textContent = msg;
+        recoveryErr.style.display = 'block';
+      }
+      toast(msg, 'error');
+    };
+
+    if (!code) return showErr('8 xonali tasdiqlash kodini kiriting');
+    if (!newPwd || newPwd.length < 6) return showErr('Yangi parol kamida 6 ta belgidan iborat bo\'lishi kerak');
+    if (newPwd !== confirmPwd) return showErr('Yangi parollar bir-biriga mos kelmadi');
+
+    recoverySubmitBtn.disabled = true;
+    recoverySubmitBtn.textContent = 'Tekshirilmoqda...';
+    if (recoveryErr) recoveryErr.style.display = 'none';
+
+    try {
+      const { data, error } = await sb.rpc('reset_password_with_code', {
+        p_username: u,
+        p_code: code,
+        p_new_password: newPwd,
+      });
+
+      if (error) throw error;
+      if (!data?.ok) throw new Error(data?.message || 'Parolni yangilashda xatolik');
+
+      _closeRecoveryModal();
+      toast('Parolingiz muvaffaqiyatli yangilandi!', 'success');
+
+      // Yangi parol bilan avtomatik tizimga kirish
+      const actualEmail = data.email || (u.includes('@') ? u : `${u}@mrspace.local`);
+      const { error: signErr } = await sb.auth.signInWithPassword({
+        email: actualEmail,
+        password: newPwd,
+      });
+
+      if (signErr) {
+        $('aUsername').value = u;
+        $('aPassword').value = newPwd;
+        toast('Yangi parolingiz bilan "Kirish" tugmasini bosing', 'info');
+      }
+    } catch (err) {
+      console.error('[reset_password_with_code] error:', err);
+      showErr(err.message || 'Tasdiqlash kodi noto\'g\'ri');
+    } finally {
+      recoverySubmitBtn.disabled = false;
+      recoverySubmitBtn.textContent = 'Parolni yangilash va kirish';
     }
   };
 }
