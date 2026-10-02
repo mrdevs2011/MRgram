@@ -1817,6 +1817,11 @@ body #toast {
   overflow: hidden !important;
 }
 
+#settingsOverlay.show {
+  display: flex !important;
+}
+
+@media (min-width: 1200px) {
   #settingsOverlay.show {
     position: fixed !important;
     top: 12px !important;
