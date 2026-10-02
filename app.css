@@ -5850,8 +5850,8 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
     max-width: 40px !important;
     padding: 0 !important;
     border-radius: 50% !important;
-    border: 1px solid var(--line) !important;
-    background: transparent !important;
+    border: 2px solid #000000 !important;
+    background: #2f3336 !important;
     color: var(--text) !important;
     display: inline-flex !important;
     align-items: center !important;
