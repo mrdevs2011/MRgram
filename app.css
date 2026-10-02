@@ -1923,11 +1923,11 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   align-items: center;
   gap: 10px;
   z-index: 5;
-  background: var(--bg);
+  background: transparent;
   pointer-events: none;
   user-select: none;
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 0;
+  border-radius: 0;
 }
 
 .chat-record-bar.active {
@@ -2085,11 +2085,11 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* O'chirilgan xabar: qum bo'lib sochilgach qator yopiladi (MRdrive .file-card.is-deleting ritmi) */
 .chat-msg.msg-dissolving {
   pointer-events: none;
-  transition: max-height .85s cubic-bezier(.4, 0, .2, 1), margin .85s cubic-bezier(.4, 0, .2, 1),
-              padding .85s cubic-bezier(.4, 0, .2, 1), opacity .55s ease;
+  transition: max-height .42s cubic-bezier(.4, 0, .2, 1), margin .42s cubic-bezier(.4, 0, .2, 1),
+              padding .42s cubic-bezier(.4, 0, .2, 1), opacity .28s ease;
 }
 .chat-msg.msg-dissolving.is-deleting {
-  max-height: 0 !important; margin-top: -2px !important; margin-bottom: 0 !important;
+  max-height: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important;
   padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; min-height: 0;
 }
 /* demo .particle-canvas (MRdrive) */
@@ -4716,17 +4716,63 @@ a { color: var(--link); }
 .post-user { overflow: hidden; text-overflow: ellipsis; min-width: 0; flex-shrink: 2; }
 .post-dot, .post-time { flex-shrink: 0; }
 .post-caption { padding: 2px 0 0; margin: 0; font-size: 15px; line-height: 1.4; color: var(--text); overflow-wrap: anywhere; min-width: 0; }
-/* Media: post kartasining butun kengligiga (chetdan chetga), yumaloq burchak va ramkasiz. Chap tomonda avatar... */
-.post-media, [data-theme] .post-media { width: auto; margin: 12px calc(-1 * var(--post-px)) 0 calc(-1 * (var(--post-px) + var(--post-avi) + var(--post-gap))); border: 0; border-radius: 0; overflow: hidden; }
-/* Nisbati saqlangan (aspect-ratio) media: min-height:180px nisbat orqali kenglikka o'tib, keng rasm/video post kartasidan chiqib ketmasin */
-.post-media[style*="aspect-ratio"], [data-theme] .post-media[style*="aspect-ratio"] { min-height: 0; min-width: 0; max-width: none; }
-.post-media img, .post-media video, .post-media .vid-wrap { max-width: 100%; }
-.post-actions { display: flex; justify-content: space-between; align-items: center; margin: 6px 0 0 -8px; }
-.act-btn { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; padding: 6px 8px; border: none; border-radius: 999px; background: none; font-family: var(--font); font-size: 13px; color: var(--text3); overflow: visible; }
-.act-btn svg { width: 18px; height: 18px; }
+/* Media: X uslubi — matn ustuni bilan hizalanadi, 16px radius, nozik hoshiya */
+.post-media, [data-theme] .post-media {
+  width: 100%; max-width: 100%; box-sizing: border-box;
+  margin: 12px 0 0; border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+  background: var(--bg);
+}
+.post-media[style*="aspect-ratio"], [data-theme] .post-media[style*="aspect-ratio"] { min-height: 0; min-width: 0; max-width: 100%; }
+.post-media img, .post-media video, .post-media .vid-wrap { max-width: 100%; display: block; }
+/* Post hover — X lights-out */
+.post:hover, [data-theme] .post:hover { background: rgba(255, 255, 255, 0.03); }
+[data-theme="light"] .post:hover, :root:not([data-theme="dark"]) .post:hover { background: rgba(0, 0, 0, 0.03); }
+.post-actions { display: flex; justify-content: space-between; align-items: center; margin: 12px 0 0; max-width: 425px; }
+.act-btn {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px;
+  padding: 0; border: none; border-radius: 999px; background: none;
+  font-family: var(--font); font-size: 13px; color: var(--text3); overflow: visible;
+  cursor: pointer; transition: color .15s ease;
+}
+.act-btn svg {
+  width: 18.75px; height: 18.75px; padding: 7px; box-sizing: content-box;
+  border-radius: 999px; transition: background .15s ease, box-shadow .15s ease, color .15s ease;
+}
 .act-btn span:empty { display: none; }
-.like-btn:hover { color: var(--red); }
-.act-btn.liked { color: var(--red); }
+.act-btn:hover { background: none; color: var(--x-blue, #1d9bf0); }
+.act-btn:hover svg { background: rgba(29, 155, 240, 0.1); color: var(--x-blue, #1d9bf0); }
+.like-btn:hover, .act-btn.liked { color: var(--x-like, #f91880); }
+.like-btn:hover svg, .act-btn.liked svg { color: var(--x-like, #f91880); }
+.like-btn:hover svg { background: rgba(249, 24, 128, 0.1); }
+.act-btn.liked { color: var(--x-like, #f91880); }
+
+/* Sticky home tabs — X "For you / Following" */
+.home-tabs {
+  position: sticky; top: 0; z-index: 6;
+  display: flex; align-items: stretch;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.home-tab {
+  flex: 1; min-width: 0; height: 53px; padding: 0 16px;
+  border: 0; background: none; color: var(--text3);
+  font: inherit; font-size: 15px; font-weight: 500;
+  cursor: pointer; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s ease, color .15s ease;
+}
+.home-tab:hover:not(:disabled) { background: rgba(255,255,255,0.03); color: var(--text); }
+.home-tab.on {
+  color: var(--text); font-weight: 700;
+}
+.home-tab.on::after {
+  content: ""; position: absolute; left: 50%; bottom: 0;
+  transform: translateX(-50%);
+  width: 56px; height: 4px; border-radius: 999px;
+  background: var(--x-blue, #1d9bf0);
+}
+.home-tab:disabled { opacity: .45; cursor: default; }
 /* ═══════════════════════════════════════════════════════════════════════ SIDEBAR — X.com o'lchamlari: elemen... */
 nav.bot-nav, nav.bot-nav button { font-family: var(--font); letter-spacing: 0; }
 nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle, nav.bot-nav .sb-logo-row, nav.bot-nav .sb-logo-glass, nav.bot-nav .sb-account, nav.bot-nav #createBtn.nav-center-btn { border: none; box-shadow: none; outline-offset: -2px; }
@@ -4775,10 +4821,9 @@ nav.bot-nav #createBtn.nav-center-btn:hover { background: var(--x-blue-hover); }
 /* Post qatori: X hover va harakat ranglari */
 .post:hover, [data-theme] .post:hover { border-color: var(--line); }
 .act-btn svg { border-radius: 0; }
-.act-btn:hover { background: none; color: var(--x-blue); }
-.act-btn:hover svg { background: none; box-shadow: none; }
-.like-btn:hover, .act-btn.liked, .act-btn.liked svg { color: var(--x-like); }
-.like-btn:hover svg, .act-btn.liked:hover svg { background: none; box-shadow: none; }
+/* act-btn hover ranglari yuqoridagi X 1:1 blokda */
+.act-btn:hover svg { box-shadow: none; }
+.like-btn:hover svg, .act-btn.liked:hover svg { box-shadow: none; }
 /* O'ng ustun: X kartalari (chegarasiz, #16181c / #f7f9f9) */
 /* Oyna / sheet: X overlay va soyasi (chegarasiz) */
 .sheet, [data-theme] .sheet, #uploadOverlay .composer-sheet, :is(#grpCreateChoiceOverlay, #grpAddUserOverlay, #grpCreateFormOverlay) .sheet { border: none; box-shadow: var(--pal-slate-20) 0 0 15px, rgba(101, 119, 134, .15) 0 0 3px 1px; }
@@ -4831,8 +4876,8 @@ nav.bot-nav #createBtn.nav-center-btn *,
 }
 #uploadOverlay .composer-post-btn:disabled { opacity: .5; }
 /* O'ng ustun: dark = chiziqli, light = to'ldirilgan (X'dagidek) */
-/* Harakat qatori butun kenglikka yoyiladi (X kabi) */
-.post-actions { max-width: none; margin-right: 0; }
+/* Harakat qatori X kabi ~425px ichida, chapga hizalangan */
+.post-actions { max-width: 425px; margin-right: 0; }
 /* ═══════════════════════════════════════════════════════════════════════ QIDIRUV — X "Explore" uslubi (faqat... */
 [data-theme] .search-overlay, [data-theme="dark"] .search-overlay, .search-overlay {
   top: 0;

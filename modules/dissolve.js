@@ -13,15 +13,15 @@ export function unmarkDissolve(ids) { (ids || []).forEach(id => dissolveMarks.de
    - Fully inlined computed styles (no fetch dependency)
    - Guaranteed visual effect (never snaps away)
    ============================================================ */
-const ANIM_DURATION  = 3000;   // sand falls fast, doesn't linger
-const SWEEP_DURATION = 1500;   // wave of grains breaking loose — a touch longer so it reads as a graceful cascade
-const COLLAPSE_DELAY = 1200;
-const FADE_IN_MS     = 180;    // canvas crossfades over the live card, grains stay still meanwhile — longer = imperceptible hand-off
+const ANIM_DURATION  = 1400;   // tezroq sochilish — uzoq qolib ketmasin
+const SWEEP_DURATION = 700;    // to'lqin tezroq o'tadi
+const COLLAPSE_DELAY = 380;    // qator erta yopiladi, sakrash kamayadi
+const FADE_IN_MS     = 90;     // canvas tezroq ustiga o'tadi
 const TILE_SIZE      = 1.0;    // finer grain = reads as sand, not confetti
-const DRIFT_X        = 110;    // px: how far grains spread sideways (wide, airy scatter)
-const PUFF_Y         = 16;     // px: soft upward lift as a grain breaks loose, then it arcs outward and down
-const GRAVITY        = 0.00065; // gentler downward pull — grains drift down like dust, not snap like rocks
-const START_SPEED     = 0.012;  // px/ms: grains ease into motion instead of jumping
+const DRIFT_X        = 80;     // biroz torroq sochilish — chalkashlik kam
+const PUFF_Y         = 10;     // yumshoqroq ko'tarilish
+const GRAVITY        = 0.0009; // biroz tezroq pastga
+const START_SPEED     = 0.016; // tezroq harakat
 const NOISE_AMP      = 0;      // subtle jitter, not chaotic
 
 function __dissolveHash(n) {
@@ -281,20 +281,20 @@ function __dissolveFloatFallback(card) {
       "z-index:9998",
       "pointer-events:none",
       "box-sizing:border-box",
-      "transition:transform 1.6s cubic-bezier(.45,0,.8,.5), opacity 1.6s ease-in",
+      "transition:transform .7s cubic-bezier(.4,0,.2,1), opacity .7s ease-in",
       "transform:translateY(0)",
       "opacity:1"
     ].join(";");
     document.body.appendChild(ghost);
     card.style.visibility = "hidden";
     requestAnimationFrame(() => {
-      ghost.style.transform = "translateY(" + Math.max(240, window.innerHeight - rect.top) + "px)";
+      ghost.style.transform = "translateY(" + Math.max(160, window.innerHeight - rect.top) + "px)";
       ghost.style.opacity = "0";
     });
     setTimeout(() => {
       ghost.remove();
       resolve();
-    }, 1200);
+    }, 720);
   });
 }
 
@@ -465,12 +465,22 @@ export async function playDeleteDissolve(card, clickX, clickY, group) {
       setTimeout(() => { card.style.visibility = "hidden"; }, FADE_IN_MS + 30);
 
       // Particles run independently (do not block delete/API)
+      let _overlayGone = false;
+      const killOverlay = () => {
+        if (_overlayGone) return;
+        _overlayGone = true;
+        try { overlay.remove(); } catch (_) {}
+      };
       function frame(now) {
-        const alive = paint(now - startT);
-        if (alive) requestAnimationFrame(frame);
-        else overlay.remove();
+        const elapsed = now - startT;
+        const alive = paint(elapsed);
+        // hard cap: animatsiya uzoq osilib qolmasin
+        if (alive && elapsed < ANIM_DURATION + FADE_IN_MS + 200) requestAnimationFrame(frame);
+        else killOverlay();
       }
       requestAnimationFrame(frame);
+      // zaxira tozalash (leftover particle-canvas oldini olish)
+      setTimeout(killOverlay, ANIM_DURATION + FADE_IN_MS + 400);
 
       // Collapse the list row after COLLAPSE_DELAY while grains still fall
       await new Promise((r) => setTimeout(r, COLLAPSE_DELAY + (group ? Math.max(0, group.sweep - SWEEP_DURATION) : 0)));
@@ -506,6 +516,6 @@ export async function playDeleteDissolve(card, clickX, clickY, group) {
       }
     };
     card.addEventListener("transitionend", onEnd);
-    setTimeout(done, 1250);
+    setTimeout(done, 700);
   });
 }

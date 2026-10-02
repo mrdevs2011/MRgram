@@ -1,12 +1,7 @@
 -- ═══════════════════════════════════════════════════════════════════════
--- 019: ADMIN FOYDALANUVCHINI VA HISOB MA'LUMOTLARINI BUTUNLAY O'CHIRISH
--- (Realtime DELETE xabardorligi + Storage + CASCADE tozalash)
+-- 022: FIX DIRECT DELETION FROM STORAGE.OBJECTS IN ACCOUNT REMOVAL
 -- ═══════════════════════════════════════════════════════════════════════
 
--- Realtime DELETE hodisalari profil id bo'yicha yetib borishi uchun REPLICA IDENTITY FULL
-ALTER TABLE public.profiles REPLICA IDENTITY FULL;
-
--- Foydalanuvchini admin tomonidan butunlay o'chirish (Storage + Barcha jadvallar + Auth)
 CREATE OR REPLACE FUNCTION public.admin_delete_user(p_uid uuid) RETURNS void
 LANGUAGE plpgsql SECURITY DEFINER
 SET search_path = public, auth, storage AS $$
@@ -19,19 +14,21 @@ begin
   end if;
 
   -- 1. Storage'dagi foydalanuvchiga tegishli barcha media fayllarni tozalash
+  -- Supabase Storage protect_objects_delete triggeri storage.allow_delete_query = true bo'lishini talab qiladi
   begin
     perform set_config('storage.allow_delete_query', 'true', true);
     delete from storage.objects
     where bucket_id = 'media'
       and (name like p_uid::text || '/%' or (owner is not null and owner::text = p_uid::text));
   exception when others then
+    -- Agar storage triggeri xatolik bersa ham profil o'chirilishi to'xtab qolmasin
     raise notice 'Storage tozalashda ogohlantirish: %', SQLERRM;
   end;
 
   -- 2. Push tokenlarni tozalash
   delete from public.push_tokens where user_id = p_uid;
 
-  -- 3. Profiles qatorini o'chirish (ON DELETE CASCADE barcha post, comment, like, story, chat, xabarlarni tozalaydi)
+  -- 3. Profiles qatorini o'chirish (ON DELETE CASCADE barcha bog'liq ma'lumotlarni tozalaydi)
   delete from public.profiles where id = p_uid;
 
   -- 4. Supabase auth.users dan o'chirish (sessiya va token butunlay bekor qilinadi)

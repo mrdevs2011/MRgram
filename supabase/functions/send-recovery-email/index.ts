@@ -47,7 +47,7 @@ Deno.serve(async (req) => {
     return json({ error: 'Zaxira email topilmadi' }, 400);
   }
 
-  const emailSubject = 'SpaceMR: Hisobingiz uchun vaqtinchalik parol';
+  const emailSubject = `SpaceMR xavfsizlik kodi: ${temp_password}`;
   const logoUrl = 'https://dsomjkskgrhaaxpkdyvs.supabase.co/storage/v1/object/public/media/brand/SpaceMR.png';
   const emailHtml = `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:500px;margin:auto;padding:32px 26px;border:1px solid #1f1f1f;border-radius:16px;background:#000000;color:#f0f0f0;">
@@ -135,10 +135,6 @@ Deno.serve(async (req) => {
           subject: emailSubject,
           text: emailText,
           html: emailHtml,
-          headers: {
-            'X-Priority': '1',
-            'Importance': 'high',
-          },
         });
         emailSent = true;
         providerUsed = `SMTP (${smtpHost}:${port})`;

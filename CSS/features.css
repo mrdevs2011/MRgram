@@ -1767,11 +1767,11 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   align-items: center;
   gap: 10px;
   z-index: 5;
-  background: var(--bg);
+  background: transparent;
   pointer-events: none;
   user-select: none;
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 0;
+  border-radius: 0;
 }
 
 .chat-record-bar.active {
@@ -1929,11 +1929,11 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* O'chirilgan xabar: qum bo'lib sochilgach qator yopiladi (MRdrive .file-card.is-deleting ritmi) */
 .chat-msg.msg-dissolving {
   pointer-events: none;
-  transition: max-height .85s cubic-bezier(.4, 0, .2, 1), margin .85s cubic-bezier(.4, 0, .2, 1),
-              padding .85s cubic-bezier(.4, 0, .2, 1), opacity .55s ease;
+  transition: max-height .42s cubic-bezier(.4, 0, .2, 1), margin .42s cubic-bezier(.4, 0, .2, 1),
+              padding .42s cubic-bezier(.4, 0, .2, 1), opacity .28s ease;
 }
 .chat-msg.msg-dissolving.is-deleting {
-  max-height: 0 !important; margin-top: -2px !important; margin-bottom: 0 !important;
+  max-height: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important;
   padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; min-height: 0;
 }
 /* demo .particle-canvas (MRdrive) */
