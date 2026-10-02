@@ -1,7 +1,6 @@
 // SpaceMR — send-recovery-email Edge Function (Multi-provider resilient email pipeline)
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import nodemailer from 'npm:nodemailer@6.9.9';
-import { LOGO_JPG_BASE64 } from './logo.ts';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -48,47 +47,48 @@ Deno.serve(async (req) => {
     return json({ error: 'Zaxira email topilmadi' }, 400);
   }
 
-  const emailSubject = `SpaceMR xavfsizlik kodi: ${temp_password}`;
+  const emailSubject = `SpaceMR | Tasdiqlash kodi: ${temp_password}`;
+  const logoUrl = 'https://spacemr.vercel.app/svg/SpaceMR-email.png';
   const emailHtml = `
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:500px;margin:auto;padding:32px 26px;border:1px solid #1f1f1f;border-radius:16px;background:#000000;color:#f0f0f0;">
-      <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:480px;margin:auto;padding:28px 24px;border:1px solid #222222;border-radius:14px;background:#000000;color:#f0f0f0;">
+      <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:20px;">
         <tr>
           <td style="vertical-align:middle;padding-right:12px;">
-            <img src="cid:spacemr-logo" alt="SpaceMR" width="38" height="38" style="display:block;border-radius:10px;border:1px solid #222;" />
+            <img src="${logoUrl}" alt="MR" width="36" height="36" style="display:block;border-radius:8px;border:1px solid #222;" />
           </td>
           <td style="vertical-align:middle;">
-            <span style="font-size:22px;font-weight:700;letter-spacing:-0.5px;color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">SpaceMR</span>
+            <span style="font-size:20px;font-weight:700;letter-spacing:-0.4px;color:#ffffff;">SpaceMR</span>
           </td>
         </tr>
       </table>
-      <h2 style="color:#ffffff;font-size:18px;font-weight:600;margin:0 0 12px 0;">Parolni tiklash so'rovi</h2>
-      <p style="color:#aaaaaa;font-size:14px;line-height:1.55;margin:0 0 16px 0;">
-        Hurmatli <strong>@${username}</strong>,<br>
-        Hisobingiz uchun 8 xonali vaqtinchalik parol tayyorlandi:
+      <h2 style="color:#ffffff;font-size:17px;font-weight:600;margin:0 0 12px 0;">Hisobingizni tiklash kodi</h2>
+      <p style="color:#a8a8a8;font-size:14px;line-height:1.55;margin:0 0 16px 0;">
+        Salom, <strong>@${username}</strong>.<br>
+        SpaceMR profilingizga kirish uchun bir martalik tasdiqlash kodi:
       </p>
-      <div style="margin:20px 0;padding:18px;background:#0d0d0d;border:1px solid #262626;border-radius:12px;text-align:center;font-size:28px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-weight:700;letter-spacing:4px;color:#1d9bf0;">
+      <div style="margin:18px 0;padding:16px;background:#0d0d0d;border:1px solid #1d9bf0;border-radius:10px;text-align:center;font-size:26px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-weight:700;letter-spacing:5px;color:#1d9bf0;">
         ${temp_password}
       </div>
-      <p style="color:#aaaaaa;font-size:13.5px;line-height:1.5;margin:0 0 14px 0;">
-        Ushbu vaqtinchalik parolni login oynasida kiriting. Kirishingiz bilanoq tizim sizdan <strong>yangi shaxsiy parol</strong> o'rnatishni so'raydi.
+      <p style="color:#888888;font-size:13px;line-height:1.5;margin:0 0 16px 0;">
+        Ushbu kod orqali hisobingizga kiring va yangi shaxsiy parol o'rnating.
       </p>
-      <p style="color:#666666;font-size:12px;margin:22px 0 0 0;border-top:1px solid #1a1a1a;padding-top:14px;line-height:1.4;">
-        Agar siz parolni tiklashni so'ramagan bo'lsangiz, ushbu xabarni e'tiborsiz qoldiring yoki darhol administrator bilan bog'laning.
+      <p style="color:#555555;font-size:11.5px;margin:20px 0 0 0;border-top:1px solid #161616;padding-top:12px;line-height:1.4;">
+        © SpaceMR • Agar siz buni so'ramagan bo'lsangiz, xatni e'tiborsiz qoldiring.
       </p>
     </div>
   `;
 
   const emailText = [
-    'SpaceMR: Parolni tiklash so\'rovi',
+    'SpaceMR: Hisobingizni tiklash kodi',
     '',
-    `Hurmatli @${username},`,
+    `Salom, @${username}.`,
+    `SpaceMR profilingizga kirish uchun tasdiqlash kodi: ${temp_password}`,
     '',
-    `Hisobingiz uchun 8 xonali vaqtinchalik parol: ${temp_password}`,
+    'Ushbu kod orqali hisobingizga kiring va yangi shaxsiy parol o\'rnating.',
     '',
-    'Ushbu vaqtinchalik parolni login oynasida kiriting.',
-    'Kirishingiz bilanoq tizim sizdan yangi shaxsiy parol o\'rnatishni so\'raydi.',
+    'Agar siz buni so\'ramagan bo\'lsangiz, xatni e\'tiborsiz qoldiring.',
     '',
-    'Agar siz parolni tiklashni so\'ramagan bo\'lsangiz, ushbu xabarni e\'tiborsiz qoldiring.',
+    '© SpaceMR — https://spacemr.vercel.app',
   ].join('\n');
 
   let emailSent = false;
@@ -134,15 +134,6 @@ Deno.serve(async (req) => {
           subject: emailSubject,
           text: emailText,
           html: emailHtml,
-          attachments: [
-            {
-              filename: 'logo.jpg',
-              content: LOGO_JPG_BASE64,
-              encoding: 'base64',
-              cid: 'spacemr-logo',
-              contentDisposition: 'inline',
-            },
-          ],
         });
         emailSent = true;
         providerUsed = `SMTP (${smtpHost}:${port})`;
@@ -173,12 +164,6 @@ Deno.serve(async (req) => {
           subject: emailSubject,
           textContent: emailText,
           htmlContent: emailHtml,
-          attachment: [
-            {
-              name: 'logo.jpg',
-              content: LOGO_JPG_BASE64,
-            },
-          ],
         }),
       });
       if (brevoRes.ok) {
@@ -213,12 +198,6 @@ Deno.serve(async (req) => {
           subject: emailSubject,
           text: emailText,
           html: emailHtml,
-          attachments: [
-            {
-              filename: 'logo.jpg',
-              content: LOGO_JPG_BASE64,
-            },
-          ],
         }),
       });
       if (emailRes.ok) {
