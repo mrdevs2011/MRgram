@@ -2611,6 +2611,7 @@ function _hideRecordBar() {
   if (_recTimerInterval) { clearInterval(_recTimerInterval); _recTimerInterval = null; }
   const wrap = $('chatVoiceWrap');
   if (wrap) wrap.classList.remove('cancelling');
+  _clearVoiceCancelVisuals();
 }
 
 function _setRecordBarCancelState(isCancelling) {
@@ -2621,6 +2622,83 @@ function _setRecordBarCancelState(isCancelling) {
   if (wrap) wrap.classList.toggle('cancelling', isCancelling);
   if (cancelText) {
     cancelText.textContent = isCancelling ? 'Qo\'yib yuboring — bekor qilish' : 'Bekor qilish uchun suring';
+  }
+}
+
+/* Chapga surish progressi (0..1) — rang/pulse silliq o'zgaradi */
+const _VOICE_CANCEL_DIST = 72; // px — to'liq bekor qilish masofasi
+function _lerp(a, b, t) { return a + (b - a) * t; }
+function _rgbMix(r1, g1, b1, r2, g2, b2, t) {
+  return `rgb(${Math.round(_lerp(r1,r2,t))},${Math.round(_lerp(g1,g2,t))},${Math.round(_lerp(b1,b2,t))})`;
+}
+function _applyVoiceCancelProgress(p) {
+  // p: 0 = normal (ko'k), 1 = to'liq cancel (qizil)
+  p = Math.max(0, Math.min(1, p));
+  const vBtn = $('chatVoiceBtn');
+  const wrap = $('chatVoiceWrap');
+  const cancelEl = $('chatRecordCancel');
+  const cancelText = $('crbCancelText');
+
+  // Ko'k #2AABEE / #229ED9  →  Qizil #ef4444 / #dc2626
+  const c1 = _rgbMix(42, 171, 238, 239, 68, 68, p);
+  const c2 = _rgbMix(34, 158, 217, 220, 38, 38, p);
+  const shadowA = _lerp(0.55, 0.55, p);
+  const shadowRgb = p < 0.5
+    ? `rgba(42, 171, 238, ${0.55 + p * 0.1})`
+    : `rgba(239, 68, 68, ${0.45 + p * 0.15})`;
+
+  if (vBtn) {
+    vBtn.style.background = `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`;
+    vBtn.style.boxShadow = `0 4px 20px ${shadowRgb}, 0 0 0 2px rgba(255, 255, 255, 0.2)`;
+  }
+
+  // Pulse rings — ko'kdan qizilga silliq
+  const pr = Math.round(_lerp(42, 239, p));
+  const pg = Math.round(_lerp(171, 68, p));
+  const pb = Math.round(_lerp(238, 68, p));
+  const r1 = $('cvPulse1'), r2 = $('cvPulse2'), r3 = $('cvPulse3');
+  if (r1) r1.style.background = `radial-gradient(circle, rgba(${pr},${pg},${pb},0.65) 0%, rgba(${pr},${pg},${pb},0.35) 65%, rgba(${pr},${pg},${pb},0) 100%)`;
+  if (r2) r2.style.background = `radial-gradient(circle, rgba(${pr},${pg},${pb},0.45) 0%, rgba(${pr},${pg},${pb},0.2) 70%, rgba(${pr},${pg},${pb},0) 100%)`;
+  if (r3) r3.style.background = `radial-gradient(circle, rgba(${pr},${pg},${pb},0.3) 0%, rgba(${pr},${pg},${pb},0.1) 75%, rgba(${pr},${pg},${pb},0) 100%)`;
+
+  // Cancel matn rangi/opacity
+  if (cancelEl) {
+    const tr = Math.round(_lerp(150, 239, p)); // text3-ish → red
+    const tg = Math.round(_lerp(150, 68, p));
+    const tb = Math.round(_lerp(155, 68, p));
+    cancelEl.style.color = `rgb(${tr},${tg},${tb})`;
+    cancelEl.style.opacity = String(0.55 + p * 0.45);
+    cancelEl.style.fontWeight = p > 0.85 ? '600' : '400';
+  }
+  if (cancelText && p > 0.92) {
+    cancelText.textContent = "Qo'yib yuboring — bekor qilish";
+  } else if (cancelText && p < 0.5) {
+    cancelText.textContent = 'Bekor qilish uchun suring';
+  }
+
+  // Binary class faqat to'liq cancel zonasida (release qarori uchun)
+  const full = p >= 0.92;
+  if (wrap) wrap.classList.toggle('cancelling', full);
+  const bar = $('chatRecordBar');
+  if (bar) bar.classList.toggle('cancelling', full);
+  return full;
+}
+
+function _clearVoiceCancelVisuals() {
+  const vBtn = $('chatVoiceBtn');
+  if (vBtn) {
+    vBtn.style.background = '';
+    vBtn.style.boxShadow = '';
+  }
+  ['cvPulse1', 'cvPulse2', 'cvPulse3'].forEach(id => {
+    const el = $(id);
+    if (el) el.style.background = '';
+  });
+  const cancelEl = $('chatRecordCancel');
+  if (cancelEl) {
+    cancelEl.style.color = '';
+    cancelEl.style.opacity = '';
+    cancelEl.style.fontWeight = '';
   }
 }
 
@@ -3088,6 +3166,9 @@ if (_vBtn) {
     _voiceStartTime = Date.now();
 
     _vBtn.classList.add('recording');
+    _vBtn.classList.remove('cancelling');
+    _clearVoiceCancelVisuals();
+    _applyVoiceCancelProgress(0);
     _showRecordBar();
     startRecording();
   });
@@ -3095,20 +3176,11 @@ if (_vBtn) {
   _vBtn.addEventListener('pointermove', e => {
     if (!_isHoldingVoice) return;
     const dx = e.clientX - _voiceStartX;
-    // Chapga 55px dan ortiq surilsa — bekor qilish holati
-    if (dx < -55) {
-      if (!_voiceCancelled) {
-        _voiceCancelled = true;
-        _setRecordBarCancelState(true);
-        _vBtn.classList.add('cancelling');
-      }
-    } else {
-      if (_voiceCancelled) {
-        _voiceCancelled = false;
-        _setRecordBarCancelState(false);
-        _vBtn.classList.remove('cancelling');
-      }
-    }
+    // Chapga surish: 0..1 progress — rang silliq o'zgaradi, to'satdan qizarib ketmaydi
+    const progress = dx >= 0 ? 0 : Math.min(1, (-dx) / _VOICE_CANCEL_DIST);
+    const full = _applyVoiceCancelProgress(progress);
+    _voiceCancelled = full;
+    _vBtn.classList.toggle('cancelling', full);
   });
 
   const _finishVoiceHold = () => {
@@ -3123,6 +3195,7 @@ if (_vBtn) {
     }
 
     _vBtn.classList.remove('recording', 'cancelling');
+    _clearVoiceCancelVisuals();
     _hideRecordBar();
 
     const duration = Date.now() - _voiceStartTime;
