@@ -567,6 +567,11 @@ function _showForgotPasswordBtn(username, recInfo) {
     btn.style.color = 'var(--tg-primary-blue,#1d9bf0)';
     btn.style.cursor = 'pointer';
   }
+  const hintEl = $('forgotPasswordHint');
+  if (hintEl) {
+    hintEl.style.display = 'none';
+    hintEl.textContent = '';
+  }
 }
 
 function _hideForgotPasswordBtn() {
@@ -580,6 +585,11 @@ function _hideForgotPasswordBtn() {
     btn.textContent = 'Parolni unutdingizmi?';
     btn.style.color = 'var(--tg-primary-blue,#1d9bf0)';
     btn.style.cursor = 'pointer';
+  }
+  const hintEl = $('forgotPasswordHint');
+  if (hintEl) {
+    hintEl.style.display = 'none';
+    hintEl.textContent = '';
   }
 }
 
@@ -616,10 +626,26 @@ if (forgotPasswordBtn) {
     const u = _lastTestedUsername || _cleanUsername($('aUsername')?.value);
     if (!u) {
       toast('Foydalanuvchi nomini kiriting', 'error');
+      $('aUsername')?.focus();
       return;
     }
 
-    if (_lastRecoveryInfo && !_lastRecoveryInfo.has_recovery) {
+    let recInfo = _lastRecoveryInfo;
+    if (!recInfo || _lastTestedUsername !== u) {
+      try {
+        const { data } = await sb.rpc('check_user_recovery', { p_username: u });
+        recInfo = data;
+        _lastRecoveryInfo = data;
+        _lastTestedUsername = u;
+      } catch (_) {}
+    }
+
+    if (recInfo && !recInfo.exists) {
+      toast('Bunday foydalanuvchi topilmadi', 'error');
+      return;
+    }
+
+    if (recInfo && !recInfo.has_recovery) {
       toast("Ushbu hisobda zaxira email ko'rsatilmagan. Administrator bilan bog'laning", 'warning');
       return;
     }
@@ -630,30 +656,28 @@ if (forgotPasswordBtn) {
     forgotPasswordBtn.style.cursor = 'default';
     forgotPasswordBtn.textContent = 'Yuborilmoqda...';
 
+    const hintEl = $('forgotPasswordHint');
+    if (hintEl) {
+      hintEl.style.display = 'none';
+      hintEl.textContent = '';
+    }
+
     try {
-      let result = null;
-      try {
-        const { data, error } = await sb.functions.invoke('send-recovery-email', {
-          body: { username: u, temp_password: tempPassword }
-        });
-        if (!error && data?.ok) {
-          result = data;
-        }
-      } catch (fErr) {
-        console.warn('[send-recovery-email] function invoke error:', fErr);
+      const resp = await sb.functions.invoke('send-recovery-email', {
+        body: { username: u, temp_password: tempPassword }
+      });
+
+      const data = resp.data;
+      const fnErr = resp.error;
+
+      if (fnErr || !data?.ok) {
+        const msg = data?.error || fnErr?.message || "Server bilan bog'lanishda xatolik";
+        throw new Error(msg);
       }
 
-      // Agar edge function javob bermasa, to'g'ridan-to'g'ri RPC chaqiramiz
-      if (!result) {
-        const { data: rpcData, error: rpcErr } = await sb.rpc('request_password_reset', {
-          p_username: u,
-          p_temp_password: tempPassword,
-        });
-        if (rpcErr) throw rpcErr;
-        result = {
-          ok: true,
-          masked_email: rpcData?.masked_email,
-        };
+      if (!data.email_sent) {
+        const detail = data.error_detail || "Email yuborishda xatolik yuz berdi";
+        throw new Error(detail);
       }
 
       // Tugma kulrang (disabled) bo'lib "Yuborildi" deb qoladi
@@ -661,6 +685,14 @@ if (forgotPasswordBtn) {
       forgotPasswordBtn.style.color = 'var(--text3, #888)';
       forgotPasswordBtn.style.cursor = 'default';
       forgotPasswordBtn.textContent = 'Yuborildi';
+
+      const masked = data.masked_email || '';
+      if (hintEl) {
+        hintEl.style.display = 'block';
+        hintEl.innerHTML = masked
+          ? `Parol <strong style="color:var(--text,#fff);">${masked}</strong> ga yuborildi.<br>Kelmasa, <u>Spam (Keraksiz)</u> papkasini tekshiring.`
+          : `Parol emailingizga yuborildi.<br>Kelmasa, <u>Spam (Keraksiz)</u> papkasini tekshiring.`;
+      }
 
       // Parol inputini tozalash va fokus berish
       const pInp = $('aPassword');
@@ -670,7 +702,13 @@ if (forgotPasswordBtn) {
         pInp.focus();
       }
 
-      toast('Vaqtinchalik parol emailingizga yuborildi', 'info');
+      toast(
+        masked
+          ? `Vaqtinchalik parol ${masked} ga yuborildi. Spam papkasini ham tekshiring!`
+          : `Vaqtinchalik parol emailingizga yuborildi. Spam papkasini ham tekshiring!`,
+        'info',
+        8000
+      );
     } catch (err) {
       console.error('[forgotPasswordBtn] error:', err);
       forgotPasswordBtn.disabled = false;

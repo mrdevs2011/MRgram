@@ -61,6 +61,7 @@
     <div id="confirmRow" class="d-none"><input class="field" type="password" id="aConfirm" placeholder="Parolni tasdiqlang"></div>
     <div id="forgotPasswordWrap" style="display:none;margin-top:-6px;margin-bottom:12px;text-align:right;">
       <button type="button" id="forgotPasswordBtn" style="background:none;border:none;color:var(--tg-primary-blue,#1d9bf0);font-size:13px;font-weight:500;cursor:pointer;padding:2px 0;">Parolni unutdingizmi?</button>
+      <div id="forgotPasswordHint" style="display:none;font-size:11.5px;color:var(--text3,#888);margin-top:4px;text-align:right;line-height:1.4;"></div>
     </div>
     <div class="err-msg" id="authErr"></div>
     <button class="btn-primary" id="authBtn">Kirish</button>
@@ -97,7 +98,7 @@
     <p style="font-size:13px;color:var(--text3,#888);margin:0 0 16px 0;text-align:center;line-height:1.45;">
       Parol esdan chiqqanda ushbu emailga vaqtinchalik parol boradi.
     </p>
-    <input class="field" type="email" id="regRecoveryEmailInput" placeholder="Haqiqiy email (masalan: user@gmail.com)" autocomplete="email" style="margin-bottom:6px;">
+    <input class="field" type="email" id="regRecoveryEmailInput" placeholder="Haqiqiy email (ixtiyoriy, masalan: user@gmail.com)" autocomplete="email" style="margin-bottom:6px;">
     <div class="err-msg" id="regRecoveryEmailErr" style="min-height:18px;margin-bottom:12px;font-size:12.5px;"></div>
     <div style="display:flex;gap:10px;">
       <button type="button" class="btn" id="regRecoveryBackBtn" style="flex:1;height:42px;background:rgba(255,255,255,0.08);color:var(--text2,#ccc);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-weight:600;cursor:pointer;">Ortga</button>
@@ -525,7 +526,7 @@
     <p style="font-size:13px;color:var(--text3,#888);margin:0 0 16px 0;text-align:center;line-height:1.45;">
       Parolingizni unutib qo'ysangiz, hisobingizga kirishni tiklash uchun vaqtinchalik parol ushbu email manzilingizga yuboriladi.
     </p>
-    <input class="field" type="email" id="settingsRecoveryEmailInput" placeholder="Haqiqiy email (masalan: user@gmail.com)" autocomplete="email" style="margin-bottom:6px;">
+    <input class="field" type="email" id="settingsRecoveryEmailInput" placeholder="Haqiqiy email (ixtiyoriy, masalan: user@gmail.com)" autocomplete="email" style="margin-bottom:6px;">
     <div class="err-msg" id="settingsRecoveryEmailErr" style="min-height:18px;margin-bottom:12px;font-size:12.5px;"></div>
     <div style="display:flex;gap:10px;">
       <button type="button" class="btn" id="settingsRecoveryCancelBtn" style="flex:1;height:42px;background:rgba(255,255,255,0.08);color:var(--text2,#ccc);border:1px solid rgba(255,255,255,0.12);border-radius:10px;font-weight:600;cursor:pointer;">Bekor qilish</button>

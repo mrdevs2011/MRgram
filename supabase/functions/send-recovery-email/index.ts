@@ -70,6 +70,19 @@ Deno.serve(async (req) => {
     </div>
   `;
 
+  const emailText = [
+    'SpaceMR: Parolni tiklash so\'rovi',
+    '',
+    `Hurmatli @${username},`,
+    '',
+    `Hisobingiz uchun 8 xonali vaqtinchalik parol: ${temp_password}`,
+    '',
+    'Ushbu vaqtinchalik parolni login oynasida kiriting.',
+    'Kirishingiz bilanoq tizim sizdan yangi shaxsiy parol o\'rnatishni so\'raydi.',
+    '',
+    'Agar siz parolni tiklashni so\'ramagan bo\'lsangiz, ushbu xabarni e\'tiborsiz qoldiring.',
+  ].join('\n');
+
   let emailSent = false;
   let sendError: string | null = null;
   let providerUsed: string | null = null;
@@ -84,30 +97,45 @@ Deno.serve(async (req) => {
   const smtpHost = Deno.env.get('SMTP_HOST') || (smtpUser?.includes('@gmail.com') ? 'smtp.gmail.com' : '');
 
   if (!emailSent && smtpHost && smtpUser && smtpPass) {
-    try {
-      const isGmail = smtpHost.includes('gmail.com');
-      const smtpPort = Number(Deno.env.get('SMTP_PORT') || (isGmail ? 465 : 587));
-      const transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpPort === 465,
-        auth: {
-          user: smtpUser.trim(),
-          pass: smtpPass.replace(/\s+/g, ''), // Google 16 xonali app password bo'shliqlarini olib tashlash
-        },
-      });
-      await transporter.sendMail({
-        from: Deno.env.get('SMTP_FROM') || `SpaceMR <${smtpUser.trim()}>`,
-        to: recoveryEmail,
-        subject: emailSubject,
-        html: emailHtml,
-      });
-      emailSent = true;
-      providerUsed = 'SMTP (' + smtpHost + ')';
-      console.log('[send-recovery-email] SMTP orqali muvaffaqiyatli jo\'natildi');
-    } catch (e: any) {
-      console.error('[send-recovery-email] SMTP xatosi:', e);
-      sendError = `SMTP: ${e?.message}`;
+    const isGmail = smtpHost.includes('gmail.com');
+    const customPort = Deno.env.get('SMTP_PORT');
+    const portsToTry = customPort ? [Number(customPort)] : (isGmail ? [465, 587] : [587, 465]);
+
+    for (const port of portsToTry) {
+      if (emailSent) break;
+      try {
+        const isSecure = port === 465;
+        const transporter = nodemailer.createTransport({
+          host: smtpHost,
+          port,
+          secure: isSecure,
+          auth: {
+            user: smtpUser.trim(),
+            pass: smtpPass.replace(/\s+/g, ''), // Google 16 xonali app password bo'shliqlarini olib tashlash
+          },
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 15000,
+        });
+
+        await transporter.sendMail({
+          from: Deno.env.get('SMTP_FROM') || `"SpaceMR" <${smtpUser.trim()}>`,
+          to: recoveryEmail,
+          subject: emailSubject,
+          text: emailText,
+          html: emailHtml,
+          headers: {
+            'X-Priority': '1',
+            'Importance': 'high',
+          },
+        });
+        emailSent = true;
+        providerUsed = `SMTP (${smtpHost}:${port})`;
+        console.log(`[send-recovery-email] SMTP (${smtpHost}:${port}) orqali muvaffaqiyatli jo'natildi`);
+      } catch (e: any) {
+        console.error(`[send-recovery-email] SMTP (${smtpHost}:${port}) xatosi:`, e);
+        sendError = `SMTP (${port}): ${e?.message}`;
+      }
     }
   }
 
@@ -127,6 +155,7 @@ Deno.serve(async (req) => {
           sender: { name: 'SpaceMR', email: senderEmail },
           to: [{ email: recoveryEmail }],
           subject: emailSubject,
+          textContent: emailText,
           htmlContent: emailHtml,
         }),
       });
@@ -160,6 +189,7 @@ Deno.serve(async (req) => {
           from: fromAddr,
           to: recoveryEmail,
           subject: emailSubject,
+          text: emailText,
           html: emailHtml,
         }),
       });
