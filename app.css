@@ -6152,8 +6152,8 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 [data-theme="dark"] #toast,
 html #toast,
 body #toast {
-  background: #0f0f0f !important;
-  background-color: #0f0f0f !important;
+  background: #000000 !important;
+  background-color: #000000 !important;
   color: #e7e9ea !important;
   border: 1px solid #2f3336 !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85) !important;
@@ -6196,7 +6196,7 @@ body #toast {
 
 /* SW yangilanish paneli + admin notice — to'liq dark */
 #swUpdateBar {
-  background: #0f0f0f !important;
+  background: #000000 !important;
   color: #e7e9ea !important;
   border: 1px solid #2f3336 !important;
   box-shadow: 0 8px 32px rgba(0,0,0,.85) !important;
@@ -6207,7 +6207,7 @@ body #toast {
   border: 1px solid #3e444a !important;
 }
 .admin-notice-banner {
-  background: #16181c !important;
+  background: #000000 !important;
   border: 1px solid #2f3336 !important;
   color: #e7e9ea !important;
 }

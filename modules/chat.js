@@ -1208,7 +1208,7 @@ function _injectNoticeCSS() {
 .admin-notice-banner {
   display: flex; align-items: flex-start; gap: 10px;
   margin: 12px 16px 4px;
-  background: #16181c;
+  background: #000000;
   border: 1px solid #2f3336;
   border-radius: 12px;
   padding: 11px 14px;
