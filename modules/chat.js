@@ -2793,7 +2793,7 @@ function _showMicPermCard({ msg, hint, onAllow } = {}) {
   cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
   newAllow.onclick = async () => {
     newAllow.disabled = true;
-    newAllow.textContent = 'So'ralmoqda...';
+    newAllow.textContent = "So’ralmoqda...";
     try {
       await onAllow?.();
       close();
@@ -2855,7 +2855,7 @@ async function startRecording() {
     _abortVoiceUi();
     _showMicPermCard({
       msg: 'Brauzer mikrofonga ruxsatni bloklagan.',
-      hint: 'Brauzer sozlamalaridan (qulf ikonka → Mikrofon) ruxsatni yoqing, keyin «Ruxsat berish»ni bosing. Keyingi safar ham qayta so'raladi.',
+      hint: "Brauzer sozlamalaridan (qulf ikonka → Mikrofon) ruxsatni yoqing, keyin «Ruxsat berish»ni bosing. Keyingi safar ham qayta so’raladi.",
       onAllow: async () => {
         try {
           const s = await _requestMicStream();
@@ -2866,7 +2866,7 @@ async function startRecording() {
           if (kind === 'notfound') {
             toast('Mikrofon topilmadi — qurilma ulanganligini tekshiring', 'error');
           } else if (kind === 'denied') {
-            toast('Hali ham ruxsat yo'q. Brauzer manzil qatori yonidagi qulfdan Mikrofonni yoqing', 'error');
+            toast("Hali ham ruxsat yo’q. Brauzer manzil qatori yonidagi qulfdan Mikrofonni yoqing", "error");
           } else {
             toast('Mikrofon ochilmadi: ' + (err.message || 'xato'), 'error');
           }
@@ -2935,7 +2935,7 @@ async function startRecording() {
       msg: kind === 'denied'
         ? 'Mikrofonga ruxsat berilmadi.'
         : 'Ovozli xabar uchun mikrofon kerak.',
-      hint: '«Ruxsat berish»ni bosing — brauzer so'rovi chiqadi. Agar chiqmasa, manzil qatori yonidagi qulf ikonkasidan Mikrofonni yoqing.',
+      hint: "«Ruxsat berish»ni bosing — brauzer so’rovi chiqadi. Agar chiqmasa, manzil qatori yonidagi qulf ikonkasidan Mikrofonni yoqing.",
       onAllow: async () => {
         try {
           const s = await _requestMicStream();
@@ -3501,6 +3501,13 @@ initMsgMenu({
   box: $('chatThreadMessages'),
   getMsgs: () => _curMsgs,
   reload: () => { if (state.currentChatKind && state.currentChatKind !== 'dm') reloadGroupThread(); else if (_reloadThread) _reloadThread(); },
+  // Optimistic delete: UI dan darhol olib tashlash (dissolve ishlashi uchun markDissolve oldindan chaqirilgan)
+  applyLocalDelete: (ids) => {
+    const set = new Set((ids || []).map(String));
+    if (!set.size) return;
+    ids.forEach(id => { try { _rtLocal.delete(id); } catch (_) {} });
+    paintMessages(_curMsgs.filter(x => !set.has(String(x.id))));
+  },
   syncInput: updateVoiceSendBtn,
   getUsers: async () => (_usersCache && _usersCache.length) ? _usersCache : await _fetchChatUsers(),
   chatIdFor: async uid => {

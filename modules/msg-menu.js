@@ -170,13 +170,29 @@ async function copyText(text) {
 function remove(ids) {
   const own = ids.filter(id => isMine(msgOf(id)));
   if (!own.length) return;
-  showConfirm(own.length > 1 ? `${own.length} ta xabar o‘chirilsinmi?` : 'Xabar o‘chirilsinmi?', async () => {
-    markDissolve(own);   // realtime DELETE/reload kelganda xabar sochilib ketadi
-    const { error } = await sb.from(tbl()).delete().in('id', own);
-    if (error) { unmarkDissolve(own); console.warn('[MsgMenu] delete:', error.message); toast('O‘chirilmadi', 'error'); return; }
-    if (editing && own.includes(editing.id)) cancelEdit(true);
+  showConfirm(own.length > 1 ? `${own.length} ta xabar o‘chirilsinmi?` : 'Xabar o‘chirilsinmi?', () => {
+    // 1) UI dan darhol (0 ms) — dissolve + local list
+    markDissolve(own);
+    if (editing && own.some(id => id === editing.id)) cancelEdit(true);
     exitSelect();
-    api.reload();
+    if (typeof api.applyLocalDelete === 'function') api.applyLocalDelete(own);
+    else api.reload?.();
+
+    // 2) Haqiqiy o'chirish orqa fonda
+    const idList = own.slice();
+    sb.from(tbl()).delete().in('id', idList).then(({ error }) => {
+      if (error) {
+        unmarkDissolve(idList);
+        console.warn('[MsgMenu] delete:', error.message);
+        toast('O‘chirilmadi', 'error');
+        api.reload?.(); // ro'yxatni tiklash
+      }
+    }).catch(e => {
+      unmarkDissolve(idList);
+      console.warn('[MsgMenu] delete:', e?.message || e);
+      toast('O‘chirilmadi', 'error');
+      api.reload?.();
+    });
   }, 'O‘chirish', 'O‘chirish');
 }
 
