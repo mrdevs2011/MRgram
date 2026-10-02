@@ -664,9 +664,13 @@ function _syncHomeUi() {
   if (attach) attach.removeAttribute('hidden');
   if (btn) btn.disabled = !has;
 
-  // textarea auto-height
-  inp.style.height = 'auto';
-  inp.style.height = Math.min(inp.scrollHeight, 160) + 'px';
+  // textarea auto-height: bo'sh bo'lganda doimiy 30px (layout 2px sakramasligi uchun)
+  if (!inp.value) {
+    inp.style.height = '30px';
+  } else {
+    inp.style.height = 'auto';
+    inp.style.height = Math.max(30, Math.min(inp.scrollHeight || 30, 160)) + 'px';
+  }
 }
 
 function _clearHomeFile() {
@@ -715,7 +719,7 @@ function _clearHomeComposerUi() {
   const inp = $('homeComposerInput');
   if (inp) {
     inp.value = '';
-    inp.style.height = 'auto';
+    inp.style.height = '30px';
   }
   const prev = $('homeComposerPreview');
   if (prev) { prev.classList.add('d-none'); prev.innerHTML = ''; }
