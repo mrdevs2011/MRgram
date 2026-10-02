@@ -1270,8 +1270,12 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
     flex: 0 0 40px !important;
   }
   #profileView .profile-actions-row .edit-btn:hover,
-  #profileView #settingsBtn.edit-btn:hover {
-    background: rgba(255, 255, 255, 0.06) !important;
+  #profileView .profile-actions-row .edit-btn:active,
+  #profileView #settingsBtn.edit-btn:hover,
+  #profileView #settingsBtn.edit-btn:active {
+    background: #2f3336 !important;
+    opacity: 1 !important;
+    filter: none !important;
   }
   #profileView .profile-actions-row .edit-btn svg,
   #profileView #settingsBtn.edit-btn svg {
