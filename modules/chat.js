@@ -929,10 +929,7 @@ function _rtIncoming(m) {
   };
   _rtLocal.set(m.id, msg);
   paintMessages([..._curMsgs, msg]);
-  // Thread ochiq va ko'rinib turgan bo'lsa — "o'qildi"ni shu zahoti p2p yuboramiz
-  if (document.visibilityState === 'visible' && $('chatThreadModal')?.classList.contains('show')) {
-    _rt?.sendRead([m.id]);
-  }
+  // Read: faqat xabar ekranda ko'rinsa (IntersectionObserver)
 }
 
 function _rtReadAck(ids) {
@@ -1560,10 +1557,7 @@ export async function openChatThread(uid) {
   _rt = openRt(chatId, uid, { onMsg: _rtIncoming, onRead: _rtReadAck, onRetract: _rtRetract, onTyping: (v) => _onPeerTyping(v) });
   inboxWarm(uid);
 
-  // Chat get_or_create_chat() bilan yaratilgan. Men ochyapman — o'qilmaganlarim nolga.
-  sb.from('chat_members').update({ unread_count: 0 })
-    .eq('chat_id', chatId).eq('user_id', state.me.uid)
-    .then(({ error }) => { if (error) console.warn('[Chat] unread reset:', error.message); });
+  // unread_count endi faqat ekranda ko'rilgan xabarlar bo'yicha kamayadi (IntersectionObserver)
 
   // Kontaktlarni saqlash — xato bo'lsa chat ochilishga ta'sir qilmaydi.
   try {
@@ -1598,10 +1592,7 @@ export async function openChatThread(uid) {
     paintMessages(_rtMerge(msgs.slice()));
     _tLoaded = true;
     cacheThreadMessages(chatId, msgs);
-    // Thread ochiq turgan bo'lsa — kelgan xabarlarni shu zahoti "read" qilamiz
-    if (state.currentChatId === chatId && $('chatThreadModal').classList.contains('show')) {
-      markThreadRead(chatId, uid, msgs);
-    }
+    // Read: faqat ekranda ko'rinadigan xabarlar (paintMessages -> _observeMessagesForRead)
   };
   const schedThread = () => { clearTimeout(_tTimer); _tTimer = setTimeout(loadThread, 0); };
   // Realtime payload'ni qayta yuklamasdan shu zahoti qo'llaymiz (INSERT/UPDATE/DELETE)
@@ -1627,7 +1618,7 @@ export async function openChatThread(uid) {
     else if (ev === 'INSERT') list.push(m);
     else { schedThread(); return; }
     paintMessages(list);
-    if (m.senderId === uid && $('chatThreadModal')?.classList.contains('show')) markThreadRead(chatId, uid, [m]);
+    // Read: observer yangi xabarni ekranda ko'ringanda belgilaydi
   };
   const mch = sb.channel('thread-' + chatId)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `chat_id=eq.${chatId}` }, applyThreadPayload)
@@ -1637,23 +1628,108 @@ export async function openChatThread(uid) {
   loadThread();
 }
 
-/* ── Mark incoming (other user's) messages as read ───────────────────── */
-async function markThreadRead(chatId, otherUid, msgs) {
-  if (!state.me) return;
-  const unread = msgs.filter(m => m.senderId === otherUid && m.status !== 'read');
-  if (!unread.length) return;
+/* ── Read receipts: faqat ekranda KO'RINGAN xabarlar o'qilgan deb belgilanadi ── */
+let _readObs = null;
+const _pendingReadIds = new Set();
+let _readFlushTimer = null;
+const _locallyReadIds = new Set(); // shu sessiya ichida o'qilgan (qayta yubormaslik)
 
+function _teardownReadObserver() {
+  if (_readObs) { try { _readObs.disconnect(); } catch (_) {} _readObs = null; }
+  _pendingReadIds.clear();
+  clearTimeout(_readFlushTimer);
+  _readFlushTimer = null;
+}
+
+async function markThreadRead(chatId, otherUid, msgs) {
+  if (!state.me || !chatId || !otherUid) return;
+  const unread = (msgs || []).filter(m =>
+    m && m.senderId === otherUid && m.status !== 'read' && !_locallyReadIds.has(m.id)
+  );
+  if (!unread.length) return;
+  const ids = unread.map(m => m.id);
+  ids.forEach(id => _locallyReadIds.add(id));
 
   try {
     const { error } = await sb.from('messages')
       .update({ status: 'read', read_at: new Date().toISOString() })
-      .in('id', unread.map(m => m.id));
+      .in('id', ids);
     if (error) throw error;
-    await sb.from('chat_members').update({ unread_count: 0 })
+
+    _curMsgs = _curMsgs.map(m => ids.includes(m.id) ? { ...m, status: 'read' } : m);
+
+    const remaining = _curMsgs.filter(m =>
+      m.senderId === otherUid && m.status !== 'read' && !_locallyReadIds.has(m.id)
+    ).length;
+    await sb.from('chat_members').update({ unread_count: remaining })
       .eq('chat_id', chatId).eq('user_id', state.me.uid);
+
+    try { _rt?.sendRead(ids); } catch (_) {}
   } catch (err) {
+    ids.forEach(id => _locallyReadIds.delete(id));
     console.error('markThreadRead failed:', err.message);
   }
+}
+
+function _flushVisibleReads() {
+  _readFlushTimer = null;
+  const chatId = state.currentChatId;
+  const otherUid = state.currentChatUid;
+  if (!chatId || !otherUid || !state.me) { _pendingReadIds.clear(); return; }
+  if (document.visibilityState !== 'visible') return;
+  if (!$('chatThreadModal')?.classList.contains('show')) return;
+
+  const ids = [..._pendingReadIds];
+  _pendingReadIds.clear();
+  if (!ids.length) return;
+  const msgs = _curMsgs.filter(m => ids.includes(m.id));
+  markThreadRead(chatId, otherUid, msgs);
+}
+
+function _observeMessagesForRead() {
+  const box = $('chatThreadMessages');
+  if (!box) return;
+
+  if (!_readObs) {
+    _readObs = new IntersectionObserver((entries) => {
+      if (document.visibilityState !== 'visible') return;
+      if (!$('chatThreadModal')?.classList.contains('show')) return;
+      const peer = state.currentChatUid;
+      if (!peer) return;
+      let any = false;
+      for (const e of entries) {
+        if (!e.isIntersecting || e.intersectionRatio < 0.4) continue;
+        const id = e.target?.dataset?.msgId;
+        if (!id) continue;
+        if (_locallyReadIds.has(id) || _pendingReadIds.has(id)) continue;
+        const m = _curMsgs.find(x => x.id === id);
+        if (!m || m.senderId !== peer || m.status === 'read') continue;
+        _pendingReadIds.add(id);
+        any = true;
+      }
+      if (any) {
+        clearTimeout(_readFlushTimer);
+        _readFlushTimer = setTimeout(_flushVisibleReads, 180);
+      }
+    }, {
+      root: box,
+      rootMargin: '0px',
+      threshold: [0.4, 0.6, 0.85],
+    });
+  } else {
+    try { _readObs.disconnect(); } catch (_) {}
+  }
+
+  const peer = state.currentChatUid;
+  if (!peer) return;
+  box.querySelectorAll('.chat-msg[data-msg-id]').forEach(el => {
+    const id = el.dataset.msgId;
+    if (!id || _locallyReadIds.has(id)) return;
+    const m = _curMsgs.find(x => x.id === id);
+    if (m && m.senderId === peer && m.status !== 'read') {
+      _readObs.observe(el);
+    }
+  });
 }
 
 function renderTicks(status) {
@@ -1961,6 +2037,7 @@ function paintMessages(msgs, grp = null) {
     </div>`;
     _dissolveRestore(box, _dsE);
     msgMenuAfterPaint();
+    _observeMessagesForRead();
     return;
   }
 
@@ -2170,6 +2247,8 @@ function paintMessages(msgs, grp = null) {
   // qidirib topilgan tugma/waveform'ga qayta bog'laymiz.
   _reattachActiveVoiceUI(box);
   msgMenuAfterPaint();
+  // Faqat viewportdagi (ko'rinadigan) xabarlar o'qilgan bo'ladi
+  _observeMessagesForRead();
 }
 
 /** Guruh thread'i shu yagona painter bilan chiziladi (DM bilan bir xil UI/mantiq) */
@@ -2271,6 +2350,8 @@ export function closeChatThread() {
     cancelRecording();
     _hideRecordBar();
   }
+  _teardownReadObserver();
+  _locallyReadIds.clear();
   document.getElementById('chatHeaderDropdown')?.remove();
   document.getElementById('groupJoinBar')?.remove();
   document.dispatchEvent(new Event('chatmedia:close'));

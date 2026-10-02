@@ -277,20 +277,12 @@ a { color: var(--link); }
 .post-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin: 4px 0 0;
+  justify-content: space-evenly;
+  margin: 6px 0 0;
+  padding: 4px 0;
   max-width: 100%;
   width: 100%;
-}
-.post-actions .post-actions-right {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-}
-.post-actions .post-actions-right .link-btn,
-.post-actions .post-actions-right .share-btn {
-  margin-left: 0;
+  box-sizing: border-box;
 }
 .act-btn.share-btn:hover { color: var(--x-blue, #1d9bf0); }
 .act-btn.share-btn:hover svg { background: rgba(29, 155, 240, 0.1); color: var(--x-blue, #1d9bf0); }
