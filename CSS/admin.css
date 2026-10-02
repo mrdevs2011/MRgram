@@ -443,13 +443,13 @@
   width: 54px;
   height: 54px;
   border-radius: 50%;
-  background: rgba(29, 155, 240, 0.12);
+  background: rgba(255, 255, 255, 0.12);
   color: var(--tg-primary-blue, #1d9bf0);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 12px;
-  box-shadow: 0 0 24px rgba(29, 155, 240, 0.18);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.18);
 }
 .admin-reset-title {
   font-size: 1.25rem;
@@ -497,7 +497,7 @@
 }
 .admin-reset-pwd-field:focus-within {
   border-color: var(--tg-primary-blue, #1d9bf0);
-  box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.2);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 .admin-reset-pwd-input {
   flex: 1 1 auto !important;
@@ -559,20 +559,20 @@
 .admin-reset-btn-submit {
   height: 44px;
   border-radius: 12px;
-  background: #ef4444;
+  background: #ffffff;
   border: none;
-  color: #fff;
+  color: var(--pal-black);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.35);
   font-family: inherit;
 }
 .admin-reset-btn-submit:hover {
-  background: #dc2626;
+  background: #ffffff;
 }
 .admin-reset-btn-submit:disabled {
   opacity: 0.5;
@@ -583,7 +583,7 @@
   align-items: center;
   justify-content: space-between;
   background: rgba(0, 0, 0, 0.45);
-  border: 1.5px solid rgba(29, 155, 240, 0.35);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
   padding: 10px 10px 10px 16px;
   border-radius: 14px;
   margin-bottom: 20px;
@@ -594,7 +594,7 @@
   padding: 0 14px;
   border-radius: 10px;
   background: var(--tg-primary-blue, #1d9bf0);
-  color: #fff;
+  color: var(--pal-black);
   border: none;
   font-size: 13px;
   font-weight: 600;
@@ -603,7 +603,7 @@
   align-items: center;
   gap: 6px;
   flex-shrink: 0;
-  box-shadow: 0 2px 10px rgba(29, 155, 240, 0.3);
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
   font-family: inherit;
 }
 .admin-reset-copy-btn:hover {

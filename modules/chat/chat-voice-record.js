@@ -618,3 +618,8 @@ export function initChatVoiceRecording(opts = {}) {
 }
 
 export { cancelRecording };
+
+export function forceStopVoiceRecording() {
+  cancelRecording();
+  _abortVoiceUi();
+}

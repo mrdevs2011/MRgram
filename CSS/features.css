@@ -272,7 +272,7 @@
   right: 6%;
   bottom: -4px;
   height: 16px;
-  background: radial-gradient(ellipse at center, rgba(29, 155, 240, 0.95) 0%, rgba(29, 155, 240, 0.5) 45%, transparent 75%);
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.5) 45%, transparent 75%);
   filter: blur(6px);
   border-radius: 50%;
   pointer-events: none;
@@ -282,16 +282,16 @@
 
 @keyframes postBlueGlow {
   0% {
-    box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.9), 0 8px 30px rgba(29, 155, 240, 0.5);
-    border-color: rgba(29, 155, 240, 0.9);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9), 0 8px 30px rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.9);
   }
   15% {
-    box-shadow: 0 0 0 2.5px rgba(29, 155, 240, 1), 0 10px 42px rgba(29, 155, 240, 0.7);
-    border-color: rgba(29, 155, 240, 1);
+    box-shadow: 0 0 0 2.5px rgba(255, 255, 255, 1), 0 10px 42px rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 1);
   }
   80% {
-    box-shadow: 0 0 0 2px rgba(29, 155, 240, 0.85), 0 8px 25px rgba(29, 155, 240, 0.4);
-    border-color: rgba(29, 155, 240, 0.85);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 8px 25px rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.85);
   }
   100% {
     box-shadow: none;
@@ -1349,13 +1349,13 @@
   background: radial-gradient(circle, rgba(42, 171, 238, 0.3) 0%, rgba(42, 171, 238, 0.08) 75%, rgba(42, 171, 238, 0) 100%);
 }
 .chat-voice-wrap.cancelling .cv-pulse-1 {
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.65) 0%, rgba(239, 68, 68, 0.35) 65%, rgba(239, 68, 68, 0) 100%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.35) 65%, rgba(255, 255, 255, 0) 100%);
 }
 .chat-voice-wrap.cancelling .cv-pulse-2 {
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.45) 0%, rgba(239, 68, 68, 0.2) 70%, rgba(239, 68, 68, 0) 100%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.2) 70%, rgba(255, 255, 255, 0) 100%);
 }
 .chat-voice-wrap.cancelling .cv-pulse-3 {
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.3) 0%, rgba(239, 68, 68, 0.1) 75%, rgba(239, 68, 68, 0) 100%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0) 100%);
 }
 .chat-voice-btn { position: relative; z-index: 2; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--pal-white); cursor: pointer; flex-shrink: 0; touch-action: none; user-select: none; -webkit-user-select: none; }
 /* File preview above input */
@@ -1562,7 +1562,7 @@
 .call-ctrl-btn:hover { background: var(--pal-legacy-35353b); box-shadow: inset 0 1px 0 #48484E; }
 .call-ctrl-btn.muted { background: #313131; border-color: #591D22; color: var(--pal-red); }
 .call-ctrl-btn.active { background: #2c2c2c; border-color: var(--pal-gray-700); color: var(--pal-white); }
-.call-ctrl-btn.end-btn { background: #dc2626; border-color: var(--pal-legacy-3a3a3f); width: 62px; height: 62px; }
+.call-ctrl-btn.end-btn { background: #ffffff; border-color: var(--pal-legacy-3a3a3f); width: 62px; height: 62px; }
 .call-ctrl-btn.end-btn:hover { background: var(--pal-red); }
 .call-ctrl-btn.end-btn svg { transform: rotate(135deg); }
 /* qabul svg'ini burab — "tugatish" belgisi */
@@ -1751,8 +1751,8 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 #chatThreadModal .chat-voice-btn.recording.cancelling,
 .chat-voice-btn.recording.cancelling {
   /* fallback — asosiy rang JS progress orqali beriladi */
-  background: var(--voice-rec-bg, linear-gradient(135deg, #ef4444 0%, #dc2626 100%)) !important;
-  box-shadow: var(--voice-rec-shadow, 0 4px 20px rgba(239, 68, 68, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.2));
+  background: var(--voice-rec-bg, linear-gradient(135deg, #ffffff 0%, #ffffff 100%)) !important;
+  box-shadow: var(--voice-rec-shadow, 0 4px 20px rgba(255, 255, 255, 0.55), 0 0 0 2px rgba(255, 255, 255, 0.2));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -1787,14 +1787,14 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #ef4444;
+  background: #ffffff;
   flex-shrink: 0;
   animation: crbBlink 1s infinite alternate;
 }
 
 @keyframes crbBlink {
   0% { opacity: 0.3; transform: scale(0.85); }
-  100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px rgba(239, 68, 68, 0.8); }
+  100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px rgba(255, 255, 255, 0.8); }
 }
 
 .crb-timer {
@@ -1826,7 +1826,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 }
 
 .chat-record-bar.cancelling .crb-cancel {
-  color: #ef4444;
+  color: #ffffff;
   animation: none;
   font-weight: 600;
 }
@@ -2326,9 +2326,9 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   transition: all .15s ease;
 }
 .grp-privacy-btn.active {
-  background: var(--blue, #1d9bf0);
-  color: #ffffff;
-  box-shadow: 0 2px 8px rgba(29, 155, 240, 0.35);
+  background: var(--blue, var(--pal-white));
+  color: var(--pal-black);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.35);
 }
 .grp-username-input-wrap {
   display: flex;
@@ -2339,7 +2339,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .grp-username-prefix {
   position: absolute;
   left: 12px;
-  color: var(--blue, #1d9bf0);
+  color: var(--blue, var(--pal-white));
   font-weight: 700;
   font-size: 15px;
   pointer-events: none;
@@ -2362,7 +2362,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .grp-invite-token {
   font-family: ui-monospace, SFMono-Regular, monospace;
   font-size: 12px;
-  color: var(--blue, #1d9bf0);
+  color: var(--blue, var(--pal-white));
   word-break: break-all;
   user-select: all;
 }
@@ -2376,10 +2376,10 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   white-space: nowrap;
 }
 .grp-invite-copy-btn {
-  background: rgba(29, 155, 240, 0.15);
-  color: var(--blue, #1d9bf0);
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--blue, var(--pal-white));
 }
-.grp-invite-copy-btn:hover { background: rgba(29, 155, 240, 0.25); }
+.grp-invite-copy-btn:hover { background: rgba(255, 255, 255, 0.25); }
 .grp-invite-regen-btn {
   background: rgba(255, 255, 255, 0.08);
   color: var(--text, #fff);
@@ -2391,7 +2391,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   box-sizing: border-box;
   flex-shrink: 0;
 }.group-join-btn:hover:not(:disabled) {
-  background: #1a8cd8;
+  background: #e7e9ea;
 }
 .group-join-btn:disabled {
   opacity: 0.7;

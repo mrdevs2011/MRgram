@@ -646,7 +646,7 @@ import {
   clearChatDeletedLocal,
   getChatDeletedAt,
 } from './chat-storage.js';
-import { initChatVoiceRecording, cancelRecording } from './chat-voice-record.js';
+import { initChatVoiceRecording, forceStopVoiceRecording } from './chat-voice-record.js';
 import {
   initVoicePlayer,
   fmtVoiceDur,
@@ -1286,7 +1286,7 @@ export async function openChatThread(uid) {
     $('chatThreadMessages').innerHTML = `<div class="spin-wrap pt-60px"><div class="spinner"></div></div>`;
   }
   // Reset voice/file state (functions defined below, safe after page load)
-  try { cancelRecording(); } catch(_) {}
+  try { forceStopVoiceRecording(); } catch(_) {}
   $('chatVoiceBtn')?.classList.remove('active');
   chatState._chatSelFile = null;
   $('chatFilePreview')?.classList.remove('active');
@@ -1811,11 +1811,7 @@ export function resetSeenMsgs(key) {
  */
 /* ── Yopish chat thread ───────────────────────────────────────────────── */
 export function closeChatThread() {
-  if (_isHoldingVoice) {
-    _isHoldingVoice = false;
-    cancelRecording();
-    _hideRecordBar();
-  }
+  try { forceStopVoiceRecording(); } catch (err) {}
   _teardownReadObserver();
   chatState._locallyReadIds.clear();
   document.getElementById('chatHeaderDropdown')?.remove();
