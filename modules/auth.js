@@ -310,8 +310,25 @@ if (authBtn) {
       authBtn.textContent = isLogin ? 'Kirish' : "Ro'yxatdan o'tish";
       const known = sbErrUz(err);
       if (known === 'Foydalanuvchi nomi yoki parol xato') {
-        showErr(known, ['aUsername','aPassword']);
         if (isLogin) {
+          // 1. Agar foydalanuvchi emailga kelgan 8 xonali tasdiqlash kodini parol maydoniga kiritgan bo'lsa:
+          if (p && p.trim().length >= 6) {
+            try {
+              const { data: vCode } = await sb.rpc('verify_recovery_code', {
+                p_username: cleaned,
+                p_code: p.trim(),
+              });
+              if (vCode && vCode.valid) {
+                toast('Tasdiqlash kodi qabul qilindi. Yangi parolingizni belgilang!', 'info', 6000);
+                _openRecoveryModal(cleaned, vCode.masked_email || '', p.trim());
+                return;
+              }
+            } catch (vErr) {
+              console.warn('[verify_recovery_code] check:', vErr);
+            }
+          }
+
+          showErr(known, ['aUsername','aPassword']);
           try {
             const { data: recInfo } = await sb.rpc('check_user_recovery', { p_username: cleaned });
             if (recInfo && recInfo.exists) {
@@ -322,6 +339,8 @@ if (authBtn) {
           } catch (_) {
             _hideForgotPasswordBtn();
           }
+        } else {
+          showErr(known, ['aUsername','aPassword']);
         }
       } else if (known === 'Bu login allaqachon band') {
         showErr(known, ['aUsername']);
@@ -730,16 +749,20 @@ const recoveryErr = $('recoveryErr');
 
 let _activeRecoveryUsername = '';
 
-function _openRecoveryModal(username, maskedEmail) {
+function _openRecoveryModal(username, maskedEmail, prefilledCode = '') {
   _activeRecoveryUsername = username;
   if (!recoveryModal) return;
   const subtitle = $('recoveryModalSubtitle');
   if (subtitle) {
-    subtitle.innerHTML = maskedEmail
-      ? `Tasdiqlash kodi <strong style="color:#fff;">${maskedEmail}</strong> ga yuborildi.<br>Kod va yangi parolingizni kiriting.`
-      : `Tasdiqlash kodi emailingizga yuborildi.<br>Kod va yangi parolingizni kiriting.`;
+    if (prefilledCode) {
+      subtitle.innerHTML = `Emailga yuborilgan tasdiqlash kodi qabul qilindi.<br><strong style="color:#fff;">Hisobga kirish uchun yangi parol belgilang.</strong>`;
+    } else {
+      subtitle.innerHTML = maskedEmail
+        ? `Tasdiqlash kodi <strong style="color:#fff;">${maskedEmail}</strong> ga yuborildi.<br>Kod va yangi parolingizni kiriting.`
+        : `Tasdiqlash kodi emailingizga yuborildi.<br>Kod va yangi parolingizni kiriting.`;
+    }
   }
-  if (recoveryCodeInp) recoveryCodeInp.value = '';
+  if (recoveryCodeInp) recoveryCodeInp.value = prefilledCode || '';
   if (recoveryNewPwdInp) recoveryNewPwdInp.value = '';
   if (recoveryConfirmPwdInp) recoveryConfirmPwdInp.value = '';
   if (recoveryErr) {
@@ -747,7 +770,26 @@ function _openRecoveryModal(username, maskedEmail) {
     recoveryErr.textContent = '';
   }
   recoveryModal.style.display = 'flex';
-  setTimeout(() => recoveryCodeInp?.focus(), 100);
+  setTimeout(() => {
+    if (prefilledCode && recoveryNewPwdInp) {
+      recoveryNewPwdInp.focus();
+    } else {
+      recoveryCodeInp?.focus();
+    }
+  }, 100);
+}
+
+const recoveryEnterCodeBtn = $('recoveryEnterCodeBtn');
+if (recoveryEnterCodeBtn) {
+  recoveryEnterCodeBtn.onclick = () => {
+    const u = $('aUsername')?.value.trim().toLowerCase() || _lastTestedUsername;
+    if (!u) {
+      toast('Avval foydalanuvchi nomingizni kiriting', 'error');
+      $('aUsername')?.focus();
+      return;
+    }
+    _openRecoveryModal(u, '');
+  };
 }
 
 function _closeRecoveryModal() {

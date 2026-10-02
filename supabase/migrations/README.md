@@ -17,3 +17,5 @@ Bazada ISHGA TUSHIRILGAN SQL fayllar, tartib raqami bilan. Yangi bazada `000_sch
 - 021 (2026-10-01): `profiles.recovery_email` ustuni, `set_recovery_email()`, `get_recovery_email_hint()` va `request_password_reset()` RPC lari.
 - 022 (2026-10-02): `admin_delete_user()` va `delete_my_account()` da `storage.allow_delete_query = true` sozlanishi va xatoliklarni xavfsiz tutish (Direct deletion from storage tables is not allowed xatosini to'liq bartaraf etish).
 - 023 (2026-10-02): `recovery_code` va `reset_password_with_code()` RPC. Parolni tiklash so'ralganda foydalanuvchining eski paroli o'chib ketmaydi va eski parol bilan kirish ochiq qoladi; 8 xonali kod faqat kod orqali yangi parol o'rnatish oynasida ishlaydi.
+- 024 (2026-10-02): `verify_recovery_code()` RPC. Foydalanuvchi emailga kelgan 8 xonali kodni login parol maydoniga kiritganda avtomatik aniqlash va yangi parol o'rnatish oynasini ochish.
+
