@@ -6139,8 +6139,25 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Toast / tizim notiflari — to'liq dark (OLED)
+   Toast / tizim notiflari — to'liq dark (OLED), doimiy
    ═══════════════════════════════════════════════════════════════════════ */
+#toast,
+#toast.show,
+#toast.toast-success,
+#toast.toast-error,
+#toast.toast-info,
+#toast.toast-warning,
+[data-theme] #toast,
+[data-theme] #toast.show,
+[data-theme="dark"] #toast,
+html #toast,
+body #toast {
+  background: #0f0f0f !important;
+  background-color: #0f0f0f !important;
+  color: #e7e9ea !important;
+  border: 1px solid #2f3336 !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85) !important;
+}
 #toast,
 [data-theme] #toast,
 [data-theme="dark"] #toast {
@@ -6152,11 +6169,6 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
   max-width: min(420px, calc(100vw - 32px));
   padding: 12px 20px;
   border-radius: 14px;
-  background: #16181c !important;
-  background-color: #16181c !important;
-  color: #e7e9ea !important;
-  border: 1px solid #2f3336 !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75) !important;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0;
@@ -6170,42 +6182,36 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 #toast.show,
 [data-theme] #toast.show,
 [data-theme="dark"] #toast.show {
-  opacity: 1;
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
   transform: translateX(-50%) translateY(0);
 }
-#toast.toast-success,
-[data-theme] #toast.toast-success {
-  background: #16181c !important;
-  border-color: #1a4d32 !important;
-  color: #e7e9ea !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(0, 186, 124, 0.15) !important;
-}
-#toast.toast-error,
-[data-theme] #toast.toast-error {
-  background: #16181c !important;
-  border-color: #5c1a2e !important;
-  color: #e7e9ea !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(249, 24, 128, 0.15) !important;
-}
-#toast.toast-info,
-[data-theme] #toast.toast-info {
-  background: #16181c !important;
-  border-color: #1a3a52 !important;
-  color: #e7e9ea !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(29, 155, 240, 0.15) !important;
-}
-#toast.toast-warning,
-[data-theme] #toast.toast-warning {
-  background: #16181c !important;
-  border-color: #4d3a12 !important;
-  color: #e7e9ea !important;
-}
+#toast.toast-success, [data-theme] #toast.toast-success { border-color: #1a4d32 !important; }
+#toast.toast-error, [data-theme] #toast.toast-error { border-color: #5c1a2e !important; }
+#toast.toast-info, [data-theme] #toast.toast-info { border-color: #1a3a52 !important; }
+#toast.toast-warning, [data-theme] #toast.toast-warning { border-color: #4d3a12 !important; }
 @media (min-width: 1100px) {
-  #toast {
-    bottom: 28px;
-  }
+  #toast { bottom: 28px; }
 }
+
+/* SW yangilanish paneli + admin notice — to'liq dark */
+#swUpdateBar {
+  background: #0f0f0f !important;
+  color: #e7e9ea !important;
+  border: 1px solid #2f3336 !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.85) !important;
+}
+#swUpdateBar button {
+  background: #2f3336 !important;
+  color: #e7e9ea !important;
+  border: 1px solid #3e444a !important;
+}
+.admin-notice-banner {
+  background: #16181c !important;
+  border: 1px solid #2f3336 !important;
+  color: #e7e9ea !important;
+}
+.admin-notice-icon { color: #1d9bf0 !important; }
 
 /* Tabs olib tashlandi — story yuqorida */
 .home-tabs { display: none !important; }

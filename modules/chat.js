@@ -1208,15 +1208,15 @@ function _injectNoticeCSS() {
 .admin-notice-banner {
   display: flex; align-items: flex-start; gap: 10px;
   margin: 12px 16px 4px;
-  background: color-mix(in srgb, var(--blue) 12%, var(--bg2));
-  border: 1px solid color-mix(in srgb, var(--blue) 35%, transparent);
+  background: #16181c;
+  border: 1px solid #2f3336;
   border-radius: 12px;
   padding: 11px 14px;
   font-size: 13px;
-  color: var(--text);
+  color: #e7e9ea;
   line-height: 1.45;
 }
-.admin-notice-icon { color: var(--blue); flex-shrink:0; margin-top:1px; }
+.admin-notice-icon { color: #1d9bf0; flex-shrink:0; margin-top:1px; }
 .admin-notice-text { flex: 1; word-break: break-word; }
 `;
   document.head.appendChild(s);
