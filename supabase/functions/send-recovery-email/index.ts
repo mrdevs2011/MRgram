@@ -48,17 +48,25 @@ Deno.serve(async (req) => {
   }
 
   const emailSubject = 'SpaceMR: Hisobingiz uchun vaqtinchalik parol';
+  const logoUrl = 'https://dsomjkskgrhaaxpkdyvs.supabase.co/storage/v1/object/public/media/brand/SpaceMR.png';
   const emailHtml = `
-    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:500px;margin:auto;padding:28px 24px;border:1px solid #1a1a1a;border-radius:14px;background:#050505;color:#f0f0f0;">
-      <div style="display:flex;align-items:center;margin-bottom:16px;">
-        <div style="font-size:20px;font-weight:700;letter-spacing:-0.5px;color:#ffffff;">SpaceMR</div>
-      </div>
+    <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;max-width:500px;margin:auto;padding:32px 26px;border:1px solid #1f1f1f;border-radius:16px;background:#000000;color:#f0f0f0;">
+      <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+        <tr>
+          <td style="vertical-align:middle;padding-right:12px;">
+            <img src="${logoUrl}" alt="SpaceMR" width="38" height="38" style="display:block;border-radius:10px;border:1px solid #222;" />
+          </td>
+          <td style="vertical-align:middle;">
+            <span style="font-size:22px;font-weight:700;letter-spacing:-0.5px;color:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">SpaceMR</span>
+          </td>
+        </tr>
+      </table>
       <h2 style="color:#ffffff;font-size:18px;font-weight:600;margin:0 0 12px 0;">Parolni tiklash so'rovi</h2>
       <p style="color:#aaaaaa;font-size:14px;line-height:1.55;margin:0 0 16px 0;">
         Hurmatli <strong>@${username}</strong>,<br>
         Hisobingiz uchun 8 xonali vaqtinchalik parol tayyorlandi:
       </p>
-      <div style="margin:20px 0;padding:18px;background:#111111;border:1px solid #222222;border-radius:10px;text-align:center;font-size:26px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-weight:700;letter-spacing:3px;color:#1d9bf0;">
+      <div style="margin:20px 0;padding:18px;background:#0d0d0d;border:1px solid #262626;border-radius:12px;text-align:center;font-size:28px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-weight:700;letter-spacing:4px;color:#1d9bf0;">
         ${temp_password}
       </div>
       <p style="color:#aaaaaa;font-size:13.5px;line-height:1.5;margin:0 0 14px 0;">
@@ -118,8 +126,11 @@ Deno.serve(async (req) => {
           socketTimeout: 15000,
         });
 
+        const senderFrom = Deno.env.get('SMTP_FROM') || `"SpaceMR Security" <${smtpUser.trim()}>`;
         await transporter.sendMail({
-          from: Deno.env.get('SMTP_FROM') || `"SpaceMR" <${smtpUser.trim()}>`,
+          from: senderFrom,
+          sender: `"SpaceMR" <${smtpUser.trim()}>`,
+          replyTo: `"SpaceMR Support" <${smtpUser.trim()}>`,
           to: recoveryEmail,
           subject: emailSubject,
           text: emailText,
@@ -152,7 +163,8 @@ Deno.serve(async (req) => {
           'Accept': 'application/json',
         },
         body: JSON.stringify({
-          sender: { name: 'SpaceMR', email: senderEmail },
+          sender: { name: 'SpaceMR Security', email: senderEmail },
+          replyTo: { name: 'SpaceMR Support', email: senderEmail },
           to: [{ email: recoveryEmail }],
           subject: emailSubject,
           textContent: emailText,
