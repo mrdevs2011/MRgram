@@ -13,16 +13,16 @@ export function unmarkDissolve(ids) { (ids || []).forEach(id => dissolveMarks.de
    - Fully inlined computed styles (no fetch dependency)
    - Guaranteed visual effect (never snaps away)
    ============================================================ */
-const ANIM_DURATION  = 1400;   // tezroq sochilish — uzoq qolib ketmasin
-const SWEEP_DURATION = 700;    // to'lqin tezroq o'tadi
-const COLLAPSE_DELAY = 380;    // qator erta yopiladi, sakrash kamayadi
-const FADE_IN_MS     = 90;     // canvas tezroq ustiga o'tadi
-const TILE_SIZE      = 1.0;    // finer grain = reads as sand, not confetti
-const DRIFT_X        = 80;     // biroz torroq sochilish — chalkashlik kam
-const PUFF_Y         = 10;     // yumshoqroq ko'tarilish
-const GRAVITY        = 0.0009; // biroz tezroq pastga
-const START_SPEED     = 0.016; // tezroq harakat
-const NOISE_AMP      = 0;      // subtle jitter, not chaotic
+const ANIM_DURATION  = 900;    // qisqa — uzoq osilib qolmasin
+const SWEEP_DURATION = 380;    // to'lqin tez, bir tekis
+const COLLAPSE_DELAY = 220;    // qator tez yopiladi, sakrashsiz
+const FADE_IN_MS     = 60;     // tez crossfade
+const TILE_SIZE      = 1.5;    // biroz yirikroq = FPS yuqori, silliq
+const DRIFT_X        = 42;     // tor sochilish — chalkashlik yo'q
+const PUFF_Y         = 6;      // yumshoq nafas
+const GRAVITY        = 0.00115;// pastga silliq tushish
+const START_SPEED    = 0.012;  // boshlang'ich tezlik
+const NOISE_AMP      = 0;
 
 function __dissolveHash(n) {
   const s = Math.sin(n * 127.1) * 43758.5453;
@@ -152,7 +152,7 @@ function __dissolveDomToCanvas(el, dprOverride) {
   });
 }
 
-const MAX_GRAINS = 70000;
+const MAX_GRAINS = 12000; // chat: past FPS emas, silliq qum
 
 /** Typed-array grains: one grain per (G x G) device pixels, colour = packed RGBA of that pixel. */
 /** Info for a multi-card delete: ONE wave sweeping from the top-most card down through all of them. */
@@ -195,22 +195,18 @@ function __dissolveBuildGrains(snapCanvas, cssW, cssH, dpr, epX, epY, groupCtx, 
       // from the epicenter, so the cloud opens up like a puff of dust.
       const away = (cx - epX) / (cssW || 1);              // -1 … 1
       vx[n] = tabMode
-        ? (Math.random() + Math.random() - 1) * 0.35          // folder tab: crumbles in place, falls almost straight down
+        ? (Math.random() + Math.random() - 1) * 0.25
         : groupCtx
-        ? (Math.random() + Math.random() - 1) * 0.5           // group: near-vertical streaks
-        : (Math.random() + Math.random() - 1) * 1.6 + away * 1.2;
-      lift[n] = tabMode ? 0.05 + Math.random() * 0.25 : 0.4 + Math.random() * 1.3;
+        ? (Math.random() + Math.random() - 1) * 0.35
+        : (Math.random() + Math.random() - 1) * 0.7 + away * 0.55; // tor, silliq sochilish
+      lift[n] = tabMode ? 0.05 + Math.random() * 0.2 : 0.25 + Math.random() * 0.7;
       ph[n] = Math.random() * 6.2832;
-      g[n] = tabMode ? 1.1 + Math.random() * 0.7 : 0.8 + Math.random() * 0.5; // each grain falls a bit differently
+      g[n] = tabMode ? 1.05 + Math.random() * 0.5 : 0.9 + Math.random() * 0.35;
       delay[n] = tabMode
-        // Folder tab: the tab itself erodes from the bottom edge and its own grains drop down
-        // (NOT a top-down wave, which reads like sand being poured on it).
-        ? ((1 - cy / cssH) * 0.35) * SWEEP_DURATION * 0.5 + Math.random() * 450
+        ? ((1 - cy / cssH) * 0.35) * SWEEP_DURATION * 0.5 + Math.random() * 120
         : groupCtx
-        // One continuous wave: delay depends on the absolute height inside the
-        // whole selection, so it runs top -> bottom across ALL cards as one.
-        ? ((groupCtx.offsetY + cy) / groupCtx.span) * groupCtx.sweep + Math.random() * 200
-        : ((cy / cssH) * 0.7 + (dist / maxDist) * 0.3) * SWEEP_DURATION + Math.random() * 380;
+        ? ((groupCtx.offsetY + cy) / groupCtx.span) * groupCtx.sweep + Math.random() * 80
+        : ((cy / cssH) * 0.75 + (dist / maxDist) * 0.25) * SWEEP_DURATION + Math.random() * 90;
       col[n] = c;
       n++;
     }
@@ -281,7 +277,7 @@ function __dissolveFloatFallback(card) {
       "z-index:9998",
       "pointer-events:none",
       "box-sizing:border-box",
-      "transition:transform .7s cubic-bezier(.4,0,.2,1), opacity .7s ease-in",
+      "transition:transform .45s cubic-bezier(.4,0,.2,1), opacity .45s ease-in",
       "transform:translateY(0)",
       "opacity:1"
     ].join(";");
@@ -294,7 +290,7 @@ function __dissolveFloatFallback(card) {
     setTimeout(() => {
       ghost.remove();
       resolve();
-    }, 720);
+    }, 480);
   });
 }
 
@@ -397,7 +393,7 @@ export async function playDeleteDissolve(card, clickX, clickY, group) {
             // sway makes each grain wander instead of travelling in a straight line.
             const inv = 1 - life;
             const driftEase = 1 - inv * inv * inv;
-            const sway = Math.sin(local * 0.0016 + gph[i]) * (groupCtx || tabMode ? 2 : 7) * dpr * Math.min(1, life * 5);
+            const sway = Math.sin(local * 0.0012 + gph[i]) * (groupCtx || tabMode ? 1.2 : 3.2) * dpr * Math.min(1, life * 4);
             px = gx[i] + gvx[i] * driftDev * driftEase + sway;
             // Tiny soft "lift" right as the grain breaks loose (decays in ~150ms),
             // then gravity takes over — reads as a gentle breath, not a hard drop.
@@ -405,8 +401,8 @@ export async function playDeleteDissolve(card, clickX, clickY, group) {
             py = gy[i] - puff + v0Dev * local + gravDev * gg[i] * tSec * tSec;
             // stays solid while falling, fades smoothly near the end
             let a = 1;
-            if (life > 0.45) {
-              const f = (life - 0.45) / 0.55;
+            if (life > 0.35) {
+              const f = (life - 0.35) / 0.65;
               a = 1 - f * f * (3 - 2 * f);
             }
             const room = OH - (py + oy);
@@ -475,12 +471,12 @@ export async function playDeleteDissolve(card, clickX, clickY, group) {
         const elapsed = now - startT;
         const alive = paint(elapsed);
         // hard cap: animatsiya uzoq osilib qolmasin
-        if (alive && elapsed < ANIM_DURATION + FADE_IN_MS + 200) requestAnimationFrame(frame);
+        if (alive && elapsed < ANIM_DURATION + FADE_IN_MS + 120) requestAnimationFrame(frame);
         else killOverlay();
       }
       requestAnimationFrame(frame);
       // zaxira tozalash (leftover particle-canvas oldini olish)
-      setTimeout(killOverlay, ANIM_DURATION + FADE_IN_MS + 400);
+      setTimeout(killOverlay, ANIM_DURATION + FADE_IN_MS + 180);
 
       // Collapse the list row after COLLAPSE_DELAY while grains still fall
       await new Promise((r) => setTimeout(r, COLLAPSE_DELAY + (group ? Math.max(0, group.sweep - SWEEP_DURATION) : 0)));
@@ -516,6 +512,6 @@ export async function playDeleteDissolve(card, clickX, clickY, group) {
       }
     };
     card.addEventListener("transitionend", onEnd);
-    setTimeout(done, 700);
+    setTimeout(done, 480);
   });
 }

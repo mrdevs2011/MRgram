@@ -137,7 +137,7 @@
 .del-btn { background: none; border: none; color: var(--text3); cursor: pointer; padding: 6px; border-radius: 8px;  display: flex; }
 .del-btn:hover { color: var(--red); }
 /* Media */
-.post-media { cursor: pointer; background: var(--pal-black); position: relative; width: 100%; min-height: 180px; }
+.post-media { cursor: default; background: var(--pal-black); position: relative; width: 100%; min-height: 180px; }
 .post-media img { width: 100%; height: auto; display: block; background: var(--pal-black); filter: blur(0); }
 .post-media video { width: 100%; height: auto; max-height: 70vh; display: block; background: var(--pal-black); object-fit: contain; filter: blur(0);  }
 /* Media yuklanayotganda: oddiy aylanuvchi spinner (blur/skeleton yo'q) */
@@ -1936,12 +1936,18 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 /* O'chirilgan xabar: qum bo'lib sochilgach qator yopiladi (MRdrive .file-card.is-deleting ritmi) */
 .chat-msg.msg-dissolving {
   pointer-events: none;
-  transition: max-height .42s cubic-bezier(.4, 0, .2, 1), margin .42s cubic-bezier(.4, 0, .2, 1),
-              padding .42s cubic-bezier(.4, 0, .2, 1), opacity .28s ease;
+  transition: max-height .36s cubic-bezier(.22, 1, .36, 1), margin .36s cubic-bezier(.22, 1, .36, 1),
+              padding .36s cubic-bezier(.22, 1, .36, 1), opacity .2s ease;
+  will-change: max-height, opacity;
 }
 .chat-msg.msg-dissolving.is-deleting {
   max-height: 0 !important; margin-top: 0 !important; margin-bottom: 0 !important;
   padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden; min-height: 0;
+}
+.particle-canvas {
+  image-rendering: auto;
+  opacity: 1;
+  transition: none;
 }
 /* demo .particle-canvas (MRdrive) */
 .particle-canvas { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 9999; }
