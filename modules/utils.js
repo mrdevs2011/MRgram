@@ -543,3 +543,20 @@ export const fmtCount = n => {
   if (n >= 1e3) return (n / 1e3).toFixed(n >= 1e4 ? 0 : 1).replace(/\.0$/, '') + 'K';
   return String(n);
 };
+
+/* ── Clipboard nusxalash (barcha brauzer lar uchun xavfsiz) ─────────────── */
+export async function copyToClipboard(text) {
+  if (!text) return;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const ta = Object.assign(document.createElement('textarea'), {
+      value: text,
+    });
+    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;pointer-events:none';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    ta.remove();
+  }
+}

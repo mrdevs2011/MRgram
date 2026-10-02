@@ -242,7 +242,7 @@ function _cmtLive(postId, listId) {
   if (_cmtCh && _cmtLivePost === postId) return;
   if (_cmtCh) { try { sb.removeChannel(_cmtCh); } catch (_) {} _cmtCh = null; }
   _cmtLivePost = postId;
-  const reload = () => { if (_loading) setTimeout(reload, 100); else loadComments(postId, _cmtLiveList); };
+  const reload = () => { loadComments(postId, _cmtLiveList); };
   _cmtCh = sb.channel('cmt-live-' + postId)
     .on('postgres_changes', { event: '*', schema: 'public', table: 'comments', filter: `post_id=eq.${postId}` }, () => {
       const l = _cmtLiveList && document.getElementById(_cmtLiveList);

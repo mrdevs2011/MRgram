@@ -2,6 +2,19 @@
 function _injectPresenceCSS() { /* CSS: mono-x.css .presence-dot */ }
 
 /* ── Search, Pins & Context Menu for Chats ──────────────────────────── */
+/* ── Timing konstantalari ───────────────────────────────────────────────── */
+const DEBOUNCE_MS        = 450;  // input debounce (qidiruv, yozmoqda)
+const TYPING_HIDE_MS     = 2500; // yozishni to'xtatgandan keyin "yozyapti" belgisi yo'qolish vaqti
+const PEER_TYPING_MAX_MS = 5000; // peer typing timeout
+const READ_FLUSH_MS      = 180;  // o'qilganlarni DB ga yozish debounce
+const PEER_STATUS_MS     = 20_000; // peer online statusini qayta chizish intervali
+const SCROLL_SETTLE_MS   = 60;   // xabar yuborilgandan keyin scroll pastga
+const KB_ADAPT_1_MS      = 120;  // klaviatura chiqishi: 1-adapt tick
+const KB_ADAPT_2_MS      = 280;  // klaviatura chiqishi: 2-adapt tick (keyboard to'liq ochilgach)
+const KB_SCROLL_MS       = 300;  // klaviatura ochilgandan keyin scroll pastga
+const KB_BLUR_MS         = 100;  // klaviatura yopilgandan keyin layout tiklash
+const LONGPRESS_GUARD_MS = 300;  // long-press tugagandan keyin touchend guard vaqti
+
 let _searchQuery = '';
 
 /* ── Pins / recent / deleted — modules/chat-storage.js ────────────────── */
@@ -267,7 +280,7 @@ function _attachChatRowContextMenu(row) {
     started = false;
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
-    timer = setTimeout(() => trigger(e), 450);
+    timer = setTimeout(() => trigger(e), DEBOUNCE_MS);
   }, { passive: true });
 
   row.addEventListener('touchmove', (e) => {
@@ -285,14 +298,14 @@ function _attachChatRowContextMenu(row) {
     if (started) {
       e.preventDefault();
       e.stopPropagation();
-      setTimeout(() => { started = false; }, 300);
+      setTimeout(() => { started = false; }, LONGPRESS_GUARD_MS);
     }
   });
 
   row.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
     started = false;
-    timer = setTimeout(() => trigger(e), 450);
+    timer = setTimeout(() => trigger(e), DEBOUNCE_MS);
   });
 
   row.addEventListener('mouseup', () => {
@@ -1157,7 +1170,7 @@ function _onChatInputTyping() {
   if (state.currentChatKind && state.currentChatKind !== 'dm') { groupTypingInput(); return; }
   _setTyping(true);
   clearTimeout(_typingTimeout);
-  _typingTimeout = setTimeout(() => _setTyping(false), 2500);
+  _typingTimeout = setTimeout(() => _setTyping(false), TYPING_HIDE_MS);
 }
 
 /* ── Tezkor kirish qutisi: boshqa tomondan kelgan xabar ro'yxatni shu zahoti yangilaydi ── */
@@ -1289,7 +1302,7 @@ export async function openChatThread(uid) {
   // "Onlayn"dan "N daqiqa oldin"ga o'tishini ko'rsatish uchun har 20s da
   // matnni qayta hisoblaymiz (server yozuvi o'zgarmasa ham vaqt o'tadi).
   if (_peerStatusTick) clearInterval(_peerStatusTick);
-  _peerStatusTick = setInterval(() => _paintPeerStatus(_peerLastSeenAt), 20000);
+  _peerStatusTick = setInterval(() => _paintPeerStatus(_peerLastSeenAt), PEER_STATUS_MS);
 
   // "Yozmoqda..." — realtime broadcast (typing_until ustuni yo'q)
   _peerTyping = false;
@@ -1300,7 +1313,7 @@ export async function openChatThread(uid) {
     _onPeerTyping = (v) => {
       clearTimeout(tTimer);
       _peerTyping = !!v;
-      if (_peerTyping) tTimer = setTimeout(() => { _peerTyping = false; _paintPeerStatus(_peerLastSeenAt); }, 5000);
+      if (_peerTyping) tTimer = setTimeout(() => { _peerTyping = false; _paintPeerStatus(_peerLastSeenAt); }, PEER_TYPING_MAX_MS);
       _paintPeerStatus(_peerLastSeenAt);
     };
     const tch = sb.channel('typing-bc-' + chatId)
@@ -1477,7 +1490,7 @@ function _observeMessagesForRead() {
       }
       if (any) {
         clearTimeout(_readFlushTimer);
-        _readFlushTimer = setTimeout(_flushVisibleReads, 180);
+        _readFlushTimer = setTimeout(_flushVisibleReads, READ_FLUSH_MS);
       }
     }, {
       root: box,
@@ -1810,7 +1823,7 @@ function paintMessages(msgs, grp = null) {
 
   // Faqat pastda turgan bo'lsak yoki chat yangi ochilgan bo'lsa scroll qilamiz
   if (isAtBottom || isInitialLoad) {
-    setTimeout(() => { box.scrollTop = box.scrollHeight; }, 60);
+    setTimeout(() => { box.scrollTop = box.scrollHeight; }, SCROLL_SETTLE_MS);
   }
 
   // "theirs" xabarlaridagi avatar bosilganda profil ochamiz
@@ -2656,14 +2669,14 @@ function initKeyboardAdaptation() {
 
   if (inp) {
     inp.addEventListener('focus', () => {
-      setTimeout(adapt, 120);
-      setTimeout(adapt, 280);
-      setTimeout(() => { if (msgs) msgs.scrollTop = msgs.scrollHeight; }, 300);
+      setTimeout(adapt, KB_ADAPT_1_MS);
+      setTimeout(adapt, KB_ADAPT_2_MS);
+      setTimeout(() => { if (msgs) msgs.scrollTop = msgs.scrollHeight; }, KB_SCROLL_MS);
     });
     inp.addEventListener('blur', () => {
       setTimeout(() => {
         if (modal) modal.style.bottom = '0px';
-      }, 100);
+      }, KB_BLUR_MS);
     });
   }
 }
@@ -2671,7 +2684,10 @@ initKeyboardAdaptation();
 
 
 // File attach
-$('chatAttachBtn')?.addEventListener('click', () => $('chatFileInput')?.click());
+$('chatAttachBtn')?.addEventListener('click', () => {
+  if ($('chatVoiceBtn')?.classList.contains('recording') || $('chatThreadInputRow')?.classList.contains('recording')) return;
+  $('chatFileInput')?.click();
+});
 $('chatFileInput')?.addEventListener('change', e => {
   const f = e.target.files?.[0];
   if (f) setChatFile(f);

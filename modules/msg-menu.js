@@ -5,7 +5,7 @@
    holat (tanlov, ochiq menyu) xabar ID'lari bo'yicha saqlanadi va msgMenuAfterPaint() bilan tiklanadi. */
 import { sb, state } from './config.js';
 import { toast } from './toast.js';
-import { $, esc, defAvi, showConfirm } from './utils.js';
+import { $, esc, defAvi, showConfirm, copyToClipboard } from './utils.js';
 import { onEsc } from './esc-stack.js';
 import { markDissolve, unmarkDissolve } from './dissolve.js';
 
@@ -142,29 +142,20 @@ function run(act, id) {
         const ps = JSON.parse(m.text);
         if (ps?.post?.id) {
           const url = `${window.location.origin}/#post-${ps.post.id}`;
-          return copyText(url);
+          copyToClipboard(url);
+          toast('Nusxalandi');
+          return;
         }
       } catch (_) {}
     }
-    return copyText((m.text || '').trim());
+    copyToClipboard((m.text || '').trim());
+    toast('Nusxalandi');
+    return;
   }
   if (act === 'edit') return startEdit(m);
   if (act === 'fwd') return forward([id]);
   if (act === 'del') return remove([id]);
   if (act === 'sel') return enterSelect(id);
-}
-
-async function copyText(text) {
-  if (!text) return;
-  try { await navigator.clipboard.writeText(text); }
-  catch {
-    const ta = document.createElement('textarea');
-    ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); } catch (_) {}
-    ta.remove();
-  }
-  toast('Nusxalandi');
 }
 
 function remove(ids) {
@@ -253,7 +244,7 @@ function ensureSelBar() {
     if (b.dataset.sb === 'x') exitSelect();
     else if (b.dataset.sb === 'copy') {
       const t = (api.getMsgs() || []).filter(m => sel.has(m.id)).map(m => (m.text || '').trim()).filter(Boolean).join('\n');
-      if (t) copyText(t); else toast('Nusxalanadigan matn yo‘q');
+      if (t) { copyToClipboard(t); toast('Nusxalandi'); } else toast('Nusxalanadigan matn yo‘q');
     }
     else if (b.dataset.sb === 'edit') { const m = msgOf(ids[0]); if (m) startEdit(m); }
     else if (b.dataset.sb === 'fwd') forward(ids, true);

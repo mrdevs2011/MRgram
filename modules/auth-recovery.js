@@ -3,7 +3,7 @@
  * auth.js dan ehtiyotkor ajratilgan.
  */
 import { sb } from './config.js';
-import { $ } from './utils.js';
+import { $, esc } from './utils.js';
 import { toast } from './toast.js';
 
 const cleanUsername = u => String(u || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -139,10 +139,17 @@ export function openRecoveryModal(username, maskedEmail, prefilledCode = '') {
   }
 
   if (recoveryModalSubtitle) {
+    recoveryModalSubtitle.textContent = '';
+    const emailStrong = document.createElement('strong');
+    emailStrong.style.color = 'var(--tg-primary-blue,#1d9bf0)';
+    emailStrong.textContent = _activeMaskedEmail || 'zaxira email';
+    recoveryModalSubtitle.append('Emailingiz: ', emailStrong);
     if (prefilledCode) {
-      recoveryModalSubtitle.innerHTML = `Emailingiz: <strong style="color:var(--tg-primary-blue,#1d9bf0);">${_activeMaskedEmail || 'zaxira email'}</strong><br><span style="color:#22c55e;">Kod qabul qilindi. Yangi parolni belgilang:</span>`;
-    } else {
-      recoveryModalSubtitle.innerHTML = `Emailingiz: <strong style="color:var(--tg-primary-blue,#1d9bf0);">${_activeMaskedEmail || 'zaxira email'}</strong>`;
+      const sep = document.createElement('br');
+      const ok = document.createElement('span');
+      ok.style.color = '#22c55e';
+      ok.textContent = 'Kod qabul qilindi. Yangi parolni belgilang:';
+      recoveryModalSubtitle.append(sep, ok);
     }
   }
 
@@ -220,7 +227,12 @@ if (recoverySendBtn) {
 
       if (recoverySendStatus) {
         recoverySendStatus.style.display = 'block';
-        recoverySendStatus.innerHTML = `<span style="color:#22c55e;">✓ Yangi kod yuborildi!</span> (Eski kodlar bekor qilindi)`;
+        recoverySendStatus.textContent = '';
+        const ok = Object.assign(document.createElement('span'), {
+          textContent: '✓ Yangi kod yuborildi!',
+        });
+        ok.style.color = '#22c55e';
+        recoverySendStatus.append(ok, ' (Eski kodlar bekor qilindi)');
       }
 
       if (recoveryCodeInp) {

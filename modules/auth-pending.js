@@ -2,7 +2,7 @@
  * auth-pending.js — ruxsat kutish / blok / offline-verify ekranlari
  */
 import { sb, state } from './config.js';
-import { $ } from './utils.js';
+import { $, esc } from './utils.js';
 
 let _serverNow = () => Date.now();
 let _onBlockExpired = null;
@@ -21,23 +21,41 @@ let _noticeUnsubPending = null;
 function _updatePendingNotice(noticeData) {
   const container = document.getElementById('pendingNoticeWrap');
   if (!container) return;
-  if (!noticeData || !noticeData.text) {
+  if (!noticeData?.text) {
     container.style.display = 'none';
     container.textContent = '';
     return;
   }
   const t = noticeData.target || 'all';
   if (t === 'approved') {
-    // Faqat tasdiqlanganlarga — kutayotganlar ko'rmasin
     container.style.display = 'none';
     container.textContent = '';
     return;
   }
+
   container.style.display = 'flex';
-  container.innerHTML = `
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tg-primary-blue,#ffffff)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <span>${noticeData.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
-  `;
+  container.textContent = '';
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('width', '16'); svg.setAttribute('height', '16');
+  svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'var(--tg-primary-blue,#ffffff)');
+  svg.setAttribute('stroke-width', '1.8');
+  svg.setAttribute('stroke-linecap', 'round'); svg.setAttribute('stroke-linejoin', 'round');
+  svg.style.cssText = 'flex-shrink:0;margin-top:2px';
+  const circle = document.createElementNS(svgNS, 'circle');
+  circle.setAttribute('cx', '12'); circle.setAttribute('cy', '12'); circle.setAttribute('r', '10');
+  const line1 = document.createElementNS(svgNS, 'line');
+  line1.setAttribute('x1','12');line1.setAttribute('y1','8');line1.setAttribute('x2','12');line1.setAttribute('y2','12');
+  const line2 = document.createElementNS(svgNS, 'line');
+  line2.setAttribute('x1','12');line2.setAttribute('y1','16');line2.setAttribute('x2','12.01');line2.setAttribute('y2','16');
+  svg.append(circle, line1, line2);
+
+  const span = document.createElement('span');
+  span.textContent = noticeData.text;
+
+  container.append(svg, span);
 }
 
 function _startPendingNoticeWatcher() {
@@ -78,9 +96,16 @@ function _startBlockedCountdown(blockedUntilMs, onExpire = null) {
   const el = document.getElementById('blockedCountdownWrap');
   if (!el) return;
 
+  /* DOM elementlarini bir marta yaratamiz, keyin faqat textContent yangilaymiz */
+  el.textContent = '';
+  const label   = Object.assign(document.createElement('div'), { className: 'blocked-cd-label', textContent: 'Blok muddati tugashiga:' });
+  const timer   = Object.assign(document.createElement('div'), { id: 'blockedCountdownTimer', className: 'blocked-cd-timer' });
+  const untilEl = Object.assign(document.createElement('div'), { className: 'blocked-cd-until' });
+  el.append(label, timer, untilEl);
+  untilEl.textContent = `${new Date(blockedUntilMs).toLocaleString('uz-UZ')} gacha bloklangansiz`;
+
   const update = () => {
-    const now = _serverNow();
-    const diff = blockedUntilMs - now;
+    const diff = blockedUntilMs - _serverNow();
     if (diff <= 0) {
       el.style.display = 'none';
       _stopBlockedCountdown();
@@ -92,22 +117,15 @@ function _startBlockedCountdown(blockedUntilMs, onExpire = null) {
     const h = Math.floor((totalSec % 86400) / 3600);
     const m = Math.floor((totalSec % 3600) / 60);
     const s = totalSec % 60;
-
-    let parts = [];
+    const parts = [];
     if (d > 0) parts.push(`${d} kun`);
     if (h > 0) parts.push(`${h} soat`);
     if (m > 0) parts.push(`${m} daqiqa`);
     parts.push(`${s} soniya`);
-
-    const untilStr = new Date(blockedUntilMs).toLocaleString('uz-UZ');
-    el.style.display = 'block';
-    el.innerHTML = `
-      <div style="font-size:13px;color:var(--text2,#999);margin-bottom:6px;">Blok muddati tugashiga:</div>
-      <div id="blockedCountdownTimer" style="font-size:2rem;font-weight:800;color:var(--red,#ef4444);letter-spacing:1px;font-variant-numeric:tabular-nums;">${parts.join(' ')}</div>
-      <div style="font-size:12px;color:var(--text2,#999);margin-top:6px;">${untilStr} gacha bloklangansiz</div>
-    `;
+    timer.textContent = parts.join(' ');
   };
 
+  el.style.display = 'block';
   update();
   _blockedCountdownInterval = setInterval(update, 1000);
 }
@@ -129,27 +147,58 @@ export function showPendingScreen(reason = 'pending', blockedUntilMs = null) {
   if (reason === 'blocked') {
     if (h2) h2.textContent = 'Hisobingiz bloklangan';
     if (p) {
+      p.textContent = '';
       if (blockedUntilMs && blockedUntilMs > _serverNow()) {
-        p.innerHTML = `Siz admin tomonidan vaqtinchalik <strong style="color:var(--red,#ef4444)">bloklangansiz.</strong><br>Muddat tugagach avtomatik ochilasiz.`;
+        const s1 = document.createElement('strong');
+        s1.style.color = 'var(--red,#ef4444)';
+        s1.textContent = 'bloklangansiz.';
+        p.append('Siz admin tomonidan vaqtinchalik ', s1, document.createElement('br'), 'Muddat tugagach avtomatik ochilasiz.');
         _startBlockedCountdown(blockedUntilMs, async () => {
-          // Vaqt tugadi — pending ekranni yashirib app ga kiritamiz
           hidePendingScreen();
           if (typeof _onBlockExpired === 'function') await _onBlockExpired();
         });
       } else {
-        p.innerHTML = `Siz admin tomonidan <strong style="color:var(--text,#fff)">bloklangansiz.</strong><br>Qo'shimcha ma'lumot uchun administratorga murojaat qiling.`;
+        const s2 = document.createElement('strong');
+        s2.style.color = 'var(--text,#fff)';
+        s2.textContent = 'bloklangansiz.';
+        p.append('Siz admin tomonidan ', s2, document.createElement('br'), "Qo'shimcha ma'lumot uchun administratorga murojaat qiling.");
         if (countdownWrap) countdownWrap.style.display = 'none';
       }
     }
   } else if (reason === 'rejected') {
     if (h2) h2.textContent = 'Arizangiz rad etildi';
-    if (p)  p.innerHTML = `Afsuski, admin sizning arizangizni <strong style="color:var(--red,#ef4444)">rad etdi.</strong><br>Qo'shimcha ma'lumot uchun administratorga murojaat qiling.`;
+    if (p) {
+      p.textContent = '';
+      const s = document.createElement('strong');
+      s.style.color = 'var(--red,#ef4444)';
+      s.textContent = 'rad etdi.';
+      p.append('Afsuski, admin sizning arizangizni ', s, document.createElement('br'), "Qo'shimcha ma'lumot uchun administratorga murojaat qiling.");
+    }
   } else if (reason === 'offline-verify') {
     if (h2) h2.textContent = 'Internetga ulaning';
-    if (p)  p.innerHTML = `Hisobingiz holatini xavfsiz tekshirish uchun internet aloqasi kerak.<br>Uzoq vaqt oflayn holda ilovadan foydalanib bo'lmaydi — bu xavfsizlik cheklovi.<br>Internet qaytishi bilan avtomatik davom etadi.`;
+    if (p) {
+      p.textContent = '';
+      p.append(
+        "Hisobingiz holatini xavfsiz tekshirish uchun internet aloqasi kerak.",
+        document.createElement('br'),
+        "Uzoq vaqt oflayn holda ilovadan foydalanib bo'lmaydi — bu xavfsizlik cheklovi.",
+        document.createElement('br'),
+        "Internet qaytishi bilan avtomatik davom etadi."
+      );
+    }
   } else {
     if (h2) h2.textContent = 'Ruxsat kutilmoqda';
-    if (p)  p.innerHTML = `Hisobingiz muvaffaqiyatli yaratildi.<br><strong style="color:var(--text,#fff)">Administrator ruxsatini kuting.</strong><br>Ruxsat berilgandan so'ng avtomatik kirasiz.`;
+    if (p) {
+      p.textContent = '';
+      const s = document.createElement('strong');
+      s.style.color = 'var(--text,#fff)';
+      s.textContent = 'Administrator ruxsatini kuting.';
+      p.append(
+        "Hisobingiz muvaffaqiyatli yaratildi.", document.createElement('br'),
+        s, document.createElement('br'),
+        "Ruxsat berilgandan so'ng avtomatik kirasiz."
+      );
+    }
   }
 
   if (screen)   { screen.style.display = 'flex'; screen.dataset.reason = reason; }

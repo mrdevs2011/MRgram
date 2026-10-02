@@ -4592,6 +4592,70 @@ h1, h2, h3, .hdr-brand, .auth-brand, .splash-wordmark {
 .admin-reset-done-btn:hover {
   background: rgba(255, 255, 255, 0.14);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Extracted Inline Styles from index.html (Pending / Auth Screens)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+#pendingApprovalScreen {
+  position: fixed; inset: 0; z-index: 1000;
+  background: var(--bg);
+  flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+  padding: 32px; text-align: center;
+}
+#pendingApprovalScreen svg { stroke: var(--blue, #1d9bf0); }
+#pendingApprovalScreen h2 { font-size: 1.3rem; font-weight: 700; color: var(--text); margin: 0; }
+#pendingApprovalScreen p { color: var(--text2); font-size: 0.95rem; margin: 0; max-width: 300px; line-height: 1.5; }
+#pendingApprovalScreen p strong { color: var(--text); }
+#blockedCountdownWrap {
+  max-width: 320px; width: 100%;
+  background: var(--bg2); border: 1px solid var(--pal-red, #4E1A1F); border-radius: 14px;
+  padding: 16px 20px; text-align: center;
+}
+#pendingNoticeWrap {
+  align-items: flex-start; gap: 10px; max-width: 300px; width: 100%;
+  background: var(--bg3); border: 1px solid var(--glass-border); border-radius: 12px;
+  padding: 11px 14px; font-size: 13px; color: var(--text); line-height: 1.45; text-align: left;
+}
+#pendingSignOutBtn {
+  margin-top: 8px; padding: 12px 28px; border-radius: 12px;
+  background: var(--red); color: var(--pal-white); border: none;
+  font-size: 0.95rem; font-weight: 600; cursor: pointer;
+}
+
+#mandatoryPwdOverlay {
+  align-items: center; justify-content: center; z-index: 1050;
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  background: var(--overlay);
+}
+#mandatoryPwdOverlay .auth-card {
+  max-width: 390px; width: 90%; margin: auto;
+  background: var(--bg2); box-shadow: 0 24px 64px rgba(0,0,0,0.95);
+  border: 1px solid var(--glass-border);
+}
+.m-pwd-icon {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--blue-glow); color: var(--blue);
+  display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;
+}
+.m-pwd-title { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.m-pwd-sub { font-size: 13px; color: var(--text2); line-height: 1.45; }
+.pwd-eye-btn {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text3); cursor: pointer;
+  padding: 4px; display: flex; align-items: center;
+}
+
+#adminResetPwdOverlay {
+  align-items: center; justify-content: center; z-index: 1050;
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  background: var(--overlay);
+}
+.admin-reset-warn {
+  background: var(--blue-glow); border: 1px solid var(--blue-glow2);
+  display: flex; gap: 10px; padding: 12px; border-radius: 12px; margin-bottom: 16px;
+}
+.admin-reset-warn-text { color: var(--text2); font-size: 12.5px; line-height: 1.4; }
 /* CSS/mono-x.css — mono, x-design. Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
 /* ─── mono ─── */
 /* ═══════════════════════════════════════════ SpaceMR — Monochrome (qora + oq) override Eng OXIRIDA yuklanadi... */
@@ -5584,6 +5648,39 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
 
 /* Chat pastki input: suzuvchi emas — pastga qotirilgan (fixed), to'liq enli, radiussiz, bordersiz */
 #chatThreadModal .chat-thread-input-row { margin: 0; border: none; border-radius: 0; box-shadow: none; background: #000; padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   OVOZ YOZISH PAYTIDA FILE ATTACH VA INPUT SILLIQ FADE (Ultra-smooth)
+   ═══════════════════════════════════════════════════════════════════════ */
+.chat-attach-btn {
+  transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.28s;
+  will-change: opacity, transform;
+}
+
+/* Ovoz yozishda attach tugmasi silliq yo'qoladi, bosilmaydi va ko'rinmaydi */
+.chat-thread-input-row.recording .chat-attach-btn,
+.chat-attach-btn.recording-hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.78) !important;
+  cursor: default !important;
+  visibility: hidden;
+}
+
+/* Ovoz yozishda textarea va emoji tugmasi ham silliq fade out */
+.chat-thread-input-row.recording .chat-thread-input,
+.chat-thread-input-row.recording .chat-emoji-wrap {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.24s ease;
+}
+
+/* Ovoz yozish paneli (qizil nuqta va taymer chapdan chiroyli boshlanadi) */
+.chat-record-bar {
+  left: 12px;
+  right: 56px;
+  transition: opacity 0.24s ease;
+}
 
 /* Desktop (≥1200px), Suhbatlar ochiq: profil / guruh-info / media sahifasi faqat MARKAZ ustunni egallaydi —
    o'ngdagi suhbatlar ro'yxati (rail) yopilib qolmasin */

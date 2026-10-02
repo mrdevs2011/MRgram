@@ -38,6 +38,16 @@ function _showRecordBar() {
   const bar = $('chatRecordBar');
   const timer = $('chatRecordTimer');
   const cancelText = $('crbCancelText');
+  const inputRow = $('chatThreadInputRow');
+  const attachBtn = $('chatAttachBtn');
+
+  if (inputRow) inputRow.classList.add('recording');
+  if (attachBtn) {
+    attachBtn.classList.add('recording-hidden');
+    attachBtn.setAttribute('tabindex', '-1');
+    attachBtn.setAttribute('aria-hidden', 'true');
+  }
+
   if (!bar) return;
   bar.classList.add('active');
   bar.classList.remove('cancelling');
@@ -60,6 +70,15 @@ function _hideRecordBar() {
   const wrap = $('chatVoiceWrap');
   if (wrap) wrap.classList.remove('cancelling');
   _clearVoiceCancelVisuals();
+
+  const inputRow = $('chatThreadInputRow');
+  if (inputRow) inputRow.classList.remove('recording');
+  const attachBtn = $('chatAttachBtn');
+  if (attachBtn) {
+    attachBtn.classList.remove('recording-hidden');
+    attachBtn.removeAttribute('tabindex');
+    attachBtn.removeAttribute('aria-hidden');
+  }
 }
 
 function _setRecordBarCancelState(isCancelling) {
