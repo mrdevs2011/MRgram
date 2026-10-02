@@ -134,10 +134,6 @@ Deno.serve(async (req) => {
           subject: emailSubject,
           text: emailText,
           html: emailHtml,
-          headers: {
-            'Auto-Submitted': 'auto-generated',
-            'X-Auto-Response-Suppress': 'All',
-          },
           attachments: [
             {
               filename: 'spacemr-logo.png',

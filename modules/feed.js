@@ -412,13 +412,6 @@ function bindFeedEvents(feedEl) {
     e.stopPropagation();
     copyPostLink(b.dataset.id);
   }));
-  feedEl.querySelectorAll('.post-media').forEach(m => m.addEventListener('click', async e => {
-    if (e.target.closest('.file-dl')) return;
-    if (e.target.closest('.vid-controls') || e.target.closest('.vc-progress')) return;
-    // Open media in zoom modal
-    const { openMediaInModal } = await import('./ui.js');
-    openMediaInModal(m.dataset.id);
-  }));
   feedEl.querySelectorAll('.user-avi-btn').forEach(b => b.addEventListener('click', async () => {
     if (b.dataset.uid !== state.me?.uid) {
       const { openUserProfileModal } = await import('./profile.js');
