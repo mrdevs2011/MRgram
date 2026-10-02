@@ -7293,3 +7293,72 @@ button:focus-visible,
 }
 .admin-notice-icon { color: var(--x-blue); flex-shrink: 0; margin-top: 1px; }
 .admin-notice-text { flex: 1; word-break: break-word; }
+
+/* ── Deleted post and deleted user states in shared post cards ─────── */
+.chat-post-card.post-deleted .cpc-badge,
+.cpc-badge.is-deleted {
+  color: var(--text3, #767676) !important;
+}
+.chat-post-card.post-deleted .cpc-badge svg,
+.cpc-badge.is-deleted svg {
+  stroke: var(--text3, #767676) !important;
+}
+.chat-post-card.post-deleted .cpc-content,
+.cpc-content.is-deleted {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  cursor: default;
+}
+.chat-post-card.post-deleted .cpc-content:hover,
+.cpc-content.is-deleted:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.cpc-deleted-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text3, #767676) !important;
+  font-style: italic;
+  font-size: 13px;
+}
+.cpc-open-btn.is-deleted {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: var(--text3, #767676) !important;
+  cursor: not-allowed !important;
+}
+.cpc-open-btn.is-deleted:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: var(--text3, #767676) !important;
+}
+.cpc-open-btn.is-deleted svg {
+  display: none;
+}
+
+/* Deleted user state */
+.chat-post-card.user-deleted .cpc-avi img,
+.cpc-avi.is-deleted img {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+.chat-post-card.user-deleted .cpc-avi-placeholder,
+.cpc-avi.is-deleted .cpc-avi-placeholder {
+  background: #2a2a2a;
+  color: #777;
+}
+.chat-post-card.user-deleted .cpc-author-name,
+.cpc-author-name.is-deleted {
+  color: var(--text3, #767676) !important;
+}
+.cpc-del-tag {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text3, #767676);
+  margin-left: 4px;
+}
+.chat-post-card.user-deleted .cpc-author-handle,
+.cpc-author-handle.is-deleted {
+  color: rgba(255, 255, 255, 0.3) !important;
+}

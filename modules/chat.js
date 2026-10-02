@@ -2026,6 +2026,7 @@ function paintMessages(msgs, grp = null) {
   msgMenuAfterPaint();
   // Faqat viewportdagi (ko'rinadigan) xabarlar o'qilgan bo'ladi
   _observeMessagesForRead();
+  checkSharedPostExistence(msgs);
 }
 
 /** Guruh thread'i shu yagona painter bilan chiziladi (DM bilan bir xil UI/mantiq) */
@@ -3069,6 +3070,102 @@ export function formatLastMessageText(raw) {
   return raw;
 }
 
+const _postExistenceMap = new Map(); // postId -> boolean (true: mavjud, false: o'chirilgan)
+const _userExistenceMap = new Map(); // userId -> boolean (true: mavjud, false: o'chirilgan)
+
+export function checkSharedPostExistence(msgs) {
+  if (!msgs || !msgs.length || typeof sb === 'undefined') return;
+  const pids = [];
+  const uids = [];
+  for (const m of msgs) {
+    const ps = parsePostShare(m.text);
+    if (ps?.post) {
+      if (ps.post.id && !_postExistenceMap.has(ps.post.id)) pids.push(ps.post.id);
+      if (ps.post.userId && !_userExistenceMap.has(ps.post.userId)) uids.push(ps.post.userId);
+    }
+  }
+  if (!pids.length && !uids.length) return;
+
+  const queries = [];
+  if (pids.length) {
+    queries.push(sb.from('posts').select('id').in('id', pids).then(({ data, error }) => {
+      if (!error && data) {
+        const found = new Set(data.map(x => x.id));
+        pids.forEach(id => _postExistenceMap.set(id, found.has(id)));
+      }
+    }).catch(() => {}));
+  }
+  if (uids.length) {
+    queries.push(sb.from('profiles').select('id').in('id', uids).then(({ data, error }) => {
+      if (!error && data) {
+        const found = new Set(data.map(x => x.id));
+        uids.forEach(id => _userExistenceMap.set(id, found.has(id)));
+      }
+    }).catch(() => {}));
+  }
+
+  Promise.all(queries).then(() => {
+    _updatePostCardsInDOM();
+  });
+}
+
+function _updatePostCardsInDOM() {
+  const cards = document.querySelectorAll('.chat-post-card[data-post-id]');
+  cards.forEach(card => {
+    const pid = card.dataset.postId;
+    const uid = card.dataset.userId;
+    const isPostDeleted = _postExistenceMap.get(pid) === false;
+    const isUserDeleted = _userExistenceMap.get(uid) === false;
+
+    if (isPostDeleted) {
+      card.classList.add('post-deleted');
+      const badge = card.querySelector('.cpc-badge');
+      if (badge) {
+        badge.classList.add('is-deleted');
+        const span = badge.querySelector('span');
+        if (span) span.textContent = "O'chirilgan post";
+      }
+      const caption = card.querySelector('.cpc-caption');
+      if (caption) {
+        caption.innerHTML = `<span class="cpc-deleted-text">Bu post o'chirilgan</span>`;
+      }
+      const media = card.querySelector('.cpc-media');
+      if (media) media.style.display = 'none';
+
+      const btn = card.querySelector('.cpc-open-btn');
+      if (btn) {
+        btn.classList.add('is-deleted');
+        btn.innerHTML = `<span>Post o'chirilgan</span>`;
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          toast("Bu post o'chirilgan", 'error');
+        };
+      }
+      const content = card.querySelector('.cpc-content');
+      if (content) {
+        content.classList.add('is-deleted');
+        content.onclick = (e) => {
+          e.stopPropagation();
+          toast("Bu post o'chirilgan", 'error');
+        };
+      }
+    }
+
+    if (isUserDeleted) {
+      card.classList.add('user-deleted');
+      const avi = card.querySelector('.cpc-avi');
+      if (avi) avi.classList.add('is-deleted');
+      const authorName = card.querySelector('.cpc-author-name');
+      if (authorName && !authorName.querySelector('.cpc-del-tag')) {
+        authorName.classList.add('is-deleted');
+        authorName.innerHTML += ` <span class="cpc-del-tag">(O'chirilgan hisob)</span>`;
+      }
+      const authorHandle = card.querySelector('.cpc-author-handle');
+      if (authorHandle) authorHandle.classList.add('is-deleted');
+    }
+  });
+}
+
 export function renderChatPostCard(ps) {
   const p = ps.post || {};
   const comment = (ps.comment || '').trim();
@@ -3079,9 +3176,13 @@ export function renderChatPostCard(ps) {
   const mediaUrl = p.mediaUrl ? esc(p.mediaUrl) : '';
   const isVideo = p.mediaType === 'video' || /\.(mp4|webm|mov)$/i.test(p.mediaUrl || '');
   const postId = esc(p.id || '');
+  const userId = esc(p.userId || '');
+
+  const isPostDeleted = _postExistenceMap.get(p.id) === false;
+  const isUserDeleted = _userExistenceMap.get(p.userId) === false;
 
   let mediaHtml = '';
-  if (mediaUrl) {
+  if (mediaUrl && !isPostDeleted) {
     if (isVideo) {
       mediaHtml = `
         <div class="cpc-media cpc-media--video">
@@ -3100,31 +3201,53 @@ export function renderChatPostCard(ps) {
       <div class="chat-bubble-text">${renderMarkdown(comment)}</div>
     </div>` : '';
 
+  const captionHtml = isPostDeleted
+    ? `<div class="cpc-caption"><span class="cpc-deleted-text">Bu post o'chirilgan</span></div>`
+    : (postText ? `<div class="cpc-caption">${renderMarkdown(postText)}</div>` : '');
+
+  const btnHtml = isPostDeleted
+    ? `<button type="button" class="cpc-open-btn is-deleted" onclick="event.stopPropagation(); toast('Bu post o\\'chirilgan', 'error');">
+         <span>Post o'chirilgan</span>
+       </button>`
+    : `<button type="button" class="cpc-open-btn" onclick="event.stopPropagation(); window._openPostFromChat && window._openPostFromChat('${postId}')">
+         <span>Postni ko'rish</span>
+         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+       </button>`;
+
+  const badgeTitle = isPostDeleted ? "O'chirilgan post" : "Ulashilgan post";
+
+  const cardClasses = [
+    'chat-post-card',
+    isPostDeleted ? 'post-deleted' : '',
+    isUserDeleted ? 'user-deleted' : ''
+  ].filter(Boolean).join(' ');
+
+  const contentOnClick = isPostDeleted
+    ? `toast('Bu post o\\'chirilgan', 'error')`
+    : `window._openPostFromChat && window._openPostFromChat('${postId}')`;
+
   return `
-    <div class="chat-post-card" data-post-id="${postId}">
+    <div class="${cardClasses}" data-post-id="${postId}" data-user-id="${userId}">
       <div class="cpc-header">
-        <div class="cpc-badge">
+        <div class="cpc-badge${isPostDeleted ? ' is-deleted' : ''}">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          <span>Ulashilgan post</span>
+          <span>${badgeTitle}</span>
         </div>
       </div>
-      <div class="cpc-content" onclick="window._openPostFromChat && window._openPostFromChat('${postId}')">
+      <div class="cpc-content${isPostDeleted ? ' is-deleted' : ''}" onclick="${contentOnClick}">
         <div class="cpc-author-row">
-          <div class="cpc-avi">
+          <div class="cpc-avi${isUserDeleted ? ' is-deleted' : ''}">
             ${authorAvi ? `<img src="${authorAvi}" alt="${authorName}" onerror="this.style.display='none'">` : `<div class="cpc-avi-placeholder">${authorName.charAt(0)}</div>`}
           </div>
           <div class="cpc-author-meta">
-            <span class="cpc-author-name">${authorName}</span>
-            ${authorUser ? `<span class="cpc-author-handle">${authorUser}</span>` : ''}
+            <span class="cpc-author-name${isUserDeleted ? ' is-deleted' : ''}">${authorName}${isUserDeleted ? ' <span class="cpc-del-tag">(O\'chirilgan hisob)</span>' : ''}</span>
+            ${authorUser ? `<span class="cpc-author-handle${isUserDeleted ? ' is-deleted' : ''}">${authorUser}</span>` : ''}
           </div>
         </div>
-        ${postText ? `<div class="cpc-caption">${renderMarkdown(postText)}</div>` : ''}
+        ${captionHtml}
         ${mediaHtml}
         <div class="cpc-open-row">
-          <button type="button" class="cpc-open-btn" onclick="event.stopPropagation(); window._openPostFromChat && window._openPostFromChat('${postId}')">
-            <span>Postni ko'rish</span>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </button>
+          ${btnHtml}
         </div>
       </div>
       ${commentHtml}
@@ -3134,6 +3257,22 @@ export function renderChatPostCard(ps) {
 
 window._openPostFromChat = async function(postId) {
   if (!postId) return;
+  if (_postExistenceMap.get(postId) === false) {
+    toast("Bu post o'chirilgan", "error");
+    return;
+  }
+  // Post mavjudligini bazadan tezkor tekshiramiz
+  try {
+    const { data } = await sb.from('posts').select('id').eq('id', postId).maybeSingle();
+    if (!data) {
+      _postExistenceMap.set(postId, false);
+      _updatePostCardsInDOM();
+      toast("Bu post o'chirilgan", "error");
+      return;
+    }
+    _postExistenceMap.set(postId, true);
+  } catch (_) {}
+
   try {
     closeChatThread();
   } catch (_) {}
