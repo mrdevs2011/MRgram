@@ -272,14 +272,25 @@ export async function renderFeedTo(feedEl, posts) {
           </svg>
             <span id="lc-${p.id}">${fmtCount(p.likes || 0)}</span>
           </button>
-          <button class="act-btn link-btn"
-            data-id="${p.id}"
-            title="Havolani nusxalash"
-            aria-label="Havolani nusxalash">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M8 7C5.23858 7 3 9.23858 3 12C3 14.7614 5.23858 17 8 17H10C10.5523 17 11 17.4477 11 18C11 18.5523 10.5523 19 10 19H8C4.13401 19 1 15.866 1 12C1 8.13401 4.13401 5 8 5H10C10.5523 5 11 5.44772 11 6C11 6.55228 10.5523 7 10 7H8ZM13 6C13 5.44772 13.4477 5 14 5H16C19.866 5 23 8.13401 23 12C23 15.866 19.866 19 16 19H14C13.4477 19 13 18.5523 13 18C13 17.4477 13.4477 17 14 17H16C18.7614 17 21 14.7614 21 12C21 9.23858 18.7614 7 16 7H14C13.4477 7 13 6.55228 13 6ZM7 12C7 11.4477 7.44772 11 8 11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H8C7.44772 13 7 12.5523 7 12Z"/>
-            </svg>
-          </button>
+          <div class="post-actions-right">
+            <button class="act-btn share-btn"
+              data-id="${p.id}"
+              title="Chatga ulashish"
+              aria-label="Chatga ulashish">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+            <button class="act-btn link-btn"
+              data-id="${p.id}"
+              title="Havolani nusxalash"
+              aria-label="Havolani nusxalash">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M8 7C5.23858 7 3 9.23858 3 12C3 14.7614 5.23858 17 8 17H10C10.5523 17 11 17.4477 11 18C11 18.5523 10.5523 19 10 19H8C4.13401 19 1 15.866 1 12C1 8.13401 4.13401 5 8 5H10C10.5523 5 11 5.44772 11 6C11 6.55228 10.5523 7 10 7H8ZM13 6C13 5.44772 13.4477 5 14 5H16C19.866 5 23 8.13401 23 12C23 15.866 19.866 19 16 19H14C13.4477 19 13 18.5523 13 18C13 17.4477 13.4477 17 14 17H16C18.7614 17 21 14.7614 21 12C21 9.23858 18.7614 7 16 7H14C13.4477 7 13 6.55228 13 6ZM7 12C7 11.4477 7.44772 11 8 11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H8C7.44772 13 7 12.5523 7 12Z"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>`;
@@ -342,6 +353,40 @@ export async function copyPostLink(postId) {
   } catch (_) {
     toast('Havola nusxalandi', 'info');
   }
+}
+
+export async function sharePostToChat(postId) {
+  if (!postId || !state.me) return;
+  const post = state.allPosts?.find(p => p.id === postId);
+  const postEl = document.querySelector(`.post[data-id="${postId}"]`);
+
+  const authorName = postEl?.querySelector('.post-name')?.textContent || '';
+  const authorUsername = postEl?.querySelector('.post-user')?.textContent?.replace(/^@/, '') || '';
+  const authorAvatar = postEl?.querySelector('.post-head .avi img')?.src || '';
+  const postText = postEl?.querySelector('.post-caption')?.textContent || post?.text || '';
+  const postMediaEl = postEl?.querySelector('.post-media');
+  const mediaImg = postMediaEl?.querySelector('img')?.src || '';
+  const mediaVid = postMediaEl?.querySelector('video')?.src || '';
+  const mediaUrl = post?.mediaUrl || mediaImg || mediaVid || '';
+  const mediaType = post?.mediaType || (mediaVid ? 'video' : (mediaImg ? 'image' : null));
+
+  const payload = {
+    id: postId,
+    userId: post?.userId || postEl?.querySelector('.user-avi-btn')?.dataset.uid || '',
+    authorName: authorName || 'Noma\'lum',
+    authorUsername: authorUsername || '',
+    authorAvatar: authorAvatar || '',
+    text: (post?.text || postText || '').trim(),
+    mediaUrl: mediaUrl,
+    mediaType: mediaType,
+    createdAt: post?.createdAt || Date.now()
+  };
+
+  const { setPendingPostShare } = await import('./chat.js');
+  setPendingPostShare(payload);
+  const { navigateTo } = await import('./router.js');
+  navigateTo('chats');
+  toast("Post biriktirildi. Suhbat yoki guruhni tanlang", "info");
 }
 
 export function getTargetPostId() {
@@ -411,9 +456,13 @@ function bindFeedEvents(feedEl) {
     const { openCmtModal } = await import('./comments.js');
     openCmtModal(b.dataset.id);
   }));
-  feedEl.querySelectorAll('.link-btn, .share-btn').forEach(b => b.addEventListener('click', (e) => {
+  feedEl.querySelectorAll('.link-btn').forEach(b => b.addEventListener('click', (e) => {
     e.stopPropagation();
     copyPostLink(b.dataset.id);
+  }));
+  feedEl.querySelectorAll('.share-btn').forEach(b => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sharePostToChat(b.dataset.id);
   }));
   feedEl.querySelectorAll('.user-avi-btn').forEach(b => b.addEventListener('click', async () => {
     if (b.dataset.uid !== state.me?.uid) {

@@ -6,6 +6,7 @@ import { startChatsWatcher, stopChatsWatcher, repaintNoticeBanner } from './chat
 import { startBus, stopBus, busOn } from './rt-bus.js';
 import { startCallWatcher, stopCallWatcher } from './call.js';
 import { clearAllCache, cachePosts, getCachedPosts, clearRuntimeCache, getCachedProfile } from './local-cache.js';
+import { openAviCrop } from './avi-crop.js';
 
 /* ── Server vaqti sinxronizatsiyasi ────────────────────────────────────
    Foydalanuvchi lokal soatini o'zgartirsa ham ban muddati to'g'ri ishlaydi.
@@ -165,14 +166,19 @@ function sbErrUz(err) {
 /** Login normalizatsiyasi: kichik harf, faqat a-z 0-9 _ */
 const _cleanUsername = u => String(u || '').trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
 
-/** Username → auth email. Avval DB'dagi haqiqiy email (email_for_username),
- *  topilmasa uToEmail() bilan taxmin qilinadi. */
+/** Username → auth email. Faqat DB'dagi joriy username orqali (email_for_username).
+ *  Eski username topilmasa null — login ishlamaydi (username o'zgargach). */
 async function _emailForLogin(cleaned) {
   try {
-    const { data } = await sb.rpc('email_for_username', { p_username: cleaned });
+    const { data, error } = await sb.rpc('email_for_username', { p_username: cleaned });
+    if (error) throw error;
     if (data) return data;
-  } catch (_) { /* tarmoq xatosi — taxmin qilamiz */ }
-  return uToEmail(cleaned);
+  } catch (e) {
+    // Tarmoq xatosida oxirgi chora — taxmin (faqat RPC ishlamasa)
+    console.warn('[auth] email_for_username:', e?.message || e);
+    return uToEmail(cleaned);
+  }
+  return null; // username bazada yo'q
 }
 
 const authBtn = $('authBtn');
@@ -241,6 +247,9 @@ if (authBtn) {
     try {
       if (isLogin) {
         const email = await _emailForLogin(cleaned);
+        if (!email) {
+          throw new Error("Login yoki parol noto'g'ri");
+        }
         const { data, error } = await sb.auth.signInWithPassword({ email, password: p });
         if (error) throw error;
         _hideForgotPasswordBtn();
@@ -1995,10 +2004,15 @@ if (peAviInput) {
   peAviInput.onchange = async ev => {
     const f = ev.target.files[0];
     if (!f || !f.type.startsWith('image/')) return;
-    if (f.size > 5*1024*1024) { toast("Avatar 5 MB dan kam bo'lishi kerak", 'error'); return; }
+    if (f.size > 12*1024*1024) { toast("Rasm 12 MB dan kam bo'lishi kerak", 'error'); return; }
+    // Crop / zoom oynasini ochamiz
+    peAviInput.value = ''; // qayta tanlash uchun
+    const cropped = await openAviCrop(f);
+    if (!cropped) return; // bekor qilindi
     toast('Yuklanmoqda...', 'info');
     try {
-      const result = await uploadViaController(f, 'avatars');
+      const file = new File([cropped], 'avatar.png', { type: 'image/png', lastModified: Date.now() });
+      const result = await uploadViaController(file, 'avatars');
       _peAviPending = result.url;
       const peAviImg = $('peAviImg');
       if (peAviImg) peAviImg.innerHTML = `<img src="${result.url}">`;
@@ -2045,17 +2059,27 @@ if (saveProfileBtn) {
       };
 
       const rawUser = $('editUsername')?.value?.trim() || '';
+      let newUsername = null;
       if (rawUser) {
         const cleaned = rawUser.toLowerCase().replace(/[^a-z0-9_]/g, '');
         if (cleaned.length < 2) { toast("Username kamida 2 ta belgi bo'lishi kerak (a-z, 0-9, _)", 'error'); return; }
         if (cleaned.length > 20) { toast("Username 20 ta belgidan oshmasligi kerak", 'error'); return; }
         if (cleaned !== _peOriginalUsername) {
-          try {
-            const { data: grpRows } = await sb.from('groups').select('id').ilike('username', cleaned).limit(1);
-            if (grpRows && grpRows.length) { toast('Bu nom allaqachon band', 'error'); return; }
-          } catch (_) {}
+          // Username o'zgarishi: auth email ham yangilanadi (eski login ishlamaydi)
+          const { data: uRes, error: uErr } = await sb.rpc('change_my_username', { p_new_username: cleaned });
+          if (uErr) {
+            const msg = uErr.message || '';
+            if (/band/i.test(msg)) toast('Bu username band', 'error');
+            else toast(msg || "Username o'zgartirilmadi", 'error');
+            return;
+          }
+          if (uRes && uRes.ok === false) {
+            toast(uRes.message || "Username o'zgartirilmadi", 'error');
+            return;
+          }
+          newUsername = cleaned;
+          _peOriginalUsername = cleaned;
         }
-        updates.username = cleaned;
       }
 
       if (_peAviPending) updates.avatar = _peAviPending;
@@ -2102,7 +2126,8 @@ if (saveProfileBtn) {
       }
 
       state.me.displayName = fn;
-      if (updates.username) state.me.username = updates.username;
+      if (newUsername) state.me.username = newUsername;
+      else if (updates.username) state.me.username = updates.username;
       if (updates.avatar)   state.me.photoURL = updates.avatar;
       if (updates.recovery_email !== undefined) {
         state.me.recoveryEmail = updates.recovery_email;
@@ -2241,13 +2266,24 @@ if (settingsBtn) {
     _applyNotifToggleUI();
     $('settingsMoreMenu')?.classList.remove('show');
     const settingsOverlay = $('settingsOverlay');
-    if (settingsOverlay) { settingsOverlay.classList.add('show'); lockScroll(); }
+    if (settingsOverlay) {
+      settingsOverlay.classList.add('show');
+      // Desktopda scroll qulflanmasin (side panel)
+      if (!window.matchMedia('(min-width: 1200px)').matches) lockScroll();
+    }
   };
+}
+
+function _isDesktopSettingsPinned() {
+  return window.matchMedia('(min-width: 1200px)').matches &&
+    (state.view === 'profile' || document.body.classList.contains('desktop-settings-pinned'));
 }
 
 const closeSettingsBtn = $('closeSettingsBtn');
 if (closeSettingsBtn) {
   closeSettingsBtn.onclick = () => {
+    // Desktop profil: sozlamalar doimo ochiq — yopilmaydi
+    if (_isDesktopSettingsPinned()) return;
     $('settingsMoreMenu')?.classList.remove('show');
     const settingsOverlay = $('settingsOverlay');
     if (settingsOverlay) { settingsOverlay.classList.remove('show'); unlockScroll(); }
@@ -2258,12 +2294,28 @@ const settingsOverlay = $('settingsOverlay');
 if (settingsOverlay) {
   settingsOverlay.onclick = e => {
     if (e.target === settingsOverlay) {
+      if (_isDesktopSettingsPinned()) return;
       $('settingsMoreMenu')?.classList.remove('show');
       settingsOverlay.classList.remove('show');
       unlockScroll();
     }
   };
 }
+
+/* Settings accordion: bosilsa ochiladi / yopiladi */
+(function initPeAccordions() {
+  const root = document.getElementById('settingsOverlay');
+  if (!root) return;
+  root.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pe-acc-toggle');
+    if (!btn || !root.contains(btn)) return;
+    const acc = btn.closest('.pe-accordion');
+    if (!acc) return;
+    const open = !acc.classList.contains('open');
+    acc.classList.toggle('open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+})();
 
 const notifToggle = $('notifToggle');
 if (notifToggle) {

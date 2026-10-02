@@ -768,8 +768,10 @@ function _paintUserRows(users, animate = false) {
     const isContact = _myContacts.has(u.uid);
     const online = isUidOnline(u.uid, isOnline(u.lastSeenAt));
     const isAdminUser = u.isAdmin || u.username === 'admin' || u.username === 'mrdevs' || u.username === 'mr';
+    const rawPreview = c?.lastMessage || '';
+    const formattedLastMsg = formatLastMessageText(rawPreview);
     const preview = c
-      ? `${c.lastSenderId === state.me.uid ? 'You: ' : ''}${esc((c.lastMessage || '').slice(0, 46))}`
+      ? `${c.lastSenderId === state.me.uid ? 'You: ' : ''}${esc(formattedLastMsg.slice(0, 46))}`
       : isAdminUser ? "Admin bilan bog'lanish" : isContact ? 'Kontakt' : 'Yangi suhbat boshlash';
     const time   = c?.lastMessageAt ? fmt(c.lastMessageAt) : '';
     const unread = c?.unreadCount?.[state.me.uid] || 0;
@@ -1281,7 +1283,9 @@ async function _appendGroupRows(root, term = '') {
       const av      = g.avatar || defAvi(g.name || 'G');
       const unread  = g.unreadCount?.[state.me?.uid] || 0;
       const badgeTxt = unread > 99 ? '+99' : `+${unread}`;
-      const preview  = g.lastMessage ? esc(g.lastMessage.slice(0, 46)) : 'Guruh';
+      const rawPreview = g.lastMessage || '';
+      const formattedLastMsg = formatLastMessageText(rawPreview);
+      const preview  = rawPreview ? esc(formattedLastMsg.slice(0, 46)) : 'Guruh';
       const time     = g.lastMessageAt ? fmt(g.lastMessageAt) : '';
       const typeIcon = `<svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
       const badgeClass = 'chat-row-grp-badge--group';
@@ -1441,6 +1445,7 @@ export async function openChatThread(uid) {
   $('chatThreadAvi').innerHTML      = '';
   $('chatThreadInput').value        = '';
   autoGrowChatInput();
+  updatePostAttachBar();
 
   state.currentChatUid = uid;
   let chatId = _latestChatMap[uid]?.id;
@@ -2065,8 +2070,14 @@ function paintMessages(msgs, grp = null) {
       }
     } else {
       /* ── Text message ── */
-      bubbleContent = `<div class="chat-bubble-text">${renderMarkdown(m.text || '')}</div>`;
-      emoCls = emojiOnlyClass(m.text);
+      const postShare = parsePostShare(m.text);
+      if (postShare) {
+        bubbleClassExtra = ' bubble-post-card';
+        bubbleContent = renderChatPostCard(postShare);
+      } else {
+        bubbleContent = `<div class="chat-bubble-text">${renderMarkdown(m.text || '')}</div>`;
+        emoCls = emojiOnlyClass(m.text);
+      }
     }
 
     // ID asosida "yangi"lik: shu xabar ID'si ilgari chizilmagan bo'lsagina
@@ -2297,41 +2308,55 @@ export async function sendChatMessage() {
   }
   if (isEditing()) { await commitEdit($('chatThreadInput')?.value); return; }
   const inp  = $('chatThreadInput');
-  const text = inp?.value?.trim();
-  if (!text || !state.currentChatId || !state.me) return;
+  const userText = (inp?.value || '').trim();
+  const postShare = _pendingPostShare;
+
+  if ((!userText && !postShare) || !state.currentChatId || !state.me) return;
   if (!rateOk('msg', 8, 10000)) return;
 
   const chatId   = state.currentChatId;
   const otherUid = state.currentChatUid;
 
   inp.value = '';
-  updateVoiceSendBtn();
+  if (postShare) {
+    clearPendingPostShare();
+  } else {
+    updateVoiceSendBtn();
+  }
   clearTimeout(_typingTimeout);
   _setTyping(false);
+
+  const finalMsgText = postShare
+    ? JSON.stringify({ __postShare: true, post: postShare, comment: userText })
+    : userText;
+
+  const previewText = postShare
+    ? (userText ? `📌 ${userText}` : `📌 Post: ${postShare.authorName || 'Post'}`)
+    : userText.slice(0, 120);
 
   // 1) Optimistik: o'z xabarimiz shu zahoti ekranda (DB javobini kutmaymiz)
   const id = _uuid();
   const nowMs = Date.now();
   const localMsg = {
-    id, chatId, senderId: state.me.uid, type: 'text', text,
+    id, chatId, senderId: state.me.uid, type: 'text', text: finalMsgText,
     mediaPath: null, mediaUrl: '', mediaType: null, fileName: null, fileSize: null, duration: null,
     status: 'sending', readAt: null, editedAt: null, createdAt: nowMs, _at: nowMs,
   };
   _rtLocal.set(id, localMsg);
   paintMessages([..._curMsgs, localMsg]);
   // 2) Peer'ga to'g'ridan-to'g'ri (WebRTC DataChannel; ulanmagan bo'lsa broadcast)
-  if (_rt && _rtChatId === chatId) _rt.send(id, text);
+  if (_rt && _rtChatId === chatId) _rt.send(id, finalMsgText);
   // 2b) Peer'ning suhbatlar ro'yxati/unread — suhbat ochiq bo'lmasa ham shu zahoti
-  inboxSend(otherUid, { chatId, from: state.me.uid, id, text: text.slice(0, 120), ts: nowMs });
+  inboxSend(otherUid, { chatId, from: state.me.uid, id, text: previewText.slice(0, 120), ts: nowMs });
 
   // Chat ro'yxatida suhbat darhol saqlansin
   if (!_latestChatMap[otherUid]) {
     _latestChatMap[otherUid] = {
       id: chatId, participants: [state.me.uid, otherUid], createdAt: nowMs,
-      lastMessage: text.slice(0, 120), lastSenderId: state.me.uid, lastMessageAt: nowMs, unreadCount: {}
+      lastMessage: previewText.slice(0, 120), lastSenderId: state.me.uid, lastMessageAt: nowMs, unreadCount: {}
     };
   } else {
-    _latestChatMap[otherUid].lastMessage = text.slice(0, 120);
+    _latestChatMap[otherUid].lastMessage = previewText.slice(0, 120);
     _latestChatMap[otherUid].lastMessageAt = nowMs;
     _latestChatMap[otherUid].lastSenderId = state.me.uid;
   }
@@ -2339,7 +2364,7 @@ export async function sendChatMessage() {
   try {
     // 3) Baza (haqiqat manbai) — xuddi shu ID bilan, dedup uchun
     const { error } = await sb.from('messages')
-      .insert({ id, chat_id: chatId, sender_id: state.me.uid, type: 'text', text });
+      .insert({ id, chat_id: chatId, sender_id: state.me.uid, type: 'text', text: finalMsgText });
     if (error) throw error;
     // DB tasdiqladi — clock → 1 chek
     const conf = _rtLocal.get(id);
@@ -2355,7 +2380,8 @@ export async function sendChatMessage() {
     _rtLocal.delete(id);
     if (_rt && _rtChatId === chatId) _rt.retract(id);
     if (state.currentChatId === chatId) paintMessages(_curMsgs.filter(x => x.id !== id));
-    inp.value = text; // qaytarib qo'yamiz, user qayta yuborishi uchun
+    inp.value = userText; // qaytarib qo'yamiz, user qayta yuborishi uchun
+    if (postShare) setPendingPostShare(postShare);
     updateVoiceSendBtn();
   }
 }
@@ -2949,6 +2975,157 @@ function clearChatFile() {
   updateVoiceSendBtn();
 }
 
+/* ── Chat post attach (postni chatga ulashish) ────────────────────────── */
+let _pendingPostShare = null;
+export function setPendingPostShare(payload) {
+  _pendingPostShare = payload;
+  updatePostAttachBar();
+}
+export function getPendingPostShare() {
+  return _pendingPostShare;
+}
+export function clearPendingPostShare() {
+  _pendingPostShare = null;
+  updatePostAttachBar();
+}
+export function updatePostAttachBar() {
+  const bar = $('chatPostAttachBar');
+  if (!bar) return;
+  if (_pendingPostShare) {
+    bar.style.display = 'flex';
+    bar.classList.add('active');
+    const authorEl = $('cpabAuthor');
+    if (authorEl) {
+      authorEl.textContent = _pendingPostShare.authorName + (_pendingPostShare.authorUsername ? (' @' + _pendingPostShare.authorUsername) : '');
+    }
+    const textEl = $('cpabText');
+    if (textEl) {
+      textEl.textContent = _pendingPostShare.text || (_pendingPostShare.mediaUrl ? 'Rasm/Video' : 'Post');
+    }
+    const thumbEl = $('cpabThumb');
+    if (thumbEl) {
+      if (_pendingPostShare.mediaUrl) {
+        thumbEl.style.display = 'block';
+        const isVid = _pendingPostShare.mediaType === 'video' || /\.(mp4|webm|mov)$/i.test(_pendingPostShare.mediaUrl);
+        thumbEl.innerHTML = isVid
+          ? `<video src="${esc(_pendingPostShare.mediaUrl)}"></video>`
+          : `<img src="${esc(_pendingPostShare.mediaUrl)}" alt="thumb">`;
+      } else {
+        thumbEl.style.display = 'none';
+        thumbEl.innerHTML = '';
+      }
+    }
+  } else {
+    bar.style.display = 'none';
+    bar.classList.remove('active');
+  }
+  updateVoiceSendBtn();
+}
+
+export function parsePostShare(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  if (!trimmed.startsWith('{') || !trimmed.endsWith('}')) return null;
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (parsed && (parsed.__postShare === true || parsed.__postShare === 'true')) {
+      return parsed;
+    }
+  } catch (_) {}
+  return null;
+}
+
+export function formatLastMessageText(raw) {
+  if (!raw) return '';
+  const ps = parsePostShare(raw);
+  if (ps) {
+    if (ps.comment && ps.comment.trim()) {
+      return `📌 ${ps.comment.trim()}`;
+    }
+    const name = ps.post?.authorName ? `${ps.post.authorName}` : 'Post';
+    return `📌 Post: ${name}`;
+  }
+  return raw;
+}
+
+export function renderChatPostCard(ps) {
+  const p = ps.post || {};
+  const comment = (ps.comment || '').trim();
+  const authorName = esc(p.authorName || 'Foydalanuvchi');
+  const authorUser = p.authorUsername ? `@${esc(p.authorUsername)}` : '';
+  const authorAvi = p.authorAvatar ? esc(p.authorAvatar) : '';
+  const postText = (p.text || '').trim();
+  const mediaUrl = p.mediaUrl ? esc(p.mediaUrl) : '';
+  const isVideo = p.mediaType === 'video' || /\.(mp4|webm|mov)$/i.test(p.mediaUrl || '');
+  const postId = esc(p.id || '');
+
+  let mediaHtml = '';
+  if (mediaUrl) {
+    if (isVideo) {
+      mediaHtml = `
+        <div class="cpc-media cpc-media--video">
+          <video src="${mediaUrl}" controls playsinline preload="metadata"></video>
+        </div>`;
+    } else {
+      mediaHtml = `
+        <div class="cpc-media">
+          <img src="${mediaUrl}" alt="Post media" loading="lazy">
+        </div>`;
+    }
+  }
+
+  const commentHtml = comment ? `
+    <div class="cpc-comment">
+      <div class="chat-bubble-text">${renderMarkdown(comment)}</div>
+    </div>` : '';
+
+  return `
+    <div class="chat-post-card" data-post-id="${postId}">
+      <div class="cpc-header">
+        <div class="cpc-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span>Ulashilgan post</span>
+        </div>
+      </div>
+      <div class="cpc-content" onclick="window._openPostFromChat && window._openPostFromChat('${postId}')">
+        <div class="cpc-author-row">
+          <div class="cpc-avi">
+            ${authorAvi ? `<img src="${authorAvi}" alt="${authorName}" onerror="this.style.display='none'">` : `<div class="cpc-avi-placeholder">${authorName.charAt(0)}</div>`}
+          </div>
+          <div class="cpc-author-meta">
+            <span class="cpc-author-name">${authorName}</span>
+            ${authorUser ? `<span class="cpc-author-handle">${authorUser}</span>` : ''}
+          </div>
+        </div>
+        ${postText ? `<div class="cpc-caption">${renderMarkdown(postText)}</div>` : ''}
+        ${mediaHtml}
+        <div class="cpc-open-row">
+          <button type="button" class="cpc-open-btn" onclick="event.stopPropagation(); window._openPostFromChat && window._openPostFromChat('${postId}')">
+            <span>Postni ko'rish</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+      ${commentHtml}
+    </div>
+  `;
+}
+
+window._openPostFromChat = async function(postId) {
+  if (!postId) return;
+  try {
+    closeChatThread();
+  } catch (_) {}
+  sessionStorage.setItem('target_post_id', postId);
+  window.location.hash = '#post-' + postId;
+  const { navigateTo } = await import('./router.js');
+  navigateTo('home');
+  const { scrollToPostFromHash } = await import('./feed.js');
+  setTimeout(() => {
+    scrollToPostFromHash();
+  }, 100);
+};
+
 /** Xabar maydoni qatorlar soniga qarab balandlashadi (max ~7 qator, undan keyin ichida skroll). */
 const _INPUT_MAX_H = 144;
 export function autoGrowChatInput() {
@@ -2967,7 +3144,8 @@ export function updateVoiceSendBtn() {
   const inp  = $('chatThreadInput');
   const hasText = inp?.value?.trim().length > 0;
   const hasFile = !!_chatSelFile;
-  const showSend = hasText || hasFile;
+  const hasPost = !!_pendingPostShare;
+  const showSend = hasText || hasFile || hasPost;
   const mic  = $('chatVoiceBtn').querySelector('.icon-mic');
   const send = $('chatVoiceBtn').querySelector('.icon-send');
   if (mic)  mic.style.display  = showSend ? 'none'  : '';
@@ -3202,9 +3380,10 @@ if (_vBtn) {
     const inp = $('chatThreadInput');
     const hasText = inp?.value?.trim().length > 0;
     const hasFile = !!_chatSelFile;
+    const hasPost = !!_pendingPostShare;
 
-    // Matn yoki fayl bo'lsa — bu yuborish tugmasi (click orqali ishlaydi)
-    if (hasText || hasFile) return;
+    // Matn yoki fayl yoki post bo'lsa — bu yuborish tugmasi (click orqali ishlaydi)
+    if (hasText || hasFile || hasPost) return;
 
     e.preventDefault();
     _activePointerId = e.pointerId;
@@ -3279,7 +3458,8 @@ if (_vBtn) {
     }
     const hasText = $('chatThreadInput')?.value?.trim().length > 0;
     const hasFile = !!_chatSelFile;
-    if (hasText || hasFile) {
+    const hasPost = !!_pendingPostShare;
+    if (hasText || hasFile || hasPost) {
       handleSendAction();
     } else {
       toast('Ovoz yozish uchun mikrofoni bosib turing');
@@ -3344,6 +3524,11 @@ $('chatFileInput')?.addEventListener('change', e => {
   if (f) setChatFile(f);
 });
 $('cfpRemove')?.addEventListener('click', clearChatFile);
+$('chatPostAttachClose')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  clearPendingPostShare();
+});
 // Ctrl+V / drag-drop (upload.js) — fayl suhbatga biriktiriladi (xuddi "skrepka" bilan tanlangandek), Enter/yuborish bilan ketadi
 document.addEventListener('chat:attach-file', e => {
   const f = e.detail?.file;

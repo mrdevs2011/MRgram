@@ -217,7 +217,7 @@
       <div class="profile-avi-row">
         <div class="profile-avi" id="profileAvi">
           <div class="avi-edit-badge">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </div>
         </div>
         <div class="profile-stats">
@@ -492,95 +492,102 @@
       </button>
     </div>
 
-    <!-- Asosiy ma'lumotlar -->
-    <div class="pe-card-group">
-      <div class="pe-group-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        Asosiy ma'lumotlar
-      </div>
-
-      <div class="pe-field-box">
-        <label class="pe-input-label" for="editName">To'liq ism <span class="pe-req">*</span></label>
-        <input class="field pe-input" type="text" id="editName" placeholder="To'liq ismingiz" autocomplete="name">
-      </div>
-
-      <div class="pe-field-box">
-        <label class="pe-input-label" for="editUsername">Foydalanuvchi nomi</label>
-        <div class="pe-field-prefix-wrap">
-          <span class="pe-prefix">@</span>
-          <input class="field pe-prefix-field pe-input" type="text" id="editUsername" maxlength="20" placeholder="username" autocomplete="username" autocapitalize="none">
+    <!-- Asosiy ma'lumotlar (accordion) -->
+    <div class="pe-card-group pe-accordion" data-pe-acc="basic">
+      <button type="button" class="pe-group-title pe-acc-toggle" aria-expanded="false">
+        <span class="pe-acc-left">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Asosiy ma'lumotlar
+        </span>
+        <svg class="pe-acc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="pe-acc-body">
+        <div class="pe-field-box">
+          <label class="pe-input-label" for="editName">To'liq ism <span class="pe-req">*</span></label>
+          <input class="field pe-input" type="text" id="editName" placeholder="To'liq ismingiz" autocomplete="name">
         </div>
-        <div class="pe-field-note">Kamida 2 ta belgi (harf, raqam va pastki chiziq)</div>
-      </div>
-
-      <div class="pe-field-box">
-        <label class="pe-input-label" for="editBioInput">Bio</label>
-        <textarea class="ta pe-input pe-textarea" id="editBioInput" rows="3" placeholder="O'zingiz haqingizda qisqacha ma'lumot..."></textarea>
+        <div class="pe-field-box">
+          <label class="pe-input-label" for="editUsername">Foydalanuvchi nomi</label>
+          <div class="pe-field-prefix-wrap">
+            <span class="pe-prefix">@</span>
+            <input class="field pe-prefix-field pe-input" type="text" id="editUsername" maxlength="20" placeholder="username" autocomplete="username" autocapitalize="none">
+          </div>
+          <div class="pe-field-note">Kamida 2 ta belgi (harf, raqam va pastki chiziq)</div>
+        </div>
+        <div class="pe-field-box">
+          <label class="pe-input-label" for="editBioInput">Bio</label>
+          <textarea class="ta pe-input pe-textarea" id="editBioInput" rows="3" placeholder="O'zingiz haqingizda qisqacha ma'lumot..."></textarea>
+        </div>
       </div>
     </div>
 
-    <!-- Zaxira email -->
-    <div class="pe-card-group">
-      <div class="pe-group-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        Zaxira email
-        <span class="pe-tag-optional">ixtiyoriy</span>
-      </div>
-
-      <div class="pe-field-box">
-        <label class="pe-input-label" for="editRecoveryEmail">Zaxira email manzili</label>
-        <input class="field pe-input" type="email" id="editRecoveryEmail" placeholder="example@gmail.com" autocomplete="email">
-        <div class="pe-field-note">Parolingizni unutganingizda 8 xonali tiklash kodi shu emailga yuboriladi.</div>
+    <!-- Zaxira email (accordion) -->
+    <div class="pe-card-group pe-accordion" data-pe-acc="email">
+      <button type="button" class="pe-group-title pe-acc-toggle" aria-expanded="false">
+        <span class="pe-acc-left">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Zaxira email
+          <span class="pe-tag-optional">ixtiyoriy</span>
+        </span>
+        <svg class="pe-acc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="pe-acc-body">
+        <div class="pe-field-box">
+          <label class="pe-input-label" for="editRecoveryEmail">Zaxira email manzili</label>
+          <input class="field pe-input" type="email" id="editRecoveryEmail" placeholder="example@gmail.com" autocomplete="email">
+          <div class="pe-field-note">Parolingizni unutganingizda 8 xonali tiklash kodi shu emailga yuboriladi.</div>
+        </div>
       </div>
     </div>
 
-    <!-- Parolni o'zgartirish -->
-    <div class="pe-card-group pe-security-group">
-      <div class="pe-group-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Parolni o'zgartirish
-        <span class="pe-tag-optional">ixtiyoriy</span>
-      </div>
-      <div class="pe-security-desc">Faqat parolni yangilamoqchi bo'lsangiz quyidagi maydonlarni to'ldiring:</div>
-
-      <div class="pe-field-box">
-        <label class="pe-input-label" for="editOldPassword">Joriy parol</label>
-        <div class="pe-pwd-wrap">
-          <input class="field pe-input pe-pwd-input" type="password" id="editOldPassword" placeholder="Joriy parolingiz" autocomplete="current-password">
-          <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editOldPassword" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
-            <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
+    <!-- Parolni o'zgartirish (accordion) -->
+    <div class="pe-card-group pe-security-group pe-accordion" data-pe-acc="password">
+      <button type="button" class="pe-group-title pe-acc-toggle" aria-expanded="false">
+        <span class="pe-acc-left">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Parolni o'zgartirish
+          <span class="pe-tag-optional">ixtiyoriy</span>
+        </span>
+        <svg class="pe-acc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="pe-acc-body">
+        <div class="pe-security-desc">Faqat parolni yangilamoqchi bo'lsangiz quyidagi maydonlarni to'ldiring:</div>
+        <div class="pe-field-box">
+          <label class="pe-input-label" for="editOldPassword">Joriy parol</label>
+          <div class="pe-pwd-wrap">
+            <input class="field pe-input pe-pwd-input" type="password" id="editOldPassword" placeholder="Joriy parolingiz" autocomplete="current-password">
+            <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editOldPassword" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
+              <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div class="pe-field-box">
-        <label class="pe-input-label" for="editNewPassword">Yangi parol</label>
-        <div class="pe-pwd-wrap">
-          <input class="field pe-input pe-pwd-input" type="password" id="editNewPassword" placeholder="Yangi parol (kamida 6 belgi)" autocomplete="new-password">
-          <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editNewPassword" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
-            <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
+        <div class="pe-field-box">
+          <label class="pe-input-label" for="editNewPassword">Yangi parol</label>
+          <div class="pe-pwd-wrap">
+            <input class="field pe-input pe-pwd-input" type="password" id="editNewPassword" placeholder="Yangi parol (kamida 6 belgi)" autocomplete="new-password">
+            <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editNewPassword" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
+              <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div class="pe-field-box">
-        <label class="pe-input-label" for="editNewPassword2">Yangi parolni tasdiqlang</label>
-        <div class="pe-pwd-wrap">
-          <input class="field pe-input pe-pwd-input" type="password" id="editNewPassword2" placeholder="Yangi parolni tasdiqlang" autocomplete="new-password">
-          <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editNewPassword2" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
-            <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
+        <div class="pe-field-box">
+          <label class="pe-input-label" for="editNewPassword2">Yangi parolni tasdiqlang</label>
+          <div class="pe-pwd-wrap">
+            <input class="field pe-input pe-pwd-input" type="password" id="editNewPassword2" placeholder="Yangi parolni tasdiqlang" autocomplete="new-password">
+            <button class="pe-pwd-toggle" type="button" tabindex="-1" data-target="editNewPassword2" aria-label="Parolni ko'rsatish" title="Parolni ko'rsatish">
+              <svg class="pe-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="pe-eye-closed" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Saqlash tugmasi -->
     <div style="display:flex;gap:10px;margin-top:2px;">
-      <button class="btn-ghost pe-btn-cancel" id="cancelEditBtn" type="button" style="flex:1;">Bekor qilish</button>
-      <button class="btn-primary pe-btn-save" id="saveProfileBtn" type="button" style="flex:1.4;">
+      <button class="btn-primary pe-btn-save" id="saveProfileBtn" type="button" style="flex:1;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         Saqlash
       </button>
@@ -694,6 +701,23 @@
       <div class="crb-text" id="chatReplyText"></div>
     </div>
     <button class="crb-close" id="chatReplyClose" title="Bekor qilish">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+
+  <!-- Post share attachment bar (above input) -->
+  <div class="chat-post-attach-bar" id="chatPostAttachBar" style="display:none;">
+    <div class="cpab-line"></div>
+    <div class="cpab-thumb" id="cpabThumb" style="display:none;"></div>
+    <div class="cpab-body">
+      <div class="cpab-title">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span>Ulashilayotgan post</span>
+      </div>
+      <div class="cpab-author" id="cpabAuthor"></div>
+      <div class="cpab-text" id="cpabText"></div>
+    </div>
+    <button class="cpab-close" id="chatPostAttachClose" title="Bekor qilish" type="button" aria-label="Bekor qilish">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
@@ -1062,6 +1086,40 @@
       .catch(function() { /* SW xatosi — jimgina */ });
   }
 </script>
+
+
+<!-- AVATAR CROP MODAL -->
+<div id="aviCropModal" class="avi-crop-overlay" style="display:none">
+  <div class="avi-crop-card">
+    <div class="avi-crop-hdr">
+      <span class="avi-crop-title">Profil rasmini o'zgartirish</span>
+      <button type="button" class="avi-crop-x" id="aviCropClose" aria-label="Yopish">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="avi-crop-stage" id="aviCropStage">
+      <div class="avi-crop-checkered"></div>
+      <img id="aviCropImg" class="avi-crop-img" alt="" draggable="false">
+      <div class="avi-crop-mask">
+        <div class="avi-crop-circle"></div>
+        <span class="avi-crop-handle tl"></span>
+        <span class="avi-crop-handle tr"></span>
+        <span class="avi-crop-handle bl"></span>
+        <span class="avi-crop-handle br"></span>
+      </div>
+    </div>
+    <div class="avi-crop-hint">Suratni suring · g'ildirak bilan kattalashtiring</div>
+    <div class="avi-crop-zoom-row">
+      <button type="button" class="avi-crop-zoom-btn" id="aviCropZoomOut" aria-label="Kichiklashtirish">−</button>
+      <input type="range" id="aviCropZoom" class="avi-crop-slider" min="100" max="300" value="100">
+      <button type="button" class="avi-crop-zoom-btn" id="aviCropZoomIn" aria-label="Kattalashtirish">+</button>
+    </div>
+    <div class="avi-crop-actions">
+      <button type="button" class="avi-crop-upload" id="aviCropUpload">Yuklash</button>
+      <button type="button" class="avi-crop-cancel" id="aviCropCancel">Bekor qilish</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

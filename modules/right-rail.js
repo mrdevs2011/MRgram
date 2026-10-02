@@ -28,15 +28,36 @@ function fit() {
   // home, profile, va qidiruv (explore overlay) da — 3 ustun
   const view = state.view || 'home';
   const exploreOpen = !!document.getElementById('searchOverlay')?.classList.contains('open');
+  const isDesktop = window.matchMedia('(min-width: 1200px)').matches;
   const allowed = view === 'home' || view === 'profile' || exploreOpen;
   showRail(
     allowed &&
-    window.matchMedia('(min-width: 1200px)').matches &&
+    isDesktop &&
     !!state.me?.uid
   );
-  // Sozlamalar tugmasi: faqat profil sahifasida, rail pastida qotib turadi
+  // Desktop: sozlamalar profil sahifasida doimo ochiq (ochish/yopish yo'q)
   const sw = $('rrSettingsWrap');
-  if (sw) sw.hidden = view !== 'profile';
+  if (sw) sw.hidden = true; // tugma kerak emas — panel o'zi ochiq
+
+  const settingsOverlay = document.getElementById('settingsOverlay');
+  if (settingsOverlay && state.me?.uid) {
+    if (isDesktop && view === 'profile') {
+      if (!settingsOverlay.classList.contains('show')) {
+        // Forma ma'lumotlarini to'ldirish (lazy)
+        import('./auth.js').then(m => {
+          m.populateProfileForm?.();
+        }).catch(() => {});
+        settingsOverlay.classList.add('show');
+        document.body.classList.add('desktop-settings-pinned');
+      } else {
+        document.body.classList.add('desktop-settings-pinned');
+      }
+    } else if (isDesktop) {
+      // Profil emas — yopamiz
+      settingsOverlay.classList.remove('show');
+      document.body.classList.remove('desktop-settings-pinned');
+    }
+  }
 }
 
 /** Router navigatsiyasidan chaqiriladi */

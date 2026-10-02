@@ -84,8 +84,9 @@ function menuHtml(m) {
   const hasText = !!(m.text || '').trim();
   const it = (k, ico, label, cls = '') => `<button type="button" class="mc-item ${cls}" data-mc="${k}">${ico}<span>${label}</span></button>`;
   let h = '';
-  if (hasText) h += it('copy', IC.copy, 'Nusxalash');
-  if (mine && m.type === 'text') h += it('edit', IC.edit, 'Tahrirlash');
+  const isPostShare = m.text && m.text.includes('"__postShare"');
+  if (hasText) h += it('copy', IC.copy, isPostShare ? 'Havolani nusxalash' : 'Nusxalash');
+  if (mine && m.type === 'text' && !isPostShare) h += it('edit', IC.edit, 'Tahrirlash');
   h += it('fwd', IC.fwd, 'Uzatish');
   if (mine) h += it('del', IC.del, 'O‘chirish', 'danger');
   h += it('sel', IC.sel, 'Tanlash');
@@ -135,7 +136,18 @@ function closeMenu() {
 function run(act, id) {
   const m = msgOf(id);
   if (!m) return;
-  if (act === 'copy') return copyText((m.text || '').trim());
+  if (act === 'copy') {
+    if (m.text && m.text.includes('"__postShare"')) {
+      try {
+        const ps = JSON.parse(m.text);
+        if (ps?.post?.id) {
+          const url = `${window.location.origin}/#post-${ps.post.id}`;
+          return copyText(url);
+        }
+      } catch (_) {}
+    }
+    return copyText((m.text || '').trim());
+  }
   if (act === 'edit') return startEdit(m);
   if (act === 'fwd') return forward([id]);
   if (act === 'del') return remove([id]);
@@ -268,7 +280,7 @@ function paintSel(keepEmpty) {
   const allMine = [...sel].every(id => isMine(msgOf(id)));
   selBar.querySelector('[data-sb="del"]').hidden = !allMine;
   const one = sel.size === 1 ? msgOf([...sel][0]) : null;
-  selBar.querySelector('[data-sb="edit"]').hidden = !(one && isMine(one) && one.type === 'text');
+  selBar.querySelector('[data-sb="edit"]').hidden = !(one && isMine(one) && one.type === 'text' && !(one.text && one.text.includes('"__postShare"')));
 }
 
 /* ── Uzatish (foydalanuvchi tanlash oynasi) ────────────────────────── */

@@ -6,6 +6,7 @@
 import { state } from './config.js';
 import { $, esc, defAvi } from './utils.js';
 import { onEsc } from './esc-stack.js';
+import { navigateTo } from './router.js';
 
 let _sig = '';
 
@@ -29,7 +30,7 @@ function render() {
   box.title = name;
 }
 
-/* ── Akkaunt bosilsa — faqat "Chiqish" menyusi ───────────────────────── */
+/* ── 3 nuqta bosilsa — Sozlamalar + Chiqish menyusi ──────────────────── */
 let _menu = null;
 
 function closeMenu() {
@@ -47,7 +48,6 @@ function openMenu() {
   const uname = state.me?.username ? ' @' + state.me.username : '';
   _menu.innerHTML = `
     <button type="button" class="sb-acc-item" data-act="settings">Sozlamalar</button>
-    <button type="button" class="sb-acc-item" data-act="account">Hisob</button>
     <div class="sb-acc-sep"></div>
     <button type="button" class="sb-acc-item sb-acc-logout" data-act="logout">Chiqish${esc(uname)}</button>
   `;
@@ -82,19 +82,33 @@ function openMenu() {
           || document.getElementById('settingsOverlay')?.classList.add('show');
         return;
       }
-      if (act === 'account') {
-        document.getElementById('settingsBtn')?.click()
-          || document.getElementById('settingsOverlay')?.classList.add('show');
-        return;
-      }
     });
   });
 }
 
+// Username card (avatar + ism) bosilsa — o'z profiliga o'tish
+// 3 nuqta bosilsa — Sozlamalar/Chiqish menyusi
+// Mobil (dots yashirin) da butun blok menyuni ochadi
 $('sbAccount')?.addEventListener('click', e => {
   e.stopPropagation();
+  const dots = e.target.closest('.sb-acc-dots');
+  const wide = window.matchMedia('(min-width: 1100px)').matches;
+
+  // Desktop: 3 nuqta → menyu, qolgan joy → profil
+  if (wide) {
+    if (dots) {
+      if (_menu) closeMenu(); else openMenu();
+    } else {
+      closeMenu();
+      navigateTo('profile');
+    }
+    return;
+  }
+
+  // Mobil / planshet: butun blok → menyu
   if (_menu) closeMenu(); else openMenu();
 });
+
 document.addEventListener('click', e => {
   if (_menu && !_menu.contains(e.target)) closeMenu();
 });

@@ -1,6 +1,6 @@
 import { busEmit } from './rt-bus.js';
 import { sb, state, MAX_FILE, MAX_VIDEO_RAW, uploadViaController } from './config.js';
-import { compressVideo } from './compress.js';
+import { compressImage, compressVideo } from './compress.js';
 import { $, esc, fmtSz, lockScroll, unlockScroll, defAvi } from './utils.js';
 import { toast }                                   from './toast.js';
 
@@ -359,9 +359,22 @@ function clearFile() {
 /* ── Yuklash / Post ───────────────────────────────────────────────────── */
 /* ── Float bar helpers ───────────────────────────────────────────────── */
 
-/* Video bo'lsa kerak bo'lganda siqadi (hisoblagich compress.js da). Float bar'da foiz ko'rsatiladi. */
+/* Rasm/video kerak bo'lganda siqadi (compress.js). Float bar'da foiz ko'rsatiladi. */
 async function _prepareUploadFile(file, label) {
-  if (!file || !file.type.startsWith('video/')) return file;
+  if (!file) return file;
+  // Rasm — shaffoflikni saqlagan holda siqish
+  if (file.type.startsWith('image/')) {
+    try {
+      const compressed = await compressImage(file);
+      if (compressed !== file) console.info('[compress] image:', fmtSz(file.size), '→', fmtSz(compressed.size), compressed.type);
+      return compressed;
+    } catch (e) {
+      console.warn('[compress] image failed, original:', e?.message || e);
+      return file;
+    }
+  }
+  // Video
+  if (!file.type.startsWith('video/')) return file;
   try {
     const r = await compressVideo(file, {
       maxBytes: MAX_FILE,

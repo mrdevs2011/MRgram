@@ -29,7 +29,8 @@ import { openRtGroup }                              from './rt-chat.js';
 import { busOn, groupJoin, groupInboxSend, isUidOnline } from './rt-bus.js';
 import { updateVoiceSendBtn, _toDateSafe, _isSameDay, _dateSepLabel,
          paintGroupThread, resetSeenMsgs, _showPendingBubble, _updatePendingProgress, _removePendingBubble,
-         _showOptimisticVoiceBubble, uploadViaControllerProgress, initChatHeaderMenu } from './chat.js';
+         _showOptimisticVoiceBubble, uploadViaControllerProgress, initChatHeaderMenu,
+         getPendingPostShare, setPendingPostShare, clearPendingPostShare, updatePostAttachBar } from './chat.js';
 import { isEditing, commitEdit }                    from './msg-menu.js';
 
 /* ─────────────────────────────────────────────────────────────────────
@@ -369,6 +370,7 @@ export async function openGroupThread(groupId) {
 
   // Input qatori: yozish huquqiga qarab ko'rsatiladi/yashiriladi (keyin ham jonli yangilanadi)
   _applyGroupComposer(groupData);
+  updatePostAttachBar();
 
   // Info button (tap header → group info)
   $('chatThreadAvi').style.cursor  = 'pointer';
@@ -571,12 +573,27 @@ export async function sendGroupMessage() {
   if (!_currentGroupId || !state.me) return;
   if (isEditing()) { await commitEdit($('chatThreadInput')?.value); return; }
   const inp  = $('chatThreadInput');
-  const text = inp?.value?.trim();
-  if (!text) return;
+  const userText = (inp?.value || '').trim();
+  const postShare = getPendingPostShare ? getPendingPostShare() : null;
+
+  if (!userText && !postShare) return;
   if (!rateOk('msg', 8, 10000)) return;
+
   inp.value = '';
-  updateVoiceSendBtn();
+  if (postShare && clearPendingPostShare) {
+    clearPendingPostShare();
+  } else {
+    updateVoiceSendBtn();
+  }
   clearTimeout(_gTypTimer); _gSetTyping(false);
+
+  const finalMsgText = postShare
+    ? JSON.stringify({ __postShare: true, post: postShare, comment: userText })
+    : userText;
+
+  const previewText = postShare
+    ? (userText ? `📌 ${userText}` : `📌 Post: ${postShare.authorName || 'Post'}`)
+    : userText.slice(0, 120);
 
   const groupId = _currentGroupId;
   const groupData = _currentGroupData;
@@ -585,18 +602,18 @@ export async function sendGroupMessage() {
   // Optimistik: o'z xabarimiz shu zahoti ekranda, baza orqada (xuddi shu ID bilan — dedup)
   const mid = _gUuid();
   const nowMs = Date.now();
-  const localMsg = mapMessage({ id: mid, group_id: groupId, sender_id: state.me.uid, type: 'text', text, created_at: new Date(nowMs).toISOString() });
+  const localMsg = mapMessage({ id: mid, group_id: groupId, sender_id: state.me.uid, type: 'text', text: finalMsgText, created_at: new Date(nowMs).toISOString() });
   localMsg._at = nowMs;
   localMsg.status = 'sending';
   _gPending.set(mid, localMsg);
   _gMsgs = [..._gMsgs, localMsg];
   paintGroupMessages(_gMsgs, groupData);
-  _gRt?.send(mid, text);
-  groupInboxSend(groupId, { gid: groupId, from: state.me.uid, id: mid, text: text.slice(0, 120), ts: nowMs });
+  _gRt?.send(mid, finalMsgText);
+  groupInboxSend(groupId, { gid: groupId, from: state.me.uid, id: mid, text: previewText.slice(0, 120), ts: nowMs });
 
   try {
     const { error } = await sb.from('group_messages')
-      .insert({ id: mid, group_id: groupId, sender_id: state.me.uid, type: 'text', text });
+      .insert({ id: mid, group_id: groupId, sender_id: state.me.uid, type: 'text', text: finalMsgText });
     if (error) throw error;
     // DB tasdiqladi — clock → 1 chek
     const conf = _gPending.get(mid);
@@ -610,7 +627,8 @@ export async function sendGroupMessage() {
     _gRt?.retract(mid);
     _gMsgs = _gMsgs.filter(x => x.id !== mid);
     if (_currentGroupId === groupId) paintGroupMessages(_gMsgs, groupData);
-    inp.value = text;
+    inp.value = userText;
+    if (postShare && setPendingPostShare) setPendingPostShare(postShare);
     updateVoiceSendBtn();
     return;
   }
