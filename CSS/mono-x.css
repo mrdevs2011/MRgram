@@ -1234,17 +1234,19 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
   }
 }
 
-/* Mobil + planshet: gear — stats ustiga chiqmasin, toza doira */
+/* Mobil + planshet: gear — stats bilan bir qatorda, normal o'lcham */
 @media (max-width: 1199px) {
   #profileView .profile-hdr {
     position: relative !important;
   }
-  /* stats o'ng tomonda gear uchun joy */
+  /* gear uchun joy — stats siqilmasin */
   #profileView .profile-avi-row {
-    padding-right: 52px !important;
+    padding-right: 60px !important;
+    align-items: center !important;
   }
   #profileView .profile-actions-row {
     position: absolute !important;
+    /* avi-row markazi bilan tekis */
     top: 16px !important;
     right: 12px !important;
     left: auto !important;
@@ -1253,15 +1255,17 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
     z-index: 6;
     display: flex !important;
     width: auto !important;
+    height: 52px !important;
     align-items: center !important;
   }
   #profileView .profile-actions-row .edit-btn,
   #profileView #settingsBtn.edit-btn {
     box-sizing: border-box !important;
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    max-width: 40px !important;
+    /* 5px border + ko'rinadigan #16181C ichki doira */
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    max-width: 52px !important;
     padding: 0 !important;
     margin: 0 !important;
     border-radius: 50% !important;
@@ -1275,7 +1279,7 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
     font-size: 0 !important;
     line-height: 0 !important;
     gap: 0 !important;
-    flex: 0 0 40px !important;
+    flex: 0 0 52px !important;
     overflow: hidden !important;
     box-shadow: none !important;
     outline: none !important;
@@ -1292,8 +1296,8 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
   }
   #profileView .profile-actions-row .edit-btn svg,
   #profileView #settingsBtn.edit-btn svg {
-    width: 16px !important;
-    height: 16px !important;
+    width: 20px !important;
+    height: 20px !important;
     flex-shrink: 0 !important;
     display: block !important;
     stroke: #e7e9ea !important;
