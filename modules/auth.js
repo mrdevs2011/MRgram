@@ -132,8 +132,6 @@ if (authSwitchBtn) {
     authSwitchBtn.textContent       = isLogin ? 'Ro\'yxatdan o\'tish' : 'Kirish';
     $('nameRow').style.display      = isLogin ? 'none' : 'block';
     $('confirmRow').style.display   = isLogin ? 'none' : 'block';
-    const recRow = $('recoveryEmailRow');
-    if (recRow) recRow.style.display = isLogin ? 'none' : 'block';
     _hideForgotPasswordBtn();
     $('authErr').textContent = '';
   };
@@ -189,7 +187,7 @@ if (authBtn) {
       e.textContent = msg;
       if ('vibrate' in navigator) navigator.vibrate([14, 6, 14, 6, 14]);
 
-      ['aUsername','aPassword','aConfirm','aFullname','aRecoveryEmail'].forEach(id => {
+      ['aUsername','aPassword','aConfirm','aFullname'].forEach(id => {
         const el = $(id);
         if (el) el.classList.remove('input-error');
       });
@@ -207,7 +205,7 @@ if (authBtn) {
     };
 
     /* Inputga yozganda qizil border ketadi */
-    ['aUsername','aPassword','aConfirm','aFullname','aRecoveryEmail'].forEach(id => {
+    ['aUsername','aPassword','aConfirm','aFullname'].forEach(id => {
       const el = $(id);
       if (el && !el._errListenerAdded) {
         el._errListenerAdded = true;
@@ -259,22 +257,12 @@ if (authBtn) {
 
       const fn = $('aFullname').value.trim();
       const c  = $('aConfirm').value;
-      const recEmail = $('aRecoveryEmail')?.value?.trim() || '';
 
       if (!fn) {
         authBtn.disabled = false;
         authBtn.textContent = "Ro'yxatdan o'tish";
         showErr('Ismingizni kiriting', ['aFullname']);
         return;
-      }
-      if (recEmail) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(recEmail)) {
-          authBtn.disabled = false;
-          authBtn.textContent = "Ro'yxatdan o'tish";
-          showErr("Zaxira email formati noto'g'ri", ['aRecoveryEmail']);
-          return;
-        }
       }
       if (p !== c) {
         authBtn.disabled = false;
@@ -299,27 +287,16 @@ if (authBtn) {
         return;
       }
 
-      // Onboarding flagi signUp'dan OLDIN — onAuthStateChange tezroq ishlab ketishi mumkin
-      sessionStorage.setItem('spacemr_new_signup', '1');
-      const { data, error } = await sb.auth.signUp({
-        email: uToEmail(cleaned),
-        password: p,
-        // Profilni DB trigger (handle_new_user) yaratadi; approval doim 'pending'
-        options: {
-          data: {
-            username: cleaned,
-            full_name: fn,
-            avatar: defAvi(fn),
-            recovery_email: recEmail,
-          }
-        },
+      // Hamma tekshiruvlar to'liq o'tdi — zaxira email maslahat popupini ochamiz
+      authBtn.disabled = false;
+      authBtn.textContent = "Ro'yxatdan o'tish";
+
+      _openRegRecoveryModal({
+        cleaned,
+        fn,
+        p,
       });
-      if (error) throw error;
-      if (!data.session) {
-        // "Confirm email" yoqilgan — soxta email'ga xat hech qachon yetmaydi
-        throw new Error('Supabase: Authentication → Email → "Confirm email" ni o\'chiring');
-      }
-      // Keyingi qadamni onAuthStateChange bajaradi (pending ekran)
+      return;
     } catch (err) {
       console.error('Auth error:', err?.code || '', err?.message);
       if (!isLogin) {
@@ -356,11 +333,91 @@ if (authBtn) {
   };
 }
 
-/* ── Zaxira email tushuntiruvchi modal ────────────────────────────── */
-let _recoveryInfoShown = false;
+/* ── Qat'iy email validatsiyasi ────────────────────────────────────── */
+function validateStrictEmail(email) {
+  const s = String(email || '').trim().toLowerCase();
+  if (!s) {
+    return { ok: false, error: 'Email manzili kiritilmadi' };
+  }
+  if (s.length > 254) {
+    return { ok: false, error: 'Email juda uzun (maksimal 254 belgi)' };
+  }
+  if (/\s/.test(s)) {
+    return { ok: false, error: 'Email manzilida bo\'sh joy bo\'lishi mumkin emas' };
+  }
+  const atCount = (s.match(/@/g) || []).length;
+  if (atCount !== 1) {
+    return { ok: false, error: 'Emailda faqat bitta @ belgisi bo\'lishi kerak' };
+  }
 
-function showRecoveryInfo() {
-  const modal = $('recoveryEmailInfoModal');
+  const [localPart, domainPart] = s.split('@');
+  if (!localPart || localPart.length < 1 || localPart.length > 64) {
+    return { ok: false, error: 'Email bosh qismi noto\'g\'ri' };
+  }
+  if (localPart.startsWith('.') || localPart.endsWith('.') || localPart.includes('..')) {
+    return { ok: false, error: 'Email manzilida nuqtalar noto\'g\'ri qo\'yilgan' };
+  }
+  if (!domainPart || !domainPart.includes('.')) {
+    return { ok: false, error: 'Email domeni to\'liq emas (masalan: @gmail.com)' };
+  }
+  if (domainPart.startsWith('.') || domainPart.endsWith('.') || domainPart.includes('..') || domainPart.startsWith('-') || domainPart.endsWith('-')) {
+    return { ok: false, error: 'Email domenida xatolik bor' };
+  }
+
+  const parts = domainPart.split('.');
+  const tld = parts[parts.length - 1];
+  if (!tld || tld.length < 2 || !/^[a-z]+$/.test(tld)) {
+    return { ok: false, error: 'Email domen kengaytmasi (.com, .uz...) noto\'g\'ri' };
+  }
+
+  const rfcRegex = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/;
+  if (!rfcRegex.test(s)) {
+    return { ok: false, error: 'Email formati noto\'g\'ri' };
+  }
+
+  // Keng tarqalgan xato yozilgan domenlar tekshiruvi (typo check)
+  const typos = [
+    { bad: 'gmail.con', good: 'gmail.com' },
+    { bad: 'gmai.com', good: 'gmail.com' },
+    { bad: 'gamil.com', good: 'gmail.com' },
+    { bad: 'gmial.com', good: 'gmail.com' },
+    { bad: 'yaho.com', good: 'yahoo.com' },
+    { bad: 'hotmial.com', good: 'hotmail.com' },
+    { bad: 'outlok.com', good: 'outlook.com' },
+  ];
+  for (const t of typos) {
+    if (domainPart === t.bad) {
+      return { ok: false, error: `Email domenida xato: @${t.good} kiritmoqchimisiz?` };
+    }
+  }
+
+  const fakeDomains = ['test.com', 'example.com', 'sample.com', 'asdf.com', 'test.uz', 'fake.com', 'aaa.com'];
+  if (fakeDomains.includes(domainPart)) {
+    return { ok: false, error: 'Iltimos, haqiqiy shaxsiy emailingizni kiriting' };
+  }
+
+  return { ok: true, email: s };
+}
+
+/* ── Ro'yxatdan o'tishda zaxira email maslahati va kiritish ────────── */
+let _pendingRegData = null;
+
+function _openRegRecoveryModal(regData) {
+  _pendingRegData = regData;
+  const tipStep = $('regRecoveryStepTip');
+  const inputStep = $('regRecoveryStepInput');
+  const emailInp = $('regRecoveryEmailInput');
+  const errEl = $('regRecoveryEmailErr');
+
+  if (tipStep) tipStep.style.display = 'block';
+  if (inputStep) inputStep.style.display = 'none';
+  if (emailInp) {
+    emailInp.value = '';
+    emailInp.classList.remove('input-error');
+  }
+  if (errEl) errEl.textContent = '';
+
+  const modal = $('regRecoveryModal');
   if (modal) {
     modal.classList.add('show');
     modal.style.display = 'flex';
@@ -368,8 +425,8 @@ function showRecoveryInfo() {
   }
 }
 
-function hideRecoveryInfo() {
-  const modal = $('recoveryEmailInfoModal');
+function _hideRegRecoveryModal() {
+  const modal = $('regRecoveryModal');
   if (modal) {
     modal.classList.remove('show');
     modal.style.display = 'none';
@@ -377,40 +434,120 @@ function hideRecoveryInfo() {
   }
 }
 
-const aRecoveryEmail = $('aRecoveryEmail');
-if (aRecoveryEmail) {
-  aRecoveryEmail.addEventListener('focus', () => {
-    if (!isLogin && !_recoveryInfoShown) {
-      _recoveryInfoShown = true;
-      showRecoveryInfo();
+async function _completeSignUp(recoveryEmail = '') {
+  if (!_pendingRegData) return;
+  const { cleaned, fn, p } = _pendingRegData;
+  _pendingRegData = null;
+  _hideRegRecoveryModal();
+
+  const authBtn = $('authBtn');
+  if (authBtn) {
+    authBtn.disabled = true;
+    authBtn.textContent = 'Hisob yaratilmoqda...';
+  }
+
+  try {
+    sessionStorage.setItem('spacemr_new_signup', '1');
+    const { data, error } = await sb.auth.signUp({
+      email: uToEmail(cleaned),
+      password: p,
+      options: {
+        data: {
+          username: cleaned,
+          full_name: fn,
+          avatar: defAvi(fn),
+          recovery_email: recoveryEmail || '',
+        }
+      },
+    });
+    if (error) throw error;
+    if (!data.session) {
+      throw new Error('Supabase: Authentication → Email → "Confirm email" ni o\'chiring');
     }
-  });
-  aRecoveryEmail.addEventListener('click', () => {
-    if (!isLogin && !_recoveryInfoShown) {
-      _recoveryInfoShown = true;
-      showRecoveryInfo();
+  } catch (err) {
+    console.error('Sign up error:', err);
+    sessionStorage.removeItem('spacemr_new_signup');
+    sessionStorage.removeItem('mrspace_new_signup');
+    if (authBtn) {
+      authBtn.disabled = false;
+      authBtn.textContent = "Ro'yxatdan o'tish";
     }
-  });
+    const known = sbErrUz(err);
+    const errEl = $('authErr');
+    if (errEl) errEl.textContent = known;
+    toast(known, 'error');
+  }
 }
 
-const recoveryEmailInfoBtn = $('recoveryEmailInfoBtn');
-if (recoveryEmailInfoBtn) {
-  recoveryEmailInfoBtn.onclick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    showRecoveryInfo();
+const regRecoverySkipBtn = $('regRecoverySkipBtn');
+if (regRecoverySkipBtn) {
+  regRecoverySkipBtn.onclick = () => {
+    _completeSignUp('');
   };
 }
 
-const recoveryEmailInfoOkBtn = $('recoveryEmailInfoOkBtn');
-if (recoveryEmailInfoOkBtn) {
-  recoveryEmailInfoOkBtn.onclick = hideRecoveryInfo;
+const regRecoveryAddBtn = $('regRecoveryAddBtn');
+if (regRecoveryAddBtn) {
+  regRecoveryAddBtn.onclick = () => {
+    const tipStep = $('regRecoveryStepTip');
+    const inputStep = $('regRecoveryStepInput');
+    const emailInp = $('regRecoveryEmailInput');
+    if (tipStep) tipStep.style.display = 'none';
+    if (inputStep) inputStep.style.display = 'block';
+    if (emailInp) emailInp.focus();
+  };
 }
 
-const recoveryEmailInfoModal = $('recoveryEmailInfoModal');
-if (recoveryEmailInfoModal) {
-  recoveryEmailInfoModal.addEventListener('click', (e) => {
-    if (e.target === recoveryEmailInfoModal) hideRecoveryInfo();
+const regRecoveryBackBtn = $('regRecoveryBackBtn');
+if (regRecoveryBackBtn) {
+  regRecoveryBackBtn.onclick = () => {
+    const tipStep = $('regRecoveryStepTip');
+    const inputStep = $('regRecoveryStepInput');
+    const errEl = $('regRecoveryEmailErr');
+    const emailInp = $('regRecoveryEmailInput');
+    if (errEl) errEl.textContent = '';
+    if (emailInp) emailInp.classList.remove('input-error');
+    if (inputStep) inputStep.style.display = 'none';
+    if (tipStep) tipStep.style.display = 'block';
+  };
+}
+
+const regRecoverySubmitBtn = $('regRecoverySubmitBtn');
+if (regRecoverySubmitBtn) {
+  regRecoverySubmitBtn.onclick = () => {
+    const emailInp = $('regRecoveryEmailInput');
+    const errEl = $('regRecoveryEmailErr');
+    const val = emailInp?.value || '';
+
+    const res = validateStrictEmail(val);
+    if (!res.ok) {
+      if (errEl) errEl.textContent = res.error;
+      if (emailInp) {
+        emailInp.classList.add('input-error');
+        emailInp.focus();
+      }
+      if ('vibrate' in navigator) navigator.vibrate([14, 6, 14]);
+      return;
+    }
+
+    if (errEl) errEl.textContent = '';
+    if (emailInp) emailInp.classList.remove('input-error');
+    _completeSignUp(res.email);
+  };
+}
+
+const regRecoveryEmailInput = $('regRecoveryEmailInput');
+if (regRecoveryEmailInput) {
+  regRecoveryEmailInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      $('regRecoverySubmitBtn')?.click();
+    }
+  });
+  regRecoveryEmailInput.addEventListener('input', () => {
+    regRecoveryEmailInput.classList.remove('input-error');
+    const errEl = $('regRecoveryEmailErr');
+    if (errEl) errEl.textContent = '';
   });
 }
 
@@ -1557,9 +1694,9 @@ if (saveProfileBtn) {
 
     const rawRecEmail = $('editRecoveryEmail')?.value?.trim() || '';
     if (rawRecEmail) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(rawRecEmail)) {
-        toast(`Zaxira email noto'g'ri formatda`, 'error');
+      const emailRes = validateStrictEmail(rawRecEmail);
+      if (!emailRes.ok) {
+        toast(emailRes.error, 'error');
         return;
       }
     }

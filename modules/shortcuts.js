@@ -44,8 +44,7 @@ const CLOSERS = [
   ['sbSearchPanel',          () => $('sbSearchPanel')?.classList.remove('show')],
   ['settingsMoreMenu',       () => $('settingsMoreMenu')?.classList.remove('show')],
   ['chatThreadModal',        () => closeChatThread()],
-  ['recoveryEmailInfoModal', () => $('recoveryEmailInfoOkBtn')?.click()],
-  ['forgotPasswordSentModal', () => $('forgotSentOkBtn')?.click()],
+  ['regRecoveryModal',       () => $('regRecoverySkipBtn')?.click()],
   ['mandatoryPwdOverlay',    () => $('mandatoryPwdSignOutBtn')?.click()],
   ['adminResetPwdOverlay',   () => $('adminResetCancelBtn')?.click()],
 ];
@@ -120,8 +119,16 @@ document.addEventListener('keydown', e => {
   // Tasdiq oynasi / modallar: Enter = asosiy tugma
   if (!onButton) {
     if (isOpen($('confirmOverlay'))) { e.preventDefault(); $('confirmOkBtn')?.click(); return; }
-    if (isOpen($('recoveryEmailInfoModal'))) { e.preventDefault(); $('recoveryEmailInfoOkBtn')?.click(); return; }
-    if (isOpen($('forgotPasswordSentModal'))) { e.preventDefault(); $('forgotSentOkBtn')?.click(); return; }
+    if (isOpen($('regRecoveryModal'))) {
+      e.preventDefault();
+      const inputStep = $('regRecoveryStepInput');
+      if (inputStep && inputStep.style.display !== 'none') {
+        $('regRecoverySubmitBtn')?.click();
+      } else {
+        $('regRecoveryAddBtn')?.click();
+      }
+      return;
+    }
   }
 
   if (t.tagName === 'INPUT' && !NON_TEXT.includes(t.type)) {
