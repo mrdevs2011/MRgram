@@ -1468,7 +1468,7 @@ export async function pickGroupPhoto() {
       if (img) { img.src = result.url; img.style.display = ''; }
       if (ph)  ph.style.display = 'none';
       toast('Rasm yuklandi', 'success');
-    } catch(e) { toast('Rasm yuklanmadi', 'error'); }
+    } catch(e) { toast('Rasm yuklanmadi' + (e && e.message ? ': ' + e.message : ''), 'error'); }
   };
   input.click();
 }
@@ -1735,7 +1735,8 @@ export function injectGroupsDOM() {
     document.getElementById('grpAddUserOverlay').classList.remove('show');
   document.getElementById('grpAddUserInput')
 
-  document.getElementById('grpFormAvi').onclick   = pickGroupPhoto;
+  /* Faqat wrap'ga: #grpFormAvi uning ichida, bosish bubble bo'lib shu yerga keladi.
+     Ikkalasiga ham qo'yilsa file chooser ikki marta ochilib "user activation" xatosi chiqadi. */
   document.getElementById('grpFormAviWrap').onclick = pickGroupPhoto;
   document.getElementById('grpFormCreateBtn').onclick = submitCreateGroup;
   document.getElementById('grpFormCancelBtn').onclick = () => {

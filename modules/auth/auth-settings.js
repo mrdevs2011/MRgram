@@ -164,6 +164,16 @@ if (clearCacheBtn) {
   };
 }
 
+/* Yordam tugmasi — manzil index.html dagi #helpBtn[data-href] da (Telegram t.me/... yoki mailto:...) */
+const helpBtn = $('helpBtn');
+if (helpBtn) {
+  helpBtn.onclick = () => {
+    const href = (helpBtn.dataset.href || '').trim();
+    if (!href) { toast('Yordam manzili hali sozlanmagan', 'error'); return; }
+    window.open(href, '_blank', 'noopener');
+  };
+}
+
 /* "..." menyusi — nozik/ko'rinmasroq joyda, tasodifan bosilib ketmasligi
  * uchun hisobni o'chirish shu menyu ichida yashiringan. */
 const settingsMoreBtn  = $('settingsMoreBtn');
