@@ -3,6 +3,7 @@ import { sb, state, MAX_FILE, MAX_VIDEO_RAW, uploadViaController } from '../core
 import { compressImage, compressVideo } from './compress.js';
 import { $, esc, fmtSz, lockScroll, unlockScroll, defAvi } from '../core/utils.js';
 import { toast }                                   from '../ui/toast.js';
+import { isAllowedUpload, isImageFile, UPLOAD_DENIED_MSG, STORY_DENIED_MSG, ALLOWED_UPLOAD_ACCEPT } from '../core/upload-policy.js';
 
 /* ═══════════════════════════════════════════════════════════════════════
    FILE TYPE → SVG icon + label + accent color
@@ -239,8 +240,8 @@ function _setComposerMode(mode) {
   const cap = $('captionInput');
   cap.placeholder = story ? "Story 24 soat davomida ko'rinadi. Izoh yozing (ixtiyoriy)…" : _POST_PLACEHOLDER;
   if (story) cap.maxLength = STORY_CAPTION_MAX; else cap.removeAttribute('maxlength');
-  $('fileInput').accept = story ? 'image/*,video/*' : _POST_ACCEPT;
-  $('uploadDrop').setAttribute('aria-label', story ? 'Story uchun rasm yoki video tanlash' : "Rasm yoki video qo'shish");
+  $('fileInput').accept = story ? 'image/*' : ALLOWED_UPLOAD_ACCEPT;
+  $('uploadDrop').setAttribute('aria-label', story ? 'Story uchun rasm tanlash' : "Rasm yoki fayl qo'shish");
 }
 
 /* ── Button enable/disable check ────────────────────────────────────── */
@@ -286,11 +287,15 @@ function hideProgress() {
 
 /* ── File pick ───────────────────────────────────────────────────────── */
 export function pickFile(f) {
-  if (_composerMode === 'story') {
-    if (!f.type.startsWith('image/') && !f.type.startsWith('video/')) {
-      toast('Faqat rasm yoki video', 'error');
-      return;
-    }
+  if (!isAllowedUpload(f)) {
+    toast(UPLOAD_DENIED_MSG, 'error');
+    $('fileInput').value = '';
+    return;
+  }
+  if (_composerMode === 'story' && !isImageFile(f)) {
+    toast(STORY_DENIED_MSG, 'error');
+    $('fileInput').value = '';
+    return;
   }
   {
     const isVid = f.type.startsWith('video/');

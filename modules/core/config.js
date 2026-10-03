@@ -10,6 +10,7 @@ import { createClient } from '../vendor/vendor-supabase.js';
 // URL va anon key modules/env.js dan keladi — uni Vercel build (scripts/build-env.mjs)
 // Environment Variables'dan yozadi. service_role ni BU YERGA YOZMANG.
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './env.js';
+import { assertAllowedUpload } from './upload-policy.js';
 export { SUPABASE_URL, SUPABASE_ANON_KEY };
 export const MEDIA_BUCKET      = 'media';
 
@@ -112,6 +113,7 @@ export async function getMediaUrl(post) {
  */
 export async function uploadViaController(file, folder = 'posts') {
   if (!state.me) throw new Error('Tizimga kirilmagan');
+  assertAllowedUpload(file, folder); // video taqiq; story/avatar faqat rasm
   const safeName = file.name.replace(/[^\w.\-]/g, '_').replace(/_+/g, '_');
   const path = `${state.me.uid}/${folder}/${Date.now()}_${(crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2))}_${safeName}`;
   const { data, error } = await sb.storage.from(MEDIA_BUCKET).upload(path, file, {

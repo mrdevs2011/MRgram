@@ -24,3 +24,6 @@ Bazada ISHGA TUSHIRILGAN SQL fayllar, tartib raqami bilan. Yangi bazada `000_sch
 
 
 
+- 054 (2026-10-03): faqat JPG/PNG yuklash. media bucket allowed_mime_types, storage.objects va messages/group_messages/posts/stories INSERT triggerlari video/audio/ovozli xabarni rad etadi. Eski qatorlarga tegilmagan.
+- 055 (2026-10-03): 054 tuzatildi — ovozli xabar (audio, faqat chat-voice papkasi va type='voice') qaytarildi; video taqiqligicha. Bucket MIME ro'yxati olib tashlandi (codecs parametri sababli), cheklov triggerlarda.
+- 056 (2026-10-03): siyosat o'zgardi (054/055 ni almashtiradi): faqat VIDEO taqiqlangan; rasm formatlari, hujjat/arxiv, audio ruxsat; story/avatar/guruh avatari faqat rasm.

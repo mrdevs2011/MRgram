@@ -668,6 +668,7 @@ import {
   uploadViaControllerProgress,
   _uuid,
 } from './chat-shared.js';
+import { isAllowedUpload, UPLOAD_DENIED_MSG } from '../core/upload-policy.js';
 // Re-export shared helpers so existing importers of chat.js keep working
 export {
   _toDateSafe,
@@ -1882,6 +1883,11 @@ function getChatFileIcon(name = '', mime = '') {
 
 /* ── Chat file attach ──────────────────────────────────────────────────── */
 function setChatFile(file) {
+  if (!isAllowedUpload(file)) {
+    import('../ui/toast.js').then(m => m.toast(UPLOAD_DENIED_MSG, 'error'));
+    $('chatFileInput') && ($('chatFileInput').value = '');
+    return;
+  }
   if (file.size > MAX_FILE) {
     import('../ui/toast.js').then(m => m.toast('Fayl hajmi 50 MB dan oshmasligi kerak', 'error'));
     return;

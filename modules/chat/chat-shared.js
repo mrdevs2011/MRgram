@@ -9,6 +9,7 @@
 import { sb, state, uploadViaController, mediaPublicUrl, SUPABASE_URL, SUPABASE_ANON_KEY, MEDIA_BUCKET } from '../core/config.js';
 import { $, esc, fmtSz, fmtTime } from '../core/utils.js';
 import { toast } from '../ui/toast.js';
+import { assertAllowedUpload } from '../core/upload-policy.js';
 
 /* ── Sana yordamchilari (Telegram uslubidagi separatorlar) ─────────────── */
 
@@ -136,6 +137,7 @@ export async function uploadViaControllerProgress(file, folder, onProgress) {
   const { data: { session } } = await sb.auth.getSession();
   const token = session?.access_token;
   if (!token || !state.me) throw new Error('Tizimga kirilmagan');
+  assertAllowedUpload(file, folder); // video taqiq; story/avatar faqat rasm
 
   const safeName = file.name.replace(/[^\w.\-]/g, '_').replace(/_+/g, '_');
   const path = `${state.me.uid}/${folder}/${Date.now()}_${(crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2))}_${safeName}`;
