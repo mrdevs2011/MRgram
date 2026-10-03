@@ -1262,7 +1262,7 @@ export function listenPosts() {
 
     // Faqat post ID'lari o'zgarganda to'liq re-render
     const currentIds = newPosts.map(p => p.id).join(',');
-    const structural = _lastPostIds !== currentIds;
+    const structural = _lastPostIds !== currentIds || (newPosts.length === 0 && window.__feedNeedsEmptyRender);
 
     const countChanged = state.allPosts && state.allPosts.some(oldP => {
       const newP = newPosts.find(p => p.id === oldP.id);
@@ -1276,6 +1276,7 @@ export function listenPosts() {
     _lastPostIds = currentIds;
 
     if (structural) cachePosts(myUid, newPosts);
+    window.__feedNeedsEmptyRender = false;
 
     if (structural) {
       if (state.view === 'home')      _cb.renderFeed?.();
@@ -1332,7 +1333,7 @@ export function listenPosts() {
     if (error) { console.warn('[Auth] Posts yuklashda xato:', error.message); return; }
     byId.clear();
     for (const r of data || []) byId.set(r.id, mapPost(r));
-    if (data && data.length < POST_LIMIT) window.__feedFullyLoaded = true;
+    if (data && data.length < POST_LIMIT) { window.__feedFullyLoaded = true; window.__feedNeedsEmptyRender = true; }
     else window.__feedFullyLoaded = false;
     _scheduleRender();
   };

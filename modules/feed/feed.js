@@ -624,9 +624,7 @@ export async function renderFeed() {
   _feedFirstRender = false;
 
   await renderFeedTo(feedEl, posts);
-  if (posts.length === 0 && window.__feedFullyLoaded) {
-    feedEl.innerHTML = '<div style="text-align:center; padding:40px; color:#888">Hozircha postlar yo\'q</div>';
-  }
+
 
   // URL hash yoki query da post id bo'lsa — o'sha postga smooth scroll va ko'k yonish
   if (targetId) scrollToPostFromHash();
