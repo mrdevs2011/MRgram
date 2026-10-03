@@ -503,6 +503,8 @@ export function closeGroupThread() {
   document.getElementById('chatHeaderDropdown')?.remove();
   $('chatThreadInput').disabled = false;
   $('chatThreadInput').placeholder = 'Xabar yozing...';
+  $('chatThreadInput').value = localStorage.getItem('draft_' + groupId) || '';
+  setTimeout(() => window.updateVoiceSendBtn && window.updateVoiceSendBtn(), 50);
   [$('chatAttachBtn'), $('chatVoiceBtn')].forEach(el => {
     if (!el) return;
     el.style.opacity = '';

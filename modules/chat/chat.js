@@ -1245,7 +1245,11 @@ export async function openChatThread(uid) {
   $('chatThreadModal').classList.add('show');
   $('chatThreadName').textContent   = '...';
   $('chatThreadAvi').innerHTML      = '';
-  $('chatThreadInput').value        = '';
+
+  const draft = localStorage.getItem('draft_' + uid) || '';
+  $('chatThreadInput').value = draft;
+  setTimeout(updateVoiceSendBtn, 50);
+
   autoGrowChatInput();
   updatePostAttachBar();
 

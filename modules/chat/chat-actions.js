@@ -209,6 +209,8 @@ export async function handleSendAction() {
     const inp = $('chatThreadInput');
     const text = inp ? inp.value.trim() : '';
     if (inp) {
+    localStorage.removeItem('draft_' + (state.currentChatUid || state.currentChatId));
+
       inp.value = '';
       inp.style.height = '';
     }
