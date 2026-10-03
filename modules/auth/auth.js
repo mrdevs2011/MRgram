@@ -1161,7 +1161,7 @@ async function _preloadForSplash(uid) {
     } catch (_) {}
   })());
 
-  await Promise.race([Promise.allSettled(tasks), new Promise(r => setTimeout(r, 600))]);
+  Promise.allSettled(tasks); // Fire and forget! Don't block splash screen.
   // right-rail qayta chizsin
   try {
     const rr = await import('../ui/right-rail.js');
@@ -1305,7 +1305,7 @@ export function listenPosts() {
         .lt('created_at', new Date(oldest.createdAt).toISOString())
         .order('created_at', { ascending: false })
         .limit(10);
-      if (error || !data || data.length === 0) return false;
+      if (error || !data || data.length === 0) { window.__feedFullyLoaded = true; document.dispatchEvent(new CustomEvent('postsUpdated')); return false; }
       
       let added = 0;
       for (const r of data) {
@@ -1314,6 +1314,7 @@ export function listenPosts() {
           added++;
         }
       }
+      if (data.length < 10) { window.__feedFullyLoaded = true; _scheduleRender(); }
       if (added > 0) _scheduleRender();
       return added > 0;
     } catch (e) {
@@ -1331,6 +1332,8 @@ export function listenPosts() {
     if (error) { console.warn('[Auth] Posts yuklashda xato:', error.message); return; }
     byId.clear();
     for (const r of data || []) byId.set(r.id, mapPost(r));
+    if (data && data.length < POST_LIMIT) window.__feedFullyLoaded = true;
+    else window.__feedFullyLoaded = false;
     _scheduleRender();
   };
 

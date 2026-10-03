@@ -624,11 +624,14 @@ export async function renderFeed() {
   _feedFirstRender = false;
 
   await renderFeedTo(feedEl, posts);
+  if (posts.length === 0 && window.__feedFullyLoaded) {
+    feedEl.innerHTML = '<div style="text-align:center; padding:40px; color:#888">Hozircha postlar yo\'q</div>';
+  }
 
   // URL hash yoki query da post id bo'lsa — o'sha postga smooth scroll va ko'k yonish
   if (targetId) scrollToPostFromHash();
 
-  if (state.visibleN < filtered().length || (!state.search && state.view === 'home')) {
+  if (state.visibleN < filtered().length || (!state.search && state.view === 'home' && !window.__feedFullyLoaded)) {
     feedEl.insertAdjacentHTML('beforeend', '<div class="spin-wrap"><div class="spinner"></div></div>');
   }
   setupScroll();
