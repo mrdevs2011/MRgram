@@ -375,9 +375,37 @@ export function initUrlRouter() {
   if (_inited) return;
   _inited = true;
 
+  /* Kirmagan foydalanuvchi: history.pushState/replaceState orqali /login dan boshqa
+     yo'lga o'tishga urinish bo'lsa — jimgina /login ga qaytariladi. */
+  const _guardHistory = fn => function (st, title, url) {
+    if (_auth === 'out' && url != null) {
+      try {
+        const u = new URL(url, location.href);
+        if (u.origin === location.origin && cleanPath(u.pathname) !== '/login') {
+          url = '/login' + u.search + u.hash;
+        }
+      } catch (_) { /* noto'g'ri URL — brauzerning o'zi xato beradi */ }
+    }
+    return fn.call(history, st, title, url);
+  };
+  history.pushState = _guardHistory(history.pushState);
+  history.replaceState = _guardHistory(history.replaceState);
+
+  /* #hash orqali ham authed sahifaga o'tib bo'lmaydi (kirmagan bo'lsa /login da qoladi) */
+  window.addEventListener('hashchange', () => {
+    if (_auth === 'out' && cleanPath(location.pathname) !== '/login') {
+      history.replaceState({ i: 0, prev: null }, '', '/login');
+    }
+  });
+
   window.addEventListener('popstate', () => {
     if (_internalPop) { _internalPop = false; return; }
     if (_auth === 'unknown') return;
+    if (_auth === 'out' && cleanPath(location.pathname) !== '/login') {
+      history.replaceState({ i: 0, prev: null }, '', '/login');
+      updateTitle('/login');
+      return;
+    }
     applyPath(location.pathname);
   });
 
