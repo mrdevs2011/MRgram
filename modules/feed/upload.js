@@ -443,6 +443,13 @@ async function submitStory() {
   if (!file || !state.me) return;
   const caption = $('captionInput').value.trim().slice(0, STORY_CAPTION_MAX);
 
+  const { rateOk } = await import('../core/rate-limit.js');
+  if (!rateOk('story', 10, 60000)) {
+    const { toast } = await import('../ui/ui.js');
+    toast('Juda ko\'p story yukladingiz', 'warning');
+    return;
+  }
+
   $('uploadBtn').disabled    = true;
   $('uploadBtn').textContent = 'Yuklanmoqda…';
   $('uploadOverlay').classList.remove('show');
@@ -508,6 +515,13 @@ export async function submitPost() {
   const isPublic     = true; // yopiq tarmoq: yangi postlar hamma tasdiqlangan a'zoga ko'rinadi
   if (!state.me) return;
   if (!caption && !state.selFile) return;
+
+  const { rateOk } = await import('../core/rate-limit.js');
+  if (!rateOk('post', 5, 60000)) {
+    const { toast } = await import('../ui/ui.js');
+    toast('Juda ko\'p post yozdingiz. Biroz kuting', 'warning');
+    return;
+  }
 
   $('uploadBtn').disabled    = true;
   $('uploadBtn').textContent = 'Yuklanmoqda…';

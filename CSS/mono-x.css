@@ -114,7 +114,7 @@ a { color: var(--link); }
 .post, [data-theme] .post { margin-bottom: 0; box-shadow: none; }
 /* Mobil / planshet: o'rtaga moslangan lenta */
 @media (max-width: 1099px) {
-  .feed, #followingView .feed { max-width: 600px; margin: 0 auto; padding: 0; border: none; width: 100%; }
+  .feed, #followingView .feed { max-width: 600px; margin: 0 auto; padding: 0 0 calc(var(--nav, 60px) + 16px) 0; border: none; width: 100%; }
   #homeComposer { max-width: 600px; margin: 0 auto; width: 100%; }
   nav.bot-nav { box-sizing: border-box; border: none; border-top: 1px solid var(--line); }
 }

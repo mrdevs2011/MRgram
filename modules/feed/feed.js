@@ -499,8 +499,12 @@ function bindFeedEvents(feedEl) {
 }
 
 /* ── Like ────────────────────────────────────────────────────────────── */
+const _likeLocks = new Set();
 export async function doLike(postId, btn) {
   if (!state.me) return;
+  if (_likeLocks.has(postId)) return;
+  _likeLocks.add(postId);
+  
   const wasLiked = state.myLikedPosts.has(postId);
   const post     = state.allPosts.find(p => p.id === postId);
   const cur      = post?.likes || 0;
@@ -541,6 +545,8 @@ export async function doLike(postId, btn) {
     }
   } catch (err) {
     console.warn('[Feed] Like saqlanmadi:', err?.message);
+  } finally {
+    _likeLocks.delete(postId);
   }
 }
 
