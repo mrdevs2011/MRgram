@@ -73,7 +73,7 @@ self.addEventListener('notificationclick', (event) => {
 /* ── Cache versiyasi ── */
 // Statik fayllarga o'zgartirish kiritsangiz, PWA o'zi eskisini yangilashi uchun
 // bu raqamni oshiring (v1 -> v2 -> v3 ...).
-const CACHE_VERSION  = 't-1790943430942'; /* BUILD_VERSION_LINE */
+const CACHE_VERSION  = 't-1791016245609'; /* BUILD_VERSION_LINE */
 const STATIC_CACHE   = `spacemr-static-${CACHE_VERSION}`;
 const RUNTIME_CACHE  = `spacemr-runtime-${CACHE_VERSION}`;
 
@@ -172,24 +172,63 @@ function _isStaticAsset(request) {
   return dest === 'style' || dest === 'script' || dest === 'image' || dest === 'font';
 }
 
-/* ── 0% KESH (Hech narsa keshlanmaydi) ── */
-self.addEventListener('install', () => {
+/* ── CACHE-FIRST: Statik fayllar keshdan, API doim tarmoqdan ── */
+self.addEventListener('install', (event) => {
   self.skipWaiting();
+  event.waitUntil(
+    caches.open(STATIC_CACHE).then(cache => cache.addAll(PRECACHE_URLS).catch(() => {}))
+  );
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
-      // 0% cache: barcha mavjud kesh xotiralarni to'liq tozalash
+      // Faqat eski versiya keshlarini tozalaymiz (joriy versiya saqlanadi)
       const keys = await caches.keys();
-      await Promise.all(keys.map((key) => caches.delete(key)));
+      await Promise.all(
+        keys.filter(k => k !== STATIC_CACHE && k !== RUNTIME_CACHE).map(k => caches.delete(k))
+      );
       await clients.claim();
     })()
   );
 });
 
-// Barcha tarmoq so'rovlari bevosita serverdan keshsiz olinadi
-self.addEventListener('fetch', () => {
-  return;
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  const url = req.url;
+
+  // Supabase API, tashqi URL'lar — doim tarmoqdan (keshlanmaydi)
+  if (_isBypassed(url) || req.method !== 'GET') return;
+
+  // HTML navigatsiya — Network-First (yangi deploy da yangi HTML kelsin)
+  if (req.destination === 'document' || req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req).then(res => {
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
+        }
+        return res;
+      }).catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // JS / CSS / Rasm / Font — Cache-First (juda tez!)
+  if (_isStaticAsset(req)) {
+    event.respondWith(
+      caches.match(req).then(cached => {
+        if (cached) return cached;
+        return fetch(req).then(res => {
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(STATIC_CACHE).then(c => c.put(req, clone));
+          }
+          return res;
+        });
+      })
+    );
+    return;
+  }
 });
 
