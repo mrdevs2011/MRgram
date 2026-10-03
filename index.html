@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<base href="/">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -185,10 +186,6 @@
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </button>
       </div>
-      <button class="hdr-mute-btn hdr-hidden" id="globalMuteBtn" title="Ovozni yoqish">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-      </button>
-
     </div>
   </header>
 
@@ -240,7 +237,6 @@
     <div class="profile-grid-hdr" id="profileGridTabs" role="tablist">
       <button type="button" class="profile-grid-tab active" data-pg-tab="all" role="tab" aria-selected="true">Barchasi</button>
       <button type="button" class="profile-grid-tab" data-pg-tab="photos" role="tab" aria-selected="false">Photos</button>
-      <button type="button" class="profile-grid-tab" data-pg-tab="videos" role="tab" aria-selected="false">Videos</button>
       <button type="button" class="profile-grid-tab" data-pg-tab="text" role="tab" aria-selected="false">Text posts</button>
       <button type="button" class="profile-grid-tab" data-pg-tab="music" role="tab" aria-selected="false">Musics</button>
     </div>
@@ -421,7 +417,7 @@
     </div>
 
     <div class="composer-toolbar">
-      <div class="upload-drop" id="uploadDrop" aria-label="Rasm yoki video qo'shish">
+      <div class="upload-drop" id="uploadDrop" aria-label="Rasm qo'shish">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" /></svg>
         <input type="file" id="fileInput" class="d-none">
       </div>
@@ -642,7 +638,6 @@
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </button>
   <img   id="zoomImg"   class="d-none">
-  <video id="zoomVideo" controls class="d-none"></video>
 </div>
 
 <!-- DETAIL MODAL -->
@@ -805,11 +800,6 @@
 <!-- ACTIVE CALL MODAL -->
 <div id="callActiveModal">
   <div class="call-stage" id="callStage">
-    <!-- Video mode -->
-    <div class="call-video-wrap" id="callVideoWrap">
-      <video id="callRemoteVideo" autoplay playsinline></video>
-      <video id="callLocalVideo" autoplay playsinline muted class="call-local-pip"></video>
-    </div>
     <!-- Voice mode -->
     <div class="call-voice-wrap cs-active" id="callVoiceWrap">
       <div class="call-voice-avi" id="callActiveAvi"></div>
@@ -821,18 +811,6 @@
   <div class="call-status" id="callStatus">Qo'ng'iroq qilinmoqda...</div>
   <div class="call-timer" id="callTimer">00:00</div>
   <div class="call-active-btns">
-    <div class="call-ctrl-col" id="callSwitchCol">
-      <button class="call-ctrl-btn cam-btn" id="callSwitchCamBtn" title="Kamerani almashtirish" style="display:none">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
-      </button>
-      <span class="call-ctrl-label">Kamera</span>
-    </div>
-    <div class="call-ctrl-col" id="callCamCol">
-      <button class="call-ctrl-btn cam-btn" id="callCamBtn" title="Videoni yoqish">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-      </button>
-      <span class="call-ctrl-label" id="callCamLabel">Video</span>
-    </div>
     <div class="call-ctrl-col" id="callMicCol">
       <button class="call-ctrl-btn" id="callMicBtn" title="Mikrofonni o'chirish">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>

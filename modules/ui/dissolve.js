@@ -133,7 +133,7 @@ function __dissolveDomToCanvas(el, dprOverride) {
       const canvas = document.createElement("canvas");
       canvas.width = Math.ceil(w * dpr);
       canvas.height = Math.ceil(h * dpr);
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       // Sanity: if almost fully transparent, treat as failure
       try {

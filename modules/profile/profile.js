@@ -1,6 +1,6 @@
 import { sb, state, getMediaUrl, uploadViaController, mapProfile, mapPost } from '../core/config.js';
 import { $, esc, fmt, fmtSz, defAvi,
-         initVidWrap, openZoom }         from '../core/utils.js';
+         openZoom }                      from '../core/utils.js';
 import { toast }                         from '../ui/toast.js';
 
 /** profiles qatori (eski users/{uid} hujjatiga o'xshash) */
@@ -33,7 +33,7 @@ async function _fetchUserPosts(uid, onlyPublic) {
 
 /* ── My profile ──────────────────────────────────────────────────────── */
 
-/* Profil postlari filter (Barchasi / Photos / Videos / Text / Music) */
+/* Profil postlari filter (Barchasi / Photos / Text / Music) */
 let _pgAllPosts = [];
 let _pgTab = 'all';
 let _pgTabsBound = false;
@@ -41,15 +41,12 @@ let _pgTabsBound = false;
 function _postKind(p) {
   const mt = (p.mediaType || '').toLowerCase();
   if (mt.startsWith('image')) return 'photos';
-  if (mt.startsWith('video')) return 'videos';
   if (mt.startsWith('audio') || mt.includes('mpeg') || mt.includes('mp3') || mt.includes('wav') || mt.includes('ogg')) return 'music';
   // ba'zi audio fayllar media_type bo'sh, fileName dan
   const fn = (p.fileName || p.mediaPath || '').toLowerCase();
   if (/\.(mp3|wav|ogg|m4a|aac|flac)(\?|$)/.test(fn)) return 'music';
-  if (/\.(mp4|webm|mov|mkv)(\?|$)/.test(fn)) return 'videos';
   if (/\.(jpe?g|png|gif|webp|avif)(\?|$)/.test(fn)) return 'photos';
   if (p.mediaUrl && mt.startsWith('image')) return 'photos';
-  if (p.mediaUrl && mt.startsWith('video')) return 'videos';
   if (!p.mediaUrl && !p.mediaPath) return 'text';
   // media bor lekin type noma'lum
   if (p.mediaUrl || p.mediaPath) return 'photos';
@@ -170,15 +167,12 @@ export async function renderProfileGrid(posts) {
 
   $('profileGrid').innerHTML = list.map(p => {
     const isImg = !!(p.mediaUrl && p.mediaType?.startsWith('image'));
-    const isVid = !!(p.mediaUrl && p.mediaType?.startsWith('video'));
-    const isMedia = isImg || isVid;
+    const isMedia = isImg;
     let c = '';
     if (isImg) c = `<img src="${esc(p.mediaUrl)}" loading="lazy" alt="">`;
-    else if (isVid) c = `<video src="${esc(p.mediaUrl)}" preload="metadata" muted></video>`;
     else c = `<div class="grid-cell-txt">${esc((p.text||p.fileName||'').substring(0,80))}</div>`;
     const kind = isMedia ? 'grid-cell--media' : 'grid-cell--text';
     return `<div class="grid-cell ${kind}" data-id="${p.id}">${c}
-      ${isVid ? `<div class="grid-play-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="m5 3 14 9-14 9V3z"/></svg></div>` : ''}
       <div class="grid-cell-overlay">
         <div class="grid-stat">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -224,8 +218,6 @@ export async function openDetail(id) {
   let mediaHtml = '';
   if (p.mediaUrl && p.mediaType?.startsWith('image')) {
     mediaHtml = `<div class="dm-media"><img src="${esc(p.mediaUrl)}" loading="lazy"></div>`;
-  } else if (p.mediaUrl && p.mediaType?.startsWith('video')) {
-    mediaHtml = `<div class="dm-media"><div class="vid-wrap"><video src="${esc(p.mediaUrl)}" preload="metadata" playsinline></video><div class="vid-overlay"></div><div class="vid-controls"><button class="vc-play"><svg class="ic-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg><svg class="ic-pause d-none" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></button><div class="vc-progress"><div class="vc-bar"><div class="vc-fill"></div></div></div><span class="vc-time">0:00</span><button class="vc-mute"><svg class="ic-vol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><svg class="ic-muted d-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg></button><button class="vc-fs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div></div></div>`;
   }
 
   const likeColor = isLiked ? '#f04060' : 'currentColor';
@@ -268,12 +260,7 @@ export async function openDetail(id) {
       </button>` : ''}
     </div>`;
 
-  const vw = $('detailContent').querySelector('.vid-wrap');
-  if (vw) initVidWrap(vw);
-
   const closeDetail = () => {
-    const vid = $('detailContent').querySelector('video');
-    if (vid) vid.pause();
     $('detailModal').classList.remove('show');
   };
 
@@ -324,8 +311,8 @@ export async function doLikeGen(id, btn) {
 
 /* ── Other user's profile modal ──────────────────────────────────────── */
 
-/* ── Boshqa foydalanuvchi profili: tablar (Barchasi / Photos / Videos / Text / Musics) ── */
-const UP_TABS = [['all','Barchasi'],['photos','Photos'],['videos','Videos'],['text','Text posts'],['music','Musics']];
+/* ── Boshqa foydalanuvchi profili: tablar (Barchasi / Photos / Text / Musics) ── */
+const UP_TABS = [['all','Barchasi'],['photos','Photos'],['text','Text posts'],['music','Musics']];
 let _upTab = 'all';
 
 function _upGridHtml(posts, uid, tab) {
@@ -339,14 +326,10 @@ function _upGridHtml(posts, uid, tab) {
     let c = '';
     if (p.mediaUrl && p.mediaType?.startsWith('image'))
       c = `<img class="w-full h-full object-cover" src="${esc(p.mediaUrl)}" loading="lazy" onerror="this.classList.add('d-none')">`;
-    else if (p.mediaUrl && p.mediaType?.startsWith('video'))
-      c = `<video src="${esc(p.mediaUrl)}" preload="metadata" muted></video>`;
     else
       c = `<div class="up-grid-cell-txt">${esc((p.text||p.fileName||'').substring(0,40))}</div>`;
-    const isVid = p.mediaType?.startsWith('video');
-    const _um = !!(p.mediaUrl && (p.mediaType?.startsWith('image') || p.mediaType?.startsWith('video')));
+    const _um = !!(p.mediaUrl && p.mediaType?.startsWith('image'));
     return `<div class="up-grid-cell ${_um ? 'up-grid-cell--media' : 'up-grid-cell--text'}" data-id="${p.id}" data-uid="${uid}">${c}
-      ${isVid ? `<div class="grid-play-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="m5 3 14 9-14 9V3z"/></svg></div>` : ''}
       <div class="up-grid-cell-overlay">
         <div class="grid-stat">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>

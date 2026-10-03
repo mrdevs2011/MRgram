@@ -1303,8 +1303,6 @@ export async function openChatThread(uid) {
   $('chatFileInput') && ($('chatFileInput').value = '');
   try { updateVoiceSendBtn(); } catch(_) {}
 
-  const videoBtn = $('chatVideoCallBtn');
-  if (videoBtn) videoBtn.style.display = '';
   const voiceCallBtn = $('chatVoiceCallBtn');
   if (voiceCallBtn) voiceCallBtn.style.display = '';
   try {
@@ -1695,11 +1693,10 @@ export function paintMessages(msgs, grp = null) {
       const _ext = (m.fileName || '').toLowerCase().split('.').pop() || '';
       const _mime = (m.mediaType || '').toLowerCase();
       const _isImage = _mime.startsWith('image') || ['jpg','jpeg','png','gif','webp','svg','avif'].includes(_ext);
-      const _isVideo = _mime.startsWith('video') || ['mp4','mov','avi','mkv','webm'].includes(_ext);
       const hasCaption = !!(m.text && m.text.trim());
       const captionHtml = hasCaption ? `<div class="chat-bubble-text cfm-caption">${renderMarkdown(m.text)}</div>` : '';
       
-      const bData = generateFileBubble({ m, fname, fsz, safeUrl, _isImage, _isVideo, hasCaption, captionHtml, time, mine, renderTicks });
+      const bData = generateFileBubble({ m, fname, fsz, safeUrl, _isImage, hasCaption, captionHtml, time, mine, renderTicks });
       bubbleClassExtra = bData.bubbleClassExtra;
       metaOutside = bData.metaOutside;
       bubbleContent = bData.bubbleContent;
@@ -1870,9 +1867,6 @@ function getChatFileIcon(name = '', mime = '') {
   if (m.startsWith('audio') || ['mp3','wav','ogg','aac','opus','m4a'].includes(ext))
     return `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="rgba(255, 255, 255,0.12)"/><path d="M18 34V18l16-4v16" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="34" r="3" fill="#ffffff"/><circle cx="31" cy="30" r="3" fill="#ffffff"/></svg>`;
 
-  if (m.startsWith('video') || ['mp4','mov','avi','mkv','webm'].includes(ext))
-    return `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="rgba(239,68,68,0.12)"/><rect x="6" y="12" width="28" height="24" rx="4" stroke="#ef4444" stroke-width="2"/><path d="M34 18l8-4v20l-8-4V18z" stroke="#ef4444" stroke-width="2" stroke-linejoin="round"/><polygon points="18 19 18 29 26 24" fill="#ef4444"/></svg>`;
-
   if (ext === 'pdf' || m === 'application/pdf')
     return `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="48" height="48" rx="10" fill="rgba(239,68,68,0.12)"/><path d="M13 8h16l8 8v24a2 2 0 0 1-2 2H13a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z" stroke="#ef4444" stroke-width="2"/><path d="M29 8v8h8" stroke="#ef4444" stroke-width="2"/><text x="24" y="34" text-anchor="middle" font-family="monospace" font-weight="700" font-size="9" fill="#ef4444">PDF</text></svg>`;
 
@@ -1932,16 +1926,13 @@ export function updatePostAttachBar() {
     }
     const textEl = $('cpabText');
     if (textEl) {
-      textEl.textContent = chatState._pendingPostShare.text || (chatState._pendingPostShare.mediaUrl ? 'Rasm/Video' : 'Post');
+      textEl.textContent = chatState._pendingPostShare.text || (chatState._pendingPostShare.mediaUrl ? 'Rasm' : 'Post');
     }
     const thumbEl = $('cpabThumb');
     if (thumbEl) {
       if (chatState._pendingPostShare.mediaUrl) {
         thumbEl.style.display = 'block';
-        const isVid = chatState._pendingPostShare.mediaType === 'video' || /\.(mp4|webm|mov)$/i.test(chatState._pendingPostShare.mediaUrl);
-        thumbEl.innerHTML = isVid
-          ? `<video src="${esc(chatState._pendingPostShare.mediaUrl)}"></video>`
-          : `<img src="${esc(chatState._pendingPostShare.mediaUrl)}" alt="thumb">`;
+        thumbEl.innerHTML = `<img src="${esc(chatState._pendingPostShare.mediaUrl)}" alt="thumb">`;
       } else {
         thumbEl.style.display = 'none';
         thumbEl.innerHTML = '';
@@ -2060,7 +2051,6 @@ export function renderChatPostCard(ps) {
   const authorAvi = p.authorAvatar ? esc(p.authorAvatar) : '';
   const postText = (p.text || '').trim();
   const mediaUrl = p.mediaUrl ? esc(p.mediaUrl) : '';
-  const isVideo = p.mediaType === 'video' || /\.(mp4|webm|mov)$/i.test(p.mediaUrl || '');
   const postId = esc(p.id || '');
   const userId = esc(p.userId || '');
 
@@ -2069,17 +2059,10 @@ export function renderChatPostCard(ps) {
 
   let mediaHtml = '';
   if (mediaUrl && !isPostDeleted) {
-    if (isVideo) {
-      mediaHtml = `
-        <div class="cpc-media cpc-media--video">
-          <video src="${esc(mediaUrl)}" controls playsinline preload="metadata"></video>
-        </div>`;
-    } else {
-      mediaHtml = `
-        <div class="cpc-media">
-          <img src="${esc(mediaUrl)}" alt="Post media" loading="lazy">
-        </div>`;
-    }
+    mediaHtml = `
+      <div class="cpc-media">
+        <img src="${esc(mediaUrl)}" alt="Post media" loading="lazy">
+      </div>`;
   }
 
   const commentHtml = comment ? `

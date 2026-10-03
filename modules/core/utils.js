@@ -222,224 +222,6 @@ export function showHeartBurst(x, y, container) {
   setTimeout(() => el.remove(), 900);
 }
 
-/* ── Video helpers ────────────────────────────────────────────────────── */
-export function fmtVidTime(s) {
-  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
-  return m + ':' + String(sec).padStart(2, '0');
-}
-
-export function setPlayState(wrap, playing) {
-  const ip = wrap.querySelector('.ic-play'), ipu = wrap.querySelector('.ic-pause');
-  if (ip)  ip.style.display  = playing ? 'none' : '';
-  if (ipu) ipu.style.display = playing ? '' : 'none';
-}
-
-export function initVidWrap(wrap) {
-  const vid = wrap.querySelector('video');
-  if (!vid || vid._inited) return;
-  vid._inited = true;
-  vid.muted = state.globalMuted;
-  const volIc = wrap.querySelector('.ic-vol'), mutedIc = wrap.querySelector('.ic-muted');
-  if (volIc)   volIc.style.display   = state.globalMuted ? 'none' : 'block';
-  if (mutedIc) mutedIc.style.display = state.globalMuted ? 'block' : 'none';
-  vid.addEventListener('loadedmetadata', () => {
-    const ratio = vid.videoWidth / vid.videoHeight;
-    wrap.style.aspectRatio = ratio.toFixed(4);
-  });
-  vid.addEventListener('timeupdate', () => {
-    if (!vid.duration) return;
-    const pct  = (vid.currentTime / vid.duration) * 100;
-    const fill = wrap.querySelector('.vc-fill');
-    const timeEl = wrap.querySelector('.vc-time');
-    if (fill)   fill.style.width = pct + '%';
-    if (timeEl) timeEl.textContent = fmtVidTime(vid.currentTime);
-  });
-  vid.addEventListener('ended', () => setPlayState(wrap, false));
-  vid.addEventListener('play',  () => setPlayState(wrap, true));
-  vid.addEventListener('pause', () => setPlayState(wrap, false));
-
-  // 2X oldinga (o'ng) va 2X orqaga qaytarish (chap)
-  let holdTimer = null;
-  let isHolding = false;
-  let wasPlaying = false;
-  let rewindRaf = null;
-  let currentDir = null; // 'forward' | 'rewind'
-  let startX = 0;
-  let startY = 0;
-
-  const updateProgress = () => {
-    if (!vid.duration) return;
-    const pct = (vid.currentTime / vid.duration) * 100;
-    const fill = wrap.querySelector('.vc-fill');
-    const timeEl = wrap.querySelector('.vc-time');
-    if (fill) fill.style.width = pct + '%';
-    if (timeEl) timeEl.textContent = fmtVidTime(vid.currentTime);
-  };
-
-  const showBadge = (type) => {
-    wrap.querySelectorAll('.vid-speed-badge').forEach(b => b.remove());
-    const badge = document.createElement('div');
-    badge.className = `vid-speed-badge vid-speed-badge--${type}`;
-    if (type === 'forward') {
-      badge.innerHTML = `<span>2X</span><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,4 15,12 5,20"/><polygon points="13,4 23,12 13,20"/></svg>`;
-    } else {
-      badge.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="19,20 9,12 19,4"/><polygon points="11,20 1,12 11,4"/></svg><span>2X</span>`;
-    }
-    wrap.appendChild(badge);
-  };
-
-  const hideBadge = () => {
-    wrap.querySelectorAll('.vid-speed-badge').forEach(b => b.remove());
-  };
-
-  const startHoldSpeed = (isRight) => {
-    isHolding = true;
-    wrap._justHeldSpeed = true;
-    currentDir = isRight ? 'forward' : 'rewind';
-    cancelAnimationFrame(rewindRaf);
-
-    if (isRight) {
-      vid.playbackRate = 2.0;
-      if (vid.paused) {
-        vid.muted = state.globalMuted;
-        vid.play().catch(() => {});
-      }
-      showBadge('forward');
-    } else {
-      vid.playbackRate = 1.0;
-      vid.pause();
-      showBadge('rewind');
-      let lastTime = performance.now();
-      const loop = (now) => {
-        if (!isHolding || currentDir !== 'rewind') return;
-        const dt = Math.min((now - lastTime) / 1000, 0.1);
-        lastTime = now;
-        if (vid.currentTime > 0) {
-          vid.currentTime = Math.max(0, vid.currentTime - dt * 2.0);
-          updateProgress();
-        }
-        rewindRaf = requestAnimationFrame(loop);
-      };
-      rewindRaf = requestAnimationFrame(loop);
-    }
-  };
-
-  const stopHoldSpeed = () => {
-    clearTimeout(holdTimer);
-    cancelAnimationFrame(rewindRaf);
-    hideBadge();
-
-    if (isHolding) {
-      isHolding = false;
-      currentDir = null;
-      vid.playbackRate = 1.0;
-      if (wasPlaying) {
-        vid.play().catch(() => {});
-      }
-      setTimeout(() => {
-        wrap._justHeldSpeed = false;
-      }, 140);
-    }
-  };
-
-  const overlay = wrap.querySelector('.vid-overlay') || wrap;
-
-  overlay.addEventListener('pointerdown', e => {
-    if (e.button && e.button !== 0) return;
-    if (e.target.closest('.vid-controls')) return;
-    clearTimeout(holdTimer);
-    isHolding = false;
-    wasPlaying = !vid.paused;
-    startX = e.clientX;
-    startY = e.clientY;
-    const rect = wrap.getBoundingClientRect();
-    const isRight = (e.clientX - rect.left) >= (rect.width / 2);
-
-    holdTimer = setTimeout(() => {
-      startHoldSpeed(isRight);
-    }, 140);
-  });
-
-  overlay.addEventListener('pointermove', e => {
-    if (isHolding) {
-      const rect = wrap.getBoundingClientRect();
-      const isRight = (e.clientX - rect.left) >= (rect.width / 2);
-      const newDir = isRight ? 'forward' : 'rewind';
-      if (newDir !== currentDir) {
-        startHoldSpeed(isRight);
-      }
-    } else if (Math.abs(e.clientX - startX) > 12 || Math.abs(e.clientY - startY) > 12) {
-      clearTimeout(holdTimer);
-    }
-  });
-
-  overlay.addEventListener('pointerup', stopHoldSpeed);
-  overlay.addEventListener('pointercancel', stopHoldSpeed);
-  overlay.addEventListener('pointerleave', stopHoldSpeed);
-  overlay.addEventListener('contextmenu', e => {
-    if (isHolding || wrap._justHeldSpeed) {
-      e.preventDefault();
-      return false;
-    }
-  });
-}
-
-export function toggleVidPlay(el) {
-  const wrap = el.closest ? el.closest('.vid-wrap') : el;
-  const vid  = wrap?.querySelector('video');
-  if (!vid) return;
-  if (vid.paused) {
-    vid.muted = state.globalMuted;
-    vid.play().catch(() => {});
-  } else {
-    vid.pause();
-  }
-}
-
-export function seekVid(e, bar) {
-  const wrap = bar.closest('.vid-wrap');
-  const vid  = wrap?.querySelector('video');
-  if (!vid || !vid.duration) return;
-  const rect = bar.getBoundingClientRect();
-  vid.currentTime = ((e.clientX - rect.left) / rect.width) * vid.duration;
-}
-
-export function toggleMute(wrap) {
-  const vid = wrap?.querySelector('video');
-  if (!vid) return;
-  vid.muted = !vid.muted;
-  state.globalMuted = vid.muted;
-  wrap.querySelector('.ic-vol').style.display   = vid.muted ? 'none' : 'block';
-  wrap.querySelector('.ic-muted').style.display = vid.muted ? 'block' : 'none';
-  document.dispatchEvent(new CustomEvent('mutestatechange'));
-}
-
-export function reqFullscreen(wrap) {
-  const vid = wrap?.querySelector('video');
-  if (!vid) return;
-  if (vid.requestFullscreen)            vid.requestFullscreen();
-  else if (vid.webkitRequestFullscreen) vid.webkitRequestFullscreen();
-}
-
-/* ── Event delegation for video controls ─────────────────────────────── */
-document.addEventListener('click', e => {
-  const wrap = e.target.closest('.vid-wrap');
-  if (!wrap) return;
-  if (wrap._justHeldSpeed) return;
-  if (e.target.closest('.vc-play') || e.target.closest('.vid-overlay')) {
-    toggleVidPlay(wrap);
-  } else if (e.target.closest('.vc-mute')) {
-    toggleMute(wrap);
-  } else if (e.target.closest('.vc-fs')) {
-    reqFullscreen(wrap);
-  }
-});
-
-document.addEventListener('click', e => {
-  const bar = e.target.closest('.vc-progress');
-  if (bar) seekVid(e, bar);
-});
-
 /* ── File download ────────────────────────────────────────────────────── */
 export async function dlFile(url, name) {
   toast('Yuklab olinmoqda...', 'info', 8000);
@@ -463,11 +245,11 @@ export async function dlFile(url, name) {
 
 /* ── Zoom modal ───────────────────────────────────────────────────────── */
 export function openZoom(url, type) {
-  const im = $('zoomImg'), vd = $('zoomVideo'), zm = $('zoomModal');
-  if (!im || !vd || !zm) { window.open(url,'_blank'); return; }
+  const im = $('zoomImg'), zm = $('zoomModal');
+  if (!im || !zm) { window.open(url,'_blank'); return; }
   zm.classList.toggle('zoom-avatar', type === 'avatar');
   if (type === 'avatar') {
-    im.style.display = 'block'; vd.style.display = 'none'; im.src = url;
+    im.style.display = 'block'; im.src = url;
     im.style.borderRadius = '50%';
     im.style.width = 'min(72vw, 340px)';
     im.style.height = 'min(72vw, 340px)';
@@ -475,15 +257,13 @@ export function openZoom(url, type) {
     im.style.maxWidth = 'none';
     im.style.maxHeight = 'none';
   } else if (type === 'image') {
-    im.style.display = 'block'; vd.style.display = 'none'; im.src = url;
+    im.style.display = 'block'; im.src = url;
     im.style.borderRadius = '12px';
     im.style.width = '';
     im.style.height = '';
     im.style.objectFit = 'contain';
     im.style.maxWidth = '96%';
     im.style.maxHeight = '96dvh';
-  } else if (type === 'video') {
-    im.style.display = 'none'; vd.style.display = 'block'; vd.src = url; vd.play().catch(() => {});
   } else { window.open(url,'_blank'); return; }
   zm.classList.add('show');
 }
@@ -492,12 +272,12 @@ export function openZoom(url, type) {
 const zoomClose = $('zoomClose');
 const zoomModal = $('zoomModal');
 if (zoomClose) {
-  zoomClose.onclick = () => { $('zoomVideo')?.pause(); zoomModal?.classList.remove('show'); };
+  zoomClose.onclick = () => { zoomModal?.classList.remove('show'); };
 }
 if (zoomModal) {
   zoomModal.onclick = e => {
     // avatar zoomda X yo'q: istalgan joyga bosilsa yopiladi
-    if (e.target === zoomModal || zoomModal.classList.contains('zoom-avatar')) { $('zoomVideo')?.pause(); zoomModal.classList.remove('show'); }
+    if (e.target === zoomModal || zoomModal.classList.contains('zoom-avatar')) { zoomModal.classList.remove('show'); }
   };
 }
 

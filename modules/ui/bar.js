@@ -86,15 +86,6 @@ export function initNavigation() {
   // Qidiruv toggle — router.js/_initSearchHandlers boshqaradi (bu yerda ikkinchi handler bo'lsa,
   // bittasi ochib, ikkinchisi darhol yopib qo'yardi).
 
-  // Mute button (desktop sidebar)
-  const sbMuteBtn = $('sbMuteBtn');
-  if (sbMuteBtn) {
-    sbMuteBtn.addEventListener('click', () => {
-      const event = new CustomEvent('togglemute');
-      document.dispatchEvent(event);
-    });
-  }
-
   // Theme toggle o'chirilgan — faqat dark theme qo'llab-quvvatlanadi
 
   // Note: Initial nav state is handled by router.js

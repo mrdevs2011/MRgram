@@ -58,10 +58,7 @@ export function navigateTo(routeName, pushState = true) {
     return;
   }
 
-  // Update browser history - all at root
-  if (pushState) {
-    history.pushState({ route: routeName }, route.title, '/');
-  }
+  // URL ni url-router.js boshqaradi (holat -> URL sinxronlash, 'spacemr:route' hodisasi orqali)
 
   // Navigatsiya vaqtida barcha ochiq modal/overlay/panel larni yopamiz
   const modalsToClose = [
@@ -95,10 +92,10 @@ export function navigateTo(routeName, pushState = true) {
   });
   // Call modallarini yopmaymiz — qo'ng'iroq davom etishi mumkin
   // chatThread yopilganda call buttonlarni tiklаymiz (group ochilganda yashirilgan bo'lishi mumkin)
-  ['chatVoiceCallBtn','chatVideoCallBtn'].forEach(id => {
-    const el = document.getElementById(id);
+  {
+    const el = document.getElementById('chatVoiceCallBtn');
     if (el) el.style.display = '';
-  });
+  }
   // chatThread state ni tozalaymiz
   if (state.currentChatKind && state.currentChatKind !== 'dm') {
     // group thread unsub ni async import orqali tozalaymiz
@@ -131,6 +128,9 @@ export function navigateTo(routeName, pushState = true) {
 
   // Scroll to top
   window.scrollTo({ top: 0, behavior: 'auto' });
+
+  // URL sinxronlashtirilsin
+  window.dispatchEvent(new Event('spacemr:route'));
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -153,9 +153,6 @@ async function switchView(prevRoute, routeName) {
       }
     } catch (_) { /* eski view controller bo'lmasa — muammo emas */ }
   }
-
-  // Pause all videos
-  document.querySelectorAll('video').forEach(v => v.pause());
 
   // Hide all views
   document.querySelectorAll('.view').forEach(el => {
@@ -355,8 +352,7 @@ export function initRouter() {
   isInitialized = true;
 
 
-  // Handle browser back/forward
-  window.addEventListener('popstate', handlePopState);
+  // Brauzer back/forward — url-router.js boshqaradi
 
   // Handle link clicks
   document.addEventListener('click', (e) => {
@@ -390,15 +386,10 @@ export function initRouter() {
   // Search btn handlers — bir marta bind qilinadi, tab o'zgarganda DOM ga tegmaydi
   _initSearchHandlers();
 
-  // Initialize from URL hash or default to home
-  const rawHash = window.location.hash.slice(1); // e.g. "post-abc123" or "home"
-  let routeName;
-  if (rawHash.startsWith('post-')) {
-    // Post havolasi — home view ga o'tamiz, feed scroll qiladi
-    routeName = 'home';
-  } else {
-    routeName = ALLOWED_ROUTES.includes(rawHash) ? rawHash : 'home';
-  }
+  // Boshlang'ich tab URL yo'lidan (auth tugagach url-router.js to'liq tekshiradi: huquq, overlay, chat)
+  const seg0 = (window.location.pathname.split('/').filter(Boolean)[0] || '').toLowerCase();
+  const routeName = (seg0 === 'chats' || seg0 === 'profile' || seg0 === 'home') ? seg0
+    : (seg0 === 'settings' ? 'profile' : 'home');
   navigateTo(routeName, false);
 }
 

@@ -162,8 +162,6 @@ export async function purgeUserMedia(uid) {
 // Constants
 // Yuklash limiti: 49.9 MB (Supabase Free storage chegarasi 50 MB dan oshmasin)
 export const MAX_FILE = Math.floor(49.9 * 1024 * 1024);
-// Video siqishdan OLDINGI xom limit (endi barchasi 50MB ga qat'iy cheklandi)
-export const MAX_VIDEO_RAW = Math.floor(49.9 * 1024 * 1024);
 export const CAP_LIMIT = 100;
 
 /** Joriy foydalanuvchi admin (profiles.is_admin) */
@@ -179,8 +177,8 @@ export const state = {
   myLikedPosts: new Set(), _knownUnliked: new Set(), cmtPostId: null,
   pendingReelId: null, pendingReelTime: 0, _lastPostIds: '',
   currentChatUid: null, currentChatId: null,
-  globalMuted: true, currentViewingUserId: null,
-  currentViewingUserPosts: [], feedVidObs: null, viewObserver: null,
+  currentViewingUserId: null,
+  currentViewingUserPosts: [], viewObserver: null,
   _userCache: {},         // uid -> { fullName, avatar, ... }
   _likeStatusCache: {},   // postId -> boolean (liked/unliked)
 };

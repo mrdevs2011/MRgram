@@ -368,9 +368,9 @@ export async function openGroupThread(groupId) {
   if (typingEl) typingEl.textContent = subLabel;
 
   // Hide call buttons for groups/channels
-  ['chatVoiceCallBtn','chatVideoCallBtn'].forEach(id => {
-    const el = $(id); if (el) el.style.display = 'none';
-  });
+  {
+    const el = $('chatVoiceCallBtn'); if (el) el.style.display = 'none';
+  }
 
   // Input qatori: yozish huquqiga qarab ko'rsatiladi/yashiriladi (keyin ham jonli yangilanadi)
   _applyGroupComposer(groupData);
@@ -477,9 +477,9 @@ export function closeGroupThread() {
   if (_groupThreadUnsub) { _groupThreadUnsub(); _groupThreadUnsub = null; }
 
   // Restore call buttons
-  ['chatVoiceCallBtn','chatVideoCallBtn'].forEach(id => {
-    const el = $(id); if (el) el.style.display = '';
-  });
+  {
+    const el = $('chatVoiceCallBtn'); if (el) el.style.display = '';
+  }
 
   // Remove info click handlers
   ['chatThreadAvi','chatThreadName'].forEach(id => {
@@ -503,7 +503,7 @@ export function closeGroupThread() {
   document.getElementById('chatHeaderDropdown')?.remove();
   $('chatThreadInput').disabled = false;
   $('chatThreadInput').placeholder = 'Xabar yozing...';
-  $('chatThreadInput').value = localStorage.getItem('draft_' + groupId) || '';
+  $('chatThreadInput').value = '';
   setTimeout(() => window.updateVoiceSendBtn && window.updateVoiceSendBtn(), 50);
   [$('chatAttachBtn'), $('chatVoiceBtn')].forEach(el => {
     if (!el) return;
@@ -872,7 +872,7 @@ export async function openGroupInfo(groupId) {
     }
   }
 
-  /* ── Load media files (images + videos) ── */
+  /* ── Load media files (images) ── */
   const mediaGrid = panel.querySelector('#grpInfoMediaGrid');
   const mediaStat = panel.querySelector('#grpInfoMediaStat');
   const mediaCount = panel.querySelector('#grpInfoMediaCount');
@@ -888,8 +888,8 @@ export async function openGroupInfo(groupId) {
         .filter(m => {
           const mime = (m.mediaType || '').toLowerCase();
           const ext  = (m.fileName || '').toLowerCase().split('.').pop();
-          return mime.startsWith('image') || mime.startsWith('video') ||
-                 ['jpg','jpeg','png','gif','webp','avif','svg','mp4','mov','mkv','webm'].includes(ext);
+          return mime.startsWith('image') ||
+                 ['jpg','jpeg','png','gif','webp','avif','svg'].includes(ext);
         });
 
       if (mediaStat) mediaStat.style.display = mediaMsgs.length ? '' : 'none';
@@ -900,15 +900,8 @@ export async function openGroupInfo(groupId) {
       } else {
         mediaGrid.innerHTML = mediaMsgs.map(m => {
           const safeUrl = (m.mediaUrl || '').replace(/"/g, '&quot;');
-          const mime    = (m.mediaType || '').toLowerCase();
-          const isVideo = mime.startsWith('video') ||
-                          ['mp4','mov','mkv','webm'].includes((m.fileName||'').toLowerCase().split('.').pop());
-          return `<div class="gi-media-cell" data-url="${safeUrl}" data-type="${isVideo?'video':'image'}">
-            ${isVideo
-              ? `<video src="${esc(safeUrl)}" preload="metadata" muted playsinline></video>
-                 <div class="gi-media-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="m5 3 14 9-14 9V3z"/></svg></div>`
-              : `<img src="${esc(safeUrl)}" loading="lazy" onerror="this.closest('.gi-media-cell').style.display='none'">`
-            }
+          return `<div class="gi-media-cell" data-url="${safeUrl}" data-type="image">
+            <img src="${esc(safeUrl)}" loading="lazy" onerror="this.closest('.gi-media-cell').style.display='none'">
           </div>`;
         }).join('');
 

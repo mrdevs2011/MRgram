@@ -1,7 +1,7 @@
 import { busEmit } from '../core/rt-bus.js';
 import { sb, state, CAP_LIMIT, getMediaUrl, isAdmin, mapProfile, MEDIA_BUCKET } from '../core/config.js';
 import { $, esc, renderMarkdown, fmt, fmtSz, defAvi,
-         initVidWrap, showConfirm,
+         showConfirm,
          dlFile, openZoom, showHeartBurst, fmtCount } from '../core/utils.js';
 import { toast }                            from '../ui/toast.js';
 
@@ -74,39 +74,15 @@ export function buildMedia(p) {
   // Post matni doim darrov ko'rinadi (buildCaption alohida chiziladi).
   // Media esa "pm-loading" holatida boshlanadi: agar postda mediaWidth/
   // mediaHeight saqlangan bo'lsa (yuklash paytida o'lchangan), post-card
-  // ALDINDAN xuddi shu nisbatda joy ochib turadi — shu bois rasm/video
+  // ALDINDAN xuddi shu nisbatda joy ochib turadi — shu bois rasm
   // hali yuklanmasdan turib ham layout "sakramaydi", faqat blur bilan
-  // ko'rinadi. To'liq yuklangach (onload/onloadeddata) "pm-loading"
+  // ko'rinadi. To'liq yuklangach (onload) "pm-loading"
   // klassi olib tashlanadi va blur asta yo'qoladi.
   const ratio = (p.mediaWidth && p.mediaHeight)
     ? ` style="aspect-ratio:${p.mediaWidth}/${p.mediaHeight}"`
     : '';
   if (p.mediaType?.startsWith('image'))
     return `<div class="post-media pm-loading" data-id="${p.id}" data-type="image" data-url="${esc(p.mediaUrl)}"${ratio}><img src="${esc(p.mediaUrl)}" loading="lazy" onload="this.closest('.post-media')?.classList.remove('pm-loading')" onerror="this.closest('.post-media')?.classList.remove('pm-loading')"></div>`;
-  if (p.mediaType?.startsWith('video'))
-    return `<div class="post-media pm-loading" data-id="${p.id}" data-type="video" data-url="${esc(p.mediaUrl)}"${ratio}>
-      <div class="vid-wrap">
-        <video src="${esc(p.mediaUrl)}" preload="metadata" playsinline onloadeddata="this.closest('.post-media')?.classList.remove('pm-loading')" onerror="this.closest('.post-media')?.classList.remove('pm-loading')"></video>
-        <div class="vid-overlay"></div>
-        <div class="vid-controls">
-          <button class="vc-play">
-            <svg class="ic-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
-            <svg class="ic-pause d-none" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-          </button>
-          <div class="vc-progress">
-            <div class="vc-bar"><div class="vc-fill"></div></div>
-          </div>
-          <span class="vc-time">0:00</span>
-          <button class="vc-mute">
-            <svg class="ic-vol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-            <svg class="ic-muted d-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-          </button>
-          <button class="vc-fs">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15,3 21,3 21,9"/><polyline points="9,21 3,21 3,15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>`;
   return `<div class="file-card" data-url="${esc(p.mediaUrl)}" data-name="${esc(p.fileName||'file')}">
     <div class="file-card-icon">${getFileIcon(p.fileName||'', p.mediaType||'')}</div>
     <div class="file-info"><div class="file-name">${esc(p.fileName||'File')}</div><div class="file-size">${p.fileSize ? fmtSz(p.fileSize) : ''}</div></div>
@@ -165,7 +141,7 @@ export async function renderFeedTo(feedEl, posts) {
           </svg>
         </div>
         <div class="empty-title">Lenta hali bo'sh</div>
-        <div class="empty-sub">Rasm, video yoki fikr bo'lishing — do'stlaringiz ko'radi.</div>
+        <div class="empty-sub">Rasm yoki fikr bo'lishing — do'stlaringiz ko'radi.</div>
         ${createBtn}
       </div>`;
     }
@@ -298,25 +274,6 @@ export async function renderFeedTo(feedEl, posts) {
   bindFeedEvents(feedEl);
 }
 
-/* ── Auto-play videos on scroll ──────────────────────────────────────── */
-export function setupFeedVideoObs(feedEl) {
-  if (state.feedVidObs) state.feedVidObs.disconnect();
-  state.feedVidObs = new IntersectionObserver(entries => {
-    entries.forEach(en => {
-      const wrap = en.target;
-      const vid  = wrap.querySelector('video');
-      if (!vid) return;
-      if (en.isIntersecting && en.intersectionRatio >= 0.5) {
-        vid.muted = state.globalMuted;
-        vid.play().catch(() => {});
-      } else {
-        vid.pause();
-      }
-    });
-  }, { threshold: 0.5 });
-  feedEl.querySelectorAll('.vid-wrap').forEach(w => state.feedVidObs.observe(w));
-}
-
 /* ── Init: URL'dan kelgan post id ni saqlab qo'yamiz (login qilmagan bo'lsa ham yo'qolmasligi uchun) ── */
 try {
   const hash = window.location.hash || '';
@@ -364,9 +321,8 @@ export async function sharePostToChat(postId) {
   const postText = postEl?.querySelector('.post-caption')?.textContent || post?.text || '';
   const postMediaEl = postEl?.querySelector('.post-media');
   const mediaImg = postMediaEl?.querySelector('img')?.src || '';
-  const mediaVid = postMediaEl?.querySelector('video')?.src || '';
-  const mediaUrl = post?.mediaUrl || mediaImg || mediaVid || '';
-  const mediaType = post?.mediaType || (mediaVid ? 'video' : (mediaImg ? 'image' : null));
+  const mediaUrl = post?.mediaUrl || mediaImg || '';
+  const mediaType = post?.mediaType || (mediaImg ? 'image' : null);
 
   const payload = {
     id: postId,
@@ -447,7 +403,6 @@ export function scrollToPostFromHash() {
 }
 
 function bindFeedEvents(feedEl) {
-  feedEl.querySelectorAll('.vid-wrap').forEach(w => initVidWrap(w));
   feedEl.querySelectorAll('.like-btn').forEach(b => b.addEventListener('click', () => doLike(b.dataset.id, b)));
 
   feedEl.querySelectorAll('.cmt-open-btn').forEach(b => b.addEventListener('click', async () => {
@@ -472,7 +427,7 @@ function bindFeedEvents(feedEl) {
     e.stopPropagation();
     dlFile(b.dataset.url, b.dataset.name);
   }));
-  // Fayl post (rasm/video bo'lmagan, lekin fayl biriktirilgan post) ustiga
+  // Fayl post (rasm bo'lmagan, lekin fayl biriktirilgan post) ustiga
   // bosilganda — faylning havolasini (Supabase url) yangi tabda ochamiz.
   // Matnli (fayl yuklanmagan) postlarda .file-card umuman render qilinmaydi,
   // shu sababli bu shart avtomatik ravishda faqat fayl yuklangan postlarga tegishli.
@@ -495,7 +450,6 @@ function bindFeedEvents(feedEl) {
       await doDelete(btn.dataset.id);
     });
   });
-  setupFeedVideoObs(feedEl);
 }
 
 /* ── Like ────────────────────────────────────────────────────────────── */

@@ -1,6 +1,6 @@
 import { busEmit } from '../core/rt-bus.js';
-import { sb, state, MAX_FILE, MAX_VIDEO_RAW, uploadViaController } from '../core/config.js';
-import { compressImage, compressVideo } from './compress.js';
+import { sb, state, MAX_FILE, uploadViaController } from '../core/config.js';
+import { compressImage } from './compress.js';
 import { $, esc, fmtSz, lockScroll, unlockScroll, defAvi } from '../core/utils.js';
 import { toast }                                   from '../ui/toast.js';
 import { isAllowedUpload, isImageFile, UPLOAD_DENIED_MSG, STORY_DENIED_MSG, ALLOWED_UPLOAD_ACCEPT } from '../core/upload-policy.js';
@@ -199,7 +199,7 @@ function revokeObjUrl() {
   state._selMediaH = null;
 }
 
-/* Rasm/video tanlanganda haqiqiy o'lchamini (width/height) o'lchab olamiz —
+/* Rasm tanlanganda haqiqiy o'lchamini (width/height) o'lchab olamiz —
    shu orqali feed'da post-card media joyi hali yuklanmasdan turib ham
    TO'G'RI aspect-ratio bilan ochilib turadi (blur bilan), layout sakramaydi. */
 function _measureSelectedMedia(file, objUrl) {
@@ -214,21 +214,12 @@ function _measureSelectedMedia(file, objUrl) {
       state._selMediaH = img.naturalHeight || null;
     };
     img.src = objUrl;
-  } else if (file.type.startsWith('video')) {
-    const vid = document.createElement('video');
-    vid.preload = 'metadata';
-    vid.onloadedmetadata = () => {
-      if (state._objUrl !== objUrl) return;
-      state._selMediaW = vid.videoWidth  || null;
-      state._selMediaH = vid.videoHeight || null;
-    };
-    vid.src = objUrl;
   }
 }
 
 /* ── Composer rejimi: 'post' (odatiy) yoki 'story' (24 soatlik hikoya) ──
    Story ham xuddi shu composer kartasida ochiladi — faqat matn maydoni o'rniga
-   qisqa izoh, faqat rasm/video, tugma "Story". */
+   qisqa izoh, faqat rasm, tugma "Story". */
 const STORY_CAPTION_MAX = 200;
 const _POST_ACCEPT = $('fileInput').accept;
 const _POST_PLACEHOLDER = $('captionInput').placeholder;
@@ -298,21 +289,14 @@ export function pickFile(f) {
     return;
   }
   {
-    const isVid = f.type.startsWith('video/');
-    const lim = isVid ? MAX_VIDEO_RAW : MAX_FILE;
-    if (f.size > lim) {
+    if (f.size > MAX_FILE) {
       const limTxt = '49.9 MB';
       $('sizeWarn').textContent = `Fayl ${fmtSz(f.size)} — limit ${limTxt}`;
       toast(`Fayl hajmi ${limTxt} dan oshmasligi kerak`, 'error');
       return;
     }
-    if (isVid) {
-      $('sizeWarn').textContent = f.size > MAX_FILE
-        ? `Video ${fmtSz(f.size)} — yuklashda avtomatik siqiladi (49.9 MB gacha)`
-        : '';
-    }
   }
-  if (!f.type.startsWith('video/')) $('sizeWarn').textContent = '';
+  $('sizeWarn').textContent = '';
   revokeObjUrl();
   state.selFile = f;
   state._objUrl = URL.createObjectURL(f);
@@ -322,10 +306,6 @@ export function pickFile(f) {
 
   if (f.type.startsWith('image')) {
     $('previewArea').innerHTML = `<div class="preview-wrap"><img src="${esc(state._objUrl)}"><button class="preview-clear" data-action="clear-file">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button></div>`;
-  } else if (f.type.startsWith('video')) {
-    $('previewArea').innerHTML = `<div class="preview-wrap"><video class="max-h-150px w-full brr-10px" src="${esc(state._objUrl)}" controls muted></video><button class="preview-clear" data-action="clear-file">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button></div>`;
   } else {
@@ -364,7 +344,7 @@ function clearFile() {
 /* ── Yuklash / Post ───────────────────────────────────────────────────── */
 /* ── Float bar helpers ───────────────────────────────────────────────── */
 
-/* Rasm/video kerak bo'lganda siqadi (compress.js). Float bar'da foiz ko'rsatiladi. */
+/* Rasm kerak bo'lganda siqadi (compress.js). Float bar'da foiz ko'rsatiladi. */
 async function _prepareUploadFile(file, label) {
   if (!file) return file;
   // Rasm — shaffoflikni saqlagan holda siqish
@@ -378,21 +358,7 @@ async function _prepareUploadFile(file, label) {
       return file;
     }
   }
-  // Video
-  if (!file.type.startsWith('video/')) return file;
-  try {
-    const r = await compressVideo(file, {
-      maxBytes: MAX_FILE,
-      onProgress: pct => {
-        const n = $('ufbName');
-        if (n) n.textContent = 'Siqilmoqda… ' + label;
-        floatBarUpdate(Math.min(pct, 94));
-      },
-    });
-    if (r.changed) console.info('[compress] video:', r.note, fmtSz(file.size), '→', fmtSz(r.file.size));
-    const n = $('ufbName'); if (n) n.textContent = label;
-    return r.file;
-  } finally { /* progress keyingi bosqichda qayta boshlanadi */ }
+  return file;
 }
 
 function floatBarShow(name) {
@@ -486,7 +452,7 @@ async function submitStory() {
     const row = {
       user_id:    state.me.uid,
       media_path: path,
-      media_type: file.type.startsWith('video/') ? 'video' : 'image',
+      media_type: 'image',
       expires_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
     };
     if (caption) row.caption = caption;
@@ -728,8 +694,6 @@ function _renderHomePreview(f) {
   let inner = '';
   if (f.type.startsWith('image/')) {
     inner = `<img src="${esc(url)}" alt="">`;
-  } else if (f.type.startsWith('video/')) {
-    inner = `<video src="${esc(url)}" controls muted playsinline></video>`;
   } else {
     inner = `<div class="hc-file"><span>📎</span><span>${esc(f.name)} · ${fmtSz(f.size)}</span></div>`;
   }

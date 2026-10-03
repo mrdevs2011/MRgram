@@ -64,9 +64,7 @@
 .hdr-search input { background: none; border: none; color: var(--text); font-size: 13px; font-family: var(--font); outline: none; width: 100%; min-width: 100px; }
 .hdr-search input::placeholder { color: var(--text3); font-size: 12px; }
 /* Global mute button */
-.hdr-mute-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: none; background: none; color: var(--text2); cursor: pointer; flex-shrink: 0;  }
-.hdr-mute-btn:hover { background: var(--pal-gray-800); color: var(--text); }
-.hdr-mute-btn.is-unmuted { color: var(--blue); }
+
 /* Header New Post Button (Mobile) */
 .hdr-new-post-btn {
   display: flex;
@@ -139,7 +137,7 @@
 /* Media */
 .post-media { cursor: default; background: var(--pal-black); position: relative; width: 100%; min-height: 180px; }
 .post-media img { width: 100%; height: auto; display: block; background: var(--pal-black); filter: blur(0); }
-.post-media video { width: 100%; height: auto; max-height: 70vh; display: block; background: var(--pal-black); object-fit: contain; filter: blur(0);  }
+
 /* Media yuklanayotganda: oddiy aylanuvchi spinner (blur/skeleton yo'q) */
 .post-media.pm-loading::after {
   content: '';
@@ -154,78 +152,7 @@
   animation: spin .8s linear infinite;
   pointer-events: none;
 }
-.vid-wrap {
-  position: relative;
-  width: 100%;
-  background: var(--pal-black);
-  overflow: hidden;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-}
-.vid-overlay {
-  position: absolute;
-  inset: 0;
-  bottom: 36px;
-  cursor: pointer;
-  z-index: 1;
-  touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-}
-.vid-controls { position: absolute; bottom: 0; left: 0; right: 0; height: 36px; display: flex; align-items: center; gap: 6px; padding: 0 8px; z-index: 2; }
-.vc-play, .vc-mute, .vc-fs { border: none; color: var(--pal-white); cursor: pointer; padding: 4px; flex-shrink: 0; }
-.vc-play svg, .vc-mute svg, .vc-fs svg { width: 16px; height: 16px; }
-.vc-progress { flex: 1; cursor: pointer; padding: 8px 0; }
-.vc-bar { height: 3px; background: var(--pal-legacy-525257); border-radius: 2px; overflow: hidden; }
-.vc-fill { height: 100%; background: var(--pal-white); width: 0%; border-radius: 2px;  }
-.vc-time { font-size: 11px; color: var(--pal-white); flex-shrink: 0; min-width: 28px; }
 
-/* ═══════════════════════ VIDEO 2X SPEED / REWIND BADGE ═══════════════════════ */
-.vid-speed-badge {
-  position: absolute;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(15, 15, 18, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  z-index: 20;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-  animation: vidSpeedBadgePop 0.16s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.vid-speed-badge svg {
-  display: block;
-}
-.story-viewer .vid-speed-badge {
-  top: calc(max(24px, calc(env(safe-area-inset-top, 0px) + 16px)) + 52px);
-  z-index: 25;
-}
-@keyframes vidSpeedBadgePop {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -6px) scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
-  }
-}
 /* Caption */
 .cap-more { color: var(--text3); font-size: 12px; cursor: pointer; font-weight: 500; margin-left: 2px;  }
 .cap-more:hover { color: var(--text2); }
@@ -320,34 +247,11 @@
 .hdr-hidden { display: none; }
 /* Hide search btn when not on home/following */
 .hdr-search-wrap.search-hidden { display: none; }
-/* Video player mute btn: mobile faqat */
-@media (min-width: 1100px) {
-  .vc-mute { display: none !important; }
-}
+
 /* Reel vol btn: mobile = top-right absolute, desktop = top bar ichida */
-.reel-vol-top {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  cursor: pointer;
-  
-  flex-shrink: 0;
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 20;
-  background: var(--pal-black);
-}
-.reel-vol-top:hover { background: var(--pal-black); }
-.reel-vol-top svg { width: 18px; height: 18px; }
+
 /* Desktop: top bar ichida — position reset */
-@media (min-width: 1100px) {
-  .reel-vol-top { position: static; background: var(--pal-black); width: 36px; height: 36px; }
-}
+
 /* Feed Subscribe Button */
 /* ═══════════════════════════════════════════════ FLOATING UPLOAD PROGRESS BAR ══════════════════════════════... */
 .upload-float-bar {
@@ -382,8 +286,7 @@
 [data-theme="dark"] .post:hover { box-shadow: none; }
 /* Light mode: softer shadows */
 /* box-shadow o'chirildi — borderless.css:43 (.post guruhida) bir xil specificity bilan keyinroq yuklanadi, bo... */
-/* Video controls - theme aware */
-[data-theme="dark"] .vid-controls { background: var(--pal-black); }
+
 /* File card hover - theme aware */
 /* [data-theme="dark"] .file-card:hover → CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi, g'o... */
 /* Badge styles - theme aware */
@@ -395,9 +298,7 @@
 /* ═══════════════════════════════════════════ ENHANCED POST CARD STYLES ═════════════════════════════════════... */
 /* Gradient border hover + zoom o'chirildi (flat X.com uslubi, 2026) */
 .post-media { overflow: hidden; }
-/* Video post indicator */
-.post-is-video::after { content: ''; position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: var(--pal-black); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.post-is-video::before { content: '▶'; position: absolute; top: 10px; right: 10px; color: var(--pal-white); font-size: 12px; z-index: 2; }
+
 /* Post badge animation */
 /* Action button ripple effect */
 .act-btn { position: relative; }
@@ -480,11 +381,11 @@
 .settings-more-menu-item:hover { background: var(--red-glow); }
 .edit-btn { width: 100%; padding: 10px; color: var(--text); font-size: 13px; font-weight: 500; font-family: var(--font); cursor: pointer; margin-top: 14px; }
 .profile-grid { margin-top: 4px; padding: 0 0 12px; }
-/* .grid-cell, .grid-cell img/video, .grid-cell:hover img/video → to'liq ui-improvements.css:610-635 tomonidan... */
+
 .grid-cell-overlay { align-items: center; border-radius: 6px; }
 /* .grid-cell:hover .grid-cell-overlay { opacity:1 } → ui-improvements.css:651 bilan bir xil qiymat, o'lik, o'... */
 .grid-cell-txt { height: 100%; background: var(--bg2); }
-.grid-play-badge { padding: 3px 5px; }
+
 /* ═══════════════════════ USER PROFILE MODAL ═══════════════════════ */
 #userProfileModal { position: fixed; inset: 0; background: var(--bg); display: none; overflow-y: auto; scrollbar-width: none; }
 #userProfileModal.show { display: block; }
@@ -524,7 +425,7 @@
 .up-grid { margin: 0 -20px; width: calc(100% + 40px); padding-bottom: 8px; }
 .up-grid-cell-overlay { align-items: center; border-radius: 4px; }
 /* .up-grid-cell:hover .up-grid-cell-overlay { opacity:1 } → ui-improvements.css:651 bilan bir xil qiymat, o'l... */
-/* .up-grid-cell img/video → to'liq ui-improvements.css:620 tomonidan yopiladi, o'lik, o'chirildi */
+
 .up-grid-cell-txt { height: 100%; background: var(--bg2); }
 /* ═══════════════════════════════════════════ PROFILE — THEME AWARE ENHANCEMENTS ════════════════════════════... */
 /* Dark mode profile */
@@ -775,7 +676,7 @@
 .file-card-icon svg { width: 44px; height: 44px; display: block; }
 .preview-file-icon svg { width: 44px; height: 44px; display: block; }
 .preview-wrap { margin-bottom: 14px; text-align: center; position: relative; }
-.preview-wrap img, .preview-wrap video { max-width: 100%; max-height: 180px; border-radius: 16px; display: block; margin: 0 auto; }
+.preview-wrap img { max-width: 100%; max-height: 180px; border-radius: 16px; display: block; margin: 0 auto; }
 .preview-file { background: var(--glass); border: 0.5px solid var(--glass-border); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
 .preview-clear {
   position: absolute;
@@ -902,7 +803,7 @@
 #zoomModal { position: fixed; inset: 0; background: var(--pal-black); display: none; align-items: center; justify-content: center; }
 #zoomModal.show { display: flex; }
 #zoomImg { max-width: 96%; max-height: 96dvh; object-fit: contain; border-radius: 12px; }
-#zoomVideo { max-width: 96%; max-height: 96dvh; border-radius: 12px; }
+
 .zoom-x {
   position: absolute;
   top: 16px;
@@ -960,7 +861,7 @@
 }
 .dm-close:hover { background: var(--glass-mid); color: var(--text); }
 .dm-media { width: 100%; background: var(--pal-black); position: relative; overflow: hidden; }
-.dm-media img, .dm-media video { width: 100%; display: block; max-height: 60dvh; object-fit: contain; }
+.dm-media img { width: 100%; display: block; max-height: 60dvh; object-fit: contain; }
 .dm-caption { padding: 10px 16px 6px; font-size: 13.5px; line-height: 1.5; color: var(--text); }
 .dm-stats { padding: 6px 16px 10px; display: flex; gap: 14px; font-size: 12px; color: var(--text3); }
 .dm-stat-item { display: flex; align-items: center; gap: 4px; }
@@ -1370,7 +1271,7 @@
 .cfp-remove { width: 24px; height: 24px; border-radius: 50%; background: var(--bg5); border: none; display: flex; align-items: center; justify-content: center; color: var(--text2); cursor: pointer; flex-shrink: 0;  }
 .cfp-remove:hover { background: var(--pal-gray-900); color: var(--pal-red); }
 /* Voice message bubble */
-/* File message (non-image, non-video) */
+
 .chat-file-msg { display: flex; align-items: center; gap: 10px; min-width: 180px; max-width: 260px; padding: 2px 0; }
 .cfm-icon { width: 38px; height: 38px; flex-shrink: 0; }
 .cfm-icon svg { width: 38px; height: 38px; }
@@ -1492,11 +1393,10 @@
 /* ════════════════════════════════════════════════════════════════════ ACTIVE CALL MODAL ════════════════════... */
 #callActiveModal { position: fixed; inset: 0; z-index: 999999; display: none; flex-direction: column; align-items: center; justify-content: space-between; padding: 60px 24px 48px;  }
 #callActiveModal.show { display: flex; }
-#callActiveModal.video-mode { padding: 0; background: var(--pal-black); }
-/* Stage — voice va video qatlamlari bir joyda ustma-ust turadi, shu sababli ular orasida smooth crossfade qil... */
+
 .call-stage { position: relative; flex: 1; width: 100%; min-height: 0; }
-.call-voice-wrap, .call-video-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.94); pointer-events: none;  }
-.call-voice-wrap.cs-active, .call-video-wrap.cs-active { opacity: 1; transform: scale(1); pointer-events: auto; }
+.call-voice-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.94); pointer-events: none;  }
+.call-voice-wrap.cs-active { opacity: 1; transform: scale(1); pointer-events: auto; }
 /* Voice mode */
 .call-voice-wrap { flex-direction: column; gap: 16px; }
 .call-voice-avi { width: 100px; height: 100px; overflow: hidden; }
@@ -1506,45 +1406,19 @@
 .call-avi-initial { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 700; color: var(--pal-white); background: var(--pal-green); border-radius: 50%; }
 .incoming-call-avi .call-avi-initial { font-size: 52px; }
 .call-voice-name { font-size: 24px; font-weight: 700; color: var(--pal-white); }
-/* Video mode */
-.call-video-wrap { background: var(--pal-black); border-radius: inherit; overflow: hidden; }
-#callRemoteVideo { width: 100%; height: 100%; object-fit: cover; }
-.call-local-pip {
-  position: absolute;
-  bottom: calc(90px + env(safe-area-inset-bottom, 0px));
-  right: 16px;
-  width: 92px;
-  height: 128px;
-  border-radius: 12px;
-  object-fit: cover;
-  border: 2px solid var(--pal-legacy-525257);
-  z-index: 2;
-  opacity: 0;
-  transform: scale(0.85);
-  
-}
-.call-local-pip.cs-active { opacity: 1; transform: scale(1); }
+
 .call-status { font-size: 14px; color: var(--pal-legacy-9c9c9f); text-align: center;  }
 .call-timer { font-size: 32px; font-weight: 300; color: var(--pal-white); font-variant-numeric: tabular-nums; letter-spacing: 2px;  }
-#callActiveModal.video-mode .call-status, #callActiveModal.video-mode .call-timer { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3; }
-#callActiveModal.video-mode .call-timer { top: 42px; }
+
 /* Control buttons — icon + label, kabi reference (Discord/FaceTime) */
 .call-active-btns { display: flex; gap: 20px; align-items: flex-start; justify-content: center; padding-bottom: env(safe-area-inset-bottom, 0);  }
 .call-ctrl-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .call-ctrl-label { font-size: 12px; font-weight: 500; color: #C7C7CA; text-align: center; }
-/* Default (voice) tartib: Video, Mikrofon, Karnay, Tugatish — Flip yashirin */
-#callSwitchCol { order: 0; display: none; }
-#callCamCol { order: 1; }
+
 #callMicCol { order: 2; }
 #callSpeakerCol { order: 3; }
 #callEndCol { order: 4; }
-/* Video rejimida tartib: Flip, Video, Mikrofon, Tugatish — Karnay yashirin (video chog'ida ovoz avtomatik din... */
-#callActiveModal.video-mode #callSwitchCol { order: 1; }
-#callActiveModal.video-mode #callCamCol { order: 2; }
-#callActiveModal.video-mode #callMicCol { order: 3; }
-#callActiveModal.video-mode #callSpeakerCol { display: none; }
-#callActiveModal.video-mode #callEndCol { order: 4; }
-#callActiveModal.video-mode .call-active-btns { position: absolute; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); z-index: 3; gap: 10px; padding: 7px 10px; max-width: calc(100vw - 24px); }
+
 .call-ctrl-btn {
   width: 54px;
   height: 54px;
@@ -1566,11 +1440,7 @@
 .call-ctrl-btn.end-btn:hover { background: var(--pal-red); }
 .call-ctrl-btn.end-btn svg { transform: rotate(135deg); }
 /* qabul svg'ini burab — "tugatish" belgisi */
-/* Video rejimida — tugmalar kichikroq, kam joy egallaydi */
-#callActiveModal.video-mode .call-ctrl-btn { width: 42px; height: 42px; }
-#callActiveModal.video-mode .call-ctrl-btn svg { width: 17px; height: 17px;  }
-#callActiveModal.video-mode .call-ctrl-btn.end-btn { width: 48px; height: 48px; }
-#callActiveModal.video-mode .call-ctrl-btn.end-btn svg { width: 19px; height: 19px; }
+
 /* Messages — bubble background/color/border owned by chat-dark-redesign.css. O'chirildi: bu yerdagi border (0... */
 /* Bubble ichidagi kod bloki/kod — .md-codeblock/.md-code odatda var(--glass) = --bg3 fonini ishlatadi, bu esa... */
 .chat-bubble .md-codeblock, .chat-bubble .md-code { background: rgba(0, 0, 0, .22); border-color: var(--pal-white-14); }
@@ -1598,7 +1468,7 @@ a.cfm-name--link {
 a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .chat-msg.theirs a.cfm-name--link { color: var(--blue); text-decoration-color: var(--pal-legacy-464646); }
 .chat-msg.theirs a.cfm-name--link:hover { text-decoration-color: var(--blue); }
-/* ── Media messages (image & video) — no bubble wrapping ── */
+
 .chat-bubble.bubble-media-only,
 #chatThreadModal .chat-msg.mine .chat-bubble.bubble-media-only,
 #chatThreadModal .chat-msg.theirs .chat-bubble.bubble-media-only {
@@ -1622,15 +1492,13 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 }
 
 .cfm-media-wrap--standalone .cfm-img-link,
-.cfm-media-wrap--standalone .cfm-img-preview,
-.cfm-media-wrap--standalone .cfm-video-preview {
+.cfm-media-wrap--standalone .cfm-img-preview {
   border-radius: 16px;
 }
 
 .cfm-img-link { display: block; border-radius: 14px; overflow: hidden; line-height: 0; }
 .cfm-img-link:hover { opacity: 1; }
 .cfm-img-preview { display: block; width: 100%; max-width: 280px; max-height: 340px; object-fit: cover; border-radius: 14px; background: transparent; }
-.cfm-video-preview { display: block; width: 100%; max-width: 280px; max-height: 320px; border-radius: 14px; background: var(--pal-black); outline: none; }
 
 /* Floating translucent timestamp badge on standalone media */
 .cfm-media-badge {
@@ -1654,12 +1522,6 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   gap: 3px;
 }
 
-.cfm-media-badge--video {
-  bottom: auto;
-  top: 8px;
-  right: 8px;
-}
-
 .cfm-media-badge .chat-msg-time {
   color: #ffffff !important;
   font-size: 11px;
@@ -1673,7 +1535,6 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   color: #ffffff !important;
 }
 
-/* Image/video with caption — media is flush edge-to-edge (no padding around media) */
 .chat-bubble.bubble-media-caption,
 #chatThreadModal .chat-msg.mine .chat-bubble.bubble-media-caption,
 #chatThreadModal .chat-msg.theirs .chat-bubble.bubble-media-caption {
@@ -1698,8 +1559,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 }
 
 .bubble-media-caption .cfm-img-link,
-.bubble-media-caption .cfm-img-preview,
-.bubble-media-caption .cfm-video-preview {
+.bubble-media-caption .cfm-img-preview {
   width: 100%;
   max-width: 100%;
   border-radius: 0;
@@ -1876,13 +1736,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   background: var(--pal-gray-900);
 }
 /* Control buttons — consolidated into single definition above */
-/* Video mode — controls glass bar */
-#callActiveModal.video-mode .call-active-btns {
-  background: var(--pal-black);
-  border: 0.5px solid var(--pal-legacy-26262c);
-  box-shadow: inset 0 1px 0 #2B2B31, 0 4px 24px var(--pal-black);
-  border-radius: 60px;
-}
+
 /* Message sender avatar (DM & Group) */
 .msg-avi-btn {
   flex-shrink: 0;
@@ -2264,8 +2118,8 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .gi-media-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; border-radius: 12px; overflow: hidden; margin-bottom: 16px; min-height: 80px; }
 .gi-media-cell { aspect-ratio: 1; overflow: hidden; background: var(--bg3); cursor: pointer; position: relative;  }
 .gi-media-cell:hover { opacity: .82; }
-.gi-media-cell img, .gi-media-cell video { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
-.gi-media-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--pal-black); }
+.gi-media-cell img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+
 .gi-media-spin { grid-column: 1/-1; display: flex; align-items: center; justify-content: center; padding: 24px 0; }
 .gi-empty { grid-column: 1/-1; text-align: center; padding: 20px; font-size: 13px; color: var(--text3); }
 /* Members list sits inside .gi-section */
@@ -2298,7 +2152,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 #cmContent .up-grid-cell { cursor: pointer; }
 #cmViewer { position: fixed; inset: 0; z-index: 600; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.94); }
 #cmViewer.show { display: flex; }
-#cmViewer img, #cmViewer video { max-width: 100%; max-height: 100%; }
+#cmViewer img { max-width: 100%; max-height: 100%; }
 
 /* ─── Guruh ommaviy / maxfiy sozlamalari va 64-xonali havola ─── */
 .grp-privacy-toggle {

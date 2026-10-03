@@ -5,11 +5,11 @@
 
 import { state } from './core/config.js';
 import { $ } from './core/utils.js';
-import { updateMuteBtnUI, toggleGlobalMute } from './ui/ui.js';
 import { setRenderCallbacks } from './auth/auth.js';
 import { renderFeed, patchCounts } from './feed/feed.js';
 import { renderProfile, renderUserProfileModal } from './profile/profile.js';
 import { initRouter, navigateTo } from './router.js';
+import { initUrlRouter } from './url-router.js';
 import { initNavigation } from './ui/bar.js';
 import './explore.js';
 
@@ -53,6 +53,7 @@ setRenderCallbacks({
 
 /* ── Router ──────────────────────────────────────────────────────────── */
 initRouter();
+initUrlRouter();
 
 /* ── Navigation Bar ──────────────────────────────────────────────────── */
 initNavigation();
@@ -64,15 +65,6 @@ import('./ui/sidebar.js');
 import('./ui/right-rail.js');
 import('./chat/chats-x.js');
 
-/* ── Global mute buttons ─────────────────────────────────────────────── */
-['globalMuteBtn', 'sbMuteBtn'].forEach(id =>
-  $(id)?.addEventListener('click', toggleGlobalMute)
-);
-
-updateMuteBtnUI();
-
-/* ── Initial header state ────────────────────────────────────────────── */
-$('globalMuteBtn')?.classList.add('hdr-hidden');
 /* ── iOS 27 Haptic — global touch feedback ── */
 import { haptic, addHapticTouch } from './core/utils.js';
 

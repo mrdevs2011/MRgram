@@ -3,54 +3,6 @@ import { esc } from '../core/utils.js';
 import { state, sb }                               from '../core/config.js';
 import { $ }                                       from '../core/utils.js';
 
-/* ── Global mute ─────────────────────────────────────────────────────── */
-const MUTE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  <polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/>
-  <line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
-</svg>`;
-const UNMUTE_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  <polygon points="11,5 6,9 2,9 2,15 6,15 11,19"/>
-  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-</svg>`;
-
-export function updateMuteBtnUI() {
-  const muted = state.globalMuted;
-  const icon  = muted ? MUTE_SVG   : UNMUTE_SVG;
-  const label = muted ? "Ovoz o'chiq" : 'Ovoz yoqiq';
-  const tip   = muted ? 'Ovozni yoqish' : "Ovozni o'chirish";
-
-  const gb = $('globalMuteBtn');
-  if (gb) { gb.innerHTML = icon; gb.title = tip; gb.classList.toggle('is-unmuted', !muted); }
-
-  const sb = $('sbMuteBtn');
-  if (sb) { sb.innerHTML = icon + `<span>${label}</span>`; sb.classList.toggle('is-unmuted', !muted); }
-
-  document.querySelectorAll('.reel-vol-top').forEach(btn => {
-    const volIc   = btn.querySelector('.ic-vol');
-    const mutedIc = btn.querySelector('.ic-muted');
-    if (volIc)   volIc.style.display   = muted ? 'none' : 'block';
-    if (mutedIc) mutedIc.style.display = muted ? 'block' : 'none';
-  });
-
-  document.querySelectorAll('.vid-wrap').forEach(wrap => {
-    const volIc   = wrap.querySelector('.ic-vol');
-    const mutedIc = wrap.querySelector('.ic-muted');
-    if (volIc)   volIc.style.display   = muted ? 'none' : 'block';
-    if (mutedIc) mutedIc.style.display = muted ? 'block' : 'none';
-    const vid = wrap.querySelector('video');
-    if (vid) vid.muted = muted;
-  });
-}
-
-export function toggleGlobalMute() {
-  state.globalMuted = !state.globalMuted;
-  document.querySelectorAll('video').forEach(v => { if (!v.paused) v.muted = state.globalMuted; });
-  updateMuteBtnUI();
-}
-
-document.addEventListener('mutestatechange', updateMuteBtnUI);
-
 /* ══════════════════════════════════════════════════════════════════════
    SEARCH OVERLAY — unified mobile + desktop
    ══════════════════════════════════════════════════════════════════════ */
@@ -101,7 +53,6 @@ searchOverlay?.addEventListener('click', e => {
 /* ── View switching ──────────────────────────────────────────────────── */
 export async function switchView(v) {
   state.view = v;
-  document.querySelectorAll('video').forEach(x => x.pause());
   document.querySelectorAll('.view').forEach(x => x.classList.remove('on'));
   document.querySelectorAll('.nav-btn[data-v]').forEach(x => x.classList.remove('on'));
   document.getElementById(`${v}View`)?.classList.add('on');
@@ -123,7 +74,6 @@ export async function switchView(v) {
     closeSearchOverlay();
   }
 
-  updateMuteBtnUI();
   window.scrollTo({ top: 0 });
 
   if (v === 'home') {
@@ -142,7 +92,7 @@ export async function openMediaInModal(postId) {
   const post = state.allPosts.find(p => p.id === postId);
   if (!post) return;
   const { openZoom } = await import('../core/utils.js');
-  openZoom(post.mediaUrl, post.mediaType?.startsWith('video') ? 'video' : 'image');
+  openZoom(post.mediaUrl, 'image');
 }
 
 /* ── Logo click → home ───────────────────────────────────────────────── */
@@ -341,5 +291,3 @@ document.addEventListener('click', e => {
 const sbSearchInput = $('sbSearchInput');
 if (sbSearchInput) sbSearchInput.oninput = e => handleSearchInput(e.target.value);
 
-/* ── Init mute UI ────────────────────────────────────────────────────── */
-updateMuteBtnUI();

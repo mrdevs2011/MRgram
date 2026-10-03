@@ -134,6 +134,7 @@ const PRECACHE_URLS = [
   '/modules/profile/view-users.js',
   '/modules/push.js',
   '/modules/router.js',
+  '/modules/url-router.js',
   '/modules/script.js',
   '/modules/ui/avi-crop.js',
   '/modules/ui/bar.js',
@@ -209,7 +210,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(RUNTIME_CACHE).then(c => c.put(req, clone));
         }
         return res;
-      }).catch(() => caches.match(req))
+      }).catch(() => caches.match(req).then(r => r || caches.match('/index.html')))
     );
     return;
   }

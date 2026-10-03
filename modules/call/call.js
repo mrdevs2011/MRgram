@@ -37,8 +37,6 @@ function mapCall(r) {
     answer: r.answer,
     callerCandidates: r.caller_candidates || [],
     calleeCandidates: r.callee_candidates || [],
-    videoOffer: r.video_offer || null,
-    videoAnswer: r.video_answer || null,
   };
 }
 
@@ -94,7 +92,7 @@ function _watchCall(id, onRow) {
 // (mobil internet, turli operatorlar, qattiq NAT) TO'G'RIDAN-TO'G'RI P2P
 // ulanish imkonsiz bo'ladi va TURN relay orqali o'tish SHART bo'ladi —
 // shuning uchun TURN serverlar ham qo'shildi (aks holda qo'ng'iroq "ulanadi,
-// lekin ovoz/video kelmaydi" yoki "tez-tez uziladi" bo'lib chiqadi).
+// lekin ovoz kelmaydi" yoki "tez-tez uziladi" bo'lib chiqadi).
 // TURN: Vercel Environment Variables'da TURN_URLS (vergul bilan), TURN_USERNAME,
 // TURN_CREDENTIAL bering (Metered / Cloudflare / o'z coturn'ingiz). Bo'lmasa —
 // bepul umumiy OpenRelay ishlatiladi (beqaror: mobil tarmoqda qo'ng'iroq ulanmasligi mumkin).
@@ -146,18 +144,9 @@ let _pendingIce  = [];   // call yozuvi yaratilguncha kelgan ICE candidate'lar
 let _callUnsub   = null;
 let _callTimer   = null;
 let _callSec     = 0;
-let _callIsVideo = false;
 let _isCaller    = false;
-let _facingMode  = 'user'; // 'user' = old kamera, 'environment' = orqa kamera
 
-// ── Qo'ng'iroq davomida video yoqish/o'chirish (Telegram uslubi: bitta
-// "qo'ng'iroq" tugmasi bilan boshlanadi, video esa faol qo'ng'iroq ichida
-// kamera tugmasi bosilganda yoqiladi) uchun holat ──
-let _localVideoOn      = false; // biz hozir video yuboryapmizmi
-let _remoteHasVideo    = false; // qarshi tomon hozir video yuboryaptimi
 let _callConnected     = false; // ulanish effektlari (beep/timer) faqat 1 marta ishga tushishi uchun
-let _lastRenegoOfferTs  = 0;
-let _lastRenegoAnswerTs = 0;
 
 /* ─── RINGBACK TONE ─────────────────────────────────────────────────── */
 let _ringbackCtx  = null;
@@ -412,34 +401,6 @@ function _stopCallTimer() {
   _callSec   = 0;
 }
 
-/* ── Yordamchi: voice-wrap ↔ video-wrap orasida SMOOTH (crossfade) o'tish ──
-   Ikkala qatlam ham doim DOM'da turadi (call-stage ichida ustma-ust), shu
-   sababli display:none bilan sakrab o'tish o'rniga opacity/scale bilan
-   erib o'tadi (CSS: .cs-active klassi orqali boshqariladi). */
-function _setVideoModeUI(showVideo) {
-  const modal      = document.getElementById('callActiveModal');
-  const videoWrap  = document.getElementById('callVideoWrap');
-  const voiceWrap  = document.getElementById('callVoiceWrap');
-  const camBtn     = document.getElementById('callCamBtn');
-  const switchBtn  = document.getElementById('callSwitchCamBtn');
-
-  modal?.classList.toggle('video-mode', !!showVideo);
-  videoWrap?.classList.toggle('cs-active', !!showVideo);
-  voiceWrap?.classList.toggle('cs-active', !showVideo);
-
-  const localVideoEl = document.getElementById('callLocalVideo');
-  localVideoEl?.classList.toggle('cs-active', _localVideoOn);
-
-  if (camBtn) {
-    camBtn.classList.toggle('active', _localVideoOn);
-    camBtn.classList.toggle('muted',  showVideo && !_localVideoOn);
-    camBtn.title = _localVideoOn ? 'Kamerani o\'chirish' : 'Videoni yoqish';
-  }
-  // Kamera almashtirish tugmasi faqat biz o'zimiz video yuborayotganda kerak
-  const switchCol = document.getElementById('callSwitchCol');
-  if (switchCol) switchCol.style.display = _localVideoOn ? '' : 'none';
-}
-
 /* ── Yordamchi: modal ko'rsatish ── */
 /* Avatar rasm bo'lmasa — ismning bosh harfi bilan doira (Telegram/Discord uslubida) */
 function _avatarHTML(name, photoUrl) {
@@ -448,7 +409,7 @@ function _avatarHTML(name, photoUrl) {
   return `<span class="call-avi-initial">${letter}</span>`;
 }
 
-function _showActiveCallModal(otherName, otherAvi, isVideo) {
+function _showActiveCallModal(otherName, otherAvi) {
   const modal = document.getElementById('callActiveModal');
   const nameEl = document.getElementById('callActiveName');
   const aviEl  = document.getElementById('callActiveAvi');
@@ -460,18 +421,11 @@ function _showActiveCallModal(otherName, otherAvi, isVideo) {
   if (statusEl) statusEl.textContent = 'Qo\'ng\'iroq qilinmoqda...';
   if (timerEl)  timerEl.textContent  = '00:00';
 
-  // Endi barcha qo'ng'iroqlar OVOZLI boshlanadi (Telegram uslubi — hdr'da
-  // bitta tugma bor); video faqat qo'ng'iroq ichida kamera tugmasi bilan
-  // yoqiladi. `isVideo` faqat eski/dasturiy chaqiruvlar uchun saqlanadi.
-  _localVideoOn   = !!isVideo;
-  _remoteHasVideo = false;
-  _setVideoModeUI(!!isVideo);
-
   modal?.classList.add('show');
 }
 
 function _hideActiveCallModal() {
-  document.getElementById('callActiveModal')?.classList.remove('show', 'video-mode');
+  document.getElementById('callActiveModal')?.classList.remove('show');
 }
 
 /* ── Qo'ng'iroqni to'liq tugatish ── */
@@ -492,12 +446,7 @@ async function _endCall(notify = true) {
     _pc = null;
   }
 
-  // Video elementlarni tozalash
-  const rv = document.getElementById('callRemoteVideo');
-  const lv = document.getElementById('callLocalVideo');
   const ra = document.getElementById('callRemoteAudio');
-  if (rv) rv.srcObject = null;
-  if (lv) lv.srcObject = null;
   if (ra) ra.srcObject = null;
 
   _hideActiveCallModal();
@@ -522,13 +471,8 @@ async function _endCall(notify = true) {
   _callId = null;
   _pendingIce = [];
   _isCaller   = false;
-  _facingMode = 'user';
 
-  _localVideoOn      = false;
-  _remoteHasVideo    = false;
   _callConnected     = false;
-  _lastRenegoOfferTs  = 0;
-  _lastRenegoAnswerTs = 0;
 }
 
 /* ── PeerConnection yaratish ── */
@@ -540,20 +484,7 @@ function _createPC() {
     const track  = e.track;
     const stream = e.streams[0];
 
-    if (track.kind === 'video') {
-      const rv = document.getElementById('callRemoteVideo');
-      if (rv) rv.srcObject = stream;
-
-      // Qarshi tomon video trackni enabled=false qilib qo'ysa (kamerani
-      // o'chirsa), bu tomonda WebRTC spetsifikatsiyasiga ko'ra shu
-      // qabul qilinayotgan track uchun 'mute'/'unmute' hodisalari
-      // avtomatik chaqiriladi — shu orqali UI'ni smooth almashtiramiz.
-      _remoteHasVideo = !track.muted;
-      _setVideoModeUI(_localVideoOn || _remoteHasVideo);
-
-      track.onunmute = () => { _remoteHasVideo = true;  _setVideoModeUI(true); };
-      track.onmute   = () => { _remoteHasVideo = false; _setVideoModeUI(_localVideoOn); };
-    } else {
+    if (track.kind === 'audio') {
       const ra = document.getElementById('callRemoteAudio');
       if (ra) {
         ra.srcObject = stream;
@@ -563,7 +494,6 @@ function _createPC() {
     }
 
     // Qo'ng'iroq ulandi — bu effektlar faqat BIRINCHI marta ishga tushsin
-    // (video keyinroq qo'shilganda qayta beep/timer restart bo'lmasin).
     if (!_callConnected) {
       _callConnected = true;
       _stopRingback();
@@ -593,105 +523,12 @@ function _createPC() {
   return _pc;
 }
 
-/* ── Qo'ng'iroq DAVOMIDA video yoqilganda qayta muzokara (renegotiation) ──
-   Boshlang'ich ulanish faqat ovoz bilan tuziladi. Foydalanuvchi kamera
-   tugmasini bosganda YANGI video track qo'shiladi — buni qarshi tomonga
-   yetkazish uchun signalingni "offer/answer" jarayonini YANA BIR MARTA
-   (calls jadvalidagi alohida video_offer/video_answer ustunlari
-   orqali) o'tkazamiz. Har ikki tomon ham o'zining kuzatuvchisi (_watchCall)
-   ichida shuni tekshiradi. */
-async function _handleRenego(data) {
-  if (!_pc || !_callId || !state.me) return;
-
-  if (data.videoOffer &&
-      data.videoOffer.from !== state.me.uid &&
-      data.videoOffer.ts !== _lastRenegoOfferTs) {
-    _lastRenegoOfferTs = data.videoOffer.ts;
-    try {
-      await _pc.setRemoteDescription(new RTCSessionDescription(data.videoOffer));
-      const answer = await _pc.createAnswer();
-      await _pc.setLocalDescription(answer);
-      await _updateCall(_callId, {
-        video_answer: { type: answer.type, sdp: answer.sdp, from: state.me.uid, ts: Date.now() }
-      });
-    } catch (err) {
-      console.error('[Call] Video taklifini qayta ishlab bo\'lmadi:', err);
-    }
-  }
-
-  if (data.videoAnswer &&
-      data.videoAnswer.from !== state.me.uid &&
-      data.videoAnswer.ts !== _lastRenegoAnswerTs) {
-    _lastRenegoAnswerTs = data.videoAnswer.ts;
-    if (_pc.signalingState === 'have-local-offer') {
-      try {
-        await _pc.setRemoteDescription(new RTCSessionDescription(data.videoAnswer));
-      } catch (err) {
-        console.error('[Call] Video javobini qayta ishlab bo\'lmadi:', err);
-      }
-    }
-  }
-}
-
-/* ── Qo'ng'iroq ichida videoni yoqish (kamera tugmasi) ── */
-async function _enableLocalVideo() {
-  if (_localVideoOn || !_pc || !_localStream || !_callId) return;
-
-  let track = _localStream.getVideoTracks()[0];
-  try {
-    if (!track) {
-      const vidStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: _facingMode }
-      });
-      track = vidStream.getVideoTracks()[0];
-      _localStream.addTrack(track);
-      _pc.addTrack(track, _localStream);
-    } else {
-      track.enabled = true;
-    }
-  } catch (err) {
-    toast('Kameraga ruxsat yo\'q: ' + err.message, 'error');
-    return;
-  }
-
-  const lv = document.getElementById('callLocalVideo');
-  if (lv) lv.srcObject = _localStream;
-
-  _localVideoOn = true;
-  _callIsVideo  = true;
-  _setVideoModeUI(true);
-
-  // Qarshi tomonga yangi trackni yetkazish uchun qayta muzokara boshlaymiz
-  try {
-    const offer = await _pc.createOffer();
-    await _pc.setLocalDescription(offer);
-    await _updateCall(_callId, {
-      video_offer: { type: offer.type, sdp: offer.sdp, from: state.me.uid, ts: Date.now() }
-    });
-  } catch (err) {
-    console.error('[Call] Video taklifini yuborib bo\'lmadi:', err);
-  }
-}
-
-/* ── Qo'ng'iroq ichida videoni o'chirish (kamera tugmasi) ──
-   Trackni butunlay olib tashlamaymiz (qayta yoqishda tezroq bo'lishi va
-   yana renegotiation kerak bo'lmasligi uchun) — shunchaki enabled=false
-   qilamiz. Bu qarshi tomonda ham avtomatik 'mute' hodisasini chaqiradi. */
-function _disableLocalVideo() {
-  const track = _localStream?.getVideoTracks()[0];
-  if (track) track.enabled = false;
-  _localVideoOn = false;
-  _setVideoModeUI(_remoteHasVideo);
-}
-
 /* ── Qo'ng'iroq boshlash (caller) ── */
-async function initiateCall(isVideo) {
+async function initiateCall() {
   const uid = state.currentChatUid;
   if (!uid || !state.me) return;
 
-  _callIsVideo = isVideo;
   _isCaller    = true;
-  _facingMode  = 'user';
 
   // Har yangi qo'ng'iroqda speaker = off (earpiece, default)
   _speakerOn = false;
@@ -700,17 +537,11 @@ async function initiateCall(isVideo) {
 
   try {
     _localStream = await navigator.mediaDevices.getUserMedia(
-      isVideo ? { audio: true, video: { facingMode: _facingMode } } : { audio: true }
+      { audio: true }
     );
   } catch (err) {
-    toast('Mikrofon/kameraga ruxsat yo\'q: ' + err.message, 'error');
+    toast('Mikrofonga ruxsat yo\'q: ' + err.message, 'error');
     return;
-  }
-
-  // Local video preview
-  if (isVideo) {
-    const lv = document.getElementById('callLocalVideo');
-    if (lv) lv.srcObject = _localStream;
   }
 
   // Qabul qiluvchi ma'lumotlari
@@ -722,7 +553,7 @@ async function initiateCall(isVideo) {
     otherAvi  = d.avatar   || '';
   } catch (e) { console.warn('[call]', e?.message || e); }
 
-  _showActiveCallModal(otherName, otherAvi, isVideo);
+  _showActiveCallModal(otherName, otherAvi);
   _playRingback();
 
   // PC yaratish va track qo'shish
@@ -739,7 +570,7 @@ async function initiateCall(isVideo) {
     id: callId,
     caller_id: state.me.uid,
     callee_id: uid,
-    type: isVideo ? 'video' : 'voice',
+    type: 'voice',
     status: 'ringing',
     offer: { type: offer.type, sdp: offer.sdp },
   });
@@ -769,9 +600,7 @@ async function initiateCall(isVideo) {
     }
     if (!_pc) return;
 
-    // FAQAT birinchi (boshlang'ich) answer uchun. Aks holda qo'ng'iroq ichida video yoqilganda
-    // (signalingState yana 'have-local-offer') eski answer qayta qo'llanib xato berardi va
-    // _handleRenego (video_answer) hech qachon ishlamay qolardi.
+    // FAQAT birinchi (boshlang'ich) answer uchun.
     if (data.answer && !_pc.remoteDescription && _pc.signalingState === 'have-local-offer') {
       try {
         await _pc.setRemoteDescription(new RTCSessionDescription(data.answer));
@@ -788,34 +617,25 @@ async function initiateCall(isVideo) {
       }
     }
 
-    // Qo'ng'iroq davomida video yoqilgan bo'lsa — qayta muzokara
-    await _handleRenego(data);
   });
 }
 
 /* ── Kiruvchi qo'ng'iroqni qabul qilish (callee) ── */
 async function _acceptIncomingCall(callData, callId) {
-  _callIsVideo = callData.type === 'video';
   _isCaller    = false;
   _callId      = callId;
-  _facingMode  = 'user';
 
   document.getElementById('incomingCallModal')?.classList.remove('show');
 
   try {
     _localStream = await navigator.mediaDevices.getUserMedia(
-      _callIsVideo ? { audio: true, video: { facingMode: _facingMode } } : { audio: true }
+      { audio: true }
     );
   } catch (err) {
-    toast("Mikrofon/kameraga ruxsat yo'q: " + err.message, 'error');
+    toast("Mikrofonga ruxsat yo'q: " + err.message, 'error');
     try { await _updateCall(callId, { status: 'declined' }); } catch (e) { console.warn('[call]', e?.message || e); }
     _callId = null;
     return;
-  }
-
-  if (_callIsVideo) {
-    const lv = document.getElementById('callLocalVideo');
-    if (lv) lv.srcObject = _localStream;
   }
 
   // Caller ma'lumotlari
@@ -826,7 +646,7 @@ async function _acceptIncomingCall(callData, callId) {
     callerAvi  = d.avatar   || '';
   } catch (e) { console.warn('[call]', e?.message || e); }
 
-  _showActiveCallModal(callerName, callerAvi, _callIsVideo);
+  _showActiveCallModal(callerName, callerAvi);
 
   _createPC();
   _localStream.getTracks().forEach(t => _pc.addTrack(t, _localStream));
@@ -869,8 +689,6 @@ async function _acceptIncomingCall(callData, callId) {
       }
     }
 
-    // Qo'ng'iroq davomida video yoqilgan bo'lsa — qayta muzokara
-    await _handleRenego(data);
   });
 }
 
@@ -934,7 +752,7 @@ async function _handleIncomingRow(data) {
   const rejectBtn = document.getElementById('incomingCallReject');
 
   if (nameEl) nameEl.textContent = callerName;
-  if (typeEl) typeEl.textContent = data.type === 'video' ? "Video qo'ng'iroq" : "Ovozli qo'ng'iroq";
+  if (typeEl) typeEl.textContent = "Ovozli qo'ng'iroq";
   if (aviEl)  aviEl.innerHTML = _avatarHTML(callerName, callerAvi);
 
   modal?.classList.add('show');
@@ -1011,11 +829,8 @@ export function stopCallWatcher() {
   if (_incomingUnsub) { _incomingUnsub(); _incomingUnsub = null; }
 }
 
-/* ── Call tugmasiga click listener ──
-   Endi hdr'da bitta tugma bor (Telegram uslubi) — qo'ng'iroq HAR DOIM
-   ovozli boshlanadi, video esa faol qo'ng'iroq ichida kamera tugmasi
-   bilan yoqiladi (pastga q.). */
-document.getElementById('chatVoiceCallBtn')?.addEventListener('click', () => initiateCall(false));
+/* ── Call tugmasiga click listener ── */
+document.getElementById('chatVoiceCallBtn')?.addEventListener('click', () => initiateCall());
 
 /* ── Active call controls ── */
 document.getElementById('callEndBtn')?.addEventListener('click', async () => {
@@ -1031,87 +846,6 @@ document.getElementById('callMicBtn')?.addEventListener('click', function () {
   track.enabled = !track.enabled;
   this.classList.toggle('muted', !track.enabled);
 });
-
-document.getElementById('callCamBtn')?.addEventListener('click', async function () {
-  if (_localVideoOn) {
-    _disableLocalVideo();
-  } else {
-    await _enableLocalVideo();
-  }
-});
-
-/* ── Old kamera ↔ orqa kamera almashtirish ── */
-let _switchingCam = false;
-
-async function _switchCamera() {
-  if (_switchingCam || !_localStream || !_localVideoOn) return;
-  const oldTrack = _localStream.getVideoTracks()[0];
-  if (!oldTrack) return;
-
-  _switchingCam = true;
-  const btn = document.getElementById('callSwitchCamBtn');
-  btn?.classList.add('active');
-
-  const wasEnabled = oldTrack.enabled;
-  const newFacing  = _facingMode === 'user' ? 'environment' : 'user';
-
-  // Avval eski kamerani to'liq to'xtatamiz — ko'pchilik mobil brauzerlar
-  // (Android/iOS) bir vaqtda 2 ta kamera oqimini ochishga ruxsat bermaydi,
-  // shuning uchun eskisi ochiq turganda yangisini so'rash xato beradi.
-  _localStream.removeTrack(oldTrack);
-  oldTrack.stop();
-
-  const getStream = (constraint) => navigator.mediaDevices.getUserMedia({
-    audio: false,
-    video: constraint
-  });
-
-  try {
-    let newStream;
-    try {
-      // Avval qat'iy (exact) urinib ko'ramiz
-      newStream = await getStream({ facingMode: { exact: newFacing } });
-    } catch (_) {
-      // Qurilmada aynan shu label topilmasa, yumshoqroq (ideal) bilan qayta urinamiz
-      newStream = await getStream({ facingMode: { ideal: newFacing } });
-    }
-
-    const newTrack = newStream.getVideoTracks()[0];
-    newTrack.enabled = wasEnabled;
-
-    // Peer connection ga yangi trackni almashtirish (qayta muzokarasiz)
-    const sender = _pc?.getSenders().find(s => s.track && s.track.kind === 'video');
-    if (sender) { try { await sender.replaceTrack(newTrack); } catch (_) {} }
-
-    // Local streamga yangi trackni qo'shamiz
-    _localStream.addTrack(newTrack);
-
-    // Preview elementini yangilash (ba'zi brauzerlarda kerak bo'ladi)
-    const lv = document.getElementById('callLocalVideo');
-    if (lv) { lv.srcObject = null; lv.srcObject = _localStream; }
-
-    _facingMode = newFacing;
-  } catch (err) {
-    console.warn('[Call] Kamera almashtirib bo\'lmadi:', err.message);
-    // Eski kamerani qaytarishga urinamiz, aks holda video butunlay o'chib qolmasin
-    try {
-      const restored = await getStream({ facingMode: { ideal: _facingMode } });
-      const restoredTrack = restored.getVideoTracks()[0];
-      restoredTrack.enabled = wasEnabled;
-      _localStream.addTrack(restoredTrack);
-      const sender = _pc?.getSenders().find(s => s.track && s.track.kind === 'video');
-      if (sender) { try { await sender.replaceTrack(restoredTrack); } catch (_) {} }
-      const lv = document.getElementById('callLocalVideo');
-      if (lv) { lv.srcObject = null; lv.srcObject = _localStream; }
-    } catch (_) {}
-    toast('Kamerani almashtirib bo\'lmadi. Qurilmangizda faqat bitta kamera bo\'lishi mumkin.', 'error');
-  } finally {
-    _switchingCam = false;
-    btn?.classList.remove('active');
-  }
-}
-
-document.getElementById('callSwitchCamBtn')?.addEventListener('click', _switchCamera);
 
 /* ── Speaker (earpiece ↔ dinamik) toggle ── */
 // _speakerOn = false → earpiece (quloqqa tutilsa eshitiladi, default)

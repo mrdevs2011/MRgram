@@ -102,7 +102,6 @@ svg { color: inherit; }
 .del-btn:focus-visible,
 .nav-btn:focus-visible,
 .hdr-icon-btn:focus-visible,
-.hdr-mute-btn:focus-visible,
 .theme-btn:focus-visible,
 .dm-close:focus-visible,
 .dm-act:focus-visible,
@@ -165,11 +164,12 @@ svg { color: inherit; }
 /* ═══════════════════════════════════════════ PROFILE GRID — Hover Effects ══════════════════════════════════... */
 .profile-grid, .up-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: minmax(72px, auto); grid-auto-flow: dense; gap: 2px; }
 .grid-cell, .up-grid-cell { position: relative; overflow: hidden; border-radius: 0; cursor: pointer; background: var(--bg3); min-height: 72px; }
-/* Rasm / video — katta (2 qator) */
+
 .grid-cell--media, .up-grid-cell--media { grid-row: span 2; min-height: 148px; aspect-ratio: 1 / 1.05; }
 /* Matn post — pastroq */
 .grid-cell--text, .up-grid-cell--text { grid-row: span 1; min-height: 72px; aspect-ratio: auto; }
-.grid-cell img, .grid-cell video, .up-grid-cell img, .up-grid-cell video { width: 100%; height: 100%; object-fit: cover;  }
+.grid-cell img,
+.up-grid-cell img { width: 100%; height: 100%; object-fit: cover;  }
 .grid-cell-overlay,
 .up-grid-cell-overlay {
   position: absolute;
@@ -187,8 +187,7 @@ svg { color: inherit; }
 }
 .grid-cell:hover .grid-cell-overlay, .up-grid-cell:hover .up-grid-cell-overlay { opacity: 1; }
 .grid-stat, .up-grid-stat { display: flex; align-items: center; gap: 4px; color: var(--pal-white); font-size: 12px; font-weight: 600; text-shadow: 0 1px 3px var(--pal-black); }
-.grid-play-badge { position: absolute; top: 6px; right: 6px; background: var(--pal-black); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; opacity: 0;  }
-.grid-cell:hover .grid-play-badge { opacity: 1; }
+
 /* Text-only post */
 .grid-cell-txt, .up-grid-cell-txt {
   display: flex;
@@ -257,14 +256,7 @@ svg { color: inherit; }
 [data-font-size="large"] { font-size: 18px; }
 [data-font-size="large"] .post-name, [data-font-size="large"] .post-caption { font-size: 16px; }
 [data-font-size="large"] .stat-val { font-size: 22px; }
-.vid-controls { background: var(--pal-black); }
-.vc-play, .vc-mute, .vc-fs { background: var(--pal-gray-800); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;  }
-.vc-play:hover, .vc-mute:hover, .vc-fs:hover { background: var(--pal-legacy-3a3a3f); }
-.vc-play:active, .vc-mute:active, .vc-bar { height: 4px;  }
-.vc-progress:hover .vc-bar { height: 6px; }
-.vc-fill { position: relative; }
-.vc-fill::after { content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: var(--pal-white); border-radius: 50%; opacity: 0;  }
-.vc-progress:hover .vc-fill::after { opacity: 1; }
+
 /* ═══════════════════════════════════════════ SEARCH OVERLAY — Suggestions ══════════════════════════════════... */
 .search-suggestions {
   position: absolute;
@@ -350,7 +342,12 @@ svg { color: inherit; }
 }
 /* ═══════════════════════════════════════════ PRINT STYLES ═══════════════════════════════════════════ */
 @media print {
-  .bot-nav, .app-hdr, .nav-btn, .upload-float-bar, #toast, .overlay, .reel-vol-top { display: none; }
+  .bot-nav,
+.app-hdr,
+.nav-btn,
+.upload-float-bar,
+#toast,
+.overlay { display: none; }
   body { background: var(--pal-white); color: var(--pal-black); }
   .post { break-inside: avoid; page-break-inside: avoid; }
 }
@@ -558,7 +555,7 @@ svg { color: inherit; }
 [data-theme="dark"] ::selection { background: #3d3d3d; color: var(--pal-white); }
 /* ══════════════════════════════════════════ 25. REEL — Overlays ══════════════════════════════════════════ */
 [data-theme="dark"] .reel { background: var(--pal-black); }
-[data-theme="dark"] .reel-top-btn, [data-theme="dark"] .reel-vol-top { background: var(--pal-black); border: 0.5px solid var(--pal-gray-900); }
+[data-theme="dark"] .reel-top-btn { background: var(--pal-black); border: 0.5px solid var(--pal-gray-900); }
 /* ══════════════════════════════════════════ 26. THEME BUTTON — Panel ══════════════════════════════════════════ */
 [data-theme="dark"] .theme-btn { color: var(--text2); }
 [data-theme="dark"] .theme-btn:hover { background: var(--pal-gray-900); color: var(--text); }
@@ -670,7 +667,8 @@ svg { color: inherit; }
 /* Detail modal */
 #detailContent, [data-theme="dark"] #detailContent { border: none; box-shadow: none; }
 .dm-close, [data-theme="dark"] .dm-close { border: none; }
-.reel-top-btn, .reel-vol-top, [data-theme="dark"] .reel-top-btn, [data-theme="dark"] .reel-vol-top { border: none; }
+.reel-top-btn,
+[data-theme="dark"] .reel-top-btn { border: none; }
 /* Nav ring/glow animatsiyalari — shadow yo'q */
 .nav-btn:hover, .nav-btn.on { box-shadow: none; }
 /* Feed buttons */
@@ -988,7 +986,7 @@ input::placeholder, textarea::placeholder, .field::placeholder { color: var(--te
 /* Visibility: bitta matnli toggle (x.com "Everyone can reply" kabi) */
 /* Divider above toolbar (x.com'dagi kabi) */
 #uploadOverlay .composer-toolbar { display: flex; align-items: center; gap: 2px; padding-top: 8px; border-top: 1px solid var(--pal-gray-700); }
-/* Rasm/video tugmasi — endi katta dashed box emas, ixcham doira ikonka */
+
 #uploadOverlay .upload-drop {
   width: 34px;
   height: 34px;
@@ -1207,25 +1205,6 @@ nav.bot-nav #createBtn.nav-center-btn:hover { opacity: .88; box-shadow: none; }
    iOS 27 Liquid Glass Edition — Step 3
    ═══════════════════════════════════════════ */
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* ── Global Reset ── */
 *, *::before, *::after {
   margin: 0; padding: 0;
@@ -1287,9 +1266,6 @@ body {
   border-radius: 50%;
   box-shadow: 0 0 8px #96620D;
 }
-
-
-
 
 /* ── Cached Badge — liquid glass ── */
 .cached-badge {

@@ -72,7 +72,6 @@ function avatarOf(uid, name) {
 function postTitle(p) {
   const t = (p.text || '').trim();
   if (t) return t;
-  if (p.mediaType?.startsWith('video')) return 'Video post';
   if (p.mediaType?.startsWith('image')) return 'Rasm post';
   return p.fileName || 'Post';
 }

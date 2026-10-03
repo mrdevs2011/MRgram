@@ -47,8 +47,8 @@ function rowAtPoint(target, y) {
   }
   return bd <= 3 ? best : null;
 }
-// Mobilda bitta bosish menyu ochadi — lekin bu elementlar o'z ishini qiladi (play, havola, rasm/video, avatar)
-const TAP_KEEP = 'a, button, video, audio, input, textarea, [data-cm-open], .msg-avi-btn, .grp-sender-name[data-uid]';
+// Mobilda bitta bosish menyu ochadi — lekin bu elementlar o'z ishini qiladi (play, havola, rasm, avatar)
+const TAP_KEEP = 'a, button, audio, input, textarea, [data-cm-open], .msg-avi-btn, .grp-sender-name[data-uid]';
 const coarse = () => window.matchMedia('(pointer: coarse)').matches;
 const pad = n => String(n).padStart(2, '0');
 
@@ -452,7 +452,7 @@ export function initMsgMenu(opts) {
   let ms = null, msTimer = null;
   box.addEventListener('mousedown', e => {
     if (e.button !== 0 || coarse()) return;
-    if (!selMode && e.target.closest('a,button,input,textarea,audio,video,[contenteditable]')) return;
+    if (!selMode && e.target.closest('a,button,input,textarea,audio,[contenteditable]')) return;
     const row = rowAtPoint(e.target, e.clientY);
     if (!row) return;
     clearTimeout(msTimer);
@@ -483,7 +483,7 @@ export function initMsgMenu(opts) {
       const r = rowAtPoint(e.target, e.clientY);
       if (!r) return;
       const keep = e.target.closest?.(TAP_KEEP);
-      if (keep && box.contains(keep)) return; // play tugmasi, havola, rasm/video...
+      if (keep && box.contains(keep)) return; // play tugmasi, havola, rasm...
       if (e.target.closest?.('.chat-msg.emoji-only.emo-1 .chat-bubble-text')) return; // bitta emoji — faqat animatsiya
       e.stopPropagation(); e.preventDefault();
       openMenu(r, null, null);

@@ -1,18 +1,16 @@
 /* chat-media.js — DM chat sarlavhasidagi avatar/nom bosilganda ochiladigan profil ko'rinishi.
    Ko'rinishi boshqa foydalanuvchi profili (#userProfileModal) bilan bir xil: orqaga tugma, avatar, ism, statistika, tablar
-   (Barchasi / Photos / Videos / Musics / Files) — lekin ostidagi medialar u odamning postlari emas,
-   aynan shu suhbatda ikkalamiz ulashgan rasm, video, musiqa va fayllar. */
+   (Barchasi / Photos / Musics / Files) — lekin ostidagi medialar u odamning postlari emas,
+   aynan shu suhbatda ikkalamiz ulashgan rasm, musiqa va fayllar. */
 import { sb, mapMessage } from '../core/config.js';
 import { esc, fmtSz, defAvi } from '../core/utils.js';
 import { toast } from '../ui/toast.js';
 import { onEsc } from '../ui/esc-stack.js';
 
 const IMG_EXT = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif'];
-const VID_EXT = ['mp4', 'mov', 'avi', 'mkv', 'webm'];
 const AUD_EXT = ['mp3', 'm4a', 'wav', 'ogg', 'oga', 'aac', 'flac', 'opus', 'wma'];
 const LIMIT = 300;
 
-const ICON_PLAY_SM = '<svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="m5 3 14 9-14 9V3z"/></svg>';
 const ICON_PLAY = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"/></svg>';
 const ICON_PAUSE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>';
 const ICON_FILE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
@@ -27,16 +25,14 @@ let _bound = false;
 let _viewer = null;
 let _avatar = '';
 
-const TABS = [['all', 'Barchasi'], ['photos', 'Photos'], ['videos', 'Videos'], ['music', 'Musics'], ['file', 'Files']];
+const TABS = [['all', 'Barchasi'], ['photos', 'Photos'], ['music', 'Musics'], ['file', 'Files']];
 
 function _kind(m) {
   const mime = (m.mediaType || '').toLowerCase();
   const ext = (m.fileName || '').toLowerCase().split('.').pop() || '';
   if (mime.startsWith('audio')) return 'audio';
-  if (mime.startsWith('video')) return 'video';
   if (mime.startsWith('image')) return 'image';
   if (AUD_EXT.includes(ext)) return 'audio';
-  if (VID_EXT.includes(ext)) return 'video';
   if (IMG_EXT.includes(ext)) return 'image';
   return 'file';
 }
@@ -66,7 +62,7 @@ function _ensureBound() {
   document.getElementById('upBack')?.addEventListener('click', () => { if (_active) _deactivate(); });
   $modal().addEventListener('click', e => { if (_active && e.target === $modal()) _deactivate(); });
   document.addEventListener('chatmedia:close', closeChatMedia);
-  // Rasm/video ko'rish oynasi (z 600) profil sahifasidan (500) ustida; profilning o'zi shortcuts.js da (userProfileModal)
+  // Rasm ko'rish oynasi (z 600) profil sahifasidan (500) ustida; profilning o'zi shortcuts.js da (userProfileModal)
   onEsc(600, () => {
     if (!_active || !_viewer?.classList.contains('show')) return false;
     _closeViewer();
@@ -84,8 +80,7 @@ function _deactivate() {
 /* ── Chizish ────────────────────────────────────────────────────────── */
 function _counts() {
   const photos = _data.media.filter(m => m.kind === 'image').length;
-  const videos = _data.media.length - photos;
-  return { photos, videos, music: _data.audio.length, file: _data.file.length };
+  return { photos, music: _data.audio.length, file: _data.file.length };
 }
 
 function _paintHead(name) {
@@ -96,7 +91,7 @@ function _paintHead(name) {
     <div class="up-info">
       <div class="up-name">${esc(name || 'Suhbat')}</div>
       <div class="up-stats">
-        <div class="up-stat"><div class="up-stat-val">${c.photos + c.videos}</div><div class="up-stat-lbl">media</div></div>
+        <div class="up-stat"><div class="up-stat-val">${c.photos}</div><div class="up-stat-lbl">media</div></div>
         <div class="up-stat"><div class="up-stat-val">${c.music}</div><div class="up-stat-lbl">musiqa</div></div>
         <div class="up-stat"><div class="up-stat-val">${c.file}</div><div class="up-stat-lbl">fayllar</div></div>
       </div>
@@ -114,9 +109,8 @@ function _paintTabs() {
     `<button type="button" class="profile-grid-tab${k === _tab ? ' active' : ''}" data-cm-tab="${k}" role="tab" aria-selected="${k === _tab}">${l}</button>`).join('');
 }
 
-const _cellMedia = (m, i) => m.kind === 'video'
-  ? `<div class="up-grid-cell up-grid-cell--media" data-cm-open="${i}"><video src="${_url(m)}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play-badge">${ICON_PLAY_SM}</div></div>`
-  : `<div class="up-grid-cell up-grid-cell--media" data-cm-open="${i}"><img class="w-full h-full object-cover" src="${esc(_url(m))}" alt="" decoding="async" onerror="this.onerror=null;this.style.display='none';this.parentNode.classList.add('cm-broken')"></div>`;
+const _cellMedia = (m, i) =>
+  `<div class="up-grid-cell up-grid-cell--media" data-cm-open="${i}"><img class="w-full h-full object-cover" src="${esc(_url(m))}" alt="" decoding="async" onerror="this.onerror=null;this.style.display='none';this.parentNode.classList.add('cm-broken')"></div>`;
 
 function _rowsAudio() {
   return _data.audio.map((m, i) => `
@@ -140,18 +134,17 @@ function _paintContent() {
   const empty = t => `<div class="up-grid-empty"><div class="up-grid-empty-title">${t}</div></div>`;
   const grid = (html, uniform) => `<div class="up-grid${uniform ? ' up-grid--uniform' : ''}" id="upGrid">${html}</div>`;
   const media = _data.media.map((m, i) => ({ m, i }));
-  if (_tab === 'photos' || _tab === 'videos') {
-    const want = _tab === 'photos' ? 'image' : 'video';
-    const list = media.filter(x => x.m.kind === want);
+  if (_tab === 'photos') {
+    const list = media.filter(x => x.m.kind === 'image');
     box.innerHTML = list.length ? grid(list.map(x => _cellMedia(x.m, x.i)).join(''), true)
-      : empty(_tab === 'photos' ? 'Hali rasm ulashilmagan' : 'Hali video ulashilmagan');
+      : empty('Hali rasm ulashilmagan');
   } else if (_tab === 'music') {
     box.innerHTML = _data.audio.length ? `<div class="cm-rows">${_rowsAudio()}</div>` : empty('Hali musiqa ulashilmagan');
     _syncAudioUI();
   } else if (_tab === 'file') {
     box.innerHTML = _data.file.length ? `<div class="cm-rows">${_rowsFiles()}</div>` : empty('Hali fayl ulashilmagan');
   } else {
-    // Barchasi: rasm/video katakchalari + (bo'lsa) musiqa va fayllar ro'yxati
+    // Barchasi: rasm katakchalari + (bo'lsa) musiqa va fayllar ro'yxati
     const parts = [];
     if (media.length) parts.push(grid(media.map(x => _cellMedia(x.m, x.i)).join(''), true));
     if (_data.audio.length || _data.file.length) parts.push(`<div class="cm-rows">${_rowsAudio()}${_rowsFiles()}</div>`);
@@ -191,12 +184,12 @@ function _toggleAudio(i) {
   a.play().catch(() => {});
 }
 
-/* ── Rasm/video ko'rish ─────────────────────────────────────────────── */
+/* ── Rasm ko'rish ─────────────────────────────────────────────── */
 function _ensureViewer() {
   if (_viewer) return _viewer;
   _viewer = document.createElement('div');
   _viewer.id = 'cmViewer';
-  _viewer.addEventListener('click', e => { if (!e.target.closest('video, img')) _closeViewer(); });
+  _viewer.addEventListener('click', e => { if (!e.target.closest('img')) _closeViewer(); });
   document.body.appendChild(_viewer);
   return _viewer;
 }
@@ -204,14 +197,11 @@ function _openViewer(i) {
   const m = _data.media[i];
   if (!m) return;
   const v = _ensureViewer();
-  v.innerHTML = m.kind === 'video'
-    ? `<video src="${esc(_url(m))}" controls autoplay playsinline></video>`
-    : `<img src="${esc(_url(m))}" alt="">`;
+  v.innerHTML = `<img src="${esc(_url(m))}" alt="">`;
   v.classList.add('show');
 }
 function _closeViewer() {
   if (!_viewer) return;
-  _viewer.querySelector('video')?.pause();
   _viewer.classList.remove('show');
   _viewer.innerHTML = '';
 }
@@ -243,7 +233,7 @@ export async function openChatMedia({ chatId, name, avatar } = {}) {
     const m = mapMessage(r);
     if (!m || !m.mediaUrl) continue;
     m.kind = _kind(m);
-    if (m.kind === 'video' || m.kind === 'image') _data.media.push(m);
+    if (m.kind === 'image') _data.media.push(m);
     else if (m.kind === 'audio') _data.audio.push(m);
     else _data.file.push(m);
   }
