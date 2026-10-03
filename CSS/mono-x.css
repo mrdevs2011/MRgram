@@ -3412,16 +3412,17 @@ textarea:not(:focus) {
 /* Sozlamalar pastki qism: bitta qatorda [ Kesh/xotira ......... ] [Chiqish] [⋮] */
 .settings-body > * { flex-shrink: 0; }
 .settings-actions { display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 4px; }
-.settings-actions #clearCacheBtn {
+.settings-actions #logoutBtn {
   flex: 1; min-width: 0; width: auto; height: 44px; margin: 0; padding: 0 14px;
   display: flex; align-items: center; justify-content: center; gap: 8px;
   border-radius: 999px; font-size: 14px; font-weight: 600; white-space: nowrap;
 }
-.settings-actions #logoutBtn {
+.settings-actions #clearCacheBtn {
   flex: 0 0 44px; width: 44px; height: 44px; margin: 0; padding: 0;
   display: flex; align-items: center; justify-content: center; border-radius: 50%;
+  background: #000; border: 1px solid var(--line, #2f3336); color: var(--text);
 }
-.settings-actions #logoutBtn .btn-lbl { display: none; }
+.settings-actions #clearCacheBtn .btn-lbl { display: none; }
 .settings-actions .settings-more-row { flex: 0 0 44px; width: 44px; height: 44px; margin: 0; }
 .settings-actions .settings-more-btn {
   width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line, #2f3336); background: transparent;
@@ -3438,3 +3439,42 @@ textarea:not(:focus) {
 .settings-actions .settings-help-btn:hover { background: var(--pal-mid-16, rgba(255,255,255,.08)); }
 
 :where(#grpFormAvi, #grpFormAviWrap, #svNext, #svPrev, #chatThreadAvi, #chatThreadName, #profileAvi, #uploadDrop, #voiceMiniPlayer, .story-plus, .user-avi-btn, .cm-row) { cursor: pointer; }
+
+/* ── Yangi guruh formasi: mobile + desktop — to'liq ekran (card emas) ── */
+#grpCreateFormOverlay.show {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important;
+  width: 100vw !important; max-width: none !important; min-width: 0 !important;
+  height: 100dvh !important;
+  margin: 0 !important; padding: 0 !important;
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  background: #000000 !important;
+  display: flex !important; flex-direction: column !important;
+  align-items: stretch !important; justify-content: flex-start !important;
+  overflow: hidden !important;
+  z-index: 1000 !important;
+}
+#grpCreateFormOverlay.show .sheet {
+  width: 100% !important; max-width: none !important;
+  height: 100% !important; max-height: 100% !important;
+  margin: 0 !important;
+  padding: env(safe-area-inset-top, 0px) 16px max(env(safe-area-inset-bottom, 0px), 16px) !important;
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  background: #000000 !important;
+  display: flex !important; flex-direction: column !important;
+  overflow-y: auto !important;
+}
+#grpCreateFormOverlay.show .sheet-handle { display: none !important; }
+#grpCreateFormOverlay.show .sheet-title {
+  padding: 16px 0 !important; margin-bottom: 16px !important;
+  border-bottom: 1px solid var(--line, #2f3336) !important; text-align: left !important;
+}
+@media (min-width: 1200px) {
+  #grpCreateFormOverlay.show .sheet { padding-left: 32px !important; padding-right: 32px !important; }
+}
+
+/* Avatar zoom: X va "Rasmni o'zgartirish" tugmalari hech kimga (egasiga ham) chiqmaydi */
+#zoomModal.zoom-avatar .zoom-x,
+#zoomModal.zoom-avatar .avi-zoom-edit-btn,
+#zoomModal.zoom-avatar .gi-avi-zoom-edit { display: none !important; }

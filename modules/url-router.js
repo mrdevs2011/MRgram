@@ -5,8 +5,9 @@
  *   /home                  bosh sahifa (sayt ochilganda doim shu)
  *   /chats                 suhbatlar
  *   /chats/u/<username>    shaxsiy chat
- *   /chats/g/<groupId>     guruh chati (group_username ham qabul qilinadi)
+ *   /chats/g/<groupId>     guruh chati (group_username ham qabul qilinadi; a'zo bo'lmagan ochiq guruhga avtomatik qo'shiladi)
  *   /chats/groupcreate     "Yangi guruh" formasi
+ *   /u/<username>          boshqa foydalanuvchi profili (hamma uchun ochiladi; o'zi ochsa /profile)
  *   /profile               profil
  *   /settings              sozlamalar
  *   /explore               qidiruv (Explore)
@@ -66,6 +67,9 @@ export function parsePath(rawPath) {
     if (a === 'explore')  return { kind: 'overlay', overlay: 'explore', base: 'home' };
     if (a === 'newpost')  return { kind: 'overlay', overlay: 'newpost', base: 'home' };
   }
+  if (a === 'u' && seg.length === 2 && seg[1]) {
+    return { kind: 'userprofile', ref: seg[1] };
+  }
   if (a === 'chats' && seg.length === 2 && b === 'groupcreate') {
     return { kind: 'overlay', overlay: 'groupcreate', base: 'chats' };
   }
@@ -83,6 +87,21 @@ function isAdminUser() { return !!(state.me && state.me.isAdmin); }
 function hasShow(id, cls = 'show') { return !!$(id)?.classList.contains(cls); }
 
 function threadOpen() { return hasShow('chatThreadModal'); }
+
+function userProfileOpen() { return hasShow('userProfileModal') && !!state.currentViewingUserId; }
+
+/** Ochiq guruhga a'zo bo'lmagan foydalanuvchi: ?g= havolasidagidek avtomatik qo'shamiz. */
+async function ensureGroupMember(gid) {
+  try {
+    const { data } = await sb.from('group_members').select('user_id')
+      .eq('group_id', gid).eq('user_id', state.me.uid).maybeSingle();
+    if (data) return true;
+    const m = await import('./chat/groups.js');
+    await m.joinGroup(gid);
+    import('./ui/toast.js').then(t => t.toast("Guruhga qo'shildingiz", 'success')).catch(() => {});
+    return true;
+  } catch (_) { return false; }
+}
 
 function settingsPinned() { return document.body.classList.contains('desktop-settings-pinned'); }
 
@@ -124,6 +143,11 @@ function computeUrl() {
 
   const gc = $('grpCreateFormOverlay');
   if (gc?.classList.contains('show') && !gc.dataset.addMode) return '/chats/groupcreate';
+
+  if (userProfileOpen()) {
+    const t = dmToken(state.currentViewingUserId);
+    return t ? `/u/${encodeURIComponent(t)}` : null;
+  }
 
   if (hasShow('settingsOverlay') && (!settingsPinned() || location.pathname === '/settings')) return '/settings';
 
@@ -189,7 +213,7 @@ const TITLES = {
   '/chats/groupcreate': 'Yangi guruh',
 };
 function updateTitle(path) {
-  const t = TITLES[path] || (path.startsWith('/chats/') ? 'Suhbatlar' : null);
+  const t = TITLES[path] || (path.startsWith('/chats/') ? 'Suhbatlar' : (path.startsWith('/u/') ? 'Profil' : null));
   if (t) document.title = `${t} - SpaceMR`;
 }
 
@@ -202,6 +226,7 @@ function hasAnyOverlay() {
 }
 
 function closeEverythingExcept(keep) {
+  if (keep !== 'userprofile' && hasShow('userProfileModal')) $('upBack')?.click();
   if (keep !== 'groupcreate' && hasShow('grpCreateFormOverlay')) $('grpFormCancelBtn')?.click();
   if (keep !== 'newpost' && hasShow('uploadOverlay')) $('cancelUpload')?.click();
   if (keep !== 'explore' && hasShow('searchOverlay', 'open')) $('searchOverlayClose')?.click();
@@ -309,12 +334,41 @@ export async function applyPath(rawPath, { initial = false } = {}) {
       return;
     }
 
+    /* Boshqa foydalanuvchi profili: /u/<username> */
+    if (route.kind === 'userprofile') {
+      const uid = await uidByUsername(route.ref);
+      if (!uid) return deny();
+      if (uid === state.me.uid) {
+        history.replaceState({ i: 0, prev: null }, '', '/profile' + tail);
+        if (getCurrentRoute() !== 'profile' || threadOpen() || hasAnyOverlay()) navigateTo('profile', false);
+        closeEverythingExcept(null);
+        await closeThreadIfOpen();
+        updateTitle('/profile');
+        return;
+      }
+      if (initial && getCurrentRoute() !== 'home') navigateTo('home', false);
+      closeEverythingExcept('userprofile');
+      if (!(userProfileOpen() && state.currentViewingUserId === uid)) {
+        const m = await import('./profile/profile.js');
+        await m.openUserProfileModal(uid);
+      }
+      if (!userProfileOpen()) return deny();
+      _replaceNext = true;
+      updateTitle('/u/x');
+      return;
+    }
+
     /* Chat / guruh */
     if (route.kind === 'thread') {
       let ok = false;
       if (route.thread === 'dm') {
         const uid = await uidByUsername(route.ref);
-        if (!uid || uid === state.me.uid) return deny();
+        if (!uid) return deny();
+        if (uid === state.me.uid) {
+          // O'ziga chat yo'q — o'z profiliga o'tamiz (havola hamma uchun ochiladi)
+          history.replaceState({ i: 0, prev: null }, '', '/profile' + tail);
+          return applyPath('/profile');
+        }
         if (getCurrentRoute() !== 'chats') navigateTo('chats', false);
         closeEverythingExcept(null);
         if (!(threadOpen() && state.currentChatKind === 'dm' && state.currentChatUid === uid)) {
@@ -326,6 +380,7 @@ export async function applyPath(rawPath, { initial = false } = {}) {
       } else {
         const gid = await groupIdByRef(route.ref);
         if (!gid) return deny();
+        if (!(await ensureGroupMember(gid))) return deny();
         if (getCurrentRoute() !== 'chats') navigateTo('chats', false);
         closeEverythingExcept(null);
         if (!(threadOpen() && $('chatThreadModal')?.dataset?.gid === gid)) {

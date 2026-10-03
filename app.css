@@ -8050,16 +8050,17 @@ textarea:not(:focus) {
 /* Sozlamalar pastki qism: bitta qatorda [ Kesh/xotira ......... ] [Chiqish] [⋮] */
 .settings-body > * { flex-shrink: 0; }
 .settings-actions { display: flex; align-items: center; gap: 8px; width: 100%; margin-top: 4px; }
-.settings-actions #clearCacheBtn {
+.settings-actions #logoutBtn {
   flex: 1; min-width: 0; width: auto; height: 44px; margin: 0; padding: 0 14px;
   display: flex; align-items: center; justify-content: center; gap: 8px;
   border-radius: 999px; font-size: 14px; font-weight: 600; white-space: nowrap;
 }
-.settings-actions #logoutBtn {
+.settings-actions #clearCacheBtn {
   flex: 0 0 44px; width: 44px; height: 44px; margin: 0; padding: 0;
   display: flex; align-items: center; justify-content: center; border-radius: 50%;
+  background: #000; border: 1px solid var(--line, #2f3336); color: var(--text);
 }
-.settings-actions #logoutBtn .btn-lbl { display: none; }
+.settings-actions #clearCacheBtn .btn-lbl { display: none; }
 .settings-actions .settings-more-row { flex: 0 0 44px; width: 44px; height: 44px; margin: 0; }
 .settings-actions .settings-more-btn {
   width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line, #2f3336); background: transparent;
@@ -8074,6 +8075,8 @@ textarea:not(:focus) {
   color: var(--text); cursor: pointer;
 }
 .settings-actions .settings-help-btn:hover { background: var(--pal-mid-16, rgba(255,255,255,.08)); }
+
+:where(#grpFormAvi, #grpFormAviWrap, #svNext, #svPrev, #chatThreadAvi, #chatThreadName, #profileAvi, #uploadDrop, #voiceMiniPlayer, .story-plus, .user-avi-btn, .cm-row) { cursor: pointer; }
 
 /* ── Yangi guruh formasi: mobile + desktop — to'liq ekran (card emas) ── */
 #grpCreateFormOverlay.show {
@@ -8113,5 +8116,3 @@ textarea:not(:focus) {
 #zoomModal.zoom-avatar .zoom-x,
 #zoomModal.zoom-avatar .avi-zoom-edit-btn,
 #zoomModal.zoom-avatar .gi-avi-zoom-edit { display: none !important; }
-
-:where(#grpFormAvi, #grpFormAviWrap, #svNext, #svPrev, #chatThreadAvi, #chatThreadName, #profileAvi, #uploadDrop, #voiceMiniPlayer, .story-plus, .user-avi-btn, .cm-row) { cursor: pointer; }
