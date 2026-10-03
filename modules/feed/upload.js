@@ -444,7 +444,7 @@ async function submitStory() {
   const caption = $('captionInput').value.trim().slice(0, STORY_CAPTION_MAX);
 
   const { rateOk } = await import('../core/rate-limit.js');
-  if (!rateOk('story', 10, 60000)) {
+  if (!rateOk('story', 3, 60000)) {
     const { toast } = await import('../ui/ui.js');
     toast('Juda ko\'p story yukladingiz', 'warning');
     return;
@@ -517,7 +517,7 @@ export async function submitPost() {
   if (!caption && !state.selFile) return;
 
   const { rateOk } = await import('../core/rate-limit.js');
-  if (!rateOk('post', 5, 60000)) {
+  if (!rateOk('post', 3, 60000)) {
     const { toast } = await import('../ui/ui.js');
     toast('Juda ko\'p post yozdingiz. Biroz kuting', 'warning');
     return;

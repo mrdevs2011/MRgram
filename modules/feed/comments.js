@@ -410,7 +410,7 @@ async function sendComment(mode) {
 
   const text = inp?.value?.trim();
   if (!text || !state.cmtPostId || !state.me) return;
-  if (!rateOk('cmt', 6, 20000)) return;
+  if (!rateOk('cmt', 10, 60000)) return;
 
   if (sendBtn) sendBtn.disabled = true;
 

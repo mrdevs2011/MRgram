@@ -21,7 +21,7 @@ export async function sendChatMessage() {
   const postShare = chatState._pendingPostShare;
 
   if ((!userText && !postShare) || !state.currentChatId || !state.me) return;
-  if (!rateOk('msg', 8, 10000)) return;
+  if (!rateOk('msg', 15, 60000)) return;
 
   const chatId   = state.currentChatId;
   const otherUid = state.currentChatUid;
@@ -98,7 +98,7 @@ export async function sendChatMessage() {
 export async function sendVoiceMessage(blob, duration) {
   if (state.currentChatKind && state.currentChatKind !== 'dm') return sendGroupVoice(blob, duration);
   if (!state.currentChatId || !state.me) return;
-  if (!rateOk('msg', 8, 10000)) return;
+  if (!rateOk('msg', 15, 60000)) return;
   const chatId   = state.currentChatId;
   const otherUid = state.currentChatUid;
 
