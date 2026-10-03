@@ -8176,7 +8176,7 @@ textarea:not(:focus) {
 }
 
 /* Sozlamalar: avatar o'rtasida kamera ikonka, surat sal xira; "Suratni o'zgartirish" tugmasi yashirin */
-.pe-avatar-ring .pe-avi-img { opacity: .6; }
+.pe-avatar-ring .pe-avi-img { opacity: .55; filter: brightness(.6); }
 .pe-avatar-ring .pe-avi-edit-badge,
 .pe-avatar-ring:hover .pe-avi-edit-badge {
   inset: 0; width: 100%; height: 100%; border-radius: 50%;
@@ -8185,5 +8185,27 @@ textarea:not(:focus) {
 .pe-avatar-ring .pe-avi-edit-badge svg { width: 30px; height: 30px; stroke: #fff !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,.6)); }
 .pe-avatar-btn { display: none !important; }
 
-/* Sozlamalar: accordion kartalar orasida masofa */
-.pe-card-group.pe-accordion { margin-bottom: 12px; }
+/* Sozlamalar: accordion kartalar orasida masofa — FAQAT mobil/tablet (desktop rightbar'da .settings-body gap:14px bor) */
+@media (max-width: 1199px) {
+  .pe-card-group.pe-accordion { margin-bottom: 12px; }
+}
+
+/* Sozlamalar pastki qism: Xotira (to'liq pill) + [ Chiqish ........ ⋮ ] bitta qatorda */
+#clearCacheBtn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; height: 44px; padding: 0 16px; margin-top: 0;
+  border-radius: 999px; font-size: 14px; font-weight: 600;
+}
+#clearCacheBtn + .divider { display: none; }
+#logoutBtn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: calc(100% - 56px); height: 44px; margin-top: 14px;
+}
+.settings-row + .settings-section-label { margin-top: 22px; }
+.settings-more-row { height: 44px; margin-top: -44px; margin-bottom: 24px; pointer-events: none; }
+.settings-more-row > * { pointer-events: auto; }
+.settings-more-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--line, #2f3336); background: transparent;
+}
+.settings-more-menu { bottom: 52px; }
