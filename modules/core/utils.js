@@ -26,72 +26,100 @@ export function renderMarkdown(rawText) {
   if (!rawText) return '';
   let s = esc(String(rawText));
 
-  // MUHIM: kod bloklarini (ko'p qatorli va bitta qatorli) ENG BIRINCHI
-  // bo'lib maxsus placeholder'larga almashtiramiz — shunda pastdagi
-  // sarlavha/ro'yxat/qalin/egik/iqtibos va eng oxirgi "\n"→"<br>" qoidalari
-  // kod ICHIDAGI matnga umuman tegmaydi (avval kod HTML'ga aylantirilib,
-  // keyin qolgan qoidalar SHU HTML ustida yana ishlab, kodni buzib
-  // yuborardi — masalan kod ichidagi "- ", "# ", "**", "\n" markdown
-  // sifatida qayta talqin qilinardi). Placeholder'lar eng oxirida,
-  // barcha boshqa almashtirishlardan KEYIN asl holiga qaytariladi.
   const codeBlocks = [];
-  s = s.replace(/```([\s\S]*?)```/g, (_m, code) => {
-    const idx = codeBlocks.push(`<pre class="md-codeblock"><code>${code.trim()}</code></pre>`) - 1;
-    return `\u0000CB${idx}\u0000`;
-  });
-  const inlineCodes = [];
-  s = s.replace(/`([^`\n]+)`/g, (_m, code) => {
-    const idx = inlineCodes.push(`<code class="md-code">${code}</code>`) - 1;
-    return `\u0000IC${idx}\u0000`;
+  s = s.replace(/```([a-z0-9]*)\n([\s\S]*?)```/gi, (_m, lang, code) => {
+    const safeCode = code.trim();
+    const idx = codeBlocks.push(
+      '<div class="md-code-wrapper">' +
+        '<div class="md-code-header">' +
+          '<span class="md-code-lang">' + (lang || 'code') + '</span>' +
+          '<button class="md-code-copy" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText); const t=this.innerText; this.innerText=\'Nusxa olindi!\'; setTimeout(()=>this.innerText=t,2000)">Nusxa olish</button>' +
+        '</div>' +
+        '<pre class="md-codeblock"><code class="language-' + (lang || 'none') + '">' + safeCode + '</code></pre>' +
+      '</div>'
+    ) - 1;
+    return '\u0000CB' + idx + '\u0000';
   });
 
-  // Havolalar [matn](url) — faqat http(s)/mailto ruxsat etiladi (xavfsizlik
-  // uchun "javascript:" va shunga o'xshash sxemalar rad etiladi). Bold/
-  // italic'dan OLDIN ishlanadi, aks holda url ichidagi "_" kabi belgilar
-  // xato ravishda egik matn sifatida talqin qilinishi mumkin edi.
+  const inlineCodes = [];
+  s = s.replace(/`([^`\n]+)`/g, (_m, code) => {
+    const idx = inlineCodes.push('<code class="md-code">' + code + '</code>') - 1;
+    return '\u0000IC' + idx + '\u0000';
+  });
+
+  s = s.replace(/\|\|([\s\S]*?)\|\|/g, '<span class="md-spoiler" onclick="this.classList.toggle(\'revealed\')">$1</span>');
+
   s = s.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+?)(?:\s+"[^"]*")?\)/g,
     '<a href="$2" class="md-link" target="_blank" rel="noopener noreferrer">$1</a>');
 
-  // Sarlavhalar (qator boshida # / ## / ###, oldida bo'sh joy/indent bo'lsa ham)
+  const htmlTags = [];
+  s = s.replace(/<[^>]+>/g, m => {
+    const idx = htmlTags.push(m) - 1;
+    return '\u0000TG' + idx + '\u0000';
+  });
+
+  s = s.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" class="md-link" target="_blank" rel="noopener noreferrer">$1</a>');
+
+  s = s.replace(/\u0000TG(\d+)\u0000/g, (_m, idx) => htmlTags[parseInt(idx, 10)]);
+
+  const htmlTags2 = [];
+  s = s.replace(/<[^>]+>/g, m => {
+    const idx = htmlTags2.push(m) - 1;
+    return '\u0000TH' + idx + '\u0000';
+  });
+
+  s = s.replace(/(^|\s)@([a-zA-Z0-9_.]+)(?=\s|[.,!?]|$)/g, '$1<span class="md-mention" onclick="window.dispatchEvent(new CustomEvent(\'open-mention\', {detail: \'$2\'}))">@$2</span>');
+
+  s = s.replace(/\u0000TH(\d+)\u0000/g, (_m, idx) => htmlTags2[parseInt(idx, 10)]);
+
   s = s.replace(/^[ \t]*###\s+(.+)$/gm, '<div class="md-h3">$1</div>');
   s = s.replace(/^[ \t]*##\s+(.+)$/gm,  '<div class="md-h2">$1</div>');
   s = s.replace(/^[ \t]*#\s+(.+)$/gm,   '<div class="md-h1">$1</div>');
 
-  // Iqtibos (blockquote) "> matn" — DIQQAT: esc() yuqorida ">" ni "&gt;"ga
-  // aylantirgan, shuning uchun aynan "&gt;" ni izlaymiz.
   s = s.replace(/^[ \t]*&gt;\s?(.+)$/gm, '<div class="md-quote">$1</div>');
 
-  // Raqamlangan ro'yxat "1. matn" (indent/ichma-ich darajasini saqlagan holda)
   s = s.replace(/^([ \t]*)(\d+)\.\s+(.+)$/gm, (_m, indent, num, txt) => {
     const depth = Math.floor(indent.replace(/\t/g, '  ').length / 2);
-    return `<div class="md-li md-li-ol" style="padding-left:${2 + depth * 16}px">${num}. ${txt}</div>`;
+    return '<div class="md-li md-li-ol" style="padding-left:' + (2 + depth * 16) + 'px">' + num + '. ' + txt + '</div>';
   });
-  // Nuqtali ro'yxat elementlari "- matn" yoki "* matn" (indent/ichma-ich
-  // darajasini saqlagan holda — avvalgi versiya faqat qator boshida, hech
-  // qanday bo'shliqsiz boshlanganini qabul qilardi, shuning uchun ichma-ich
-  // (indent qilingan) elementlar chiqarilmay qolardi).
+  s = s.replace(/^([ \t]*)[-*]\s+\[([ xX])\]\s+(.+)$/gm, (_m, indent, checked, txt) => {
+    const depth = Math.floor(indent.replace(/\t/g, '  ').length / 2);
+    const isChecked = checked.toLowerCase() === 'x';
+    return '<div class="md-li md-task-list" style="padding-left:' + (2 + depth * 16) + 'px">' +
+      '<input type="checkbox" disabled ' + (isChecked ? 'checked' : '') + ' class="md-task-checkbox"> ' + txt + '</div>';
+  });
   s = s.replace(/^([ \t]*)[-*]\s+(.+)$/gm, (_m, indent, txt) => {
     const depth = Math.floor(indent.replace(/\t/g, '  ').length / 2);
-    return `<div class="md-li" style="padding-left:${2 + depth * 16}px">• ${txt}</div>`;
+    return '<div class="md-li" style="padding-left:' + (2 + depth * 16) + 'px">• ' + txt + '</div>';
   });
 
-  // Chizilgan (strikethrough) ~~matn~~
+  const tables = [];
+  s = s.replace(/(?:^[ 	]*|.*|[ 	]*
+)+^[ 	]*|.*|[ 	]*/gm, (match) => {
+    let rows = match.trim().split('\n');
+    let html = '<div class="md-table-wrap"><table class="md-table">';
+    rows.forEach((row, i) => {
+      if (row.match(/^\|?[ \t:-]+\|[ \t:-|]+$/)) return;
+      const tag = (i === 0 && rows.length > 1 && rows[1].match(/^\|?[ \t:-]+\|[ \t:-|]+$/)) ? 'th' : 'td';
+      let cols = row.trim().replace(/^\||\|$/g, '').split('|');
+      html += '<tr>' + cols.map(c => '<' + tag + '>' + c.trim() + '</' + tag + '>').join('') + '</tr>';
+    });
+    html += '</table></div>';
+    const idx = tables.push(html) - 1;
+    return '\u0000TB' + idx + '\u0000';
+  });
+
   s = s.replace(/~~([^~\n]+)~~/g, '<del class="md-del">$1</del>');
-  // Qalin **matn** yoki __matn__
   s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
   s = s.replace(/__([^_\n]+)__/g, '<strong>$1</strong>');
-  // Egik *matn* yoki _matn_ (bitta yulduzcha/pastki chiziq)
   s = s.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
   s = s.replace(/(^|[^\w])_([^_\n]+)_(?!\w)/g, '$1<em>$2</em>');
-  // Qolgan qator ko'chirishlar (kod bloklari hali placeholder holida —
-  // ularning ICHIDAGI asl "\n" belgilari <pre> orqali saqlanib qoladi,
-  // ikki marta qator ko'chirilib ketmaydi)
+
   s = s.replace(/\n/g, '<br>');
 
-  // Placeholder'larni kod HTML'ining asl (buzilmagan) holatiga qaytaramiz —
-  // eng oxirida, shunda hech qanday qoida ularga endi tegmaydi.
-  s = s.replace(/\u0000CB(\d+)\u0000/g, (_m, i) => codeBlocks[Number(i)]);
-  s = s.replace(/\u0000IC(\d+)\u0000/g, (_m, i) => inlineCodes[Number(i)]);
+  s = s.replace(/\u0000TB(\d+)\u0000/g, (_m, idx) => tables[parseInt(idx, 10)]);
+  s = s.replace(/\u0000IC(\d+)\u0000/g, (_m, idx) => inlineCodes[parseInt(idx, 10)]);
+  s = s.replace(/\u0000CB(\d+)\u0000/g, (_m, idx) => codeBlocks[parseInt(idx, 10)]);
 
   return s;
 }
