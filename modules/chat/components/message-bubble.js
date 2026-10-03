@@ -1,3 +1,4 @@
+import { esc } from '../../core/utils.js';
 export function generateVoiceBubble({ voiceMedia, dur, barCount, safeUrl, _mpName, renderVoiceWave, idx, state }) {
   return `<div class="chat-voice-msg" data-url="${safeUrl}" data-dur="${voiceMedia.duration||0}" data-bar-count="${barCount}" data-chat-id="${state.currentChatId||''}" data-chat-uid="${state.currentChatUid||''}" data-name="${_mpName}">
     <button class="cvm-play" onclick="window._chatPlayVoice(this)">
@@ -19,7 +20,7 @@ export function generateFileBubble({ m, fname, fsz, safeUrl, _isImage, _isVideo,
       metaOutside = false;
       bubbleContent = `<div class="cfm-media-wrap cfm-media-wrap--standalone">
         <a href="${safeUrl}" target="_blank" rel="noopener" class="cfm-img-link">
-          <img class="cfm-img-preview" src="${safeUrl}" alt="${fname}" loading="lazy" onload="this.classList.add('loaded')">
+          <img class="cfm-img-preview" src="${esc(safeUrl)}" alt="${fname}" loading="lazy" onload="this.classList.add('loaded')">
         </a>
         <span class="chat-msg-meta cfm-media-badge">
           ${m.editedAt ? '<span class="chat-msg-edited">tahrirlangan</span>' : ''}<span class="chat-msg-time">${time}</span>
@@ -30,7 +31,7 @@ export function generateFileBubble({ m, fname, fsz, safeUrl, _isImage, _isVideo,
       bubbleClassExtra = ' bubble-media-caption';
       bubbleContent = `<div class="cfm-media-wrap">
         <a href="${safeUrl}" target="_blank" rel="noopener" class="cfm-img-link">
-          <img class="cfm-img-preview" src="${safeUrl}" alt="${fname}" loading="lazy" onload="this.classList.add('loaded')">
+          <img class="cfm-img-preview" src="${esc(safeUrl)}" alt="${fname}" loading="lazy" onload="this.classList.add('loaded')">
         </a>
         ${captionHtml}
       </div>`;
@@ -40,7 +41,7 @@ export function generateFileBubble({ m, fname, fsz, safeUrl, _isImage, _isVideo,
       bubbleClassExtra = ' bubble-media-only';
       metaOutside = false;
       bubbleContent = `<div class="cfm-media-wrap cfm-media-wrap--standalone cfm-media-wrap--video">
-        <video class="cfm-video-preview" src="${safeUrl}" controls playsinline preload="metadata">
+        <video class="cfm-video-preview" src="${esc(safeUrl)}" controls playsinline preload="metadata">
           <a href="${safeUrl}" target="_blank" rel="noopener">${fname}</a>
         </video>
         <span class="chat-msg-meta cfm-media-badge cfm-media-badge--video">
@@ -51,7 +52,7 @@ export function generateFileBubble({ m, fname, fsz, safeUrl, _isImage, _isVideo,
     } else {
       bubbleClassExtra = ' bubble-media-caption';
       bubbleContent = `<div class="cfm-media-wrap cfm-media-wrap--video">
-        <video class="cfm-video-preview" src="${safeUrl}" controls playsinline preload="metadata">
+        <video class="cfm-video-preview" src="${esc(safeUrl)}" controls playsinline preload="metadata">
           <a href="${safeUrl}" target="_blank" rel="noopener">${fname}</a>
         </video>
         ${captionHtml}

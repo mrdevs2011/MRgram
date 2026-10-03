@@ -92,7 +92,7 @@ function _paintHead(name) {
   const c = _counts();
   const av = (_avatar || defAvi(name || 'U')).replace(/"/g, '&quot;');
   $body().innerHTML = `
-    <div class="up-head"><div class="up-avi-wrap"><div class="up-avi"><img class="w-full h-full object-cover" src="${av}" onerror="this.src='${defAvi(name || 'U')}'"></div></div></div>
+    <div class="up-head"><div class="up-avi-wrap"><div class="up-avi"><img class="w-full h-full object-cover" src="${esc(av)}" onerror="this.src='${defAvi(name || 'U')}'"></div></div></div>
     <div class="up-info">
       <div class="up-name">${esc(name || 'Suhbat')}</div>
       <div class="up-stats">
@@ -116,7 +116,7 @@ function _paintTabs() {
 
 const _cellMedia = (m, i) => m.kind === 'video'
   ? `<div class="up-grid-cell up-grid-cell--media" data-cm-open="${i}"><video src="${_url(m)}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play-badge">${ICON_PLAY_SM}</div></div>`
-  : `<div class="up-grid-cell up-grid-cell--media" data-cm-open="${i}"><img class="w-full h-full object-cover" src="${_url(m)}" alt="" decoding="async" onerror="this.onerror=null;this.style.display='none';this.parentNode.classList.add('cm-broken')"></div>`;
+  : `<div class="up-grid-cell up-grid-cell--media" data-cm-open="${i}"><img class="w-full h-full object-cover" src="${esc(_url(m))}" alt="" decoding="async" onerror="this.onerror=null;this.style.display='none';this.parentNode.classList.add('cm-broken')"></div>`;
 
 function _rowsAudio() {
   return _data.audio.map((m, i) => `
@@ -205,8 +205,8 @@ function _openViewer(i) {
   if (!m) return;
   const v = _ensureViewer();
   v.innerHTML = m.kind === 'video'
-    ? `<video src="${_url(m)}" controls autoplay playsinline></video>`
-    : `<img src="${_url(m)}" alt="">`;
+    ? `<video src="${esc(_url(m))}" controls autoplay playsinline></video>`
+    : `<img src="${esc(_url(m))}" alt="">`;
   v.classList.add('show');
 }
 function _closeViewer() {

@@ -1402,7 +1402,7 @@ export async function populateProfileForm() {
   const peAviImg = $('peAviImg');
   if (peAviImg) {
     const av = d.avatar || defAvi(d.fullName || 'U');
-    peAviImg.innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
+    peAviImg.innerHTML = `<img src="${esc(av)}" onerror="this.style.display='none'">`;
   }
 
   // Parol maydonlarini tozalash va ko'rish holatini yopish

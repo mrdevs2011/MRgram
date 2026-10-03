@@ -76,7 +76,7 @@ function _renderRecentSearches() {
         const sub = item.type === 'group' ? 'Guruh' : (item.username ? '@' + item.username : '');
         return `
           <div class="chat-recent-item" data-id="${esc(item.id)}" data-type="${esc(item.type)}">
-            <div class="chat-recent-avi"><img src="${av}" onerror="this.style.display='none'"></div>
+            <div class="chat-recent-avi"><img src="${esc(av)}" onerror="this.style.display='none'"></div>
             <div class="chat-recent-info">
               <div class="chat-recent-name">${esc(item.name || 'Foydalanuvchi')}</div>
               ${sub ? `<div class="chat-recent-sub">${esc(sub)}</div>` : ''}
@@ -556,7 +556,7 @@ function _paintUserRows(users, animate = false) {
     const animStyle = '';
     return `<div class="chat-row${unread ? ' unread' : ''}${animate ? ' chat-row-anim' : ''}" data-uid="${u.uid}" ${animStyle}>
       <div class="chat-avi">
-        <img src="${av}" onerror="this.style.display='none'">
+        <img src="${esc(av)}" onerror="this.style.display='none'">
         ${online ? '<span class="presence-dot" title="onlayn"></span>' : ''}
       </div>
       <div class="chat-row-body">
@@ -1089,7 +1089,7 @@ async function _appendGroupRows(root, term = '') {
 
       return `<div class="chat-row${unread ? ' unread' : ''}" data-gid="${g.id}">
         <div class="chat-avi">
-          <img src="${av}" onerror="this.style.display='none'">
+          <img src="${esc(av)}" onerror="this.style.display='none'">
           <div class="chat-row-grp-badge ${badgeClass}">${typeIcon}</div>
         </div>
         <div class="chat-row-body">
@@ -1302,7 +1302,7 @@ export async function openChatThread(uid) {
     const ud = mapProfile(prow) || {};
     const av = ud.avatar || defAvi(ud.fullName || 'U');
     $('chatThreadName').textContent = ud.fullName || 'Foydalanuvchi';
-    $('chatThreadAvi').innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
+    $('chatThreadAvi').innerHTML = `<img src="${esc(av)}" onerror="this.style.display='none'">`;
     _paintPeerStatus(ud.lastSeenAt);
     // Cache for message avatars
     chatState._otherUserAvi = av;
@@ -2057,12 +2057,12 @@ export function renderChatPostCard(ps) {
     if (isVideo) {
       mediaHtml = `
         <div class="cpc-media cpc-media--video">
-          <video src="${mediaUrl}" controls playsinline preload="metadata"></video>
+          <video src="${esc(mediaUrl)}" controls playsinline preload="metadata"></video>
         </div>`;
     } else {
       mediaHtml = `
         <div class="cpc-media">
-          <img src="${mediaUrl}" alt="Post media" loading="lazy">
+          <img src="${esc(mediaUrl)}" alt="Post media" loading="lazy">
         </div>`;
     }
   }
@@ -2108,7 +2108,7 @@ export function renderChatPostCard(ps) {
       <div class="cpc-content${isPostDeleted ? ' is-deleted' : ''}" onclick="${contentOnClick}">
         <div class="cpc-author-row">
           <div class="cpc-avi${isUserDeleted ? ' is-deleted' : ''}">
-            ${authorAvi ? `<img src="${authorAvi}" alt="${authorName}" onerror="this.style.display='none'">` : `<div class="cpc-avi-placeholder">${authorName.charAt(0)}</div>`}
+            ${authorAvi ? `<img src="${esc(authorAvi)}" alt="${authorName}" onerror="this.style.display='none'">` : `<div class="cpc-avi-placeholder">${authorName.charAt(0)}</div>`}
           </div>
           <div class="cpc-author-meta">
             <span class="cpc-author-name${isUserDeleted ? ' is-deleted' : ''}">${authorName}${isUserDeleted ? ' <span class="cpc-del-tag">(O\'chirilgan hisob)</span>' : ''}</span>

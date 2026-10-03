@@ -97,7 +97,7 @@ async function _paintProfile(ud) {
   const fn   = ud.fullName || state.me.displayName || 'Foydalanuvchi';
   const av   = ud.avatar   || defAvi(fn);
 
-  $('profileAvi').innerHTML = `<img src="${av}" onerror="this.style.display='none'">
+  $('profileAvi').innerHTML = `<img src="${esc(av)}" onerror="this.style.display='none'">
     <div class="avi-edit-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>`;
 
   $('profileName').textContent = fn;
@@ -235,7 +235,7 @@ export async function openDetail(id) {
   $('detailContent').innerHTML = `
     <div class="dm-handle"></div>
     <div class="dm-head">
-      <div class="dm-avi${isOwn?'':' dm-avi-link'}" ${isOwn?'':('data-uid="'+p.userId+'"')}><img src="${av}" onerror="this.style.display='none'"></div>
+      <div class="dm-avi${isOwn?'':' dm-avi-link'}" ${isOwn?'':('data-uid="'+p.userId+'"')}><img src="${esc(av)}" onerror="this.style.display='none'"></div>
       <div class="dm-meta">
         <div class="dm-name${isOwn?'':' dm-name-link'}" ${isOwn?'':('data-uid="'+p.userId+'"')}>${esc(ud.fullName||'Noma\'lum')}</div>
         <div class="dm-time">${fmt(p.createdAt)}</div>
@@ -397,7 +397,7 @@ export async function renderUserProfileModal(uid) {
   const gridHTML = _upGridHtml(userPublicPosts, uid, _upTab);
 
   $('upBody').innerHTML = `
-    <div class="up-head"><div class="up-avi-wrap"><div class="up-avi" id="upAviImg" style="cursor:pointer" title="Rasmni ko'rish"><img class="w-full h-full object-cover" src="${av}" onerror="this.src='${defAvi(ud.fullName || 'U')}'"></div></div></div>
+    <div class="up-head"><div class="up-avi-wrap"><div class="up-avi" id="upAviImg" style="cursor:pointer" title="Rasmni ko'rish"><img class="w-full h-full object-cover" src="${esc(av)}" onerror="this.src='${defAvi(ud.fullName || 'U')}'"></div></div></div>
     <div class="up-info">
       <div class="up-name">${esc(ud.fullName||'Noma\'lum')}</div>
       ${ud.bio ? `<div class="up-bio">${esc(ud.bio)}</div>` : ''}

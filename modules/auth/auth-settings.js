@@ -1,3 +1,4 @@
+import { esc } from '../core/utils.js';
 /**
  * auth-settings.js — sozlamalar sheet (notif, kesh, hisob o'chirish)
  * auth.js dan ehtiyotkor ajratilgan.
@@ -35,7 +36,7 @@ export function paintSettingsProfileCard() {
   const av = cached.avatar || defAvi(fn);
 
   const aviEl = $('settingsAvi');
-  if (aviEl) aviEl.innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
+  if (aviEl) aviEl.innerHTML = `<img src="${esc(av)}" onerror="this.style.display='none'">`;
 
   const nameEl = $('settingsName');
   if (nameEl) nameEl.textContent = fn;

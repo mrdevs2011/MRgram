@@ -1,3 +1,4 @@
+import { esc } from '../core/utils.js';
 // test 3: diff uchun izoh
 import { state, sb }                               from '../core/config.js';
 import { $ }                                       from '../core/utils.js';
@@ -188,7 +189,7 @@ function showSuggestions(list) {
   suggestionIndex = -1;
   suggestionsEl.innerHTML = list.map((item, i) => {
     const avatarHtml = item.type === 'user'
-      ? `<img src="${item.avatar || ''}" class="search-suggestion-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">
+      ? `<img src="${esc(item.avatar || '')}" class="search-suggestion-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">
          <span class="search-suggestion-avatar-fallback" style="display:none;width:28px;height:28px;border-radius:50%;background:var(--accent,#ffffff);color:#fff;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">${escapeHtml((item.label[1] || '?').toUpperCase())}</span>`
       : `<svg class="search-suggestion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           ${item.type === 'hashtag' ? '<path d="M4 9h16M4 15h16M10 3L8 21M16 3l-2 18"/>' : '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>'}

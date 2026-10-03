@@ -349,7 +349,7 @@ export async function openGroupThread(groupId) {
 
   // Header
   const av = groupData.avatar || defAvi(groupData.name || 'G');
-  $('chatThreadAvi').innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
+  $('chatThreadAvi').innerHTML = `<img src="${esc(av)}" onerror="this.style.display='none'">`;
 
   // Type badge on avi
   let existingBadge = modal.querySelector('.grp-avi-badge');
@@ -733,7 +733,7 @@ export async function openGroupInfo(groupId) {
   const av = g.avatar || defAvi(g.name || 'G');
   const aviEl = panel.querySelector('#grpInfoAvi');
   if (aviEl) {
-    aviEl.innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
+    aviEl.innerHTML = `<img src="${esc(av)}" onerror="this.style.display='none'">`;
     aviEl.style.cursor = 'pointer';
 
     // Click: admin → rasm o'zgartirish + zoom; boshqa → faqat zoom
@@ -881,7 +881,7 @@ export async function openGroupInfo(groupId) {
             const online = isUidOnline(u.uid, isOnline(u.lastSeenAt));
             return `<div class="grp-member-row" data-uid="${uid}">
               <div class="grp-member-avi-wrap">
-                <div class="grp-member-avi"><img src="${av}" onerror="this.style.display='none'"></div>
+                <div class="grp-member-avi"><img src="${esc(av)}" onerror="this.style.display='none'"></div>
                 ${online ? '<span class="presence-dot" title="onlayn"></span>' : ''}
               </div>
               <div class="grp-member-info">
@@ -942,9 +942,9 @@ export async function openGroupInfo(groupId) {
                           ['mp4','mov','mkv','webm'].includes((m.fileName||'').toLowerCase().split('.').pop());
           return `<div class="gi-media-cell" data-url="${safeUrl}" data-type="${isVideo?'video':'image'}">
             ${isVideo
-              ? `<video src="${safeUrl}" preload="metadata" muted playsinline></video>
+              ? `<video src="${esc(safeUrl)}" preload="metadata" muted playsinline></video>
                  <div class="gi-media-play"><svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="m5 3 14 9-14 9V3z"/></svg></div>`
-              : `<img src="${safeUrl}" loading="lazy" onerror="this.closest('.gi-media-cell').style.display='none'">`
+              : `<img src="${esc(safeUrl)}" loading="lazy" onerror="this.closest('.gi-media-cell').style.display='none'">`
             }
           </div>`;
         }).join('');
@@ -1080,7 +1080,7 @@ export function openGroupEdit(groupId, g) {
   // Avatar preview
   const av = g.avatar || defAvi(g.name || 'G');
   const aviEl = panel.querySelector('#grpEditAviImg');
-  aviEl.innerHTML = `<img src="${av}" onerror="this.style.display='none'">`;
+  aviEl.innerHTML = `<img src="${esc(av)}" onerror="this.style.display='none'">`;
 
   panel.querySelector('#grpEditGroupFields').style.display = '';
   panel.querySelector('#grpEditMsgPerm').value = g.msgPermission || 'all';
@@ -1263,7 +1263,7 @@ function _renderPickerRows(users, listEl) {
     const av   = u.avatar || defAvi(u.fullName || 'U');
     const sel  = _selectedMembers.has(u.uid);
     return `<div class="grp-picker-row ${sel ? 'selected' : ''}" data-uid="${u.uid}">
-      <div class="grp-picker-avi"><img src="${av}" onerror="this.style.display='none'"></div>
+      <div class="grp-picker-avi"><img src="${esc(av)}" onerror="this.style.display='none'"></div>
       <div class="grp-picker-info">
         <div class="grp-picker-name">${esc(u.fullName||'Foydalanuvchi')}</div>
         ${u.username ? `<div class="grp-picker-user">@${esc(u.username)}</div>` : ''}

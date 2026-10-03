@@ -4,7 +4,7 @@ import { toast }  from '../ui/toast.js';
 
 /* ── DOM / formatting helpers ─────────────────────────────────────────── */
 export const $    = id => document.getElementById(id);
-export const esc  = s  => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
+export const esc  = s  => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;') : '';
 
 /**
  * Foydalanuvchi yozgan oddiy Markdown belgilarini xavfsiz

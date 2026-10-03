@@ -108,7 +108,7 @@ async function fillMyAvi(targetId) {
   try {
     const { data } = await sb.from('profiles').select('full_name,avatar').eq('id', state.me.uid).maybeSingle();
     const av = data?.avatar || defAvi(data?.full_name || 'U');
-    el.innerHTML = `<img class="w-full h-full object-cover brr-50pct" src="${av}" onerror="this.classList.add('d-none')">`;
+    el.innerHTML = `<img class="w-full h-full object-cover brr-50pct" src="${esc(av)}" onerror="this.classList.add('d-none')">`;
   } catch (_) {}
 }
 
@@ -273,7 +273,7 @@ function _paintCmts(postId, listId, cmts, aMap) {
   if (!cmts.length) { list.innerHTML = emptyHtml(); return; }
   list.innerHTML = cmts.map(c => `<div class="cmt-row" data-cmt-id="${c.id}">
       <div class="cmt-avi user-avi-btn" data-uid="${c.userId}">
-        <img src="${aMap[c.userId]}" onerror="this.style.display='none'">
+        <img src="${esc(aMap[c.userId])}" onerror="this.style.display='none'">
       </div>
       <div class="cmt-body">
         <div class="cmt-head"><span class="cmt-name">${esc(c.userName)}</span><span class="cmt-time">· ${fmt(c.createdAt)}</span></div>

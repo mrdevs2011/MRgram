@@ -1,3 +1,4 @@
+import { esc } from '../core/utils.js';
 /**
  * call.js — faqat WebRTC call engine + chat.js dan re-export
  * 
@@ -442,7 +443,7 @@ function _setVideoModeUI(showVideo) {
 /* ── Yordamchi: modal ko'rsatish ── */
 /* Avatar rasm bo'lmasa — ismning bosh harfi bilan doira (Telegram/Discord uslubida) */
 function _avatarHTML(name, photoUrl) {
-  if (photoUrl) return `<img src="${photoUrl}" onerror="this.style.display='none'">`;
+  if (photoUrl) return `<img src="${esc(photoUrl)}" onerror="this.style.display='none'">`;
   const letter = (name || '?').trim().charAt(0).toUpperCase() || '?';
   return `<span class="call-avi-initial">${letter}</span>`;
 }
