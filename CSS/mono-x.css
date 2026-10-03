@@ -3394,3 +3394,15 @@ textarea:not(:focus) {
   content-visibility: auto;
   contain-intrinsic-size: 0 60px;
 }
+
+/* Desktop (>=1200px): settings page back button not needed — panel closes by clicking outside */
+@media (min-width: 1200px) {
+  #settingsOverlay.show .settings-back {
+    display: none !important;
+  }
+}
+
+/* "Inbox bo'sh" empty state — not needed, remove from all views */
+.chats-x-empty {
+  display: none !important;
+}
