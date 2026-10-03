@@ -4644,7 +4644,7 @@ body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
   .bot-nav { border-top: 1px solid var(--line); }
 }
 @media (min-width: 1100px) {
-  nav.bot-nav { border-right: 1px solid var(--line); }
+  nav.bot-nav { box-sizing: border-box; box-sizing: border-box; border-right: 1px solid var(--line); }
 }
 /* Sidebar Post tugmasi va hover: yangi palitraga moslash */
 nav.bot-nav #createBtn.nav-center-btn { color: var(--bg); }
@@ -4724,7 +4724,7 @@ a { color: var(--link); }
 @media (max-width: 1099px) {
   .feed, #followingView .feed { max-width: 600px; margin: 0 auto; padding: 0; border: none; width: 100%; }
   #homeComposer { max-width: 600px; margin: 0 auto; width: 100%; }
-  nav.bot-nav { border: none; border-top: 1px solid var(--line); }
+  nav.bot-nav { box-sizing: border-box; border: none; border-top: 1px solid var(--line); }
 }
 /* Desktop/planshet: markaz ustun */
 @media (min-width: 1100px) {
@@ -4735,7 +4735,7 @@ a { color: var(--link); }
 /* Keng ekran (≥1260px): sidebar + markaz + o'ng ustun, butun guruh markazda */
 @media (min-width: 1260px) {
   :root { --gutter: max(0px, calc((100vw - 1240px) / 2)); --sidebar: calc(260px + var(--gutter)); --content-left: var(--sidebar); }
-  nav.bot-nav { padding-left: calc(12px + var(--gutter)); }
+  nav.bot-nav { box-sizing: border-box; padding-left: calc(12px + var(--gutter)); }
   .feed, #followingView .feed { margin: 0; }
 }
 /* O'ng ustun tarkibi */
@@ -4967,7 +4967,7 @@ nav.bot-nav .nav-btn svg, nav.bot-nav .sb-search-toggle svg { fill: none; stroke
 nav.bot-nav .nav-btn.on svg, nav.bot-nav #sbSearchToggle.search-active svg { stroke-width: 2.4; }
 /* Pastki nav (mobil + planshet): tugmalar 48x48 kvadrat + 24px radius = aniq doira (new post kabi) */
 @media (max-width: 1099px) {
-  nav.bot-nav { gap: 0; }
+  nav.bot-nav { box-sizing: border-box; gap: 0; }
   nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { flex: 0 0 auto; width: 48px; height: 48px; min-height: 48px; border-radius: 24px; }
   nav.bot-nav .nav-btn:hover, nav.bot-nav .nav-btn:active { background: var(--bg4); }
 }
@@ -4976,7 +4976,7 @@ nav.bot-nav .nav-btn.on svg, nav.bot-nav #sbSearchToggle.search-active svg { str
 }
 /* Keng sidebar (>=1100px) */
 @media (min-width: 1100px) {
-  nav.bot-nav { gap: 0; }
+  nav.bot-nav { box-sizing: border-box; gap: 0; }
   nav.bot-nav .sb-logo-row { width: 50px; height: 50px; }
   nav.bot-nav .sb-logo-img { width: 30px; height: 30px; }
   nav.bot-nav .nav-btn, nav.bot-nav .sb-search-toggle { height: 50px; padding: 0 16px 0 12px; gap: 20px; border-radius: 999px; }
@@ -6122,7 +6122,7 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
    ═══════════════════════════════════════════════════════════════════════ */
 @media (min-width: 1100px) {
   /* Desktop sidebar: tinch, X pill hover */
-  nav.bot-nav {
+  nav.bot-nav { box-sizing: border-box;
     width: var(--sidebar);
     padding: 4px 12px 12px;
     border-right: 1px solid var(--line);
@@ -6281,7 +6281,7 @@ html[data-theme] #chatThreadModal .chat-thread-input, html[data-theme] #chatThre
     --sidebar: 88px;
     --content-left: 88px;
   }
-  nav.bot-nav {
+  nav.bot-nav { box-sizing: border-box;
     width: 88px;
     padding: 4px 8px 12px;
     align-items: center;
