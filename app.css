@@ -8209,3 +8209,11 @@ textarea:not(:focus) {
   border: 1px solid var(--line, #2f3336); background: transparent;
 }
 .settings-more-menu { bottom: 52px; }
+/* Sozlamalar: flex-column ichida tugmalar siqilib qolmasin */
+.settings-body > * { flex-shrink: 0; }
+/* Desktop rightbar: .settings-body gap:14px bor — qo'shimcha margin kerak emas */
+@media (min-width: 1200px) {
+  #logoutBtn { margin-top: 0; }
+  .settings-more-row { margin-top: -58px; }
+  .settings-row + .settings-section-label { margin-top: 8px; }
+}
