@@ -94,8 +94,7 @@ export function renderMarkdown(rawText) {
   });
 
   const tables = [];
-  s = s.replace(/(?:^[ 	]*|.*|[ 	]*
-)+^[ 	]*|.*|[ 	]*/gm, (match) => {
+  s = s.replace(/(?:^[ \t]*\|.*\|[ \t]*\n)+^[ \t]*\|.*\|[ \t]*/gm, (match) => {
     let rows = match.trim().split('\n');
     let html = '<div class="md-table-wrap"><table class="md-table">';
     rows.forEach((row, i) => {
@@ -123,6 +122,7 @@ export function renderMarkdown(rawText) {
 
   return s;
 }
+
 
 export const fmt  = ts => {
   if (!ts) return '';
