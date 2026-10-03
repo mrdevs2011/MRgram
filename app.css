@@ -8251,3 +8251,8 @@ textarea:not(:focus) {
 @media (min-width: 1200px) {
   #grpCreateFormOverlay.show .sheet { padding-left: 32px !important; padding-right: 32px !important; }
 }
+
+/* Avatar zoom: X va "Rasmni o'zgartirish" tugmalari hech kimga (egasiga ham) chiqmaydi */
+#zoomModal.zoom-avatar .zoom-x,
+#zoomModal.zoom-avatar .avi-zoom-edit-btn,
+#zoomModal.zoom-avatar .gi-avi-zoom-edit { display: none !important; }

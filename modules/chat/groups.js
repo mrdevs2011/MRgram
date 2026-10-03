@@ -738,50 +738,11 @@ export async function openGroupInfo(groupId) {
     aviEl.innerHTML = `<img src="${esc(av)}" onerror="this.style.display='none'">`;
     aviEl.style.cursor = 'pointer';
 
-    // Click: admin → rasm o'zgartirish + zoom; boshqa → faqat zoom
+    // Click: faqat zoom (X va "rasm o'zgartirish" tugmalari yo'q — hech kimga)
     aviEl.onclick = async () => {
-      // Avatar zoom (har doim)
       const { openZoom } = await import('../core/utils.js');
       openZoom(av, 'avatar');
-      // Admin uchun "rasm o'zgartirish" tugmasi zoom ichida
-      if (canManage) {
-        const zm = document.getElementById('zoomModal');
-        if (zm) {
-          let editBtn = zm.querySelector('.gi-avi-zoom-edit');
-          if (!editBtn) {
-            editBtn = document.createElement('button');
-            editBtn.className = 'gi-avi-zoom-edit avi-zoom-edit-btn';
-            zm.appendChild(editBtn);
-          }
-          editBtn.style.display = 'flex';
-          editBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Rasmni o'zgartirish`;
-          editBtn.onclick = (e) => {
-            e.stopPropagation();
-            zm.classList.remove('show');
-            editBtn.style.display = 'none';
-            const inp = document.createElement('input');
-            inp.type = 'file'; inp.accept = 'image/*';
-            inp.onchange = async ev => {
-              const f = ev.target.files[0];
-              if (!f || !f.type.startsWith('image/')) return;
-              if (f.size > 5*1024*1024) { toast("Rasm 5 MB dan kam bo'lishi kerak", 'error'); return; }
-              toast('Yuklanmoqda...', 'info');
-              try {
-                const result = await uploadViaController(f, 'group-avatars');
-                await _updateGroup(groupId, { avatar: result.url });
-                toast('Rasm yangilandi', 'success');
-                openGroupInfo(groupId);
-              } catch(e2) { toast('Xato: ' + e2.message, 'error'); }
-            };
-            inp.click();
-          };
-          // Zoom yopilganda editBtn ni yashir
-          const hideEdit = () => { editBtn.style.display = 'none'; zm.removeEventListener('click', hideEdit); };
-          zm.addEventListener('click', hideEdit);
-        }
-      }
     };
-    if (canManage) aviEl.title = "Rasmni ko'rish / o'zgartirish";
   }
 
   const nameEl  = panel.querySelector('#grpInfoName');

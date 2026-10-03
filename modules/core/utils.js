@@ -465,6 +465,7 @@ export async function dlFile(url, name) {
 export function openZoom(url, type) {
   const im = $('zoomImg'), vd = $('zoomVideo'), zm = $('zoomModal');
   if (!im || !vd || !zm) { window.open(url,'_blank'); return; }
+  zm.classList.toggle('zoom-avatar', type === 'avatar');
   if (type === 'avatar') {
     im.style.display = 'block'; vd.style.display = 'none'; im.src = url;
     im.style.borderRadius = '50%';
@@ -495,7 +496,8 @@ if (zoomClose) {
 }
 if (zoomModal) {
   zoomModal.onclick = e => {
-    if (e.target === zoomModal) { $('zoomVideo')?.pause(); zoomModal.classList.remove('show'); }
+    // avatar zoomda X yo'q: istalgan joyga bosilsa yopiladi
+    if (e.target === zoomModal || zoomModal.classList.contains('zoom-avatar')) { $('zoomVideo')?.pause(); zoomModal.classList.remove('show'); }
   };
 }
 
