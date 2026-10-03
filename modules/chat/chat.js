@@ -668,7 +668,7 @@ import {
   uploadViaControllerProgress,
   _uuid,
 } from './chat-shared.js';
-import { isAllowedUpload, UPLOAD_DENIED_MSG } from '../core/upload-policy.js';
+import { isAllowedChatFile as isAllowedUpload, UPLOAD_DENIED_MSG } from '../core/upload-policy.js';
 // Re-export shared helpers so existing importers of chat.js keep working
 export {
   _toDateSafe,
