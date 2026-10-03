@@ -3409,3 +3409,16 @@ textarea:not(:focus) {
 .chats-x-empty {
   display: none !important;
 }
+
+/* Sozlamalar: avatar o'rtasida kamera ikonka, surat sal xira; "Suratni o'zgartirish" tugmasi yashirin */
+.pe-avatar-ring .pe-avi-img { opacity: .6; }
+.pe-avatar-ring .pe-avi-edit-badge,
+.pe-avatar-ring:hover .pe-avi-edit-badge {
+  inset: 0; width: 100%; height: 100%; border-radius: 50%;
+  background: transparent; border: 0; box-shadow: none; transform: none;
+}
+.pe-avatar-ring .pe-avi-edit-badge svg { width: 30px; height: 30px; stroke: #fff !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,.6)); }
+.pe-avatar-btn { display: none !important; }
+
+/* Sozlamalar: accordion kartalar orasida masofa */
+.pe-card-group.pe-accordion { margin-bottom: 12px; }
