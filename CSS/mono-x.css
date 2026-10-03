@@ -728,8 +728,10 @@ html, body, #app, .app { background: var(--pal-black); background-color: var(--p
     border-radius: 16px;
     z-index: 40;
   }
-  #chatsView .chats-hdr { padding: 12px 0 8px; background: var(--pal-black); font-size: 18px; font-weight: 700; }
-  #chatsView .ulist-search-wrap { margin: 4px 0 10px; }
+  #chatsView .chats-hdr { padding: 16px 16px 10px; gap: 8px; background: var(--pal-black); font-size: 20px; font-weight: 800; border-radius: 16px 16px 0 0; }
+  #chatsView .chats-filter-btn, #chatsView .chats-add-btn { height: 36px; }
+  #chatsView .chats-add-btn { width: 36px; }
+  #chatsView .ulist-search-wrap { margin: 2px 16px 12px; height: 42px; }
   #chatsView .chats-list { padding-bottom: 8px; }
   body:has(#chatsView.on) #chatThreadModal {
     left: var(--content-left, var(--sidebar, 260px));
