@@ -368,9 +368,9 @@ export async function openGroupThread(groupId) {
   if (typingEl) typingEl.textContent = subLabel;
 
   // Hide call buttons for groups/channels
-  {
-    const el = $('chatVoiceCallBtn'); if (el) el.style.display = 'none';
-  }
+  ['chatVoiceCallBtn','chatVideoCallBtn'].forEach(id => {
+    const el = $(id); if (el) el.style.display = 'none';
+  });
 
   // Input qatori: yozish huquqiga qarab ko'rsatiladi/yashiriladi (keyin ham jonli yangilanadi)
   _applyGroupComposer(groupData);
@@ -477,9 +477,9 @@ export function closeGroupThread() {
   if (_groupThreadUnsub) { _groupThreadUnsub(); _groupThreadUnsub = null; }
 
   // Restore call buttons
-  {
-    const el = $('chatVoiceCallBtn'); if (el) el.style.display = '';
-  }
+  ['chatVoiceCallBtn','chatVideoCallBtn'].forEach(id => {
+    const el = $(id); if (el) el.style.display = '';
+  });
 
   // Remove info click handlers
   ['chatThreadAvi','chatThreadName'].forEach(id => {

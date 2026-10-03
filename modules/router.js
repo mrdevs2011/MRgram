@@ -92,10 +92,10 @@ export function navigateTo(routeName, pushState = true) {
   });
   // Call modallarini yopmaymiz — qo'ng'iroq davom etishi mumkin
   // chatThread yopilganda call buttonlarni tiklаymiz (group ochilganda yashirilgan bo'lishi mumkin)
-  {
-    const el = document.getElementById('chatVoiceCallBtn');
+  ['chatVoiceCallBtn','chatVideoCallBtn'].forEach(id => {
+    const el = document.getElementById(id);
     if (el) el.style.display = '';
-  }
+  });
   // chatThread state ni tozalaymiz
   if (state.currentChatKind && state.currentChatKind !== 'dm') {
     // group thread unsub ni async import orqali tozalaymiz

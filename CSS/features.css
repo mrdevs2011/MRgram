@@ -153,6 +153,8 @@
   pointer-events: none;
 }
 
+/* ═══════════════════════ VIDEO 2X SPEED / REWIND BADGE ═══════════════════════ */
+
 /* Caption */
 .cap-more { color: var(--text3); font-size: 12px; cursor: pointer; font-weight: 500; margin-left: 2px;  }
 .cap-more:hover { color: var(--text2); }
@@ -247,6 +249,7 @@
 .hdr-hidden { display: none; }
 /* Hide search btn when not on home/following */
 .hdr-search-wrap.search-hidden { display: none; }
+/* Video player mute btn: mobile faqat */
 
 /* Reel vol btn: mobile = top-right absolute, desktop = top bar ichida */
 
@@ -286,6 +289,7 @@
 [data-theme="dark"] .post:hover { box-shadow: none; }
 /* Light mode: softer shadows */
 /* box-shadow o'chirildi — borderless.css:43 (.post guruhida) bir xil specificity bilan keyinroq yuklanadi, bo... */
+/* Video controls - theme aware */
 
 /* File card hover - theme aware */
 /* [data-theme="dark"] .file-card:hover → CSS/dark-theme-fix.css'da qayta belgilangan (keyinroq yuklanadi, g'o... */
@@ -298,6 +302,7 @@
 /* ═══════════════════════════════════════════ ENHANCED POST CARD STYLES ═════════════════════════════════════... */
 /* Gradient border hover + zoom o'chirildi (flat X.com uslubi, 2026) */
 .post-media { overflow: hidden; }
+/* Video post indicator */
 
 /* Post badge animation */
 /* Action button ripple effect */
@@ -381,7 +386,7 @@
 .settings-more-menu-item:hover { background: var(--red-glow); }
 .edit-btn { width: 100%; padding: 10px; color: var(--text); font-size: 13px; font-weight: 500; font-family: var(--font); cursor: pointer; margin-top: 14px; }
 .profile-grid { margin-top: 4px; padding: 0 0 12px; }
-
+/* .grid-cell, .grid-cell img/video, .grid-cell:hover img/video → to'liq ui-improvements.css:610-635 tomonidan... */
 .grid-cell-overlay { align-items: center; border-radius: 6px; }
 /* .grid-cell:hover .grid-cell-overlay { opacity:1 } → ui-improvements.css:651 bilan bir xil qiymat, o'lik, o'... */
 .grid-cell-txt { height: 100%; background: var(--bg2); }
@@ -425,7 +430,7 @@
 .up-grid { margin: 0 -20px; width: calc(100% + 40px); padding-bottom: 8px; }
 .up-grid-cell-overlay { align-items: center; border-radius: 4px; }
 /* .up-grid-cell:hover .up-grid-cell-overlay { opacity:1 } → ui-improvements.css:651 bilan bir xil qiymat, o'l... */
-
+/* .up-grid-cell img/video → to'liq ui-improvements.css:620 tomonidan yopiladi, o'lik, o'chirildi */
 .up-grid-cell-txt { height: 100%; background: var(--bg2); }
 /* ═══════════════════════════════════════════ PROFILE — THEME AWARE ENHANCEMENTS ════════════════════════════... */
 /* Dark mode profile */
@@ -1271,7 +1276,7 @@
 .cfp-remove { width: 24px; height: 24px; border-radius: 50%; background: var(--bg5); border: none; display: flex; align-items: center; justify-content: center; color: var(--text2); cursor: pointer; flex-shrink: 0;  }
 .cfp-remove:hover { background: var(--pal-gray-900); color: var(--pal-red); }
 /* Voice message bubble */
-
+/* File message (non-image, non-video) */
 .chat-file-msg { display: flex; align-items: center; gap: 10px; min-width: 180px; max-width: 260px; padding: 2px 0; }
 .cfm-icon { width: 38px; height: 38px; flex-shrink: 0; }
 .cfm-icon svg { width: 38px; height: 38px; }
@@ -1393,10 +1398,11 @@
 /* ════════════════════════════════════════════════════════════════════ ACTIVE CALL MODAL ════════════════════... */
 #callActiveModal { position: fixed; inset: 0; z-index: 999999; display: none; flex-direction: column; align-items: center; justify-content: space-between; padding: 60px 24px 48px;  }
 #callActiveModal.show { display: flex; }
-
+#callActiveModal.video-mode { padding: 0; background: var(--pal-black); }
+/* Stage — voice va video qatlamlari bir joyda ustma-ust turadi, shu sababli ular orasida smooth crossfade qil... */
 .call-stage { position: relative; flex: 1; width: 100%; min-height: 0; }
-.call-voice-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.94); pointer-events: none;  }
-.call-voice-wrap.cs-active { opacity: 1; transform: scale(1); pointer-events: auto; }
+.call-voice-wrap, .call-video-wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.94); pointer-events: none;  }
+.call-voice-wrap.cs-active, .call-video-wrap.cs-active { opacity: 1; transform: scale(1); pointer-events: auto; }
 /* Voice mode */
 .call-voice-wrap { flex-direction: column; gap: 16px; }
 .call-voice-avi { width: 100px; height: 100px; overflow: hidden; }
@@ -1406,19 +1412,45 @@
 .call-avi-initial { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 700; color: var(--pal-white); background: var(--pal-green); border-radius: 50%; }
 .incoming-call-avi .call-avi-initial { font-size: 52px; }
 .call-voice-name { font-size: 24px; font-weight: 700; color: var(--pal-white); }
-
+/* Video mode */
+.call-video-wrap { background: var(--pal-black); border-radius: inherit; overflow: hidden; }
+#callRemoteVideo { width: 100%; height: 100%; object-fit: cover; }
+.call-local-pip {
+  position: absolute;
+  bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+  right: 16px;
+  width: 92px;
+  height: 128px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 2px solid var(--pal-legacy-525257);
+  z-index: 2;
+  opacity: 0;
+  transform: scale(0.85);
+  
+}
+.call-local-pip.cs-active { opacity: 1; transform: scale(1); }
 .call-status { font-size: 14px; color: var(--pal-legacy-9c9c9f); text-align: center;  }
 .call-timer { font-size: 32px; font-weight: 300; color: var(--pal-white); font-variant-numeric: tabular-nums; letter-spacing: 2px;  }
-
+#callActiveModal.video-mode .call-status, #callActiveModal.video-mode .call-timer { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 3; }
+#callActiveModal.video-mode .call-timer { top: 42px; }
 /* Control buttons — icon + label, kabi reference (Discord/FaceTime) */
 .call-active-btns { display: flex; gap: 20px; align-items: flex-start; justify-content: center; padding-bottom: env(safe-area-inset-bottom, 0);  }
 .call-ctrl-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .call-ctrl-label { font-size: 12px; font-weight: 500; color: #C7C7CA; text-align: center; }
-
+/* Default (voice) tartib: Video, Mikrofon, Karnay, Tugatish — Flip yashirin */
+#callSwitchCol { order: 0; display: none; }
+#callCamCol { order: 1; }
 #callMicCol { order: 2; }
 #callSpeakerCol { order: 3; }
 #callEndCol { order: 4; }
-
+/* Video rejimida tartib: Flip, Video, Mikrofon, Tugatish — Karnay yashirin (video chog'ida ovoz avtomatik din... */
+#callActiveModal.video-mode #callSwitchCol { order: 1; }
+#callActiveModal.video-mode #callCamCol { order: 2; }
+#callActiveModal.video-mode #callMicCol { order: 3; }
+#callActiveModal.video-mode #callSpeakerCol { display: none; }
+#callActiveModal.video-mode #callEndCol { order: 4; }
+#callActiveModal.video-mode .call-active-btns { position: absolute; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); z-index: 3; gap: 10px; padding: 7px 10px; max-width: calc(100vw - 24px); }
 .call-ctrl-btn {
   width: 54px;
   height: 54px;
@@ -1440,7 +1472,11 @@
 .call-ctrl-btn.end-btn:hover { background: var(--pal-red); }
 .call-ctrl-btn.end-btn svg { transform: rotate(135deg); }
 /* qabul svg'ini burab — "tugatish" belgisi */
-
+/* Video rejimida — tugmalar kichikroq, kam joy egallaydi */
+#callActiveModal.video-mode .call-ctrl-btn { width: 42px; height: 42px; }
+#callActiveModal.video-mode .call-ctrl-btn svg { width: 17px; height: 17px;  }
+#callActiveModal.video-mode .call-ctrl-btn.end-btn { width: 48px; height: 48px; }
+#callActiveModal.video-mode .call-ctrl-btn.end-btn svg { width: 19px; height: 19px; }
 /* Messages — bubble background/color/border owned by chat-dark-redesign.css. O'chirildi: bu yerdagi border (0... */
 /* Bubble ichidagi kod bloki/kod — .md-codeblock/.md-code odatda var(--glass) = --bg3 fonini ishlatadi, bu esa... */
 .chat-bubble .md-codeblock, .chat-bubble .md-code { background: rgba(0, 0, 0, .22); border-color: var(--pal-white-14); }
@@ -1468,7 +1504,7 @@ a.cfm-name--link {
 a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .chat-msg.theirs a.cfm-name--link { color: var(--blue); text-decoration-color: var(--pal-legacy-464646); }
 .chat-msg.theirs a.cfm-name--link:hover { text-decoration-color: var(--blue); }
-
+/* ── Media messages (image & video) — no bubble wrapping ── */
 .chat-bubble.bubble-media-only,
 #chatThreadModal .chat-msg.mine .chat-bubble.bubble-media-only,
 #chatThreadModal .chat-msg.theirs .chat-bubble.bubble-media-only {
@@ -1535,6 +1571,7 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   color: #ffffff !important;
 }
 
+/* Image/video with caption — media is flush edge-to-edge (no padding around media) */
 .chat-bubble.bubble-media-caption,
 #chatThreadModal .chat-msg.mine .chat-bubble.bubble-media-caption,
 #chatThreadModal .chat-msg.theirs .chat-bubble.bubble-media-caption {
@@ -1736,7 +1773,13 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
   background: var(--pal-gray-900);
 }
 /* Control buttons — consolidated into single definition above */
-
+/* Video mode — controls glass bar */
+#callActiveModal.video-mode .call-active-btns {
+  background: var(--pal-black);
+  border: 0.5px solid var(--pal-legacy-26262c);
+  box-shadow: inset 0 1px 0 #2B2B31, 0 4px 24px var(--pal-black);
+  border-radius: 60px;
+}
 /* Message sender avatar (DM & Group) */
 .msg-avi-btn {
   flex-shrink: 0;

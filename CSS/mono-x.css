@@ -861,7 +861,7 @@ html[data-theme] :is(.post-cmt-panel, .rr-cmt-panel) input.cmt-input:focus {
 .rr-cmt-back:hover { background: var(--hover-strong); }
 .rr-cmt-title { font-size: 20px; font-weight: 700; color: var(--text); }
 [data-theme] .rr-cmt-panel .cmt-input-row, [data-theme] .rr-cmt-list .cmt-row, [data-theme] .rr-cmt-list .cmt-empty { padding-left: 4px; padding-right: 4px; }
-
+/* Boshqa foydalanuvchi profili: tablar (Barchasi/Photos/Videos/Text posts/Musics) */
 .up-posts-tab { overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
 .up-posts-tab::-webkit-scrollbar { display: none; }
 .up-posts-tab .profile-grid-tab { flex: 0 0 auto; background: none; border: none; border-bottom: 2px solid transparent; font-family: var(--font); white-space: nowrap; }

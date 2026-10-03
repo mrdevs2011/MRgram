@@ -800,6 +800,11 @@
 <!-- ACTIVE CALL MODAL -->
 <div id="callActiveModal">
   <div class="call-stage" id="callStage">
+    <!-- Video mode -->
+    <div class="call-video-wrap" id="callVideoWrap">
+      <video id="callRemoteVideo" autoplay playsinline></video>
+      <video id="callLocalVideo" autoplay playsinline muted class="call-local-pip"></video>
+    </div>
     <!-- Voice mode -->
     <div class="call-voice-wrap cs-active" id="callVoiceWrap">
       <div class="call-voice-avi" id="callActiveAvi"></div>
@@ -811,6 +816,18 @@
   <div class="call-status" id="callStatus">Qo'ng'iroq qilinmoqda...</div>
   <div class="call-timer" id="callTimer">00:00</div>
   <div class="call-active-btns">
+    <div class="call-ctrl-col" id="callSwitchCol">
+      <button class="call-ctrl-btn cam-btn" id="callSwitchCamBtn" title="Kamerani almashtirish" style="display:none">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/><path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"/></svg>
+      </button>
+      <span class="call-ctrl-label">Kamera</span>
+    </div>
+    <div class="call-ctrl-col" id="callCamCol">
+      <button class="call-ctrl-btn cam-btn" id="callCamBtn" title="Videoni yoqish">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      </button>
+      <span class="call-ctrl-label" id="callCamLabel">Video</span>
+    </div>
     <div class="call-ctrl-col" id="callMicCol">
       <button class="call-ctrl-btn" id="callMicBtn" title="Mikrofonni o'chirish">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>

@@ -1303,6 +1303,8 @@ export async function openChatThread(uid) {
   $('chatFileInput') && ($('chatFileInput').value = '');
   try { updateVoiceSendBtn(); } catch(_) {}
 
+  const videoBtn = $('chatVideoCallBtn');
+  if (videoBtn) videoBtn.style.display = '';
   const voiceCallBtn = $('chatVoiceCallBtn');
   if (voiceCallBtn) voiceCallBtn.style.display = '';
   try {
