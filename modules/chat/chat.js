@@ -91,10 +91,9 @@ function _renderRecentSearches() {
   `;
 
   const box = document.getElementById('chatSearchBoxWrap');
-  if (box && box.nextSibling) {
-    box.parentNode.insertBefore(wrap, box.nextSibling);
-  } else if (box) {
-    box.parentNode.appendChild(wrap);
+  if (box) {
+    // Wrap ichiga qo'shamiz — position:absolute to'g'ri ishlashi uchun
+    box.appendChild(wrap);
   }
 
   wrap.querySelector('#chatRecentsClearAll')?.addEventListener('click', (e) => {
@@ -1125,6 +1124,12 @@ function paintChatsList(users, chatMap) {
 
   // Search box hamma uchun ko'rsatiladi
   _renderSearchBox(root);
+
+  // Recent searches panel faqat input focus bo'lganda ko'rinsin, aks holda olib tashla
+  const searchInput = document.getElementById('chatSearchInput');
+  if (document.activeElement !== searchInput) {
+    document.getElementById('chatRecentSearchesWrap')?.remove();
+  }
 
   const rawQ = (chatState._searchQuery || '').trim();
   const term = (rawQ.startsWith('@') ? rawQ.slice(1) : rawQ).toLowerCase();
