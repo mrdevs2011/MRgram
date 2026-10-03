@@ -3003,7 +3003,8 @@ svg { color: inherit; }
 .vid-controls { background: var(--pal-black); }
 .vc-play, .vc-mute, .vc-fs { background: var(--pal-gray-800); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;  }
 .vc-play:hover, .vc-mute:hover, .vc-fs:hover { background: var(--pal-legacy-3a3a3f); }
-.vc-play:active, .vc-mute:active, .vc-bar { height: 4px;  }
+.vc-bar { height: 4px; }
+.vc-play:active, .vc-mute:active, .vc-fs:active { transform: scale(0.92); }
 .vc-progress:hover .vc-bar { height: 6px; }
 .vc-fill { position: relative; }
 .vc-fill::after { content: ''; position: absolute; right: -4px; top: 50%; transform: translateY(-50%); width: 10px; height: 10px; background: var(--pal-white); border-radius: 50%; opacity: 0;  }
