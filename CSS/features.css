@@ -2518,3 +2518,47 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 .md-task-checkbox {
   margin: 0;
 }
+
+/* ── Chats rightbar/sidebar layout fixes ─────────────────────────────── */
+
+/* chat-row name qatoridagi @username span overflow qilmasligi uchun */
+.chat-row-name {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.chat-row-name > span {
+  flex-shrink: 0;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* chat-row-body ichida ham min-width:0 bo'lishi shart (flex truncation) */
+.chat-row-body {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+/* chatRecentSearchesWrap — so'nggi qidiruvlar overlay sifatida chiqsin */
+#chatRecentSearchesWrap {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: var(--bg, #0e1012);
+  border: 1px solid var(--line, #2f3336);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  margin: 0;
+}
+/* Search box wrap — relative container for overlay */
+#chatSearchBoxWrap {
+  position: relative;
+}
