@@ -98,9 +98,19 @@ export async function initPush() {
     let sub = await reg.pushManager.getSubscription();
     // Eski (FCM yoki boshqa VAPID kalit bilan) obuna bo'lsa — yangisiga almashtiramiz
     if (sub && !_sameKey(sub, key)) { await sub.unsubscribe().catch(() => {}); sub = null; }
-    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
 
-    // Bir qurilmada akkaunt almashsa ham token joriy userga o'tadi (RPC shuni qiladi)
+    if (!sub) {
+      try {
+        sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: key });
+      } catch (subErr) {
+        // "Registration failed - push service error" — brauzer push serveri (FCM/Mozilla) bilan
+        // tarmoq muammosi. Ilovaga ta'sir qilmaydi, jimgina chiqamiz.
+        return;
+      }
+    }
+
+    if (!sub) return;
+
     const { error } = await sb.rpc('register_push_token', {
       p_token: JSON.stringify(sub.toJSON()),
       p_platform: _platform(),
@@ -109,8 +119,11 @@ export async function initPush() {
 
     _initDone = true;
   } catch (e) {
-    // Obuna bo'lmadi (ruxsat yo'q, brauzer qo'llamaydi, RPC yo'q) — ilova ishlashda davom etadi
-    console.warn('[Push] obuna bo\'lmadi:', e?.message || e);
+    const msg = e?.message || String(e);
+    // Brauzer push xizmati muammolari — faqat DB/RPC xatolarini ko'rsatamiz
+    if (!msg.includes('push service') && !msg.includes('Registration failed') && !msg.includes('network')) {
+      console.warn('[Push] obuna bo\'lmadi:', msg);
+    }
   }
 }
 
