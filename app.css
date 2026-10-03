@@ -8217,3 +8217,37 @@ textarea:not(:focus) {
   color: var(--text); cursor: pointer;
 }
 .settings-actions .settings-help-btn:hover { background: var(--pal-mid-16, rgba(255,255,255,.08)); }
+
+/* ── Yangi guruh formasi: mobile + desktop — to'liq ekran (card emas) ── */
+#grpCreateFormOverlay.show {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important;
+  width: 100vw !important; max-width: none !important; min-width: 0 !important;
+  height: 100dvh !important;
+  margin: 0 !important; padding: 0 !important;
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  background: #000000 !important;
+  display: flex !important; flex-direction: column !important;
+  align-items: stretch !important; justify-content: flex-start !important;
+  overflow: hidden !important;
+  z-index: 1000 !important;
+}
+#grpCreateFormOverlay.show .sheet {
+  width: 100% !important; max-width: none !important;
+  height: 100% !important; max-height: 100% !important;
+  margin: 0 !important;
+  padding: env(safe-area-inset-top, 0px) 16px max(env(safe-area-inset-bottom, 0px), 16px) !important;
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  background: #000000 !important;
+  display: flex !important; flex-direction: column !important;
+  overflow-y: auto !important;
+}
+#grpCreateFormOverlay.show .sheet-handle { display: none !important; }
+#grpCreateFormOverlay.show .sheet-title {
+  padding: 16px 0 !important; margin-bottom: 16px !important;
+  border-bottom: 1px solid var(--line, #2f3336) !important; text-align: left !important;
+}
+@media (min-width: 1200px) {
+  #grpCreateFormOverlay.show .sheet { padding-left: 32px !important; padding-right: 32px !important; }
+}
