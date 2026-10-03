@@ -240,8 +240,8 @@ export function initVidWrap(wrap) {
   vid._inited = true;
   vid.muted = state.globalMuted;
   const volIc = wrap.querySelector('.ic-vol'), mutedIc = wrap.querySelector('.ic-muted');
-  if (volIc)   volIc.style.display   = state.globalMuted ? 'none' : '';
-  if (mutedIc) mutedIc.style.display = state.globalMuted ? '' : 'none';
+  if (volIc)   volIc.style.display   = state.globalMuted ? 'none' : 'block';
+  if (mutedIc) mutedIc.style.display = state.globalMuted ? 'block' : 'none';
   vid.addEventListener('loadedmetadata', () => {
     const ratio = vid.videoWidth / vid.videoHeight;
     wrap.style.aspectRatio = ratio.toFixed(4);
@@ -409,8 +409,8 @@ export function toggleMute(wrap) {
   if (!vid) return;
   vid.muted = !vid.muted;
   state.globalMuted = vid.muted;
-  wrap.querySelector('.ic-vol').style.display   = vid.muted ? 'none' : '';
-  wrap.querySelector('.ic-muted').style.display = vid.muted ? '' : 'none';
+  wrap.querySelector('.ic-vol').style.display   = vid.muted ? 'none' : 'block';
+  wrap.querySelector('.ic-muted').style.display = vid.muted ? 'block' : 'none';
   document.dispatchEvent(new CustomEvent('mutestatechange'));
 }
 

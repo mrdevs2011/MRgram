@@ -36,8 +36,8 @@ export function updateMuteBtnUI() {
   document.querySelectorAll('.vid-wrap').forEach(wrap => {
     const volIc   = wrap.querySelector('.ic-vol');
     const mutedIc = wrap.querySelector('.ic-muted');
-    if (volIc)   volIc.style.display   = muted ? 'none' : '';
-    if (mutedIc) mutedIc.style.display = muted ? '' : 'none';
+    if (volIc)   volIc.style.display   = muted ? 'none' : 'block';
+    if (mutedIc) mutedIc.style.display = muted ? 'block' : 'none';
     const vid = wrap.querySelector('video');
     if (vid) vid.muted = muted;
   });
