@@ -2584,6 +2584,163 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 #adminResetPwdOverlay .auth-card {
   animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Markdown Enhancements */
+.md-code-wrapper {
+  background: var(--bg2, #1e1e1e);
+  border-radius: 8px;
+  margin: 8px 0;
+  overflow: hidden;
+  border: 1px solid var(--border, #333);
+}
+.md-code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 12px;
+  background: var(--bg3, #2d2d2d);
+  font-size: 11px;
+  color: #aaa;
+  border-bottom: 1px solid var(--border, #333);
+}
+.md-code-lang {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.md-code-copy {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  transition: 0.2s;
+}
+.md-code-copy:hover {
+  background: var(--accent, #007bff);
+}
+.md-codeblock {
+  margin: 0;
+  padding: 12px;
+  overflow-x: auto;
+  font-size: 13px;
+  color: #e6e6e6;
+  font-family: monospace;
+}
+.md-spoiler {
+  background: #333;
+  color: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 0 4px;
+  transition: color 0.3s, background 0.3s;
+}
+.md-spoiler.revealed {
+  color: inherit;
+  background: rgba(100,100,100,0.2);
+}
+.md-mention {
+  color: var(--accent, #007bff);
+  cursor: pointer;
+  font-weight: 500;
+}
+.md-mention:hover {
+  text-decoration: underline;
+}
+.md-table-wrap {
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.md-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+.md-table th, .md-table td {
+  border: 1px solid var(--border, #333);
+  padding: 6px 12px;
+  text-align: left;
+}
+.md-table th {
+  background: var(--bg2, #1e1e1e);
+  font-weight: 600;
+}
+.md-task-list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.md-task-checkbox {
+  margin: 0;
+}
+
+/* ── Chats rightbar/sidebar layout fixes ─────────────────────────────── */
+
+/* chat-row name qatoridagi @username span overflow qilmasligi uchun */
+.chat-row-name {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.chat-row-name > span {
+  flex-shrink: 0;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* chat-row-body ichida ham min-width:0 bo'lishi shart (flex truncation) */
+.chat-row-body {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+/* chatRecentSearchesWrap — so'nggi qidiruvlar overlay sifatida chiqsin */
+#chatRecentSearchesWrap {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: -16px;
+  right: -16px;
+  z-index: 300;
+  background: var(--bg, #0e1012);
+  border: 1px solid var(--line, #2f3336);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  margin: 0;
+}
+/* Search box wrap — relative container for overlay */
+#chatSearchBoxWrap {
+  position: relative;
+}
+
+/* ── Chats rightbar: add horizontal margin to chat rows so they don't touch edges ── */
+@media (min-width: 1100px) {
+  #chatsView .chat-row {
+    margin: 0 8px;
+    border-radius: 12px;
+    border-bottom: none;
+    padding: 10px 10px;
+  }
+  #chatsView .chat-row:hover {
+    transform: none;
+    background: var(--pal-white-06, rgba(255,255,255,0.06));
+  }
+  #chatsView .grp-rows-section > .chat-row {
+    margin: 0 8px;
+    border-radius: 12px;
+    border-bottom: none;
+  }
+  /* Section divider (GURUHLAR label) — also add margin */
+  #chatsView .grp-rows-label {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
 /* CSS/layers.css — theme, ui-improvements, local-utility, dark-theme-fix, borderless, chat-dark-redesign, 00-components.core, post-composer, card-sheets, sidebar-x, no-animations (F4.4), style (global reset). Kaskad tartibi MUHIM: tokens → base → features → layers → admin → mono-x (scripts/build-css.mjs) */
 /* ─── theme ─── */
 /* ═══════════════════════════════════════════ SpaceMR — Theme System SpaceMR — Theme System ═════════════════... */
@@ -4722,7 +4879,7 @@ a { color: var(--link); }
 .post, [data-theme] .post { margin-bottom: 0; box-shadow: none; }
 /* Mobil / planshet: o'rtaga moslangan lenta */
 @media (max-width: 1099px) {
-  .feed, #followingView .feed { max-width: 600px; margin: 0 auto; padding: 0; border: none; width: 100%; }
+  .feed, #followingView .feed { max-width: 600px; margin: 0 auto; padding: 0 0 calc(var(--nav, 60px) + 16px) 0; border: none; width: 100%; }
   #homeComposer { max-width: 600px; margin: 0 auto; width: 100%; }
   nav.bot-nav { box-sizing: border-box; border: none; border-top: 1px solid var(--line); }
 }
@@ -8001,4 +8158,17 @@ textarea:not(:focus) {
 .chat-msg {
   content-visibility: auto;
   contain-intrinsic-size: 0 60px;
+}
+
+/* Desktop: settings page back/chevron button not needed — panel closes by clicking outside */
+@media (min-width: 1100px) {
+  #settingsOverlay .settings-back,
+  #settingsOverlay.show .settings-back {
+    display: none !important;
+  }
+}
+
+/* "Inbox bo'sh" empty state — not needed, remove from all views */
+.chats-x-empty {
+  display: none !important;
 }
