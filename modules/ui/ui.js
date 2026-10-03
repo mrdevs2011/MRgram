@@ -138,9 +138,9 @@ function showSuggestions(list) {
   currentSuggestions = list;
   suggestionIndex = -1;
   suggestionsEl.innerHTML = list.map((item, i) => {
-    const avatarHtml = item.type === 'user'
+    const avatarHtml = (item.type === 'user' || item.type === 'group')
       ? `<img src="${esc(item.avatar || '')}" class="search-suggestion-avatar" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0">
-         <span class="search-suggestion-avatar-fallback" style="display:none;width:28px;height:28px;border-radius:50%;background:var(--accent,#ffffff);color:#fff;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">${escapeHtml((item.label[1] || '?').toUpperCase())}</span>`
+         <span class="search-suggestion-avatar-fallback" style="display:none;width:28px;height:28px;border-radius:50%;background:var(--accent,#ffffff);color:#fff;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">${escapeHtml(((item.type === 'user' ? item.label[1] : item.label[0]) || '?').toUpperCase())}</span>`
       : `<svg class="search-suggestion-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           ${item.type === 'hashtag' ? '<path d="M4 9h16M4 15h16M10 3L8 21M16 3l-2 18"/>' : '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>'}
         </svg>`;
@@ -156,7 +156,11 @@ function showSuggestions(list) {
       const idx = parseInt(el.dataset.index);
       const chosen = currentSuggestions[idx];
       if (suggestionsEl) suggestionsEl.classList.remove('show');
-      if (chosen.type === 'user' && chosen.uid) {
+      if (chosen.type === 'group' && chosen.gid) {
+        closeSearchOverlay();
+        const { applyPath } = await import('../url-router.js');
+        applyPath('/chats/g/' + encodeURIComponent(chosen.gid));
+      } else if (chosen.type === 'user' && chosen.uid) {
         closeSearchOverlay();
         const { openUserProfileModal } = await import('../profile/profile.js');
         openUserProfileModal(chosen.uid);
@@ -183,28 +187,39 @@ async function fetchSuggestions(rawQuery) {
   const results = [];
   const q = rawQuery.toLowerCase().replace(/^@/, '');
 
-  // 1. profiles jadvalidan username bo'yicha qidirish
+  // 1. profiles: username YOKI ism bo'yicha, so'zning istalgan joyidan ("ro" -> "Aro", "pro_x")
+  const likeQ = q.replace(/[,()"]/g, ' ').trim().replace(/[\\%_]/g, m => '\\' + m);
   try {
-    const like = q.replace(/[\\%_]/g, m => '\\' + m) + '%';
     const { data, error } = await sb.from('profiles')
-      .select('id,username,avatar')
-      .ilike('username', like)
+      .select('id,username,full_name,avatar')
+      .or(`username.ilike.%${likeQ}%,full_name.ilike.%${likeQ}%`)
       .order('username')
       .limit(5);
     if (error) throw error;
     (data || []).forEach(u => {
-      if (u.username) {
+      if (u.username && u.id !== state.me?.uid) {
         results.push({ type: 'user', label: '@' + u.username, value: u.username, uid: u.id, avatar: u.avatar || null });
       }
     });
   } catch (e) {
     // So'rov xato bersa, local allUsers dan izlaymiz
     state.allUsers?.forEach(user => {
-      if (user.username?.toLowerCase().includes(q)) {
+      if (user.username?.toLowerCase().includes(q) || (user.fullName || '').toLowerCase().includes(q)) {
         results.push({ type: 'user', label: '@' + user.username, value: user.username, uid: user.uid, avatar: user.photoURL || null });
       }
     });
   }
+
+  // 1b. Guruhlar: nomi YOKI username bo'yicha (masalan "ters" -> "testers", "groups_gro")
+  try {
+    const { data, error } = await sb.from('groups')
+      .select('id,name,username,avatar')
+      .or(`name.ilike.%${likeQ}%,username.ilike.%${likeQ}%`)
+      .limit(4);
+    if (!error) (data || []).forEach(g => {
+      results.push({ type: 'group', label: g.name + (g.username ? ' · @' + g.username : ''), value: g.name, gid: g.id, avatar: g.avatar || null });
+    });
+  } catch (_) { /* guruh qidiruvi xato bersa — qolganlari ishlayveradi */ }
 
   // 2. Hashtag qidirish (postlardan)
   const hashtags = new Set();
@@ -224,7 +239,7 @@ async function fetchSuggestions(rawQuery) {
     }
   });
 
-  return results.slice(0, 6);
+  return results.slice(0, 10);
 }
 
 // Debounced suggestion fetch
@@ -255,7 +270,11 @@ if (searchInput) {
       if (suggestionIndex >= 0 && currentSuggestions[suggestionIndex]) {
         const chosen = currentSuggestions[suggestionIndex];
         suggestionsEl?.classList.remove('show');
-        if (chosen.type === 'user' && chosen.uid) {
+        if (chosen.type === 'group' && chosen.gid) {
+          closeSearchOverlay();
+          const { applyPath } = await import('../url-router.js');
+          applyPath('/chats/g/' + encodeURIComponent(chosen.gid));
+        } else if (chosen.type === 'user' && chosen.uid) {
           closeSearchOverlay();
           const { openUserProfileModal } = await import('../profile/profile.js');
           openUserProfileModal(chosen.uid);

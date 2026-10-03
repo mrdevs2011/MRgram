@@ -368,7 +368,7 @@ export function scrollToPostFromHash() {
     if (el) {
       _scrolledTargetId = targetId;
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      // 3 sekund tagidan ko'k rang yonib turib keyin o'chadi
+      // 5 sekund tagidan rang yonib turib keyin o'chadi
       el.classList.add('post-link-highlight');
       try {
         if (window.location.hash.startsWith('#post-')) {
@@ -378,7 +378,7 @@ export function scrollToPostFromHash() {
       setTimeout(() => {
         el.classList.remove('post-link-highlight');
         sessionStorage.removeItem('target_post_id');
-      }, 3000);
+      }, 5000);
       return;
     }
 

@@ -343,11 +343,11 @@
 .act-btn { justify-content: center; border-right: 0.5px solid var(--glass-border); }
 .act-btn:last-child { border-right: none; }
 
-/* ── Post Target Blue Glow (3 seconds) ── */
+/* ── Post Target Glow (5 seconds) ── */
 .post.post-link-highlight {
   position: relative;
   border-radius: 16px;
-  animation: postBlueGlow 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: postBlueGlow 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .post.post-link-highlight::after {
@@ -362,7 +362,7 @@
   border-radius: 50%;
   pointer-events: none;
   z-index: 5;
-  animation: postUnderglow 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: postUnderglow 5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes postBlueGlow {
