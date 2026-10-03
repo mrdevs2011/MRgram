@@ -2561,3 +2561,27 @@ a.cfm-name--link:hover { opacity: 1; text-decoration-color: #DADADB; }
 #chatSearchBoxWrap {
   position: relative;
 }
+
+/* ── Chats rightbar: add horizontal margin to chat rows so they don't touch edges ── */
+@media (min-width: 1100px) {
+  #chatsView .chat-row {
+    margin: 0 8px;
+    border-radius: 12px;
+    border-bottom: none;
+    padding: 10px 10px;
+  }
+  #chatsView .chat-row:hover {
+    transform: none;
+    background: var(--pal-white-06, rgba(255,255,255,0.06));
+  }
+  #chatsView .grp-rows-section > .chat-row {
+    margin: 0 8px;
+    border-radius: 12px;
+    border-bottom: none;
+  }
+  /* Section divider (GURUHLAR label) — also add margin */
+  #chatsView .grp-rows-label {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
